@@ -4,7 +4,9 @@ const BUILD_PATH = path.resolve(ROOT_PATH, 'dist')
 
 module.exports = {
   entry: {
-    maeco: './src/js/index.js'
+    /* eslint-disable-next-line quote-props */
+    'maeco': './src/js/main.js',
+    'maeco.all': './src/js/main.all.js'
   },
   output: {
     path: BUILD_PATH,

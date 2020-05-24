@@ -1,4 +1,5 @@
 import {
+  constant,
   isNotSet,
   logger
 } from '../utils'
@@ -15,10 +16,11 @@ const tcb = {
   db: null
 }
 
-function install (options = {}, tcbSdk) {
+async function install (options = {}, tcbSdk) {
   tcb.sdk = tcbSdk
   checkOptions(options)
-  init(options)
+  await init(options)
+  return tcb
 }
 
 function checkOptions (options) {
@@ -34,6 +36,7 @@ function checkOptions (options) {
     for (const missingOption of missingOptions) {
       logger.warn(`${missingOption} is required`)
     }
+    throw new Error(`${constant.logPrefix} failed to init`)
   }
 }
 

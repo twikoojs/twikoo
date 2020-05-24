@@ -1,5 +1,5 @@
 {
-  "name": "maeco",
+  "name": "twii",
   "version": "1.0.0",
   "description": "A simple comment system based on Tencent CloudBase (tcb).",
   "author": "imaegoo <mail1st@qq.com> (https://github.com/imaegoo)",
@@ -12,17 +12,22 @@
   "devDependencies": {
     "@cloudbase/cli": "^0.7.4",
     "copy-webpack-plugin": "^6.0.1",
+    "css-loader": "^3.5.3",
     "eslint": "^7.1.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
+    "vue-loader": "^15.9.2",
+    "vue-template-compiler": "^2.6.11",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
-    "tcb-js-sdk": "^1.6.2"
+    "bulma": "^0.8.2",
+    "tcb-js-sdk": "^1.6.2",
+    "vue": "^2.6.11"
   }
 }

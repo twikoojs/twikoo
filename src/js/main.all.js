@@ -1,13 +1,16 @@
 import { install } from './tcb'
-import tcbSdk from 'tcb-js-sdk'
+import { render } from '../view'
+import * as tcbSdk from 'tcb-js-sdk'
+import 'bulma/css/bulma.css'
 
 /**
  * Constructor
  */
-class Maeco {
-  constructor (options = {}) {
-    return install(options, tcbSdk)
-  }
+async function init (options = {}) {
+  const data = await install(options, tcbSdk)
+  render(data)
 }
 
-export default Maeco
+export {
+  init
+}

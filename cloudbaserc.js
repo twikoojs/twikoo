@@ -1,19 +1,20 @@
-const config = require('./_config')
+const { config } = require('./_config')
+
+const defaultFunctionConfig = {
+  // 超时时间
+  timeout: 10,
+  // 环境变量
+  envVariables: {},
+  runtime: 'Nodejs10.15',
+  // 内存 128
+  memorySize: 128,
+  handler: 'index.main'
+}
 
 module.exports = {
   envId: config.envId,
-  functionRoot: './functions',
+  functionRoot: './src/func',
   functions: [
-    {
-      name: 'app',
-      // 超时时间
-      timeout: 5,
-      // 环境变量
-      envVariables: {},
-      runtime: 'Nodejs10.15',
-      // 内存 128
-      memorySize: 128,
-      handler: 'index.main'
-    }
+    { name: 'migrate', ...defaultFunctionConfig }
   ]
 }

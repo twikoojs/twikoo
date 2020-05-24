@@ -10,6 +10,8 @@
     "lint": "eslint"
   },
   "devDependencies": {
+    "@cloudbase/cli": "^0.7.4",
+    "copy-webpack-plugin": "^6.0.1",
     "eslint": "^7.1.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.20.2",

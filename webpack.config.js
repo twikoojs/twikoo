@@ -1,4 +1,5 @@
 const path = require('path')
+const CopyPlugin = require('copy-webpack-plugin')
 const ROOT_PATH = path.resolve(__dirname)
 const BUILD_PATH = path.resolve(ROOT_PATH, 'dist')
 
@@ -14,6 +15,13 @@ module.exports = {
     library: 'Maeco',
     libraryTarget: 'umd'
   },
+  plugins: [
+    new CopyPlugin({
+      patterns: [
+        { from: 'public/', to: './' }
+      ]
+    })
+  ],
   devServer: {
     contentBase: BUILD_PATH,
     port: 8080

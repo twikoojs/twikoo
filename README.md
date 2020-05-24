@@ -1,7 +1,9 @@
 # Twikoo
 
 一个轻量级微型博客系统，基于腾讯云开发。<br>
-A simple micro blog system based on Tencent CloudBase (tcb). 
+A simple micro blog system based on Tencent CloudBase (tcb).
+
+![Demo](./public/demo.png)
 
 ## 特色 | Features
 

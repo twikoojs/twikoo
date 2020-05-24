@@ -10,7 +10,7 @@
           </div>
           <div class="media-content">
             <div class="content">
-              <strong>{{ author }}</strong> <small>@johnsmith</small> <small>31m</small>
+              <strong>{{ author }}</strong> <small>@imaegoo</small> <small>31m</small>
               <div v-html="content"></div>
             </div>
             <nav class="level is-mobile">

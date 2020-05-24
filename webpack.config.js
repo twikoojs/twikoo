@@ -13,13 +13,13 @@ module.exports = {
   },
   entry: {
     /* eslint-disable-next-line quote-props */
-    'twii': './src/js/main.js',
-    'twii.all': './src/js/main.all.js'
+    'twikoo': './src/js/main.js',
+    'twikoo.all': './src/js/main.all.js'
   },
   output: {
     path: BUILD_PATH,
     filename: '[name].min.js',
-    library: 'twii',
+    library: 'twikoo',
     libraryTarget: 'umd'
   },
   plugins: [

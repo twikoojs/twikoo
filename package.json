@@ -1,11 +1,12 @@
 {
-  "name": "twii",
+  "name": "twikoo",
   "version": "1.0.0",
   "description": "A simple comment system based on Tencent CloudBase (tcb).",
   "author": "imaegoo <mail1st@qq.com> (https://github.com/imaegoo)",
   "license": "MIT",
   "scripts": {
     "dev": "webpack-dev-server",
+    "serve": "webpack-dev-server",
     "build": "webpack",
     "lint": "eslint"
   },

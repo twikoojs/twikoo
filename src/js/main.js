@@ -9,7 +9,7 @@ async function init (options = {}, tcbSdk) {
   }
   /* eslint-disable-next-line no-undef */
   const data = await install(options, tcb)
-  render(data)
+  render(data, options)
 }
 
 export {

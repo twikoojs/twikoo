@@ -1,11 +1,9 @@
-class Comment {
+class Like {
   constructor (model = {}) {
     this.tid = model.tid
-    this.url = model.url
     this.nick = model.nick
     this.mail = model.mail
     this.site = model.site
-    this.comment = model.comment
     this.ua = model.ua
     this.ip = model.ip
     this.created = model.created
@@ -13,4 +11,4 @@ class Comment {
   }
 }
 
-export default Comment
+export default Like

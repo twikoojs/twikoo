@@ -1,4 +1,4 @@
-const { config } = require('./_config')
+const config = require('./_config')
 
 const defaultFunctionConfig = {
   // 超时时间

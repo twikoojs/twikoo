@@ -4,39 +4,82 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bulma@0.8.2/css/bulma.min.css">
+  <link rel="stylesheet" type="text/css" href="demo.css">
 </head>
 
 <body>
   <script src="https://imgcache.qq.com/qcloud/tcbjs/1.6.2/tcb.js"></script>
-  <script type="text/javascript" src="./twii.min.js" charset="utf-8"></script>
+  <script type="text/javascript" src="./twikoo.min.js" charset="utf-8"></script>
   <script type="text/javascript">
     function init() {
-      twii.init({
-        envId: document.getElementById('envId').value
+      twikoo.init({
+        envId: document.getElementById('envId').value,
+        author: document.getElementById('author').value,
+        avatar: document.getElementById('avatar').value
       });
     }
   </script>
   <navbar>
-    <div class="container"></div>
-  </navbar>
-  <section>
     <div class="container">
-      <div class="configs">
-        <div class="field">
-          <label class="label">Environment ID</label>
-          <div class="control">
-            <input class="input" id="envId" type="text" placeholder="e.g imaegoo-16fe3d">
+      <nav class="navbar">
+        <div class="navbar-brand">
+          <a class="navbar-item" href="#"><strong>Twikoo</strong></a>
+        </div>
+        <div class="navbar-menu">
+          <div class="navbar-start">
+            <a class="navbar-item" href="#">Demo</a>
+          </div>
+          <div class="navbar-end">
+            <div class="navbar-item">
+              <a class="button is-light" href="#">View on Github</a>
+            </div>
           </div>
         </div>
-        <div class="control">
-          <button class="button is-primary" onclick="init()">Init</button>
+      </nav>
+    </div>
+  </navbar>
+  <section class="section">
+    <div class="container">
+      <div class="columns">
+        <div class="configs column">
+          <div class="field">
+            <label class="label">环境 ID | Environment ID</label>
+            <div class="control">
+              <input class="input" id="envId" type="text" placeholder="e.g imaegoo-16fe3d">
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">博主名字 | Author</label>
+            <div class="control">
+              <input class="input" id="author" type="text" placeholder="e.g iMaeGoo">
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">头像地址 | Avatar URL</label>
+            <div class="control">
+              <input class="input" id="avatar" type="text" placeholder="e.g https://www.imaegoo.com/images/avatar.jpg">
+            </div>
+          </div>
+          <div class="control">
+            <button class="button is-info" onclick="init()">加载 | Init</button>
+          </div>
+        </div>
+        <div class="column">
+          <div class="twikoo" id="twikoo"></div>
         </div>
       </div>
-      <div class="twii" id="twii"></div>
     </div>
   </section>
-  <footer>
-    <div class="container"></div>
+  <footer class="footer">
+    <div class="container">
+      <div class="content has-text-centered">
+        <p>
+          <strong>Twikoo</strong> by <a href="https://www.imaegoo.com">imaegoo</a>. The source code is licensed
+          <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content
+          is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
+        </p>
+      </div>
+    </div>
   </footer>
 </body>
 

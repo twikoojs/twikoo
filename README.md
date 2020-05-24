@@ -1,14 +1,33 @@
-# Twii
+# Twikoo
 
-A simple comment system based on Tencent CloudBase (tcb).
+一个轻量级微型博客系统，基于腾讯云开发。<br>
+A simple micro blog system based on Tencent CloudBase (tcb). 
 
-## Features
+## 特色 | Features
 
-## Contributors
+* 发推 | Send twii
+* 评论 | Comment
+* 点赞 | Like
+* 纯静态 | Static pages
+* 可嵌入 | Embedded
+* 免费搭建 | Free deploy
 
-## Donate
+## 快速开始 | Quick Start
 
-## Development
+1. 注册 https://console.cloud.tencent.com/tcb/
+2. 初始化数据库
+```
+npm install
+npx tcb login
+npx tcb functions:deploy migrate
+npx tcb functions:invoke migrate
+```
+
+## 贡献者 | Contributors
+
+## 捐赠 | Donate
+
+## 开发 | Development
 
 ```
 npm install
@@ -17,6 +36,6 @@ npm run build
 npm run lint
 ```
 
-## License
+## 许可 | License
 
 [MIT License](./LICENSE)

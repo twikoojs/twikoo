@@ -1,4 +1,5 @@
 import constant from './constant'
+import timeago from './timeago'
 
 const isNotSet = (option) => {
   return option === undefined || option === null || option === ''
@@ -19,5 +20,6 @@ const logger = {
 export {
   constant,
   isNotSet,
-  logger
+  logger,
+  timeago
 }

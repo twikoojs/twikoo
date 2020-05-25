@@ -2,7 +2,7 @@ import { install } from './tcb'
 import { render } from '../view'
 import { logger } from './utils'
 
-async function init (options = {}, tcbSdk) {
+async function init (options = {}) {
   if (typeof tcb === 'undefined') {
     logger.error('Please import tcbjs firstly: <script src="https://imgcache.qq.com/qcloud/tcbjs/1.6.2/tcb.js"></script>')
     return null

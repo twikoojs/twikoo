@@ -1,5 +1,5 @@
 const constant = {
-  logPrefix: '[TWII]'
+  logPrefix: '[TWIKOO]'
 }
 
 export default constant

@@ -16,8 +16,7 @@
     function init() {
       twikoo.init({
         envId: document.getElementById('envId').value,
-        author: document.getElementById('author').value,
-        avatar: document.getElementById('avatar').value
+        masterMail: document.getElementById('masterMail').value
       });
     }
   </script>
@@ -45,21 +44,15 @@
       <div class="columns">
         <div class="configs column">
           <div class="field">
-            <label class="label">环境 ID | Environment ID</label>
+            <label class="label">环境 ID | Environment ID: <code>envId</code></label>
             <div class="control">
-              <input class="input" id="envId" type="text" placeholder="e.g imaegoo-16fe3d">
+              <input class="input" id="envId" type="text" placeholder="e.g imaegoo-16fe3d" value="imaegoo-16fe3d">
             </div>
           </div>
           <div class="field">
-            <label class="label">博主名字 | Author</label>
+            <label class="label">博主邮箱 | Site Master Mail: <code>masterMail</code></label>
             <div class="control">
-              <input class="input" id="author" type="text" placeholder="e.g iMaeGoo">
-            </div>
-          </div>
-          <div class="field">
-            <label class="label">头像地址 | Avatar URL</label>
-            <div class="control">
-              <input class="input" id="avatar" type="text" placeholder="e.g https://www.imaegoo.com/images/avatar.jpg">
+              <input class="input" id="masterMail" type="text" placeholder="e.g mail1st@qq.com" value="mail1st@qq.com">
             </div>
           </div>
           <div class="control">
@@ -67,7 +60,11 @@
           </div>
         </div>
         <div class="column">
-          <div class="twikoo" id="twikoo"></div>
+          <div class="card">
+            <div class="card-content">
+              <div class="twikoo" id="twikoo"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 class Like {
   constructor (model = {}) {
-    this.tid = model.tid
+    this.pid = model.pid
     this.nick = model.nick
     this.mail = model.mail
     this.site = model.site

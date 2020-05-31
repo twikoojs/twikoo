@@ -1,43 +1,47 @@
 <template>
-  <div class="twikoo">
-    <tk-twii :id="twii._id"
-      v-for="twii in twiis"
-      :key="twii._id"
-      :avatar="options.avatar"
-      :author="options.author"
-      :content="twii.content"
-      :updated="twii.updated" />
+  <div id="twikoo" class="twikoo">
+    <tk-new-post @update="initPost" />
+    <tk-post v-for="post in posts"
+        :id="post._id"
+        :key="post._id"
+        :post="post" />
   </div>
 </template>
 
 <script>
-import TkTwii from './components/TkTwii.vue'
+import TkNewPost from './components/TkNewPost.vue'
+import TkPost from './components/TkPost.vue'
 
 export default {
   components: {
-    TkTwii
-  },
-  props: {
-    options: Object
+    TkNewPost,
+    TkPost
   },
   data () {
     return {
-      twiis: []
+      posts: []
     }
   },
   methods: {
-    async initTwii () {
-      if (this.$tcb && this.$tcb.db) {
-        const twiis = await this.$tcb.db
-          .collection('twii')
-          .limit(10)
-          .get()
-        this.twiis = twiis.data
-      }
+    async initPost () {
+      const posts = await this.$tcb.db
+        .collection('post')
+        .orderBy('updated', 'desc')
+        .limit(10)
+        .get()
+      this.posts = posts.data
     }
   },
-  mounted () {
-    this.initTwii()
+  async mounted () {
+    if (this.$tcb && this.$tcb.db) {
+      await this.initPost()
+    }
   }
 }
 </script>
+
+<style>
+.tk-post {
+  margin-top: 1rem;
+}
+</style>

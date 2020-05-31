@@ -3,7 +3,7 @@ const tcb = require('tcb-admin-node')
 const collections = [
   'comment',
   'like',
-  'twii'
+  'post'
 ]
 
 exports.main = async (event, context) => {

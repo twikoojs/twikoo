@@ -1,5 +1,5 @@
 {
-  "name": "migrate",
+  "name": "twikoo-func-migrate",
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {

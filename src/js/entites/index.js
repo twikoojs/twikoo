@@ -1,9 +1,9 @@
 import Comment from './comment'
 import Like from './Like'
-import Twii from './Twii'
+import Post from './Post'
 
 export {
   Comment,
   Like,
-  Twii
+  Post
 }

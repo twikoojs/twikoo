@@ -1,12 +1,11 @@
 import { timestamp } from '../utils'
 
-class Comment {
+class Post {
   constructor (model = {}) {
-    this.pid = model.pid
     this.nick = model.nick
     this.mail = model.mail
     this.site = model.site
-    this.ua = model.ua
+    this.ua = model.ua || navigator.userAgent
     this.ip = model.ip
     this.master = model.master || false
     this.content = model.content
@@ -15,4 +14,4 @@ class Comment {
   }
 }
 
-export default Comment
+export default Post

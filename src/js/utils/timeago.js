@@ -9,6 +9,9 @@ const locale = {
 }
 
 const timeAgo = (date) => {
+  if (typeof date === 'number') {
+    date = new Date(date)
+  }
   if (date) {
     try {
       const oldTime = date.getTime()

@@ -27,6 +27,8 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
+    "blueimp-md5": "^2.16.0",
+    "element-ui": "^2.13.2",
     "tcb-js-sdk": "^1.6.2",
     "vue": "^2.6.11"
   }

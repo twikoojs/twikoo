@@ -1,8 +1,0 @@
-{
-  "name": "twikoo-func-twii",
-  "version": "1.0.0",
-  "main": "index.js",
-  "dependencies": {
-    "tcb-admin-node": "^1.23.0"
-  }
-}

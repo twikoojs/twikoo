@@ -17,9 +17,14 @@ const logger = {
   }
 }
 
+const timestamp = (date = new Date()) => {
+  return date.getTime()
+}
+
 export {
   constant,
   isNotSet,
   logger,
-  timeago
+  timeago,
+  timestamp
 }

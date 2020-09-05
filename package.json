@@ -1,0 +1,49 @@
+{
+  "name": "twikoo",
+  "version": "0.1.1",
+  "description": "A simple comment system based on Tencent CloudBase (tcb).",
+  "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imaegoo/twikoo.git"
+  },
+  "homepage": "https://github.com/imaegoo/twikoo",
+  "scripts": {
+    "dev": "webpack-dev-server",
+    "serve": "webpack-dev-server",
+    "build": "webpack",
+    "analyze": "webpack --profile --json > stats.json && webpack-bundle-analyzer stats.json",
+    "deploy": "tcb functions:deploy",
+    "lint": "eslint"
+  },
+  "devDependencies": {
+    "@cloudbase/cli": "^0.9.5",
+    "copy-webpack-plugin": "^6.0.3",
+    "css-loader": "^3.6.0",
+    "eslint": "^7.6.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "svg-inline-loader": "^0.8.2",
+    "vue-loader": "^15.9.3",
+    "vue-template-compiler": "^2.6.11",
+    "webpack": "^4.44.1",
+    "webpack-bundle-analyzer": "^3.8.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "dependencies": {
+    "@cloudbase/js-sdk": "^1.0.4",
+    "@fortawesome/fontawesome-free": "^5.14.0",
+    "blueimp-md5": "^2.17.0",
+    "element-ui": "^2.13.2",
+    "marked": "^1.1.1",
+    "vue": "^2.6.11"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "twikoo-func-comment-get",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@cloudbase/node-sdk": "^2.3.1",
+    "blueimp-md5": "^2.17.0",
+    "bowser": "^2.10.0"
+  }
+}

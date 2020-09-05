@@ -1,0 +1,12 @@
+{
+  "name": "twikoo-func-comment-submit",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@cloudbase/node-sdk": "^2.3.1",
+    "axios": "^0.20.0",
+    "blueimp-md5": "^2.17.0",
+    "nodemailer": "^6.4.11",
+    "querystring": "^0.2.0"
+  }
+}

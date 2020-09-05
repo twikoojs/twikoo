@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <title>Twikoo Demo</title>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bulma@0.8.2/css/bulma.min.css">
+  <link rel="stylesheet" type="text/css" href="demo.css">
+</head>
+
+<body>
+  <script type="text/javascript" src="./twikoo.all.min.js" charset="utf-8"></script>
+  <script type="text/javascript">
+    function init() {
+      twikoo.init({
+        envId: document.getElementById('envId').value
+      });
+    }
+  </script>
+  <navbar>
+    <div class="container">
+      <nav class="navbar">
+        <div class="navbar-brand">
+          <a class="navbar-item" href="#"><strong>Twikoo</strong></a>
+        </div>
+        <div class="navbar-menu">
+          <div class="navbar-start">
+            <a class="navbar-item" href="#">Demo</a>
+          </div>
+          <div class="navbar-end">
+            <div class="navbar-item">
+              <a class="button is-light" href="#">View on Github</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </navbar>
+  <section class="section">
+    <div class="container">
+      <div class="columns">
+        <div class="configs column">
+          <div class="field">
+            <label class="label">环境 ID | Environment ID: <code>envId</code></label>
+            <div class="control">
+              <input class="input" id="envId" type="text" placeholder="e.g imaegoo-16fe3d" value="imaegoo-16fe3d">
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">访问量:</label>
+            <div class="control">
+              <span id="twikoo_visitors">N/A</span>
+            </div>
+          </div>
+          <div class="control">
+            <button class="button is-info" onclick="init()">加载 | Init</button>
+          </div>
+        </div>
+        <div class="column">
+          <div class="card">
+            <div class="card-content">
+              <div class="twikoo" id="twikoo"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <footer class="footer">
+    <div class="container">
+      <div class="content has-text-centered">
+        <p>
+          <strong>Twikoo</strong> by <a href="https://www.imaegoo.com">imaegoo</a>. The source code is licensed
+          <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content
+          is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
+        </p>
+      </div>
+    </div>
+  </footer>
+</body>
+
+</html>

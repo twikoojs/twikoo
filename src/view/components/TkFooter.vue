@@ -1,7 +1,7 @@
 <template>
   <div class="tk-footer">
     Powered by <a href="https://github.com/imaegoo/twikoo" target="_blank">Twikoo</a>
-    v0.1.2
+    v0.1.3
   </div>
 </template>
 

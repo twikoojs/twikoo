@@ -9,7 +9,7 @@
             <strong>{{ comment.nick }}</strong>
           </a>
           <span class="tk-tag tk-tag-green" v-if="comment.master">博主</span>
-          <small class="tk-time">{{ displayUpdated }}</small>
+          <small class="tk-time">{{ displayCreated }}</small>
           <div class="tk-tag">{{ comment.os }}</div>
           <div class="tk-tag">{{ comment.browser }}</div>
         </div>
@@ -67,8 +67,8 @@ export default {
     replying: Boolean
   },
   computed: {
-    displayUpdated () {
-      return timeago(this.comment.updated)
+    displayCreated () {
+      return timeago(this.comment.created)
     },
     showExpand () {
       return this.hasExpand && !this.isExpanded

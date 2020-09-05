@@ -123,6 +123,7 @@ export default {
 <style scoped>
 .tk-main {
   flex: 1;
+  width: 0;
 }
 .tk-row {
   flex: 1;
@@ -155,6 +156,7 @@ export default {
   margin-top: 1rem;
   display: flex;
   flex-direction: row;
+  word-break: break-all;
 }
 .tk-content {
   margin-top: 0.5rem;

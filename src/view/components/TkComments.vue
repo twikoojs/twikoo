@@ -3,6 +3,7 @@
     <tk-submit @load="initComments" />
     <div class="tk-comments-container" v-loading="loading">
       <div class="tk-comments-title">{{ comments.length }} 条评论</div>
+      <div class="tk-comments-no" v-if="!loading && !comments.length">没有评论</div>
       <tk-comment v-for="comment in comments"
         :key="comment.id"
         :comment="comment"
@@ -59,5 +60,13 @@ export default {
 }
 .tk-comments-container {
   min-height: 10rem;
+  display: flex;
+  flex-direction: column;
+}
+.tk-comments-no {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

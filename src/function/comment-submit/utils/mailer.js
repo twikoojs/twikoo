@@ -2,6 +2,7 @@ const nodemailer = require('nodemailer')
 const tcb = require('@cloudbase/node-sdk')
 const axios = require('axios')
 const qs = require('querystring')
+const $ = require('cheerio')
 const app = tcb.init({ env: tcb.SYMBOL_CURRENT_ENV })
 const db = app.database()
 
@@ -70,11 +71,11 @@ exports.noticeMaster = async (comment, config) => {
 exports.noticeWeChat = async (comment, config) => {
   const SITE_NAME = config.SITE_NAME
   const NICK = comment.nick
-  const COMMENT = comment.comment
+  const COMMENT = $(comment.comment).text()
   const SITE_URL = config.SITE_URL
   const POST_URL = SITE_URL + comment.url
   const emailSubject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}上有新评论了`
-  const emailContent = `您在${SITE_NAME}上的文章有了新的评论\n${NICK}回复说：\n${COMMENT}\n您可以点击 ${POST_URL} 查看回复的完整內容`
+  const emailContent = `${NICK}回复说：\n${COMMENT}\n您可以点击 ${POST_URL} 查看回复的完整內容`
   const sendResult = await axios.post(`https://sctapi.ftqq.com/${config.SC_SENDKEY}.send`, qs.stringify({
     title: emailSubject,
     desp: emailContent

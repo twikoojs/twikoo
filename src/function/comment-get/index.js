@@ -66,7 +66,8 @@ function toDto (comment, uid, replies = [], comments = []) {
     liked: comment.like ? comment.like.findIndex((item) => item === uid) > -1 : false,
     replies: replies,
     rid: comment.rid,
-    ruser: ruser(comment.rid, comments),
+    pid: comment.pid,
+    ruser: ruser(comment.pid, comments),
     created: comment.created,
     updated: comment.updated
   }
@@ -75,8 +76,8 @@ function toDto (comment, uid, replies = [], comments = []) {
 /**
  * Get replied user nick name.
  */
-function ruser (rid, comments = []) {
-  const comment = comments.find((item) => item._id === rid)
+function ruser (pid, comments = []) {
+  const comment = comments.find((item) => item._id === pid)
   return comment ? comment.nick : null
 }
 

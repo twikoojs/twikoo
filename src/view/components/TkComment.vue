@@ -20,7 +20,7 @@
             @reply="onReply" />
       </div>
       <div class="tk-content">
-        <span v-if="comment.rid">回复 <a :href="`#${comment.rid}`">@{{ comment.ruser }}</a> :</span>
+        <span v-if="comment.pid">回复 <a :href="`#${comment.pid}`">@{{ comment.ruser }}</a> :</span>
         <span v-html="comment.comment"></span>
       </div>
       <!-- 回复列表 -->

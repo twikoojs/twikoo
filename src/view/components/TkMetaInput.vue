@@ -79,9 +79,12 @@ export default {
   padding: 0 1rem;
 }
 
-@media screen and (max-width: 425px) {
+@media screen and (max-width: 767px) {
   .tk-meta-input {
     flex-direction: column;
+  }
+  .tk-meta-input .el-input {
+    width: auto;
   }
   .tk-meta-input .el-input + .el-input {
     margin-left: 0;

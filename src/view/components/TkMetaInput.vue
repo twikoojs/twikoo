@@ -69,6 +69,7 @@ export default {
 }
 .tk-meta-input .el-input {
   width: auto;
+  width: min-content;
   flex: 1;
 }
 .tk-meta-input .el-input + .el-input {
@@ -87,4 +88,4 @@ export default {
     margin-top: 0.5rem;
   }
 }
-</style>>
+</style>

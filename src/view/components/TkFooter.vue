@@ -1,9 +1,21 @@
 <template>
   <div class="tk-footer">
     Powered by <a href="https://github.com/imaegoo/twikoo" target="_blank">Twikoo</a>
-    v0.1.5
+    v {{ version }}
   </div>
 </template>
+
+<script>
+import { version } from '../../../package.json'
+
+export default {
+  data () {
+    return {
+      version
+    }
+  }
+}
+</script>
 
 <style scoped>
 .tk-footer {

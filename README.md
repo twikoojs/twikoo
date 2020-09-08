@@ -18,7 +18,10 @@ A simple, safe, serverless comment system based on Tencent CloudBase (tcb).
 
 ## 快速开始 | Quick Start
 
-**此部分尚未完善，请关注后续更新**
+**文档尚未完善，请关注后续更新；<br>
+如果你想获取更新动态、建言献策、参与内测，欢迎加入内测群：**
+
+![1080829142](https://www.imaegoo.com/gallery/2020/hello-twikoo.png)
 
 1. 注册 https://console.cloud.tencent.com/tcb/
 2. 部署云函数

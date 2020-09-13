@@ -25,6 +25,7 @@ Twikoo 使用云开发作为评论后台，每个云开发用户均长期享受1
 1. 克隆本仓库
 ``` sh
 git clone https://github.com/imaegoo/twikoo.git
+cd twikoo
 ```
 > 如果您没有安装 Git，也可以从 [Release](https://github.com/imaegoo/twikoo/releases) 页面下载最新的 Source code
 2. 安装依赖项

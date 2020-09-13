@@ -1,10 +1,11 @@
 # Twikoo
 
 [![](https://img.shields.io/npm/v/twikoo)](https://www.npmjs.com/package/twikoo)
+[![](https://img.shields.io/bundlephobia/minzip/twikoo)](https://bundlephobia.com/result?p=twikoo)
 [![](https://img.shields.io/npm/dt/twikoo)](https://www.npmjs.com/package/twikoo)
 [![](https://img.shields.io/npm/l/twikoo)](./LICENSE)
 
-一个简洁、安全、无后端的静态网站评论系统，基于腾讯云开发。<br>
+一个简洁、安全、无后端的静态网站评论系统，基于[腾讯云开发](https://curl.qcloud.com/KnnJtUom)。<br>
 A simple, safe, serverless comment system based on Tencent CloudBase (tcb).
 
 ## 特色 | Features

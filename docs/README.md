@@ -1,9 +1,11 @@
-# 介绍
+# 简介
 
-一个（仍处于开发初期的）简洁、安全、无后端的静态网站评论系统，基于腾讯云开发。<br>
+[![](https://img.shields.io/npm/v/twikoo)](https://www.npmjs.com/package/twikoo)
+[![](https://img.shields.io/npm/dt/twikoo)](https://www.npmjs.com/package/twikoo)
+[![](https://img.shields.io/npm/l/twikoo)](https://github.com/imaegoo/twikoo/blob/dev/LICENSE)
+
+一个简洁、安全、无后端的静态网站评论系统，基于腾讯云开发。<br>
 A simple, safe, serverless comment system based on Tencent CloudBase (tcb).
-
-![Demo](./demo.png)
 
 ## 特色
 
@@ -15,3 +17,35 @@ A simple, safe, serverless comment system based on Tencent CloudBase (tcb).
 * 存储安全 | Security
 * 反垃圾评论 | Akismet
 * 邮件 / 微信通知 | Email / WeChat notify
+
+## 预览
+
+[https://www.imaegoo.com/2020/hello-twikoo/](https://www.imaegoo.com/2020/hello-twikoo/)
+
+## 快速上手
+
+请查看[快速上手](https://twikoo.js.org/quick-start.html)
+
+> 文档尚未完善，请关注后续更新；<br>
+> 如果你想获取更新动态、建言献策、参与内测，欢迎加入内测群：<br>
+> <img height="300" alt="1080829142" src="https://www.imaegoo.com/gallery/2020/hello-twikoo.png" />
+
+<!-- ## 贡献者 | Contributors -->
+
+<!-- ## 捐赠 | Donate -->
+
+## 开发
+
+```
+npm run serve
+npm run build
+```
+
+## 国际化
+
+鉴于腾讯云在中国以外地区的支持程度，本项目暂无国际化计划。<br>
+There are no plans to internationalize this project.
+
+## 许可
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fimaegoo%2Ftwikoo.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fimaegoo%2Ftwikoo?ref=badge_large)

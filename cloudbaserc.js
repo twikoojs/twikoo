@@ -2,7 +2,7 @@ const fs = require('fs')
 
 let envId
 try {
-  envId = fs.readFileSync('envId.txt').trim()
+  envId = fs.readFileSync('./envId.txt').toString().trim()
 } catch (e) {
   throw new Error('无法读取环境id，请先配置 envId.txt')
 }

@@ -4,6 +4,7 @@
 A simple, safe, serverless comment system based on Tencent CloudBase (tcb).
 
 ![Demo](./docs/demo.png)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fimaegoo%2Ftwikoo.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fimaegoo%2Ftwikoo?ref=badge_shield)
 
 ## 特色 | Features
 
@@ -61,3 +62,6 @@ npm run build
 ## 许可 | License
 
 [MIT License](./LICENSE)
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fimaegoo%2Ftwikoo.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fimaegoo%2Ftwikoo?ref=badge_large)

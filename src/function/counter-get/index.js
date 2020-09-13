@@ -12,10 +12,13 @@ exports.main = async (event, context) => {
   const res = {}
   try {
     validate(event)
-    const record = await db
-      .collection('counter')
-      .where({ url: event.url })
-      .get()
+    let record
+    try {
+      record = await read()
+    } catch (e) {
+      await createCollections()
+      record = await read()
+    }
     res.data = record.data[0] ? record.data[0] : {}
     res.time = res.data ? res.data.time : 0
     res.updated = await inc(event)
@@ -24,6 +27,13 @@ exports.main = async (event, context) => {
     return res
   }
   return res
+}
+
+async function read () {
+  return await db
+    .collection('counter')
+    .where({ url: event.url })
+    .get()
 }
 
 /**
@@ -65,4 +75,11 @@ function validate (event) {
       throw new Error(`参数"${requiredParam}"不合法`)
     }
   }
+}
+
+/**
+ * 建立数据库 collections
+ */
+async function createCollections () {
+  return await db.createCollection('counter')
 }

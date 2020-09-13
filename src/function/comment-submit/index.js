@@ -27,14 +27,19 @@ exports.main = async (event, context) => {
     res.message = e.message
     return res
   }
-  await init()
+  try {
+    await readConfig()
+  } catch (e) {
+    await createCollections()
+    await readConfig()
+  }
   const comment = await save(event)
   res.id = comment.id
   await sendMail(comment)
   return res
 }
 
-async function init () {
+async function readConfig () {
   if (!config) {
     config = await db
       .collection('config')

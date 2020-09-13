@@ -17,19 +17,19 @@ exports.main = async (event, context) => {
   try {
     validate(event)
     uid = await auth.getEndUserInfo().userInfo.uid
+    const data = await db
+      .collection('comment')
+      .where({
+        url: event.url,
+        isSpam: _.neq(true)
+      })
+      .orderBy('created', 'desc')
+      .get()
+    res.data = parse(data.data, uid)
   } catch (e) {
+    res.data = []
     res.message = e.message
-    return res
   }
-  const data = await db
-    .collection('comment')
-    .where({
-      url: event.url,
-      isSpam: _.neq(true)
-    })
-    .orderBy('created', 'desc')
-    .get()
-  res.data = parse(data.data, uid)
   return res
 }
 

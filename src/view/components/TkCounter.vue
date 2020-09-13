@@ -8,20 +8,12 @@ export default {
     }
   },
   methods: {
-    incCounter () {
-      this.$tcb.app.callFunction({
-        name: 'counter-inc',
-        data: {
-          url: window.location.pathname,
-          title: document.title
-        }
-      })
-    },
     async getCounter () {
       const result = await this.$tcb.app.callFunction({
         name: 'counter-get',
         data: {
-          url: window.location.pathname
+          url: window.location.pathname,
+          title: document.title
         }
       })
       this.counter = result.result
@@ -35,7 +27,6 @@ export default {
   },
   mounted () {
     this.getCounter()
-    this.incCounter()
   }
 }
 </script>

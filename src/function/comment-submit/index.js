@@ -73,7 +73,7 @@ function parse (comment) {
     link: comment.link ? comment.link : '',
     ua: comment.ua,
     ip: auth.getClientIP(),
-    master: comment.mail === config.BLOGGER_EMAIL,
+    master: config ? comment.mail === config.BLOGGER_EMAIL : false,
     url: comment.url,
     comment: comment.comment,
 
@@ -94,4 +94,17 @@ function validate (event) {
       throw new Error(`参数"${requiredParam}"不合法`)
     }
   }
+}
+
+/**
+ * 建立数据库 collections
+ */
+async function createCollections () {
+  const collections = ['comment', 'config']
+  const res = {}
+  for (const collection of collections) {
+    res[collection] = await db.createCollection(collection)
+  }
+
+  return res
 }

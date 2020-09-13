@@ -1,4 +1,11 @@
-const config = require('./_config')
+const fs = require('fs')
+
+let envId
+try {
+  envId = fs.readFileSync('envId.txt').trim()
+} catch (e) {
+  throw new Error('无法读取环境id，请先配置 envId.txt')
+}
 
 const defaultFunctionConfig = {
   // 超时时间
@@ -12,14 +19,13 @@ const defaultFunctionConfig = {
 }
 
 module.exports = {
-  envId: config.envId,
+  envId: envId,
   functionRoot: './src/function',
   functions: [
     { name: 'migrate', ...defaultFunctionConfig },
     { name: 'comment-get', ...defaultFunctionConfig },
     { name: 'comment-like', ...defaultFunctionConfig },
     { name: 'comment-submit', ...defaultFunctionConfig },
-    { name: 'counter-get', ...defaultFunctionConfig },
-    { name: 'counter-inc', ...defaultFunctionConfig }
+    { name: 'counter-get', ...defaultFunctionConfig }
   ]
 }

@@ -10,8 +10,6 @@
           </a>
           <span class="tk-tag tk-tag-green" v-if="comment.master">博主</span>
           <small class="tk-time">{{ displayCreated }}</small>
-          <div class="tk-tag">{{ comment.os }}</div>
-          <div class="tk-tag">{{ comment.browser }}</div>
         </div>
         <tk-action :liked="comment.liked"
             :like-count="comment.like"
@@ -22,6 +20,10 @@
       <div class="tk-content">
         <span v-if="comment.pid">回复 <a :href="`#${comment.pid}`">@{{ comment.ruser }}</a> :</span>
         <span v-html="comment.comment"></span>
+      </div>
+      <div class="tk-extras">
+        <div class="tk-extra"><span class="tk-icon" v-html="iconOs"></span>&nbsp;{{ comment.os }}</div>
+        <div class="tk-extra"><span class="tk-icon" v-html="iconBrowser"></span>&nbsp;{{ comment.browser }}</div>
       </div>
       <!-- 回复列表 -->
       <div class="tk-replies" :class="{ 'tk-replies-expand': isExpanded }" ref="tk-replies">
@@ -47,6 +49,37 @@ import { timeago } from '../../js/utils'
 import TkAction from './TkAction.vue'
 import TkAvatar from './TkAvatar.vue'
 import TkSubmit from './TkSubmit.vue'
+import iconWindows from '@fortawesome/fontawesome-free/svgs/brands/windows.svg'
+import iconApple from '@fortawesome/fontawesome-free/svgs/brands/apple.svg'
+import iconAndroid from '@fortawesome/fontawesome-free/svgs/brands/android.svg'
+import iconLinux from '@fortawesome/fontawesome-free/svgs/brands/linux.svg'
+import iconUbuntu from '@fortawesome/fontawesome-free/svgs/brands/ubuntu.svg'
+import iconChrome from '@fortawesome/fontawesome-free/svgs/brands/chrome.svg'
+import iconFirefox from '@fortawesome/fontawesome-free/svgs/brands/firefox-browser.svg'
+import iconSafari from '@fortawesome/fontawesome-free/svgs/brands/safari.svg'
+import iconIe from '@fortawesome/fontawesome-free/svgs/brands/internet-explorer.svg'
+import iconEdge from '@fortawesome/fontawesome-free/svgs/brands/edge.svg'
+import iconOther from '@fortawesome/fontawesome-free/svgs/regular/window-maximize.svg'
+
+
+const osList = {
+  win: iconWindows,
+  mac: iconApple,
+  ipad: iconApple,
+  iphone: iconApple,
+  android: iconAndroid,
+  ubuntu: iconUbuntu,
+  linux: iconLinux
+}
+
+const browserList = {
+  edge: iconEdge,
+  chrome: iconChrome,
+  firefox: iconFirefox,
+  safari: iconSafari,
+  explorer: iconIe,
+  ie: iconIe
+}
 
 export default {
   name: 'tk-comment', // 允许组件模板递归地调用自身
@@ -70,11 +103,24 @@ export default {
     displayCreated () {
       return timeago(this.comment.created)
     },
+    iconOs () {
+      return this.getIconBy(this.comment.os, osList)
+    },
+    iconBrowser () {
+      return this.getIconBy(this.comment.browser, browserList)
+    },
     showExpand () {
       return this.hasExpand && !this.isExpanded
     }
   },
   methods: {
+    getIconBy (name, list) {
+      const lowerCaseName = name.toLowerCase()
+      for (let key in list) {
+        if (lowerCaseName.indexOf(key) !== -1) return list[key]
+      }
+      return iconOther
+    },
     showExpandIfNeed () {
       if (this.comment.replies && this.comment.replies.length > 0 && this.$refs['tk-replies']) {
         this.hasExpand = this.$refs['tk-replies'].scrollHeight > 200
@@ -140,6 +186,25 @@ export default {
 }
 .tk-nick-link:hover {
   color: #409eff;
+}
+.tk-extras {
+  color: #999999;
+  font-size: 0.875em;
+  display: flex;
+  margin-top: 0.5rem;
+}
+.tk-extra {
+  margin-right: 0.75rem;
+}
+.tk-icon {
+  display: inline-block;
+  height: 1em;
+  width: 1em;
+  line-height: 0;
+  vertical-align: text-top;
+}
+.tk-icon /deep/ svg {
+  fill: currentColor;
 }
 .tk-tag {
   display: inline-block;

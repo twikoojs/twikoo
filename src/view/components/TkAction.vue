@@ -35,10 +35,10 @@ export default {
   },
   computed: {
     likeCountStr () {
-      return this.likeCount > 0 ? `(${this.likeCount})` : ''
+      return this.likeCount > 0 ? `${this.likeCount}` : ''
     },
     repliesCountStr () {
-      return this.repliesCount > 0 ? `(${this.repliesCount})` : ''
+      return this.repliesCount > 0 ? `${this.repliesCount}` : ''
     }
   },
   methods: {

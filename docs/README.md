@@ -22,13 +22,23 @@ A simple, safe, serverless comment system based on Tencent CloudBase (tcb).
 
 [https://www.imaegoo.com/2020/hello-twikoo/](https://www.imaegoo.com/2020/hello-twikoo/)
 
-## 快速上手
+## 交流群
 
-请查看[快速上手](https://twikoo.js.org/quick-start.html)
+如果你想获取更新动态、建言献策、参与内测，欢迎加入内测群：<br>
+<img height="300" alt="1080829142" src="https://www.imaegoo.com/gallery/2020/hello-twikoo.png" />
 
-> 文档尚未完善，请关注后续更新；<br>
-> 如果你想获取更新动态、建言献策、参与内测，欢迎加入内测群：<br>
-> <img height="300" alt="1080829142" src="https://www.imaegoo.com/gallery/2020/hello-twikoo.png" />
+## 开发计划
+
+| 状态 | 优先级 | 计划 |
+| ---- | ---- | ---- |
+| DONE | P0 | 文档撰写 |
+| TODO | P1 | 评论管理 |
+| TODO | P2 | 人工审核 |
+| TODO | P2 | AKISMET 审核 |
+| TODO | P2 | 完整 Markdown 适配 |
+| TODO | P3 | Emoji 表情 |
+| TODO | P3 | 图片表情 |
+| TODO | P3 | 评论框粘贴图片 |
 
 <!-- ## 贡献者 | Contributors -->
 

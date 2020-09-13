@@ -9,7 +9,7 @@
             v-model="comment"
             placeholder="请输入内容"
             :autosize="{ minRows: 3 }"
-            @change="updatePreview" />
+            @input="updatePreview" />
       </div>
     </div>
     <div class="tk-row actions">

@@ -206,6 +206,7 @@ export default {
   line-height: 0;
 }
 .tk-icon /deep/ svg {
+  width: 100%;
   fill: currentColor;
 }
 .tk-tag {

@@ -69,7 +69,7 @@ export default {
 }
 .tk-meta-input .el-input {
   width: auto;
-  width: -webkit-min-content; /* Fix Safari */
+  width: calc((100% - 1rem) / 3); /* Fix Safari */
   flex: 1;
 }
 .tk-meta-input .el-input + .el-input {

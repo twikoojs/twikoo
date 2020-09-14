@@ -197,11 +197,13 @@ export default {
   margin-right: 0.75rem;
 }
 .tk-icon {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: sub;
   height: 1em;
   width: 1em;
   line-height: 0;
-  vertical-align: text-top;
 }
 .tk-icon /deep/ svg {
   fill: currentColor;

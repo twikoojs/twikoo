@@ -38,7 +38,7 @@ echo 您的环境id > envId.txt
 ```
 4. 授权云开发环境
 ``` sh
-npm run login # 或 yarn login
+npm run login # 或 yarn run login
 ```
 5. 自动部署
 ``` sh

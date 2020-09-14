@@ -47,9 +47,9 @@ A simple, safe, serverless comment system based on Tencent CloudBase (tcb).
 
 ## 开发
 
-```
-npm run serve
-npm run build
+``` sh
+yarn dev # 开发
+yarn build # 编译
 ```
 
 ## 国际化

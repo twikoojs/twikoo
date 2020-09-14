@@ -8,18 +8,20 @@ on:
     types: [created]
 
 jobs:
-  build:
+  publish-docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12
-      - run: yarn install
-      - run: yarn build
+      - uses: jenkey2011/vuepress-deploy@master
+        env:
+          ACCESS_TOKEN: ${{ secrets.TWIKOO_TOKEN }}
+          TARGET_REPO: imaegoo/twikoo
+          TARGET_BRANCH: gh-pages
+          BUILD_SCRIPT: yarn && yarn docs:build
+          BUILD_DIR: docs/.vuepress/dist
+          CNAME: twikoo.js.org
 
   publish-npm:
-    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

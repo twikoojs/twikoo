@@ -14,10 +14,10 @@ exports.main = async (event, context) => {
     validate(event)
     let record
     try {
-      record = await read()
+      record = await read(event.url)
     } catch (e) {
       await createCollections()
-      record = await read()
+      record = await read(event.url)
     }
     res.data = record.data[0] ? record.data[0] : {}
     res.time = res.data ? res.data.time : 0
@@ -29,10 +29,10 @@ exports.main = async (event, context) => {
   return res
 }
 
-async function read () {
+async function read (url) {
   return await db
     .collection('counter')
-    .where({ url: event.url })
+    .where({ url })
     .get()
 }
 

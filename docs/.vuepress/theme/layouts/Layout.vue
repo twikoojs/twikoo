@@ -20,15 +20,21 @@ export default {
     ParentLayout
   },
   mounted () {
-    const twikooJs = this.$refs.twikooJs
-    if (twikooJs) {
-      twikooJs.onload = this.initTwikoo
-      this.$router.afterEach(this.onRoute)
-    }
+    this.initTwikoo()
+    this.initJs()
   },
   methods: {
     initTwikoo () {
-      twikoo.init({ envId })
+      try {
+        twikoo.init({ envId })
+      } catch (e) {}
+    },
+    initJs () {
+      const twikooJs = this.$refs.twikooJs
+      if (twikooJs) {
+        twikooJs.onload = this.initTwikoo
+        this.$router.afterEach(this.onRoute)
+      }
     },
     onRoute (to, from) {
       if (to.path !== from.path) this.initTwikoo()

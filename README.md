@@ -19,6 +19,10 @@ A simple, safe, serverless comment system based on Tencent CloudBase (tcb).
 * 反垃圾评论 | Akismet
 * 邮件 / 微信通知 | Email / WeChat notify
 
+## 演示 | Demo
+
+请查看[twikoo.js.org](https://twikoo.js.org)
+
 ## 快速上手 | Quick Start
 
 请查看[快速上手](https://twikoo.js.org/quick-start.html)

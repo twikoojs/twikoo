@@ -25,7 +25,7 @@
           type="primary"
           size="small"
           :disabled="!canSend"
-          @click="send">发送</el-button>
+          @click="send">{{ isSending ? '发送中' : '发送' }}</el-button>
     </div>
     <div class="tk-preview-container" v-if="isPreviewing" v-html="commentHtml"></div>
   </div>

@@ -1,6 +1,6 @@
 <template>
   <div class="tk-footer">
-    Powered by <a href="https://github.com/imaegoo/twikoo" target="_blank">Twikoo</a>
+    Powered by <a href="https://twikoo.js.org" target="_blank">Twikoo</a>
     v{{ version }}
   </div>
 </template>
@@ -23,5 +23,6 @@ export default {
   text-align: end;
   font-size: 0.75em;
   color: #999999;
+  margin-top: 1em;
 }
 </style>

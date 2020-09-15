@@ -5,7 +5,8 @@ module.exports = {
     sidebar: [
       '/',
       '/quick-start',
-      '/configuration'
+      '/configuration',
+      '/faq'
     ],
     lastUpdated: true,
     // 假定是 GitHub. 同时也可以是一个完整的 GitLab URL
@@ -16,8 +17,5 @@ module.exports = {
     docsBranch: 'dev',
     // 默认是 false, 设置为 true 来启用
     editLinks: true
-  },
-  plugins: [
-    ['@oak-tree-house/encrypt']
-  ]
+  }
 }

@@ -61,12 +61,12 @@ import iconIe from '@fortawesome/fontawesome-free/svgs/brands/internet-explorer.
 import iconEdge from '@fortawesome/fontawesome-free/svgs/brands/edge.svg'
 import iconOther from '@fortawesome/fontawesome-free/svgs/regular/window-maximize.svg'
 
-
 const osList = {
   win: iconWindows,
   mac: iconApple,
   ipad: iconApple,
   iphone: iconApple,
+  ios: iconApple,
   android: iconAndroid,
   ubuntu: iconUbuntu,
   linux: iconLinux
@@ -191,6 +191,7 @@ export default {
   color: #999999;
   font-size: 0.875em;
   display: flex;
+  flex-wrap: wrap;
   margin-top: 0.5rem;
 }
 .tk-extra {

@@ -9,6 +9,7 @@ async function init (options = {}) {
   render(data, options)
 }
 
+export default init
 export {
   init
 }

@@ -52,7 +52,7 @@ npm run deploy # 或 yarn deploy
 
 ``` html
 <div id="twikoo"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@0.1.15/dist/twikoo.all.min.js"></script>
 <script>twikoo.init({ envId: '您的环境id' })</script>
 ```
 

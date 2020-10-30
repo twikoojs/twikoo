@@ -33,7 +33,13 @@ exports.main = async (event, context) => {
     await createCollections()
     await readConfig()
   }
-  const comment = await save(event)
+  let comment
+  try {
+    comment = await save(event)
+  } catch (e) {
+    await createCollections()
+    comment = await save(event)
+  }
   res.id = comment.id
   await sendMail(comment)
   return res
@@ -80,6 +86,7 @@ function parse (comment) {
     ip: auth.getClientIP(),
     master: config ? comment.mail === config.BLOGGER_EMAIL : false,
     url: comment.url,
+    href: comment.href,
     comment: comment.comment,
 
     pid: comment.pid ? comment.pid : comment.rid,

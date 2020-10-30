@@ -1,11 +1,11 @@
 <template>
   <div class="tk-comment" :id="comment.id">
-    <tk-avatar :nick="comment.nick" :mail-md5="comment.mailMd5" :link="comment.link" />
+    <tk-avatar :nick="comment.nick" :mail-md5="comment.mailMd5" :link="convertedLink" />
     <div class="tk-main">
       <div class="tk-row">
         <div class="tk-meta">
-          <strong class="tk-nick" v-if="!comment.link">{{ comment.nick }}</strong>
-          <a class="tk-nick tk-nick-link" v-if="comment.link" :href="comment.link" target="_blank">
+          <strong class="tk-nick" v-if="!convertedLink">{{ comment.nick }}</strong>
+          <a class="tk-nick tk-nick-link" v-if="convertedLink" :href="convertedLink" target="_blank">
             <strong>{{ comment.nick }}</strong>
           </a>
           <span class="tk-tag tk-tag-green" v-if="comment.master">博主</span>
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { timeago } from '../../js/utils'
+import { timeago, convertLink } from '../../js/utils'
 import TkAction from './TkAction.vue'
 import TkAvatar from './TkAvatar.vue'
 import TkSubmit from './TkSubmit.vue'
@@ -111,6 +111,9 @@ export default {
     },
     showExpand () {
       return this.hasExpand && !this.isExpanded
+    },
+    convertedLink () {
+      return convertLink(this.comment.link)
     }
   },
   methods: {

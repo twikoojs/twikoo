@@ -21,10 +21,17 @@ const timestamp = (date = new Date()) => {
   return date.getTime()
 }
 
+const convertLink = (link) => {
+  if (!link) return ''
+  if (link.substring(0, 4) !== 'http') return `http://${link}`
+  return link
+}
+
 export {
   isNotSet,
   logger,
   timeago,
   timestamp,
+  convertLink,
   marked
 }

@@ -39,7 +39,7 @@ exports.noticeMaster = async (comment, config) => {
   const NICK = comment.nick
   const COMMENT = comment.comment
   const SITE_URL = config.SITE_URL
-  const POST_URL = SITE_URL + comment.url
+  const POST_URL = comment.href || SITE_URL + comment.url
   const emailSubject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}上有新评论了`
   const emailContent = config.MAIL_TEMPLATE_ADMIN || `
     <div style="border-top:2px solid #12addb;box-shadow:0 1px 3px #aaaaaa;line-height:180%;padding:0 15px 12px;margin:50px auto;font-size:12px;">
@@ -69,14 +69,23 @@ exports.noticeMaster = async (comment, config) => {
  * 微信通知
  */
 exports.noticeWeChat = async (comment, config) => {
+  if (!config.SC_SENDKEY) {
+    console.log('没有配置 server 酱，放弃微信通知')
+    return
+  }
   const SITE_NAME = config.SITE_NAME
   const NICK = comment.nick
   const COMMENT = $(comment.comment).text()
   const SITE_URL = config.SITE_URL
-  const POST_URL = SITE_URL + comment.url
+  const POST_URL = comment.href || SITE_URL + comment.url
   const emailSubject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}上有新评论了`
   const emailContent = `${NICK}回复说：\n${COMMENT}\n您可以点击 ${POST_URL} 查看回复的完整內容`
-  const sendResult = await axios.post(`https://sctapi.ftqq.com/${config.SC_SENDKEY}.send`, qs.stringify({
+  let scApiUrl = 'https://sc.ftqq.com'
+  if (config.SC_SENDKEY.substring(0, 3).toLowerCase() === 'sct') {
+    // 兼容 server 酱测试专版
+    scApiUrl = 'https://sctapi.ftqq.com'
+  }
+  const sendResult = await axios.post(`${scApiUrl}/${config.SC_SENDKEY}.send`, qs.stringify({
     title: emailSubject,
     desp: emailContent
   }), {
@@ -101,7 +110,7 @@ exports.noticeReply = async (currentComment, config) => {
   const NICK = currentComment.nick
   const COMMENT = currentComment.comment
   const PARENT_COMMENT = parentComment.comment
-  const POST_URL = config.SITE_URL + currentComment.url + '#' + currentComment.objectId
+  const POST_URL = (currentComment.href || config.SITE_URL + currentComment.url) + '#' + currentComment.objectId
   const SITE_URL = config.SITE_URL
   const emailSubject = config.MAIL_SUBJECT || `${PARENT_NICK}，您在『${SITE_NAME}』上的评论收到了回复`
   const emailContent = config.MAIL_TEMPLATE || `

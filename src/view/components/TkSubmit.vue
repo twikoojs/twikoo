@@ -92,6 +92,7 @@ export default {
         link: this.link,
         ua: navigator.userAgent,
         url: window.location.pathname,
+        href: window.location.href,
         comment: marked(this.comment),
         pid: this.pid ? this.pid : this.replyId,
         rid: this.replyId

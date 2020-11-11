@@ -23,9 +23,9 @@ export default {
   computed: {
     avatar () {
       if (this.mailMd5) {
-        return `https://gravatar.loli.net/avatar/${this.mailMd5}`
+        return `https://dn-qiniu-avatar.qbox.me/avatar/${this.mailMd5}`
       } else if (this.mail) {
-        return `https://gravatar.loli.net/avatar/${md5(this.mail)}`
+        return `https://dn-qiniu-avatar.qbox.me/avatar/${md5(this.mail)}`
       } else {
         return ''
       }

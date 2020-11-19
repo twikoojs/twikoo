@@ -35,7 +35,7 @@
 import iconMarkdown from '@fortawesome/fontawesome-free/svgs/brands/markdown.svg'
 import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
-import { marked } from '../../js/utils'
+import { marked, call } from '../../js/utils'
 
 export default {
   components: {
@@ -97,10 +97,7 @@ export default {
         pid: this.pid ? this.pid : this.replyId,
         rid: this.replyId
       }
-      const id = await this.$tcb.app.callFunction({
-        name: 'comment-submit',
-        data: comment
-      })
+      const id = await call(this.$tcb, 'COMMENT_SUBMIT', comment)
       if (id && id.result && id.result.id) {
         this.onSendComplete()
       }

@@ -1,0 +1,14 @@
+{
+  "name": "twikoo-func",
+  "version": "0.2.0",
+  "main": "index.js",
+  "dependencies": {
+    "@cloudbase/node-sdk": "^2.4.0",
+    "axios": "^0.21.0",
+    "blueimp-md5": "^2.18.0",
+    "bowser": "^2.11.0",
+    "cheerio": "^1.0.0-rc.3",
+    "nodemailer": "^6.4.16",
+    "querystring": "^0.2.0"
+  }
+}

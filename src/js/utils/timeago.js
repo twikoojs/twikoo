@@ -1,3 +1,5 @@
+import { logger } from '.'
+
 const locale = {
   timeago: {
     seconds: '秒前',
@@ -45,7 +47,7 @@ const timeAgo = (date) => {
         return dateFormat(date)
       }
     } catch (error) {
-      console.log(error)
+      logger.log('timeAgo 错误', error)
     }
   }
 }

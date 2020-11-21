@@ -489,7 +489,7 @@ async function noticeReply (currentComment) {
   const NICK = currentComment.nick
   const COMMENT = currentComment.comment
   const PARENT_COMMENT = parentComment.comment
-  const POST_URL = (currentComment.href || config.SITE_URL + currentComment.url) + '#' + currentComment.objectId
+  const POST_URL = (currentComment.href || config.SITE_URL + currentComment.url) + '#' + currentComment._id
   const SITE_URL = config.SITE_URL
   const emailSubject = config.MAIL_SUBJECT || `${PARENT_NICK}，您在『${SITE_NAME}』上的评论收到了回复`
   const emailContent = config.MAIL_TEMPLATE || `

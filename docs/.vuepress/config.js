@@ -5,7 +5,8 @@ module.exports = {
     sidebar: [
       '/',
       '/quick-start',
-      '/faq'
+      '/faq',
+      '/link'
     ],
     lastUpdated: true,
     // 假定是 GitHub. 同时也可以是一个完整的 GitLab URL

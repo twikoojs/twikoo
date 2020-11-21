@@ -19,7 +19,7 @@
     "build": "webpack",
     "analyze": "webpack --profile --json > stats.json && webpack-bundle-analyzer stats.json",
     "login": "tcb login",
-    "deploy": "tcb fn deploy twikoo-func --force",
+    "deploy": "tcb fn deploy twikoo --force",
     "lint": "eslint",
     "docs:dev": "vuepress dev docs",
     "docs:build": "vuepress build docs"

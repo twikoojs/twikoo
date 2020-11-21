@@ -1,44 +1,53 @@
 <template>
   <div class="tk-admin" :class="{ '__show': show }" v-loading="loading">
     <a class="tk-admin-close" @click="onClose" v-html="iconClose"></a>
-    <div class="tk-login" v-if="!isLogin && isSetPassword">
-      <div class="tk-login-title">Twikoo 评论管理</div>
-      <el-input class="tk-password" placeholder="请输入" v-model="password" show-password @keyup.enter.native="onLogin" ref="password">
-        <template slot="prepend">密码</template>
-        <el-button slot="append" @click="onLogin">登录</el-button>
-      </el-input>
-      <div class="tk-login-msg" v-if="loginErrorMessage">
-        {{ loginErrorMessage }}
-        <a href="https://twikoo.js.org/faq.html" rel="noopener noreferrer" target="_blank">忘记密码</a>
-      </div>
+    <div class="tk-login-title" v-if="needUpdate">
+      <div>若要使用评论管理，请更新 Twikoo 云函数</div>
+      <a href="https://twikoo.js.org/quick-start.html" target="_blank">https://twikoo.js.org/quick-start.html</a>
     </div>
-    <div class="tk-regist" v-if="!isLogin && !isSetPassword">
-      <div class="tk-login-title">Twikoo 评论管理</div>
-      <el-input class="tk-password" placeholder="请输入" v-model="password" show-password @keyup.enter.native="onLogin" ref="password">
-        <template slot="prepend">设置密码</template>
-      </el-input>
-      <el-input class="tk-password" placeholder="请输入" v-model="passwordConfirm" show-password @keyup.enter.native="onLogin" ref="passwordConfirm">
-        <template slot="prepend">确认密码</template>
-      </el-input>
-      <el-button class="tk-regist-button" :disabled="!canRegist" @click="onRegist">注册</el-button>
-      <div class="tk-login-msg" v-if="loginErrorMessage">
-        {{ loginErrorMessage }}
-        <a href="https://twikoo.js.org/faq.html" rel="noopener noreferrer" target="_blank">忘记密码</a>
+    <div v-if="!needUpdate">
+      <div class="tk-login" v-if="!isLogin && isSetPassword">
+        <div class="tk-login-title">Twikoo 评论管理</div>
+        <el-input class="tk-password" placeholder="请输入" v-model="password" show-password @keyup.enter.native="onLogin" ref="focusme">
+          <template slot="prepend">密码</template>
+          <el-button slot="append" @click="onLogin">登录</el-button>
+        </el-input>
+        <div class="tk-login-msg" v-if="loginErrorMessage">
+          {{ loginErrorMessage }}
+          <a href="https://twikoo.js.org/faq.html" rel="noopener noreferrer" target="_blank">忘记密码</a>
+        </div>
       </div>
-    </div>
-    <div class="tk-panel" v-if="isLogin">
-      <div class="tk-panel-title">Twikoo 管理面板</div>
-      <el-tabs v-model="activeTabName">
-        <el-tab-pane label="评论管理" name="comment">
-          <tk-admin-comment />
-        </el-tab-pane>
-        <el-tab-pane label="配置管理" name="config">
-          <tk-admin-config />
-        </el-tab-pane>
-        <el-tab-pane label="导入" name="import">
-          <tk-admin-import />
-        </el-tab-pane>
-      </el-tabs>
+      <div class="tk-regist" v-if="!isLogin && !isSetPassword">
+        <div class="tk-login-title">Twikoo 评论管理</div>
+        <el-input class="tk-password" placeholder="请粘贴私钥文件内容" v-if="!isSetCredentials" v-model="credentials" ref="focusme">
+          <template slot="prepend">私钥文件</template>
+        </el-input>
+        <el-input class="tk-password" placeholder="密码" v-model="password" show-password>
+          <template slot="prepend">设置密码</template>
+        </el-input>
+        <el-input class="tk-password" placeholder="确认密码" v-model="passwordConfirm" show-password>
+          <template slot="prepend">确认密码</template>
+        </el-input>
+        <el-button class="tk-regist-button" :disabled="!canRegist" @click="onRegist">注册</el-button>
+        <div class="tk-login-msg" v-if="loginErrorMessage">{{ loginErrorMessage }}</div>
+      </div>
+      <div class="tk-panel" v-if="isLogin">
+        <div class="tk-panel-title">
+          <div>Twikoo 管理面板</div>
+          <a class="tk-panel-logout" @click="onLogout">退出登录</a>
+        </div>
+        <el-tabs v-model="activeTabName">
+          <el-tab-pane label="评论管理" name="comment">
+            <tk-admin-comment />
+          </el-tab-pane>
+          <el-tab-pane label="配置管理" name="config">
+            <tk-admin-config />
+          </el-tab-pane>
+          <el-tab-pane label="导入" name="import">
+            <tk-admin-import />
+          </el-tab-pane>
+        </el-tabs>
+      </div>
     </div>
   </div>
 </template>
@@ -64,8 +73,11 @@ export default {
     return {
       iconClose,
       loading: true,
+      needUpdate: false,
       isLogin: false,
       isSetPassword: true,
+      isSetCredentials: false,
+      credentials: '',
       password: '',
       passwordConfirm: '',
       loginErrorMessage: '',
@@ -76,7 +88,8 @@ export default {
     canRegist () {
       return !this.isSetPassword &&
         !!this.password &&
-        this.password === this.passwordConfirm
+        this.password === this.passwordConfirm &&
+        (this.isSetCredentials || this.credentials)
     }
   },
   methods: {
@@ -99,6 +112,7 @@ export default {
             .customAuthProvider()
             .signIn(res.result.ticket)
           logger.log('登录成功')
+          this.password = ''
           this.checkAuth()
         } catch (err) {
           logger.error('登录失败', err)
@@ -106,16 +120,31 @@ export default {
       }
       this.loading = false
     },
+    async onLogout () {
+      this.loading = true
+      await this.$tcb.auth.signOut()
+      await this.$tcb.auth
+        .anonymousAuthProvider()
+        .signIn()
+      this.isLogin = false
+      this.loading = false
+    },
     async onRegist () {
       this.loading = true
       const passwordMd5 = md5(this.password)
       const res = await call(this.$tcb, 'SET_PASSWORD', {
-        password: passwordMd5
+        password: passwordMd5,
+        credentials: this.credentials
       })
       if (!res.result.code) {
+        this.passwordMd5 = ''
+        this.isSetPassword = true
         this.onLogin()
       } else {
         this.loginErrorMessage = '注册失败'
+        if (res.result.message) {
+          this.loginErrorMessage += '，' + res.result.message
+        }
         logger.warn('Twikoo 注册失败', res)
       }
       this.loading = false
@@ -131,7 +160,9 @@ export default {
     },
     focusPassword () {
       // 聚焦密码输入框
-      this.$refs.password.focus()
+      setTimeout(() => {
+        this.$refs.focusme.focus()
+      }, 500)
     },
     async checkAuth () {
       // 检查用户身份
@@ -140,8 +171,14 @@ export default {
     },
     async checkIfPasswordSet () {
       // 检查是否设置过密码
-      const res = await call(this.$tcb, 'GET_PASSWORD_STATUS')
-      this.isSetPassword = res.result.status
+      try {
+        const res = await call(this.$tcb, 'GET_PASSWORD_STATUS')
+        this.isSetPassword = res.result.status
+      } catch (e) {
+        this.needUpdate = true
+        this.loading = false
+        throw e
+      }
     },
     onClose () {
       this.$emit('close')
@@ -182,6 +219,9 @@ export default {
   box-sizing: content-box;
   color: #ffffff;
 }
+.tk-admin /deep/ .el-loading-mask {
+  background-color: #00000099;
+}
 .tk-login,
 .tk-regist {
   display: flex;
@@ -191,6 +231,7 @@ export default {
 .tk-login-title {
   color: #ffffff;
   font-size: 1.25rem;
+  text-align: center;
   margin-top: 10rem;
 }
 .tk-password,
@@ -214,6 +255,14 @@ export default {
 .tk-panel-title {
   color: #ffffff;
   font-size: 1.5rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.tk-panel-logout {
+  font-size: 1rem;
+  text-decoration: underline;
+  color: #ffffff;
 }
 .tk-panel .el-tab-pane {
   display: flex;

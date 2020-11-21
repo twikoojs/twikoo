@@ -23,6 +23,6 @@ module.exports = {
   envId: envId,
   functionRoot: './src/function',
   functions: [
-    { name: 'twikoo-func', ...defaultFunctionConfig }
+    { name: 'twikoo', ...defaultFunctionConfig }
   ]
 }

@@ -1,7 +1,7 @@
 const call = async (tcb, event, data = {}) => {
   try {
     return await tcb.app.callFunction({
-      name: 'twikoo-func',
+      name: 'twikoo',
       data: { event, ...data }
     })
   } catch (e) {

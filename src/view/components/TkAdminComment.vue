@@ -113,9 +113,6 @@ export default {
 .tk-admin-comment /deep/ .el-table--enable-row-hover .el-table__body tr:hover>td {
   background-color: #ffffff10;
 }
-.tk-admin-comment /deep/ .el-loading-mask {
-  background-color: #00000099;
-}
 .tk-admin-comment /deep/ .el-table td,
 .tk-admin-comment /deep/ .el-table th.is-leaf {
   border: none;

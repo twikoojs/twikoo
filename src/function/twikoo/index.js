@@ -24,6 +24,7 @@ const RES_CODE = {
   PASS_EXIST: 1010,
   CONFIG_NOT_EXIST: 1020,
   CREDENTIALS_NOT_EXIST: 1021,
+  CREDENTIALS_INVALID: 1025,
   PASS_NOT_EXIST: 1022,
   PASS_NOT_MATCH: 1023,
   NEED_LOGIN: 1024
@@ -69,7 +70,13 @@ exports.main = async (event, context) => {
         res = await getPasswordStatus()
         break
       case 'SET_PASSWORD':
-        res = await setPassword(event.password)
+        res = await setPassword(event)
+        break
+      case 'GET_CONFIG':
+        res = await getConfig(event)
+        break
+      case 'GET_CONFIG_FOR_ADMIN':
+        res = await getConfigForAdmin(event)
         break
       case 'SET_CONFIG':
         res = await setConfig(event)
@@ -106,26 +113,45 @@ async function getPasswordStatus () {
   return {
     code: RES_CODE.SUCCESS,
     status: !!conf.ADMIN_PASS,
+    credentials: !! conf.CREDENTIALS,
     version: packageInfo.version
   }
 }
 
 // 写入管理密码
-async function setPassword (password) {
+async function setPassword (event) {
   const conf = await readConfig()
   const isAdminUser = await isAdmin()
   // 如果数据库里没有密码，则写入密码
   // 如果数据库里有密码，则只有管理员可以写入密码
   if (conf.ADMIN_PASS && !isAdminUser) {
-    return {
-      code: RES_CODE.PASS_EXIST,
-      message: '请先登录再修改密码'
+    return { code: RES_CODE.PASS_EXIST, message: '请先登录再修改密码' }
+  }
+  if (!conf.CREDENTIALS && !event.credentials) {
+    return { code: RES_CODE.CREDENTIALS_NOT_EXIST, message: '未配置登录私钥' }
+  }
+  if (!conf.CREDENTIALS && event.credentials) {
+    const checkResult = await checkAndSaveCredentials(event.credentials)
+    if (!checkResult) {
+      return { code: RES_CODE.CREDENTIALS_INVALID, message: '无效的私钥文件' }
     }
   }
-  const ADMIN_PASS = md5(password)
+  const ADMIN_PASS = md5(event.password)
   await writeConfig({ ADMIN_PASS })
   return {
     code: RES_CODE.SUCCESS
+  }
+}
+
+async function checkAndSaveCredentials (credentials) {
+  try {
+    const ticket = getAdminTicket(JSON.parse(credentials))
+    if (!ticket) return false
+    await writeConfig({ CREDENTIALS: credentials })
+    return true
+  } catch (e) {
+    console.error('私钥文件异常：', e)
+    return false
   }
 }
 
@@ -578,6 +604,34 @@ async function incCounter (event) {
       })
   }
   return result.updated || result.inserted
+}
+
+async function getConfig () {
+  const fullConfig = await readConfig()
+  return {
+    code: RES_CODE.SUCCESS,
+    config: {
+      SITE_NAME: fullConfig.SITE_NAME,
+      SITE_URL: fullConfig.SITE_URL
+    }
+  }
+}
+
+async function getConfigForAdmin () {
+  const isAdminUser = await isAdmin()
+  if (isAdminUser) {
+    const fullConfig = await readConfig()
+    delete fullConfig.CREDENTIALS
+    return {
+      code: RES_CODE.SUCCESS,
+      config: fullConfig
+    }
+  } else {
+    return {
+      code: RES_CODE.NEED_LOGIN,
+      message: '请先登录'
+    }
+  }
 }
 
 // 修改配置

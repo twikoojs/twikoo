@@ -5,7 +5,6 @@ module.exports = {
     sidebar: [
       '/',
       '/quick-start',
-      '/configuration',
       '/faq'
     ],
     lastUpdated: true,

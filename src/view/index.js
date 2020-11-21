@@ -31,7 +31,7 @@ const render = (data = {}, options = {}) => {
   Vue.prototype.$twikoo = options
   return new Vue({
     render: h => h(App)
-  }).$mount('#twikoo')
+  }).$mount(options.el || '#twikoo')
 }
 
 export {

@@ -29,12 +29,13 @@ Twikoo 使用云开发作为评论后台，每个云开发用户均长期享受1
 更新 Twikoo 版本时，直接前往云函数详情页，将新的代码粘贴保存即可。
 :::
 
-### ② 脚本方式
+### ② 脚本方式（不推荐）
 
 ::: warning 注意
 * 请确保您已经安装了 [Node.js](https://nodejs.org/en/download/)
 * 请将命令、代码中“您的环境id”替换为您自己的环境id
 * 第4步会弹出浏览器要求授权，需在有图形界面的系统下进行
+* 请勿在 Termux 下操作。虽然可以部署成功，但是使用时会报错 `[FUNCTIONS_EXECUTE_FAIL] Error: EACCES: permission denied, open '/var/user/index.js'`，这是 cloudbase-cli 的问题
 :::
 
 1. 克隆本仓库
@@ -42,7 +43,7 @@ Twikoo 使用云开发作为评论后台，每个云开发用户均长期享受1
 git clone https://github.com/imaegoo/twikoo.git # 或 git clone https://e.coding.net/imaegoo/twikoo/twikoo.git
 cd twikoo
 ```
-> 如果您没有安装 Git，也可以从 [Release](https://github.com/imaegoo/twikoo/releases) 页面下载最新的 Source code
+> 如果您没有安装 Git，也可以从 [Release](https://github.com/imaegoo/twikoo/releases) 页面下载最新的 Source code<br>
 > 如果您所在的地区访问 Github 速度慢，您可以尝试另一个仓库地址：https://imaegoo.coding.net/public/twikoo/twikoo/git
 2. 安装依赖项
 ``` sh
@@ -65,7 +66,7 @@ npm run deploy # 或 yarn deploy
 更新 Twikoo 版本时，请执行 `git pull` 和 `npm run deploy` 更新现有的云函数
 :::
 
-## 使用
+## 配置使用
 
 ### 在 Hexo Butterfly 主题使用
 
@@ -73,7 +74,7 @@ npm run deploy # 或 yarn deploy
 
 ### 在 Hexo Icarus 主题使用
 
-敬请期待
+[魔改版 Icarus](https://github.com/imaegoo/hexo-theme-icarus)目前支持 Twikoo，官方版 Icarus 暂不支持，适配工作将会在近期完成
 
 ### 通过 CDN 引入
 
@@ -82,9 +83,9 @@ npm run deploy # 或 yarn deploy
 :::
 
 ``` html
-<div id="twikoo"></div>
+<div id="tcomment"></div>
 <script src="https://cdn.jsdelivr.net/npm/twikoo@0.1.15/dist/twikoo.all.min.js"></script>
-<script>twikoo.init({ envId: '您的环境id' })</script>
+<script>twikoo.init({ envId: '您的环境id', el: '#tcomment' })</script>
 ```
 
 ### 通过 NPM 引入
@@ -98,14 +99,13 @@ npm install twikoo # 或 yarn add twikoo
 ```
 
 ``` html
-<div id="twikoo"></div>
+<div id="tcomment"></div>
 ```
 
 ``` js
 import twikoo from 'twikoo' // 或 const twikoo = require('twikoo')
-twikoo.init({ envId: '您的环境id' })
+twikoo.init({ envId: '您的环境id', el: '#tcomment' })
 ```
-
 
 ## 开启管理面板
 

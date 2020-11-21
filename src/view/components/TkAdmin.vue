@@ -43,9 +43,9 @@
           <el-tab-pane label="配置管理" name="config">
             <tk-admin-config />
           </el-tab-pane>
-          <el-tab-pane label="导入" name="import">
+          <!-- <el-tab-pane label="导入" name="import">
             <tk-admin-import />
-          </el-tab-pane>
+          </el-tab-pane> -->
         </el-tabs>
       </div>
     </div>
@@ -56,15 +56,15 @@
 import md5 from 'blueimp-md5'
 import TkAdminComment from './TkAdminComment.vue'
 import TkAdminConfig from './TkAdminConfig.vue'
-import TkAdminImport from './TkAdminImport.vue'
+// import TkAdminImport from './TkAdminImport.vue'
 import { logger, call } from '../../js/utils'
 import iconClose from '@fortawesome/fontawesome-free/svgs/solid/times.svg'
 
 export default {
   components: {
     TkAdminComment,
-    TkAdminConfig,
-    TkAdminImport
+    TkAdminConfig
+    // TkAdminImport
   },
   props: {
     show: Boolean

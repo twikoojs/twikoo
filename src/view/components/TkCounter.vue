@@ -1,6 +1,8 @@
 <template></template>
 
 <script>
+import { call } from '../../js/utils'
+
 export default {
   data () {
     return {
@@ -9,12 +11,10 @@ export default {
   },
   methods: {
     async getCounter () {
-      const result = await this.$tcb.app.callFunction({
-        name: 'counter-get',
-        data: {
-          url: window.location.pathname,
-          title: document.title
-        }
+      const result = await call(this.$tcb, 'COUNTER_GET', {
+        url: window.location.pathname,
+        href: window.location.href,
+        title: document.title
       })
       this.counter = result.result
       if (this.counter.time || this.counter.time === 0) {

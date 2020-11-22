@@ -32,14 +32,14 @@ A simple, safe, serverless comment system based on Tencent CloudBase (tcb).
 
 | 状态 | 优先级 | 计划 |
 | ---- | ---- | ---- |
-| DONE | P0 | 文档撰写 |
-| TODO | P1 | 评论管理 |
-| TODO | P2 | 人工审核 |
-| TODO | P2 | AKISMET 审核 |
-| TODO | P2 | 完整 Markdown 适配 |
-| TODO | P3 | Emoji 表情 |
-| TODO | P3 | 图片表情 |
-| TODO | P3 | 评论框粘贴图片 |
+| 已完成 | P0 | 文档撰写 |
+| 已完成 | P1 | 评论管理 |
+| 开发中 | P2 | 人工审核 |
+| 开发中 | P2 | AKISMET 审核 |
+| 开发中 | P2 | 完整 Markdown 适配 |
+| 计划中 | P3 | Emoji 表情 |
+| 计划中 | P3 | 图片表情 |
+| 计划中 | P3 | 评论框粘贴图片 |
 
 <!-- ## 贡献者 | Contributors -->
 

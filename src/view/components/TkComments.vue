@@ -2,7 +2,10 @@
   <div class="tk-comments">
     <tk-submit @load="initComments" />
     <div class="tk-comments-container" v-loading="loading">
-      <div class="tk-comments-title">{{ comments.length }} 条评论</div>
+      <div class="tk-comments-title">
+        <span>{{ comments.length }} 条评论</span>
+        <span class="tk-icon" v-html="iconSetting" @click="openAdmin"></span>
+      </div>
       <div class="tk-comments-no" v-if="!loading && !comments.length">没有评论</div>
       <tk-comment v-for="comment in comments"
         :key="comment.id"
@@ -15,8 +18,10 @@
 </template>
 
 <script>
+import { call } from '../../js/utils'
 import TkSubmit from './TkSubmit.vue'
 import TkComment from './TkComment.vue'
+import iconSetting from '@fortawesome/fontawesome-free/svgs/solid/cog.svg'
 
 export default {
   components: {
@@ -27,15 +32,15 @@ export default {
     return {
       loading: true,
       comments: [],
-      replyId: ''
+      replyId: '',
+      iconSetting
     }
   },
   methods: {
     async initComments () {
       this.loading = true
-      const comments = await this.$tcb.app.callFunction({
-        name: 'comment-get',
-        data: { url: window.location.pathname }
+      const comments = await call(this.$tcb, 'COMMENT_GET', {
+        url: window.location.pathname
       })
       if (comments && comments.result && comments.result.data) {
         this.comments = comments.result.data
@@ -44,6 +49,9 @@ export default {
     },
     onReply (id) {
       this.replyId = id
+    },
+    openAdmin () {
+      this.$emit('admin')
     }
   },
   mounted () {
@@ -57,6 +65,9 @@ export default {
   font-size: 1.25rem;
   font-weight: bold;
   margin-bottom: 1rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
 }
 .tk-comments-container {
   min-height: 10rem;
@@ -68,5 +79,20 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.tk-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: sub;
+  height: 0.75em;
+  width: 0.75em;
+  line-height: 0;
+  cursor: pointer;
+}
+.tk-icon /deep/ svg {
+  width: 100%;
+  height: 100%;
+  fill: #409eff;
 }
 </style>

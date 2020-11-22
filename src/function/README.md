@@ -9,3 +9,7 @@ https://cloud.tencent.com/document/product/876/46798
 ## SDK
 
 https://docs.cloudbase.net/api-reference/server/node-sdk/introduction.html
+
+## CLI 文档
+
+https://docs.cloudbase.net/cli-v1/intro.html

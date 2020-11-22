@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { timeago, convertLink } from '../../js/utils'
+import { timeago, convertLink, call } from '../../js/utils'
 import TkAction from './TkAction.vue'
 import TkAvatar from './TkAvatar.vue'
 import TkSubmit from './TkSubmit.vue'
@@ -130,10 +130,7 @@ export default {
       }
     },
     onLike () {
-      const updated = this.$tcb.app.callFunction({
-        name: 'comment-like',
-        data: { id: this.comment.id }
-      })
+      call(this.$tcb, 'COMMENT_LIKE', { id: this.comment.id })
       if (this.comment.liked) {
         this.comment.like--
       } else {

@@ -23,9 +23,6 @@ module.exports = {
   envId: envId,
   functionRoot: './src/function',
   functions: [
-    { name: 'comment-get', ...defaultFunctionConfig },
-    { name: 'comment-like', ...defaultFunctionConfig },
-    { name: 'comment-submit', ...defaultFunctionConfig },
-    { name: 'counter-get', ...defaultFunctionConfig }
+    { name: 'twikoo', ...defaultFunctionConfig }
   ]
 }

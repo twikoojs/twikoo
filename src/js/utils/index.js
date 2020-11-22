@@ -1,19 +1,23 @@
 import timeago from './timeago'
 import marked from './marked'
+import call from './api'
 
 const isNotSet = (option) => {
   return option === undefined || option === null || option === ''
 }
 
 const logger = {
-  info: (message) => {
-    console.log(`Twikoo: ${message}`)
+  log: (message, e) => {
+    console.log(`Twikoo: ${message}`, e)
   },
-  warn: (message) => {
-    console.warn(`Twikoo: ${message}`)
+  info: (message, e) => {
+    console.info(`Twikoo: ${message}`, e)
   },
-  error: (message) => {
-    console.error(`Twikoo: ${message}`)
+  warn: (message, e) => {
+    console.warn(`Twikoo: ${message}`, e)
+  },
+  error: (message, e) => {
+    console.error(`Twikoo: ${message}`, e)
   }
 }
 
@@ -27,11 +31,22 @@ const convertLink = (link) => {
   return link
 }
 
+// 云函数版本
+let twikooFuncVer
+const getFuncVer = async (tcb) => {
+  if (!twikooFuncVer) {
+    twikooFuncVer = await call(tcb, 'GET_FUNC_VERSION')
+  }
+  return twikooFuncVer
+}
+
 export {
   isNotSet,
   logger,
   timeago,
   timestamp,
   convertLink,
-  marked
+  marked,
+  call,
+  getFuncVer
 }

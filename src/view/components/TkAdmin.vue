@@ -94,11 +94,11 @@ export default {
   },
   methods: {
     async onLogin () {
-      this.loading = true
       if (!this.password) {
         this.loginErrorMessage = '请输入密码'
         return
       }
+      this.loading = true
       this.loginErrorMessage = ''
       const passwordMd5 = md5(this.password)
       const res = await call(this.$tcb, 'LOGIN', {

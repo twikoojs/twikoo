@@ -30,6 +30,9 @@
         </el-input>
         <el-button class="tk-regist-button" :disabled="!canRegist" @click="onRegist">注册</el-button>
         <div class="tk-login-msg" v-if="loginErrorMessage">{{ loginErrorMessage }}</div>
+        <div class="tk-login-msg" v-if="!isSetCredentials">
+          <a href="https://twikoo.js.org/faq.html" rel="noopener noreferrer" target="_blank">如何获得私钥</a>
+        </div>
       </div>
       <div class="tk-panel" v-if="isLogin">
         <div class="tk-panel-title">

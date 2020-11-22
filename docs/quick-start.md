@@ -21,12 +21,12 @@ Twikoo 使用云开发作为评论后台，每个云开发用户均长期享受1
 
 1. 进入[环境-云函数](https://console.cloud.tencent.com/tcb/scf/index)，点击“新建云函数”
 2. 函数名称请填写：`twikoo`，其余默认，点击“下一步”
-3. 打开 [index.js](https://imaegoo.coding.net/p/twikoo/d/twikoo/git/raw/dev/src/function/twikoo/index.js)，全选、复制、粘贴到“函数代码”输入框中，点击“确定”
+3. 打开 [index.js](https://imaegoo.coding.net/public/twikoo/twikoo/git/files/dev/src/function/twikoo/index.js)，全选代码、复制、粘贴到“函数代码”输入框中，点击“确定”
 4. 创建完成后，点击“twikoo"进入云函数详情页，进入“函数代码”标签，点击“文件 - 新建文件”，输入 `package.json`，回车
-5. 打开 [package.json](https://imaegoo.coding.net/p/twikoo/d/twikoo/git/raw/dev/src/function/twikoo/package.json)，全选、复制、粘贴到代码框中，点击“保存并安装依赖”
+5. 打开 [package.json](https://imaegoo.coding.net/public/twikoo/twikoo/git/files/dev/src/function/twikoo/package.json)，全选代码、复制、粘贴到代码框中，点击“保存并安装依赖”
 
 ::: tip 提示
-更新 Twikoo 版本时，直接前往云函数详情页，将新的代码粘贴保存即可。
+更新 Twikoo 版本时，直接前往云函数详情页，将新的云函数代码（[index.js](https://imaegoo.coding.net/public/twikoo/twikoo/git/files/dev/src/function/twikoo/index.js) 和 [package.json](https://imaegoo.coding.net/public/twikoo/twikoo/git/files/dev/src/function/twikoo/package.json) 两个文件）粘贴、保存并安装依赖即可。
 :::
 
 ### ② 脚本方式（不推荐）
@@ -63,7 +63,13 @@ npm run deploy # 或 yarn deploy
 ```
 
 ::: tip 提示
-更新 Twikoo 版本时，请执行 `git pull` 和 `npm run deploy` 更新现有的云函数
+更新 Twikoo 版本时，请执行
+``` sh
+git pull
+npm install
+npm run deploy
+```
+更新现有的云函数
 :::
 
 ## 配置使用
@@ -84,7 +90,7 @@ npm run deploy # 或 yarn deploy
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@0.2.2/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@0.2.3/dist/twikoo.all.min.js"></script>
 <script>twikoo.init({ envId: '您的环境id', el: '#tcomment' })</script>
 ```
 

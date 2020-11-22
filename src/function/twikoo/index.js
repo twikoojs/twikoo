@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v0.2.2
+ * Twikoo cloudbase function v0.2.3
  * (c) 2020-2020 iMaeGoo
  * Released under the MIT License.
  */
@@ -13,9 +13,6 @@ const axios = require('axios')
 const qs = require('querystring')
 const $ = require('cheerio')
 
-// 自我依赖 / self dependencies
-const packageInfo = require('./package.json')
-
 // 云函数 SDK / tencent cloudbase sdk
 const app = tcb.init({ env: tcb.SYMBOL_CURRENT_ENV })
 const auth = app.auth()
@@ -23,6 +20,7 @@ const db = app.database()
 const _ = db.command
 
 // 常量 / constants
+const VERSION = '0.2.3'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -109,7 +107,7 @@ exports.main = async (event, context) => {
 function getFuncVersion () {
   return {
     code: RES_CODE.SUCCESS,
-    version: packageInfo.version
+    version: VERSION
   }
 }
 
@@ -120,7 +118,7 @@ async function getPasswordStatus () {
     code: RES_CODE.SUCCESS,
     status: !!conf.ADMIN_PASS,
     credentials: !! conf.CREDENTIALS,
-    version: packageInfo.version
+    version: VERSION
   }
 }
 
@@ -505,6 +503,8 @@ async function noticeReply (currentComment) {
     .where({ _id: currentComment.pid })
     .get()
   parentComment = parentComment.data[0]
+  // 回复给博主，因为会发博主通知邮件，所以不再重复通知
+  if (config.BLOGGER_EMAIL === parentComment.mail) return
   const PARENT_NICK = parentComment.nick
   const SITE_NAME = config.SITE_NAME
   const NICK = currentComment.nick

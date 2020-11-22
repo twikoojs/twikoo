@@ -84,7 +84,7 @@ npm run deploy # 或 yarn deploy
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@0.2.0/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@0.2.2/dist/twikoo.all.min.js"></script>
 <script>twikoo.init({ envId: '您的环境id', el: '#tcomment' })</script>
 ```
 

@@ -21,7 +21,7 @@
         <span v-if="comment.pid">回复 <a :href="`#${comment.pid}`">@{{ comment.ruser }}</a> :</span>
         <span v-html="comment.comment"></span>
       </div>
-      <div class="tk-extras">
+      <div class="tk-extras" v-if="comment.os || comment.browser">
         <div class="tk-extra"><span class="tk-icon" v-html="iconOs"></span>&nbsp;{{ comment.os }}</div>
         <div class="tk-extra"><span class="tk-icon" v-html="iconBrowser"></span>&nbsp;{{ comment.browser }}</div>
       </div>

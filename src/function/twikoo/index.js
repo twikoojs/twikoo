@@ -1,3 +1,9 @@
+/*!
+ * Twikoo cloudbase function v0.2.2
+ * (c) 2020-2020 iMaeGoo
+ * Released under the MIT License.
+ */
+
 // 三方依赖 / 3rd party dependencies
 const tcb = require('@cloudbase/node-sdk')
 const md5 = require('blueimp-md5')
@@ -226,16 +232,24 @@ function parseComment (comments, uid) {
 
 // 将评论记录转换为前端需要的格式
 function toCommentDto (comment, uid, replies = [], comments = []) {
-  const ua = bowser.getParser(comment.ua)
-  const os = ua.getOS()
+  let displayOs = ''
+  let displayBrowser = ''
+  try {
+    const ua = bowser.getParser(comment.ua)
+    const os = ua.getOS()
+    displayOs = [os.name, os.versionName ? os.versionName : os.version].join(' ')
+    displayBrowser = [ua.getBrowserName(), ua.getBrowserVersion()].join(' ')
+  } catch (e) {
+    console.log('bowser 错误：', e)
+  }
   return {
     id: comment._id,
     nick: comment.nick,
     mailMd5: comment.mailMd5 || md5(comment.mail),
     link: comment.link,
     comment: comment.comment,
-    os: [os.name, os.versionName ? os.versionName : os.version].join(' '),
-    browser: [ua.getBrowserName(), ua.getBrowserVersion()].join(' '),
+    os: displayOs,
+    browser: displayBrowser,
     master: comment.master,
     like: comment.like ? comment.like.length : 0,
     liked: comment.like ? comment.like.findIndex((item) => item === uid) > -1 : false,
@@ -418,6 +432,7 @@ async function initMailer () {
 // 博主通知
 async function noticeMaster (comment) {
   if (!transporter) if (!await initMailer()) return
+  if (config.BLOGGER_EMAIL === comment.mail) return
   const SITE_NAME = config.SITE_NAME
   const NICK = comment.nick
   const COMMENT = comment.comment
@@ -454,6 +469,7 @@ async function noticeWeChat (comment) {
     console.log('没有配置 server 酱，放弃微信通知')
     return
   }
+  if (config.BLOGGER_EMAIL === comment.mail) return
   const SITE_NAME = config.SITE_NAME
   const NICK = comment.nick
   const COMMENT = $(comment.comment).text()
@@ -462,14 +478,19 @@ async function noticeWeChat (comment) {
   const emailSubject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}上有新评论了`
   const emailContent = `${NICK}回复说：\n${COMMENT}\n您可以点击 ${POST_URL} 查看回复的完整內容`
   let scApiUrl = 'https://sc.ftqq.com'
+  let scApiParam = {
+    text: emailSubject,
+    desp: emailContent
+  }
   if (config.SC_SENDKEY.substring(0, 3).toLowerCase() === 'sct') {
     // 兼容 server 酱测试专版
     scApiUrl = 'https://sctapi.ftqq.com'
+    scApiParam = {
+      title: emailSubject,
+      desp: emailContent
+    }
   }
-  const sendResult = await axios.post(`${scApiUrl}/${config.SC_SENDKEY}.send`, qs.stringify({
-    title: emailSubject,
-    desp: emailContent
-  }), {
+  const sendResult = await axios.post(`${scApiUrl}/${config.SC_SENDKEY}.send`, qs.stringify(scApiParam), {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
   })
   console.log('微信通知结果：', sendResult)
@@ -653,13 +674,11 @@ async function setConfig (event) {
 // 读取配置
 async function readConfig () {
   try {
-    if (!config) {
-      const res = await db
-        .collection('config')
-        .limit(1)
-        .get()
-      config = res.data[0]
-    }
+    const res = await db
+      .collection('config')
+      .limit(1)
+      .get()
+    config = res.data[0]
     return config
   } catch (e) {
     console.error('读取配置失败：', e)

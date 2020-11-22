@@ -1,6 +1,5 @@
 {
   "name": "twikoo-func",
-  "version": "0.2.2",
   "main": "index.js",
   "dependencies": {
     "@cloudbase/node-sdk": "^2.4.0",

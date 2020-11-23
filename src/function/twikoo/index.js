@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v0.2.3
+ * Twikoo cloudbase function v0.2.3.1
  * (c) 2020-2020 iMaeGoo
  * Released under the MIT License.
  */
@@ -20,7 +20,7 @@ const db = app.database()
 const _ = db.command
 
 // 常量 / constants
-const VERSION = '0.2.3'
+const VERSION = '0.2.3.1'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -678,10 +678,11 @@ async function readConfig () {
       .collection('config')
       .limit(1)
       .get()
-    config = res.data[0]
+    config = res.data[0] || {}
     return config
   } catch (e) {
     console.error('读取配置失败：', e)
+    await createCollections()
     return null
   }
 }
@@ -702,7 +703,6 @@ async function writeConfig (newConfig) {
     } else {
       const res = await db
         .collection('config')
-        .limit(1)
         .add(newConfig)
       updated = res.id ? 1 : 0
     }

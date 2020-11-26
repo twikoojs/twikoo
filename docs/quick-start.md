@@ -76,7 +76,7 @@ npm run deploy
 
 ### 在 Hexo Butterfly 主题使用
 
-请查看 [在Hexo的Butterfly主题使用Twikoo评论配置及更新教程](https://blog.zhheo.com/p/2e6bbbd0.html) by 张洪 Heo
+Butterfly 目前支持 Twikoo，请查看 [Butterfly 安裝文檔(四) 主題配置-2](https://butterfly.js.org/posts/ceeb73f/#%E8%A9%95%E8%AB%96)
 
 ### 在 Hexo Icarus 主题使用
 
@@ -90,7 +90,7 @@ npm run deploy
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@0.2.3/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@0.2.4/dist/twikoo.all.min.js"></script>
 <script>twikoo.init({ envId: '您的环境id', el: '#tcomment' })</script>
 ```
 

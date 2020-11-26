@@ -2,6 +2,8 @@
   <div class="tk-meta-input">
     <el-input v-for="metaInput in metaInputs"
         :key="metaInput.key"
+        :name="metaInput.name"
+        :type="metaInput.type"
         :placeholder="metaInput.placeholder"
         v-model="metaData[metaInput.key]"
         size="small"
@@ -13,9 +15,9 @@
 
 <script>
 const metaInputs = [
-  { key: 'nick', locale: '昵称', placeholder: '必填' },
-  { key: 'mail', locale: '邮箱', placeholder: '必填' },
-  { key: 'link', locale: '网址', placeholder: '选填' }
+  { key: 'nick', locale: '昵称', placeholder: '必填', name: 'nick', type: 'text' },
+  { key: 'mail', locale: '邮箱', placeholder: '必填', name: 'mail', type: 'email' },
+  { key: 'link', locale: '网址', placeholder: '选填', name: 'link', type: 'text' }
 ]
 
 export default {
@@ -78,7 +80,10 @@ export default {
 .tk-meta-input .el-input /deep/ .el-input-group__prepend {
   padding: 0 1rem;
 }
-
+.tk-meta-input .el-input /deep/ input:invalid {
+  border: 1px solid #ff0000;
+  box-shadow: none;
+}
 @media screen and (max-width: 767px) {
   .tk-meta-input {
     flex-direction: column;

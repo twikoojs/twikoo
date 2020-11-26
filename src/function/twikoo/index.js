@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v0.2.3.1
+ * Twikoo cloudbase function v0.2.4
  * (c) 2020-2020 iMaeGoo
  * Released under the MIT License.
  */
@@ -20,7 +20,7 @@ const db = app.database()
 const _ = db.command
 
 // 常量 / constants
-const VERSION = '0.2.3.1'
+const VERSION = '0.2.4'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -117,7 +117,7 @@ async function getPasswordStatus () {
   return {
     code: RES_CODE.SUCCESS,
     status: !!conf.ADMIN_PASS,
-    credentials: !! conf.CREDENTIALS,
+    credentials: !!conf.CREDENTIALS,
     version: VERSION
   }
 }

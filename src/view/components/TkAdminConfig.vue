@@ -39,7 +39,7 @@ export default {
         {
           name: '反垃圾',
           items: [
-            { key: 'AKISMET_KEY', desc: '反垃圾评论 API key（暂未上线，敬请期待）。', ph: '示例：8651783ed123', value: '' }
+            { key: 'AKISMET_KEY', desc: 'Akismet 反垃圾评论，用于垃圾评论检测，设为 "MANUAL_REVIEW" 开启人工审核，留空不使用反垃圾。注册：https://akismet.com', ph: '示例：8651783edxxx', value: '' }
           ]
         },
         {
@@ -53,7 +53,7 @@ export default {
           items: [
             { key: 'SENDER_EMAIL', desc: '邮件通知邮箱地址。对于大多数邮箱服务商，SENDER_EMAIL 必须和 SMTP_USER 保持一致，否则无法发送邮件。', ph: '示例：blog@imaegoo.com', value: '' },
             { key: 'SENDER_NAME', desc: '邮件通知标题。', ph: '示例：虹墨空间站评论提醒', value: '' },
-            { key: 'SMTP_SERVICE', desc: '邮件通知邮箱服务商。https://nodemailer.com/smtp/well-known/#supported-services', ph: '示例：QQ', value: '' },
+            { key: 'SMTP_SERVICE', desc: '邮件通知邮箱服务商。支持："126", "163", "1und1", "AOL", "DebugMail", "DynectEmail", "FastMail", "GandiMail", "Gmail", "Godaddy", "GodaddyAsia", "GodaddyEurope", "Hotmail", "Mail.ru", "Maildev", "Mailgun", "Mailjet", "Mailosaur", "Mandrill", "Naver", "OpenMailBox", "Outlook365", "Postmark", "QQ", "QQex", "SES", "SES-EU-WEST-1", "SES-US-EAST-1", "SES-US-WEST-2", "SendCloud", "SendGrid", "SendPulse", "SendinBlue", "Sparkpost", "Yahoo", "Yandex", "Zoho", "hot.ee", "iCloud", "mail.ee", "qiye.aliyun"', ph: '示例：QQ', value: '' },
             { key: 'SMTP_USER', desc: '邮件通知邮箱用户名。', ph: '示例：blog@imaegoo.com', value: '' },
             { key: 'SMTP_PASS', desc: '邮件通知邮箱密码，QQ邮箱请填写授权码。', ph: '示例：password', value: '', secret: true }
           ]
@@ -107,7 +107,6 @@ export default {
 
 <style scoped>
 .tk-admin-config-groups {
-  max-height: 600px;
   overflow-y: auto;
   padding-right: 0.5em;
 }

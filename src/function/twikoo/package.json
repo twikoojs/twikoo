@@ -3,6 +3,7 @@
   "main": "index.js",
   "dependencies": {
     "@cloudbase/node-sdk": "^2.4.0",
+    "akismet-api": "^5.1.0",
     "axios": "^0.21.0",
     "blueimp-md5": "^2.18.0",
     "bowser": "^2.11.0",

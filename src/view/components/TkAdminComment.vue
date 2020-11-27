@@ -5,10 +5,18 @@
       <el-table-column prop="mail" label="邮箱" show-overflow-tooltip />
       <el-table-column prop="link" label="网址" show-overflow-tooltip />
       <el-table-column prop="commentText" label="评论" show-overflow-tooltip />
-      <el-table-column width="150" label="操作">
+      <el-table-column prop="isSpam" width="50" :formatter="statusFormatter" label="状态" />
+      <el-table-column width="50" label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" @click="handleView(scope.row)" type="primary">查看</el-button>
-          <el-button size="mini" @click="handleDelete(scope.row)" type="danger">删除</el-button>
+          <el-tooltip placement="left" width="160">
+            <el-button type="text">操作</el-button>
+            <div class="tk-admin-actions" slot="content">
+              <el-button size="mini" @click="handleView(scope.row)" type="primary">查看</el-button>
+              <el-button size="mini" v-if="scope.row.isSpam" @click="handleSpam(scope.row, false)" type="warning">显示</el-button>
+              <el-button size="mini" v-if="!scope.row.isSpam" @click="handleSpam(scope.row, true)" type="warning">隐藏</el-button>
+              <el-button size="mini" @click="handleDelete(scope.row)" type="danger">删除</el-button>
+            </div>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -53,6 +61,9 @@ export default {
       this.currentPage = e
       this.getComments()
     },
+    statusFormatter (row, column, cell) {
+      return cell ? '隐藏' : '显示'
+    },
     handleView (comment) {
       window.open(comment.href || comment.url)
     },
@@ -60,6 +71,15 @@ export default {
       this.loading = true
       await call(this.$tcb, 'COMMENT_DELETE_FOR_ADMIN', {
         id: comment._id
+      })
+      await this.getComments()
+      this.loading = false
+    },
+    async handleSpam (comment, isSpam) {
+      this.loading = true
+      await call(this.$tcb, 'COMMENT_SET_FOR_ADMIN', {
+        id: comment._id,
+        set: { isSpam }
       })
       await this.getComments()
       this.loading = false
@@ -121,5 +141,8 @@ export default {
 .tk-admin-comment /deep/ .el-icon-d-arrow-left::before,
 .tk-admin-comment /deep/ .el-icon-d-arrow-right::before {
   content: '...';
+}
+.tk-admin-actions {
+  display: flex;
 }
 </style>

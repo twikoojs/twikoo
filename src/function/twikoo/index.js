@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v0.2.4
+ * Twikoo cloudbase function v0.2.5
  * (c) 2020-2020 iMaeGoo
  * Released under the MIT License.
  */
@@ -12,6 +12,7 @@ const nodemailer = require('nodemailer')
 const axios = require('axios')
 const qs = require('querystring')
 const $ = require('cheerio')
+const { AkismetClient } = require('akismet-api')
 
 // 云函数 SDK / tencent cloudbase sdk
 const app = tcb.init({ env: tcb.SYMBOL_CURRENT_ENV })
@@ -20,7 +21,7 @@ const db = app.database()
 const _ = db.command
 
 // 常量 / constants
-const VERSION = '0.2.4'
+const VERSION = '0.2.5'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -58,6 +59,9 @@ exports.main = async (event, context) => {
       case 'COMMENT_GET_FOR_ADMIN':
         res = await commentGetForAdmin(event)
         break
+      case 'COMMENT_SET_FOR_ADMIN':
+        res = await commentSetForAdmin(event)
+        break
       case 'COMMENT_DELETE_FOR_ADMIN':
         res = await commentDeleteForAdmin(event)
         break
@@ -77,10 +81,10 @@ exports.main = async (event, context) => {
         res = await setPassword(event)
         break
       case 'GET_CONFIG':
-        res = await getConfig(event)
+        res = await getConfig()
         break
       case 'GET_CONFIG_FOR_ADMIN':
-        res = await getConfigForAdmin(event)
+        res = await getConfigForAdmin()
         break
       case 'SET_CONFIG':
         res = await setConfig(event)
@@ -297,6 +301,25 @@ function parseCommentForAdmin (comments) {
   return comments
 }
 
+// 管理员修改评论
+async function commentSetForAdmin (event) {
+  const res = {}
+  const isAdminUser = await isAdmin()
+  if (isAdminUser) {
+    validate(event, ['id', 'set'])
+    const data = await db
+      .collection('comment')
+      .doc(event.id)
+      .update(event.set)
+    res.code = RES_CODE.SUCCESS
+    res.updated = data.updated
+  } else {
+    res.code = RES_CODE.NEED_LOGIN
+    res.message = '请先登录'
+  }
+  return res
+}
+
 // 管理员删除评论
 async function commentDeleteForAdmin (event) {
   const res = {}
@@ -374,13 +397,7 @@ async function commentSubmit (event) {
     await createCollections()
     await readConfig()
   }
-  let comment
-  try {
-    comment = await save(event)
-  } catch (e) {
-    await createCollections()
-    comment = await save(event)
-  }
+  const comment = await save(event)
   res.id = comment.id
   await sendMail(comment)
   return res
@@ -388,7 +405,7 @@ async function commentSubmit (event) {
 
 // 保存评论
 async function save (event) {
-  const data = parse(event)
+  const data = await parse(event)
   const result = await db
     .collection('comment')
     .add(data)
@@ -545,9 +562,9 @@ async function noticeReply (currentComment) {
 }
 
 // 将评论转为数据库存储格式
-function parse (comment) {
+async function parse (comment) {
   const timestamp = new Date().getTime()
-  return {
+  const commentDo = {
     nick: comment.nick ? comment.nick : 'Anonymous',
     mail: comment.mail ? comment.mail : '',
     mailMd5: comment.mail ? md5(comment.mail) : '',
@@ -562,6 +579,45 @@ function parse (comment) {
     rid: comment.rid,
     created: timestamp,
     updated: timestamp
+  }
+  commentDo.isSpam = await checkSpam(commentDo)
+  return commentDo
+}
+
+// 垃圾评论检测
+async function checkSpam (comment) {
+  // 使用全局配置，不需要重新读取配置
+  if (!config.AKISMET_KEY) {
+    return false
+  } else if (config.AKISMET_KEY === 'MANUAL_REVIEW') {
+    console.log('已使用人工审核模式，评论审核后才会发表~')
+    return true
+  } else {
+    try {
+      const akismetClient = new AkismetClient({
+        key: config.AKISMET_KEY,
+        blog: config.SITE_URL
+      })
+      const isValid = await akismetClient.verifyKey()
+      if (!isValid) {
+        console.log('Akismet key 不可用：', config.AKISMET_KEY)
+        return
+      }
+      const isSpam = await akismetClient.checkSpam({
+        user_ip: comment.ip,
+        user_agent: comment.ua,
+        permalink: comment.href,
+        comment_type: comment.rid ? 'reply' : 'comment',
+        comment_author: comment.nick,
+        comment_author_email: comment.mail,
+        comment_author_url: comment.link,
+        comment_content: comment.comment
+      })
+      console.log('垃圾评论检测结果：', isSpam)
+      return isSpam
+    } catch (err) {
+      console.error('Akismet 异常：', err)
+    }
   }
 }
 
@@ -692,16 +748,14 @@ async function writeConfig (newConfig) {
   console.log('写入配置：', newConfig)
   try {
     let updated
-    const existConfig = await readConfig()
-    if (existConfig) {
-      const res = await db
-        .collection('config')
-        .where({}) // 不加 where 会报错 Error: param should have required property 'query'
-        .limit(1)
-        .update(newConfig)
-      updated = res.updated
-    } else {
-      const res = await db
+    let res = await db
+      .collection('config')
+      .where({}) // 不加 where 会报错 Error: param should have required property 'query'
+      .limit(1)
+      .update(newConfig)
+    updated = res.updated
+    if (updated === 0) {
+      res = await db
         .collection('config')
         .add(newConfig)
       updated = res.id ? 1 : 0

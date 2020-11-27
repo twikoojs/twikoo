@@ -3,7 +3,7 @@
     <template #page-bottom>
       <div class="page-edit">
         <div id="twikoo"></div>
-        <script src="https://cdn.jsdelivr.net/npm/twikoo@0.2.4/dist/twikoo.all.min.js" ref="twikooJs"></script>
+        <script src="https://cdn.jsdelivr.net/npm/twikoo@0.2.5/dist/twikoo.all.min.js" ref="twikooJs"></script>
       </div>
     </template>
   </ParentLayout>

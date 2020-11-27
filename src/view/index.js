@@ -8,6 +8,7 @@ import TabPane from 'element-ui/lib/tab-pane'
 import Pagination from 'element-ui/lib/pagination'
 import Table from 'element-ui/lib/table'
 import TableColumn from 'element-ui/lib/table-column'
+import Tooltip from 'element-ui/lib/tooltip'
 import 'element-ui/lib/theme-chalk/button.css'
 import 'element-ui/lib/theme-chalk/input.css'
 import 'element-ui/lib/theme-chalk/loading.css'
@@ -16,6 +17,7 @@ import 'element-ui/lib/theme-chalk/tab-pane.css'
 import 'element-ui/lib/theme-chalk/pagination.css'
 import 'element-ui/lib/theme-chalk/table.css'
 import 'element-ui/lib/theme-chalk/table-column.css'
+import 'element-ui/lib/theme-chalk/tooltip.css'
 
 Vue.use(Button)
 Vue.use(Input)
@@ -25,6 +27,7 @@ Vue.use(TabPane)
 Vue.use(Pagination)
 Vue.use(Table)
 Vue.use(TableColumn)
+Vue.use(Tooltip)
 
 const render = (data = {}, options = {}) => {
   Vue.prototype.$tcb = data

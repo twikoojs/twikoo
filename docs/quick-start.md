@@ -1,5 +1,7 @@
 # 快速上手
 
+[查看视频](https://www.bilibili.com/video/BV1MZ4y1G7VB?zw)
+
 ## 环境初始化
 
 Twikoo 使用云开发作为评论后台，每个云开发用户均长期享受1个免费的标准型基础版1资源套餐。如果您已经拥有了一个免费版云开发环境，在环境配置符合要求的情况下，Twikoo 理论可以与其他项目共用一个环境。
@@ -90,7 +92,7 @@ Butterfly 目前支持 Twikoo，请查看 [Butterfly 安裝文檔(四) 主題配
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@0.2.5/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@0.2.6/dist/twikoo.all.min.js"></script>
 <script>twikoo.init({ envId: '您的环境id', el: '#tcomment' })</script>
 ```
 

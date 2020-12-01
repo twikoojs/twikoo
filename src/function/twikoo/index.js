@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v0.2.5
+ * Twikoo cloudbase function v0.2.6
  * (c) 2020-2020 iMaeGoo
  * Released under the MIT License.
  */
@@ -21,7 +21,7 @@ const db = app.database()
 const _ = db.command
 
 // 常量 / constants
-const VERSION = '0.2.5'
+const VERSION = '0.2.6'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -194,22 +194,49 @@ function getAdminTicket (credentials) {
 }
 
 // 读取评论
-// TODO: 分页
 async function commentGet (event) {
   const res = {}
-  let uid
   try {
     validate(event, ['url'])
-    uid = await auth.getEndUserInfo().userInfo.uid
-    const data = await db
+    const uid = await auth.getEndUserInfo().userInfo.uid
+    const query = {}
+    const limit = parseInt(config.COMMENT_PAGE_SIZE) || 8
+    let more = false
+    query.url = event.url
+    query.rid = _.in(['', null])
+    query.isSpam = _.neq(true)
+    // 读取总条数
+    const count = await db
+      .collection('comment')
+      .where(query)
+      .count()
+    // 读取主楼
+    if (event.before) {
+      query.created = _.lt(event.before)
+    }
+    const main = await db
+      .collection('comment')
+      .where(query)
+      .orderBy('created', 'desc')
+      // 流式分页，通过多读 1 条的方式，确认是否还有更多评论
+      .limit(limit + 1)
+      .get()
+    if (main.data.length > limit) {
+      // 还有更多评论
+      more = true
+      // 删除多读的 1 条
+      main.data.splice(limit - 1, 1)
+    }
+    // 读取回复楼
+    const reply = await db
       .collection('comment')
       .where({
-        url: event.url,
-        isSpam: _.neq(true)
+        rid: _.in(main.data.map((item) => item._id))
       })
-      .orderBy('created', 'desc')
       .get()
-    res.data = parseComment(data.data, uid)
+    res.data = parseComment([...main.data, ...reply.data], uid)
+    res.more = more
+    res.count = count.total
   } catch (e) {
     res.data = []
     res.message = e.message
@@ -310,7 +337,10 @@ async function commentSetForAdmin (event) {
     const data = await db
       .collection('comment')
       .doc(event.id)
-      .update(event.set)
+      .update({
+        ...event.set,
+        updated: new Date().getTime()
+      })
     res.code = RES_CODE.SUCCESS
     res.updated = data.updated
   } else {

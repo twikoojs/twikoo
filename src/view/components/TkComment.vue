@@ -32,7 +32,6 @@
             :comment="reply"
             @load="onLoad"
             @reply="onReplyReply" />
-        <div class="tk-expand" v-if="showExpand" @click="onExpand">查看更多...</div>
       </div>
       <!-- 回复框 -->
       <tk-submit v-if="replying"
@@ -40,6 +39,7 @@
           :pid="pid"
           @load="onLoad"
           @cancel="onCancel" />
+      <div class="tk-expand" v-if="showExpand" @click="onExpand">查看更多...</div>
     </div>
   </div>
 </template>
@@ -241,18 +241,6 @@ export default {
 }
 .tk-replies-expand {
   max-height: none;
-}
-.tk-expand {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 100px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  background: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1));
-  cursor: pointer;
 }
 .tk-submit {
   margin-top: 1rem;

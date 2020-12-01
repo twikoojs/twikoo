@@ -3,7 +3,7 @@
     <tk-submit @load="initComments" />
     <div class="tk-comments-container" v-loading="loading">
       <div class="tk-comments-title">
-        <span>{{ comments.length }} 条评论</span>
+        <span>{{ count }} 条评论</span>
         <span class="tk-icon" v-html="iconSetting" @click="openAdmin"></span>
       </div>
       <div class="tk-comments-no" v-if="!loading && !comments.length">没有评论</div>
@@ -13,6 +13,7 @@
         :replying="replyId === comment.id"
         @reply="onReply"
         @load="initComments" />
+      <div class="tk-expand" v-if="showExpand" @click="onExpand" v-loading="loadingMore">查看更多...</div>
     </div>
   </div>
 </template>
@@ -31,7 +32,10 @@ export default {
   data () {
     return {
       loading: true,
+      loadingMore: false,
       comments: [],
+      showExpand: true,
+      count: 0,
       replyId: '',
       iconSetting
     }
@@ -39,13 +43,29 @@ export default {
   methods: {
     async initComments () {
       this.loading = true
-      const comments = await call(this.$tcb, 'COMMENT_GET', {
+      await this.getComments({
         url: window.location.pathname
       })
-      if (comments && comments.result && comments.result.data) {
-        this.comments = comments.result.data
-      }
       this.loading = false
+    },
+    async onExpand () {
+      this.loadingMore = true
+      const before = this.comments
+        .map((item) => item.created)
+        .sort((a, b) => a - b)[0] // 最小值
+      await this.getComments({
+        url: window.location.pathname,
+        before
+      })
+      this.loadingMore = false
+    },
+    async getComments (event) {
+      const comments = await call(this.$tcb, 'COMMENT_GET', event)
+      if (comments && comments.result && comments.result.data) {
+        this.comments = event.before ? this.comments.concat(comments.result.data) : comments.result.data
+        this.showExpand = comments.result.more
+        this.count = comments.result.count || this.comments.length
+      }
     },
     onReply (id) {
       this.replyId = id

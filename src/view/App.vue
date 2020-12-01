@@ -38,4 +38,20 @@ export default {
   height: 100%;
   fill: currentColor;
 }
+
+/* 全局 CSS */
+.tk-expand {
+  width: 100%;
+  cursor: pointer;
+  padding: 0.75em;
+  text-align: center;
+  background-color: #00000010;
+  transition: all 0.5s;
+}
+.tk-expand:hover {
+  background-color: #00000020;
+}
+.tk-expand:active {
+  background-color: #00000030;
+}
 </style>

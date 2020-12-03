@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v0.2.6
+ * Twikoo cloudbase function v0.2.7
  * (c) 2020-2020 iMaeGoo
  * Released under the MIT License.
  */
@@ -21,7 +21,7 @@ const db = app.database()
 const _ = db.command
 
 // 常量 / constants
-const VERSION = '0.2.6'
+const VERSION = '0.2.7'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -91,6 +91,12 @@ exports.main = async (event, context) => {
         break
       case 'LOGIN':
         res = await login(event.password)
+        break
+      case 'GET_COMMENTS_COUNT': // >= 0.2.7
+        res = await getCommentsCount(event)
+        break
+      case 'GET_RECENT_COMMENTS': // >= 0.2.7
+        res = await getRecentComments(event)
         break
       default:
         res.code = RES_CODE.EVENT_NOT_EXIST
@@ -339,7 +345,7 @@ async function commentSetForAdmin (event) {
       .doc(event.id)
       .update({
         ...event.set,
-        updated: new Date().getTime()
+        updated: Date.now()
       })
     res.code = RES_CODE.SUCCESS
     res.updated = data.updated
@@ -593,7 +599,7 @@ async function noticeReply (currentComment) {
 
 // 将评论转为数据库存储格式
 async function parse (comment) {
-  const timestamp = new Date().getTime()
+  const timestamp = Date.now()
   const commentDo = {
     nick: comment.nick ? comment.nick : 'Anonymous',
     mail: comment.mail ? comment.mail : '',
@@ -697,7 +703,7 @@ async function incCounter (event) {
     .update({
       title: event.title,
       time: _.inc(1),
-      updated: new Date().getTime()
+      updated: Date.now()
     })
   if (result.updated === 0) {
     result = await db
@@ -706,11 +712,83 @@ async function incCounter (event) {
         url: event.url,
         title: event.title,
         time: 1,
-        created: new Date().getTime(),
-        updated: new Date().getTime()
+        created: Date.now(),
+        updated: Date.now()
       })
   }
   return result.updated || result.inserted
+}
+
+/**
+ * 批量获取文章评论数 API
+ * @param {Array} event.urls 不包含协议和域名的文章路径列表，必传参数
+ * @param {Boolean} event.includeReply 评论数是否包括回复，默认：false
+ */
+async function getCommentsCount (event) {
+  const res = {}
+  try {
+    validate(event, ['urls'])
+    const query = {}
+    query.isSpam = _.neq(true)
+    query.url = _.in(event.urls)
+    if (!event.includeReply) {
+      query.rid = _.in(['', null])
+    }
+    const result = await db
+      .collection('comment')
+      .aggregate()
+      .match(query)
+      .group({ _id: '$url', count: _.aggregate.sum(1) })
+      .end()
+    res.data = []
+    for (const url of event.urls) {
+      const record = result.data.find((item) => item._id === url)
+      res.data.push({
+        url,
+        count: record ? record.count : 0
+      })
+    }
+  } catch (e) {
+    res.message = e.message
+    return res
+  }
+  return res
+}
+
+/**
+ * 获取最新评论 API
+ * @param {Boolean} event.includeReply 评论数是否包括回复，默认：false
+ */
+async function getRecentComments (event) {
+  const res = {}
+  try {
+    const query = {}
+    query.isSpam = _.neq(true)
+    if (!event.includeReply) query.rid = _.in(['', null])
+    if (event.pageSize > 100) event.pageSize = 100
+    const result = await db
+      .collection('comment')
+      .where(query)
+      .orderBy('created', 'desc')
+      .limit(event.pageSize || 10)
+      .get()
+    res.data = result.data.map((comment) => {
+      return {
+        id: comment._id,
+        url: comment.url,
+        nick: comment.nick,
+        mailMd5: comment.mailMd5 || md5(comment.mail),
+        link: comment.link,
+        comment: comment.comment,
+        commentText: $(comment.comment).text(),
+        created: comment.created
+      }
+    })
+  } catch (e) {
+    res.message = e.message
+    return res
+  }
+  return res
 }
 
 async function getConfig () {

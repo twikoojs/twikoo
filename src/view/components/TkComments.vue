@@ -13,7 +13,7 @@
         :replying="replyId === comment.id"
         @reply="onReply"
         @load="initComments" />
-      <div class="tk-expand" v-if="showExpand" @click="onExpand" v-loading="loadingMore">查看更多...</div>
+      <div class="tk-expand" v-if="showExpand" @click="onExpand" v-loading="loadingMore">查看更多</div>
     </div>
   </div>
 </template>

@@ -17,7 +17,7 @@ const timeAgo = (date) => {
   if (date) {
     try {
       const oldTime = date.getTime()
-      const currTime = new Date().getTime()
+      const currTime = Date.now()
       const diffValue = currTime - oldTime
 
       const days = Math.floor(diffValue / (24 * 3600 * 1000))

@@ -6,6 +6,7 @@ module.exports = {
       '/',
       '/quick-start',
       '/faq',
+      '/api',
       '/link'
     ],
     lastUpdated: true,

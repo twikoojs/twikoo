@@ -46,7 +46,7 @@ git clone https://github.com/imaegoo/twikoo.git # 或 git clone https://e.coding
 cd twikoo
 ```
 > 如果您没有安装 Git，也可以从 [Release](https://github.com/imaegoo/twikoo/releases) 页面下载最新的 Source code<br>
-> 如果您所在的地区访问 Github 速度慢，您可以尝试另一个仓库地址：https://imaegoo.coding.net/public/twikoo/twikoo/git
+> 如果您所在的地区访问 Github 速度慢，您可以尝试另一个仓库地址：[https://imaegoo.coding.net/public/twikoo/twikoo/git](https://imaegoo.coding.net/public/twikoo/twikoo/git)
 2. 安装依赖项
 ``` sh
 npm install # 或 yarn install
@@ -92,7 +92,7 @@ Butterfly 目前支持 Twikoo，请查看 [Butterfly 安裝文檔(四) 主題配
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@0.2.6/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@0.2.7/dist/twikoo.all.min.js"></script>
 <script>twikoo.init({ envId: '您的环境id', el: '#tcomment' })</script>
 ```
 

@@ -31,6 +31,10 @@ A simple, safe, serverless comment system based on Tencent CloudBase (tcb).
 
 ![评论管理](./static/readme-2.png)
 
+### 推送通知
+
+![推送通知](./static/readme-3.jpg)
+
 ## 交流群
 
 如果你想获取更新动态、建言献策、参与内测，欢迎加入内测群：<br>

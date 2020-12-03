@@ -31,6 +31,10 @@ A simple, safe, serverless comment system based on Tencent CloudBase (tcb).
 
 ![评论管理](./docs/static/readme-2.png)
 
+### 推送通知
+
+![推送通知](./docs/static/readme-3.jpg)
+
 ## 快速上手 | Quick Start
 
 请查看[快速上手](https://twikoo.js.org/quick-start.html)
@@ -45,10 +49,14 @@ A simple, safe, serverless comment system based on Tencent CloudBase (tcb).
 
 ## 开发 | Development
 
+如果您想在本地二次开发，可以参考以下命令：
+
 ``` sh
-yarn dev # 开发
-yarn build # 编译
+yarn dev # 开发 (http://localhost:9820/demo.html)
+yarn build # 编译 (dist/twikoo.all.min.js)
 ```
+
+如果您的改动能够帮助到更多人，欢迎提交 Pull Request！
 
 ## 国际化 | I18N
 

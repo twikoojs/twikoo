@@ -40,6 +40,22 @@ const getFuncVer = async (tcb) => {
   return twikooFuncVer
 }
 
+const getCommentsCountApi = async (tcb, options) => {
+  if (!(options.urls instanceof Array)) {
+    throw new Error('urls 参数有误')
+  }
+  if (options.urls.length === 0) {
+    return []
+  }
+  const result = await call(tcb, 'GET_COMMENTS_COUNT', options)
+  return result.result.data
+}
+
+const getRecentCommentsApi = async (tcb, options) => {
+  const result = await call(tcb, 'GET_RECENT_COMMENTS', options)
+  return result.result.data
+}
+
 export {
   isNotSet,
   logger,
@@ -48,5 +64,7 @@ export {
   convertLink,
   marked,
   call,
-  getFuncVer
+  getFuncVer,
+  getCommentsCountApi,
+  getRecentCommentsApi
 }

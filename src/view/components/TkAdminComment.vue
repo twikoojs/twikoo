@@ -1,25 +1,23 @@
 <template>
   <div class="tk-admin-comment" v-loading="loading">
-    <el-table class="tk-admin-comment-list" :data="comments" stripe size="small">
-      <el-table-column prop="nick" label="昵称" show-overflow-tooltip />
-      <el-table-column prop="mail" label="邮箱" show-overflow-tooltip />
-      <el-table-column prop="link" label="网址" show-overflow-tooltip />
-      <el-table-column prop="commentText" label="评论" show-overflow-tooltip />
-      <el-table-column prop="isSpam" width="50" :formatter="statusFormatter" label="状态" />
-      <el-table-column width="50" label="操作">
-        <template slot-scope="scope">
-          <el-tooltip placement="left" width="160">
-            <el-button type="text">操作</el-button>
-            <div class="tk-admin-actions" slot="content">
-              <el-button size="mini" @click="handleView(scope.row)" type="primary">查看</el-button>
-              <el-button size="mini" v-if="scope.row.isSpam" @click="handleSpam(scope.row, false)" type="warning">显示</el-button>
-              <el-button size="mini" v-if="!scope.row.isSpam" @click="handleSpam(scope.row, true)" type="warning">隐藏</el-button>
-              <el-button size="mini" @click="handleDelete(scope.row)" type="danger">删除</el-button>
-            </div>
-          </el-tooltip>
-        </template>
-      </el-table-column>
-    </el-table>
+    <div class="tk-admin-comment-list">
+      <div class="tk-admin-comment-item" v-for="comment in comments" :key="comment._id">
+        <div class="tk-admin-comment-meta">
+          <tk-avatar :mail="comment.mail" :link="comment.link" />
+          <span v-if="!comment.link">{{ comment.nick }}</span>
+          <a v-if="comment.link" :href="convertLink(comment.link)" target="_blank">{{ comment.nick }}</a>
+          <span v-if="comment.mail">&nbsp;(<a :href="`mailto:${comment.mail}`">{{ comment.mail }}</a>)</span>
+          <span v-if="comment.isSpam">&nbsp;(已隐藏)</span>
+        </div>
+        <div class="tk-admin-comment-text">{{ comment.commentText }}</div>
+        <div class="tk-admin-actions" slot="content">
+          <el-button size="mini" type="text" @click="handleView(comment)">查看</el-button>
+          <el-button size="mini" type="text" v-if="comment.isSpam" @click="handleSpam(comment, false)">显示</el-button>
+          <el-button size="mini" type="text" v-if="!comment.isSpam" @click="handleSpam(comment, true)">隐藏</el-button>
+          <el-button size="mini" type="text" @click="handleDelete(comment)">删除</el-button>
+        </div>
+      </div>
+    </div>
     <el-pagination background
         layout="total, pager, jumper"
         :pager-count="5"
@@ -30,11 +28,15 @@
 </template>
 
 <script>
-import { call } from '../../js/utils'
+import { call, convertLink } from '../../js/utils'
+import TkAvatar from './TkAvatar.vue'
 
-const docPerPage = 10
+const docPerPage = 5
 
 export default {
+  components: {
+    TkAvatar
+  },
   data () {
     return {
       loading: true,
@@ -45,6 +47,7 @@ export default {
     }
   },
   methods: {
+    convertLink,
     async getComments () {
       this.loading = true
       const res = await call(this.$tcb, 'COMMENT_GET_FOR_ADMIN', {
@@ -60,9 +63,6 @@ export default {
     switchPage (e) {
       this.currentPage = e
       this.getComments()
-    },
-    statusFormatter (row, column, cell) {
-      return cell ? '隐藏' : '显示'
     },
     handleView (comment) {
       window.open(comment.href || comment.url)
@@ -96,14 +96,29 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #00000010;
 }
-.tk-admin-comment-list {
-  display: grid;
-  overflow: auto;
+.tk-admin-comment a {
+  color: currentColor;
+  text-decoration: underline;
 }
+.tk-admin-comment-list,
 .tk-admin-comment-item {
+  width: 100%;
   display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+}
+.tk-admin-comment-meta {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5em;
+}
+.tk-avatar {
+  margin-right: 0.5em;
+}
+.tk-admin-actions {
+  display: flex;
+  margin-bottom: 1em;
 }
 .tk-admin-comment .el-pagination {
   color: #c0c4cc;
@@ -119,30 +134,15 @@ export default {
 .tk-admin-comment /deep/ .el-pager li.active {
   color: #ffffff;
 }
-.tk-admin-comment .el-table,
-.tk-admin-comment .el-table::before,
-.tk-admin-comment /deep/ .el-table th,
-.tk-admin-comment /deep/ .el-table tr,
 .tk-admin-comment /deep/ .el-pager li,
 .tk-admin-comment /deep/ .el-pagination.is-background .el-pager li,
 .tk-admin-comment /deep/ .el-input__inner {
   background-color: transparent;
   color: #ffffff;
 }
-.tk-admin-comment /deep/ .el-table--striped .el-table__body tr.el-table__row--striped td,
-.tk-admin-comment /deep/ .el-table--enable-row-hover .el-table__body tr:hover>td {
-  background-color: #ffffff10;
-}
-.tk-admin-comment /deep/ .el-table td,
-.tk-admin-comment /deep/ .el-table th.is-leaf {
-  border: none;
-}
 .tk-admin-comment /deep/ .el-icon-more::before,
 .tk-admin-comment /deep/ .el-icon-d-arrow-left::before,
 .tk-admin-comment /deep/ .el-icon-d-arrow-right::before {
   content: '...';
-}
-.tk-admin-actions {
-  display: flex;
 }
 </style>

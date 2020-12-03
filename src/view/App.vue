@@ -45,7 +45,6 @@ export default {
   cursor: pointer;
   padding: 0.75em;
   text-align: center;
-  background-color: #00000010;
   transition: all 0.5s;
 }
 .tk-expand:hover {

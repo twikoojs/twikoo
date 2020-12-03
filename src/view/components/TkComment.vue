@@ -39,7 +39,7 @@
           :pid="pid"
           @load="onLoad"
           @cancel="onCancel" />
-      <div class="tk-expand" v-if="showExpand" @click="onExpand">查看更多...</div>
+      <div class="tk-expand" v-if="showExpand" @click="onExpand">展开</div>
     </div>
   </div>
 </template>
@@ -244,5 +244,8 @@ export default {
 }
 .tk-submit {
   margin-top: 1rem;
+}
+.tk-expand {
+  font-size: 0.75em;
 }
 </style>

@@ -72,14 +72,18 @@ A simple, safe, serverless comment system based on Tencent CloudBase (tcb).
 
 ## 开发
 
+如果您想在本地二次开发，可以参考以下命令：
+
 ``` sh
-yarn dev # 开发
-yarn build # 编译
+yarn dev # 开发 (http://localhost:9820/demo.html)
+yarn build # 编译 (dist/twikoo.all.min.js)
 ```
 
-## 国际化
+如果您的改动能够帮助到更多人，欢迎提交 Pull Request！
 
-鉴于腾讯云在中国以外地区的支持程度，本项目暂无国际化计划。<br>
+## 国际化 | I18N
+
+鉴于腾讯云云开发在中国以外地区的支持程度（文档只有中文版本，环境没有国际版本，在中国以外地区访问缓慢），本项目暂无国际化计划，请各位站长知悉。<br>
 There are no plans to internationalize this project.
 
 ## 许可

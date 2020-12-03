@@ -39,7 +39,6 @@ A simple, safe, serverless comment system based on Tencent CloudBase (tcb).
 
 请查看[快速上手](https://twikoo.js.org/quick-start.html)
 
-> 文档尚未完善，请关注后续更新；<br>
 > 如果你想获取更新动态、建言献策、参与内测，欢迎加入内测群：<br>
 > <img height="300" alt="1080829142" src="https://www.imaegoo.com/gallery/2020/hello-twikoo.png" />
 
@@ -60,7 +59,7 @@ yarn build # 编译 (dist/twikoo.all.min.js)
 
 ## 国际化 | I18N
 
-鉴于腾讯云在中国以外地区的支持程度，本项目暂无国际化计划。<br>
+鉴于腾讯云云开发在中国以外地区的支持程度（文档只有中文版本，环境没有国际版本，在中国以外地区访问缓慢），本项目暂无国际化计划，请各位站长知悉。<br>
 There are no plans to internationalize this project.
 
 ## 许可 | License

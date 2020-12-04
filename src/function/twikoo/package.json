@@ -8,6 +8,8 @@
     "blueimp-md5": "^2.18.0",
     "bowser": "^2.11.0",
     "cheerio": "^1.0.0-rc.3",
+    "dompurify": "^2.2.2",
+    "jsdom": "^16.4.0",
     "nodemailer": "^6.4.16",
     "querystring": "^0.2.0"
   }

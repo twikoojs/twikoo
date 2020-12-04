@@ -154,7 +154,7 @@ export default {
   margin-left: 3rem;
   margin-bottom: 1rem;
   padding: 5px 15px;
-  border: 1px solid #dcdfe6;
+  border: 1px solid #80808050;
   border-radius: 4px;
 }
 </style>

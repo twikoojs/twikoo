@@ -7,6 +7,7 @@
 
 <script>
 import md5 from 'blueimp-md5'
+import { convertLink } from '../../js/utils'
 import iconUser from '@fortawesome/fontawesome-free/svgs/solid/user-circle.svg'
 
 export default {
@@ -34,7 +35,7 @@ export default {
   methods: {
     onClick () {
       this.$emit('click')
-      this.link && window.open(this.link)
+      this.link && window.open(convertLink(this.link))
     }
   }
 }

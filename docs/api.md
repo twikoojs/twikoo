@@ -54,14 +54,16 @@ twikoo.getRecentComments({
 }).then(function (res) {
   console.log(res);
   // 返回 Array，包含最新评论的
-  //   * id:          评论 ID
-  //   * url:         评论地址
-  //   * nick:        昵称
-  //   * mailMd5:     邮箱的 MD5 值，可用于展示头像
-  //   * link:        网址
-  //   * comment:     HTML 格式的评论内容
-  //   * commentText: 纯文本格式的评论内容
-  //   * created:     评论时间，格式为毫秒级时间戳
+  //   * id:           评论 ID
+  //   * url:          评论地址
+  //   * nick:         昵称
+  //   * mailMd5:      邮箱的 MD5 值，可用于展示头像
+  //   * link:         网址
+  //   * comment:      HTML 格式的评论内容
+  //   * commentText:  纯文本格式的评论内容
+  //   * created:      评论时间，格式为毫秒级时间戳
+  //   * avatar:       头像（0.2.9 新增）
+  //   * relativeTime: 相对评论时间，如 “1 小时前”（0.2.9 新增）
   // 返回示例: [ // 从新到旧顺序
   //   { id: '', url: '', nick: '', mailMd5: '', link: '', comment: '', commentText: '', created: 0 },
   //   { id: '', url: '', nick: '', mailMd5: '', link: '', comment: '', commentText: '', created: 0 },

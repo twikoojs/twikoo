@@ -62,7 +62,7 @@ twikoo.getRecentComments({
   //   * comment:      HTML 格式的评论内容
   //   * commentText:  纯文本格式的评论内容
   //   * created:      评论时间，格式为毫秒级时间戳
-  //   * avatar:       头像（0.2.9 新增）
+  //   * avatar:       头像地址（0.2.9 新增）
   //   * relativeTime: 相对评论时间，如 “1 小时前”（0.2.9 新增）
   // 返回示例: [ // 从新到旧顺序
   //   { id: '', url: '', nick: '', mailMd5: '', link: '', comment: '', commentText: '', created: 0 },

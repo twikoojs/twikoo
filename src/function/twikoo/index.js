@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v0.2.8
+ * Twikoo cloudbase function v0.2.9
  * (c) 2020-2020 iMaeGoo
  * Released under the MIT License.
  */
@@ -27,7 +27,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '0.2.8'
+const VERSION = '0.2.9'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,

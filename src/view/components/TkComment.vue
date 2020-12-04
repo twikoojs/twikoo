@@ -26,7 +26,7 @@
         <div class="tk-extra"><span class="tk-icon" v-html="iconBrowser"></span>&nbsp;{{ comment.browser }}</div>
       </div>
       <!-- 回复列表 -->
-      <div class="tk-replies" :class="{ 'tk-replies-expand': isExpanded }" ref="tk-replies">
+      <div class="tk-replies" :class="{ 'tk-replies-expand': isExpanded || !showExpand }" ref="tk-replies">
         <tk-comment v-for="reply in comment.replies"
             :key="reply.id"
             :comment="reply"

@@ -217,8 +217,9 @@ export default {
   background-color: #f2f6fc;
 }
 .tk-tag-green {
-  background-color: #f0f9eb;
-  border: 1px solid #e1f3d8;
+  background-color: #67c23a20;
+  border: 1px solid #67c23a80;
+  border-radius: 2px;
   color: #67c23a;
 }
 .tk-comment {

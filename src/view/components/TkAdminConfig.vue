@@ -121,10 +121,6 @@ export default {
 .tk-admin-config-groups::-webkit-scrollbar-thumb {
   background-color: #ffffff50;
 }
-.tk-admin-config /deep/ .el-input__inner {
-  background-color: transparent;
-  color: #ffffff;
-}
 .tk-admin-config-group-title {
   margin-top: 1em;
   font-size: 1.25rem;

@@ -222,9 +222,6 @@ export default {
   box-sizing: content-box;
   color: #ffffff;
 }
-.tk-admin /deep/ .el-loading-mask {
-  background-color: #00000099;
-}
 .tk-login,
 .tk-regist {
   display: flex;

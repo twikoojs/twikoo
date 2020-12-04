@@ -81,7 +81,7 @@ export default {
   padding: 0 1rem;
 }
 .tk-meta-input .el-input /deep/ input:invalid {
-  border: 1px solid #ff0000;
+  border: 1px solid #f56c6c;
   box-shadow: none;
 }
 @media screen and (max-width: 767px) {

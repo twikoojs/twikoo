@@ -1,18 +1,20 @@
 /*!
- * Twikoo cloudbase function v0.2.7
+ * Twikoo cloudbase function v0.2.8
  * (c) 2020-2020 iMaeGoo
  * Released under the MIT License.
  */
 
 // 三方依赖 / 3rd party dependencies
-const tcb = require('@cloudbase/node-sdk')
-const md5 = require('blueimp-md5')
-const bowser = require('bowser')
-const nodemailer = require('nodemailer')
-const axios = require('axios')
-const qs = require('querystring')
-const $ = require('cheerio')
-const { AkismetClient } = require('akismet-api')
+const tcb = require('@cloudbase/node-sdk') // 云开发 SDK
+const md5 = require('blueimp-md5') // MD5 加解密
+const bowser = require('bowser') // UserAgent 格式化
+const nodemailer = require('nodemailer') // 发送邮件
+const axios = require('axios') // 发送 REST 请求
+const qs = require('querystring') // URL 参数格式化
+const $ = require('cheerio') // jQuery 服务器版
+const { AkismetClient } = require('akismet-api') // 反垃圾 API
+const createDOMPurify = require('dompurify') // 反 XSS
+const { JSDOM } = require('jsdom') // document.window 服务器版
 
 // 云函数 SDK / tencent cloudbase sdk
 const app = tcb.init({ env: tcb.SYMBOL_CURRENT_ENV })
@@ -20,8 +22,12 @@ const auth = app.auth()
 const db = app.database()
 const _ = db.command
 
+// 初始化反 XSS
+const window = new JSDOM('').window
+const DOMPurify = createDOMPurify(window)
+
 // 常量 / constants
-const VERSION = '0.2.7'
+const VERSION = '0.2.8'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -32,7 +38,9 @@ const RES_CODE = {
   CREDENTIALS_INVALID: 1025,
   PASS_NOT_EXIST: 1022,
   PASS_NOT_MATCH: 1023,
-  NEED_LOGIN: 1024
+  NEED_LOGIN: 1024,
+  FORBIDDEN: 1403,
+  AKISMET_ERROR: 1030
 }
 const ADMIN_USER_ID = 'admin'
 
@@ -81,7 +89,7 @@ exports.main = async (event, context) => {
         res = await setPassword(event)
         break
       case 'GET_CONFIG':
-        res = await getConfig()
+        res = getConfig()
         break
       case 'GET_CONFIG_FOR_ADMIN':
         res = await getConfigForAdmin()
@@ -97,6 +105,9 @@ exports.main = async (event, context) => {
         break
       case 'GET_RECENT_COMMENTS': // >= 0.2.7
         res = await getRecentComments(event)
+        break
+      case 'CHECK_SPAM':
+        res = await checkSpamAction(event, context)
         break
       default:
         res.code = RES_CODE.EVENT_NOT_EXIST
@@ -123,28 +134,26 @@ function getFuncVersion () {
 
 // 判断是否存在管理员密码
 async function getPasswordStatus () {
-  const conf = await readConfig()
   return {
     code: RES_CODE.SUCCESS,
-    status: !!conf.ADMIN_PASS,
-    credentials: !!conf.CREDENTIALS,
+    status: !!config.ADMIN_PASS,
+    credentials: !!config.CREDENTIALS,
     version: VERSION
   }
 }
 
 // 写入管理密码
 async function setPassword (event) {
-  const conf = await readConfig()
   const isAdminUser = await isAdmin()
   // 如果数据库里没有密码，则写入密码
   // 如果数据库里有密码，则只有管理员可以写入密码
-  if (conf.ADMIN_PASS && !isAdminUser) {
+  if (config.ADMIN_PASS && !isAdminUser) {
     return { code: RES_CODE.PASS_EXIST, message: '请先登录再修改密码' }
   }
-  if (!conf.CREDENTIALS && !event.credentials) {
+  if (!config.CREDENTIALS && !event.credentials) {
     return { code: RES_CODE.CREDENTIALS_NOT_EXIST, message: '未配置登录私钥' }
   }
-  if (!conf.CREDENTIALS && event.credentials) {
+  if (!config.CREDENTIALS && event.credentials) {
     const checkResult = await checkAndSaveCredentials(event.credentials)
     if (!checkResult) {
       return { code: RES_CODE.CREDENTIALS_INVALID, message: '无效的私钥文件' }
@@ -171,22 +180,21 @@ async function checkAndSaveCredentials (credentials) {
 
 // 管理员登录
 async function login (password) {
-  const conf = await readConfig()
-  if (!conf) {
+  if (!config) {
     return { code: RES_CODE.CONFIG_NOT_EXIST, message: '数据库无配置' }
   }
-  if (!conf.CREDENTIALS) {
+  if (!config.CREDENTIALS) {
     return { code: RES_CODE.CREDENTIALS_NOT_EXIST, message: '未配置登录私钥' }
   }
-  if (!conf.ADMIN_PASS) {
+  if (!config.ADMIN_PASS) {
     return { code: RES_CODE.PASS_NOT_EXIST, message: '未配置管理密码' }
   }
-  if (conf.ADMIN_PASS !== md5(password)) {
+  if (config.ADMIN_PASS !== md5(password)) {
     return { code: RES_CODE.PASS_NOT_MATCH, message: '密码错误' }
   }
   return {
     code: RES_CODE.SUCCESS,
-    ticket: getAdminTicket(JSON.parse(conf.CREDENTIALS))
+    ticket: getAdminTicket(JSON.parse(config.CREDENTIALS))
   }
 }
 
@@ -427,12 +435,6 @@ async function commentSubmit (event) {
     res.message = e.message
     return res
   }
-  try {
-    await readConfig()
-  } catch (e) {
-    await createCollections()
-    await readConfig()
-  }
   const comment = await save(event)
   res.id = comment.id
   await sendMail(comment)
@@ -610,7 +612,7 @@ async function parse (comment) {
     master: config ? comment.mail === config.BLOGGER_EMAIL : false,
     url: comment.url,
     href: comment.href,
-    comment: comment.comment,
+    comment: DOMPurify.sanitize(comment.comment),
     pid: comment.pid ? comment.pid : comment.rid,
     rid: comment.rid,
     created: timestamp,
@@ -629,31 +631,62 @@ async function checkSpam (comment) {
     console.log('已使用人工审核模式，评论审核后才会发表~')
     return true
   } else {
+    // Akismet 服务响应慢，影响用户体验，通过调用自身，实现开启新的云函数进程，异步检测的效果
     try {
-      const akismetClient = new AkismetClient({
-        key: config.AKISMET_KEY,
-        blog: config.SITE_URL
-      })
-      const isValid = await akismetClient.verifyKey()
-      if (!isValid) {
-        console.log('Akismet key 不可用：', config.AKISMET_KEY)
-        return
-      }
-      const isSpam = await akismetClient.checkSpam({
-        user_ip: comment.ip,
-        user_agent: comment.ua,
-        permalink: comment.href,
-        comment_type: comment.rid ? 'reply' : 'comment',
-        comment_author: comment.nick,
-        comment_author_email: comment.mail,
-        comment_author_url: comment.link,
-        comment_content: comment.comment
-      })
-      console.log('垃圾评论检测结果：', isSpam)
-      return isSpam
-    } catch (err) {
-      console.error('Akismet 异常：', err)
+      await app.callFunction({
+        name: 'twikoo',
+        data: {
+          event: 'CHECK_SPAM',
+          comment,
+          key: config.AKISMET_KEY,
+          blog: config.SITE_URL
+        }
+      }, { timeout: 300 }) // 设置较短的 timeout 来实现异步
+    } catch (e) {
+      console.log('开始异步检测垃圾评论')
     }
+    return false // 暂时放行
+  }
+}
+
+// 异步检测垃圾评论
+async function checkSpamAction (event, context) {
+  if (!isRecursion(context)) return { code: RES_CODE.FORBIDDEN }
+  try {
+    const comment = event.comment
+    const akismetClient = new AkismetClient({
+      key: event.key,
+      blog: event.blog
+    })
+    const isValid = await akismetClient.verifyKey()
+    if (!isValid) {
+      console.log('Akismet key 不可用：', event.key)
+      return
+    }
+    const isSpam = await akismetClient.checkSpam({
+      user_ip: comment.ip,
+      user_agent: comment.ua,
+      permalink: comment.href,
+      comment_type: comment.rid ? 'reply' : 'comment',
+      comment_author: comment.nick,
+      comment_author_email: comment.mail,
+      comment_author_url: comment.link,
+      comment_content: comment.comment
+    })
+    console.log('垃圾评论检测结果：', isSpam)
+    if (isSpam) {
+      await db
+        .collection('comment')
+        .where({ created: comment.created })
+        .update({
+          isSpam,
+          updated: Date.now()
+        })
+    }
+    return { code: RES_CODE.SUCCESS, isSpam }
+  } catch (err) {
+    console.error('Akismet 异常：', err)
+    return { code: RES_CODE.AKISMET_ERROR, message: err.message }
   }
 }
 
@@ -665,13 +698,7 @@ async function counterGet (event) {
   const res = {}
   try {
     validate(event, ['url'])
-    let record
-    try {
-      record = await readCounter(event.url)
-    } catch (e) {
-      await createCollections()
-      record = await readCounter(event.url)
-    }
+    const record = await readCounter(event.url)
     res.data = record.data[0] ? record.data[0] : {}
     res.time = res.data ? res.data.time : 0
     res.updated = await incCounter(event)
@@ -791,13 +818,12 @@ async function getRecentComments (event) {
   return res
 }
 
-async function getConfig () {
-  const fullConfig = await readConfig()
+function getConfig () {
   return {
     code: RES_CODE.SUCCESS,
     config: {
-      SITE_NAME: fullConfig.SITE_NAME,
-      SITE_URL: fullConfig.SITE_URL
+      SITE_NAME: config.SITE_NAME,
+      SITE_URL: config.SITE_URL
     }
   }
 }
@@ -805,11 +831,10 @@ async function getConfig () {
 async function getConfigForAdmin () {
   const isAdminUser = await isAdmin()
   if (isAdminUser) {
-    const fullConfig = await readConfig()
-    delete fullConfig.CREDENTIALS
+    delete config.CREDENTIALS
     return {
       code: RES_CODE.SUCCESS,
-      config: fullConfig
+      config
     }
   } else {
     return {
@@ -847,7 +872,8 @@ async function readConfig () {
   } catch (e) {
     console.error('读取配置失败：', e)
     await createCollections()
-    return null
+    config = {}
+    return config
   }
 }
 
@@ -881,6 +907,12 @@ async function writeConfig (newConfig) {
 async function isAdmin () {
   const userInfo = await auth.getEndUserInfo()
   return ADMIN_USER_ID === userInfo.userInfo.customUserId
+}
+
+// 判断是否为递归调用（即云函数调用自身）
+function isRecursion (context) {
+  const envObj = tcb.getCloudbaseContext(context)
+  return envObj.TCB_SOURCE.substr(-3, 3) === 'scf'
 }
 
 // 建立数据库 collections

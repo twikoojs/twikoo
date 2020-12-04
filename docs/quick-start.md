@@ -1,10 +1,25 @@
 # 快速上手
 
-[查看视频](https://www.bilibili.com/video/BV1MZ4y1G7VB?zw)
+## 一键部署
+
+1. 点击以下按钮将 Twikoo 一键部署到云开发<br>
+[![部署到云开发](https://main.qcloudimg.com/raw/67f5a389f1ac6f3b4d04c7256438e44f.svg)](https://console.cloud.tencent.com/tcb/env/index?action=CreateAndDeployCloudBaseProject&appUrl=https%3A%2F%2Fgithub.com%2Fimaegoo%2Ftwikoo&branch=dev)
+2. 进入[环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)，启用“匿名登录”
+3. 进入[环境-安全配置](https://console.cloud.tencent.com/tcb/env/safety)，将网站域名添加到“WEB安全域名”
+
+::: warning 注意
+一键部署虽然方便，但是仅支持按量计费环境——也就是说，**一键部署的环境，当免费资源用尽后，将会产生费用**。且按量计费环境无法切换为包年包月环境。
+
+大多数情况下，免费资源能够满足日访问量在 10,000 以下的站点（参考：[免费资源如何计算？](faq.html#免费资源如何计算)）。
+
+如果您希望，当免费资源用尽时，不产生费用，请参考下面的教程手动部署。
+:::
 
 ## 环境初始化
 
-Twikoo 使用云开发作为评论后台，每个云开发用户均长期享受1个免费的标准型基础版1资源套餐。如果您已经拥有了一个免费版云开发环境，在环境配置符合要求的情况下，Twikoo 理论可以与其他项目共用一个环境。
+[查看环境初始化与环境部署视频教程](https://www.bilibili.com/video/BV1MZ4y1G7VB)
+
+Twikoo 使用云开发作为评论后台，每个云开发用户均长期享受1个免费的标准型基础版1资源套餐。如果您已经拥有了一个免费版云开发环境，Twikoo 也可以与其他项目共用一个环境，请直接查看[环境部署](#环境部署)。
 
 1. [注册云开发CloudBase](https://curl.qcloud.com/KnnJtUom)
 2. 进入[云开发控制台](https://console.cloud.tencent.com/tcb/)，新建环境，请按需配置环境<br>
@@ -19,10 +34,10 @@ Twikoo 使用云开发作为评论后台，每个云开发用户均长期享受1
 
 ## 环境部署
 
-### ① 简单方式（推荐）
+### ① 网页方式（推荐）
 
 1. 进入[环境-云函数](https://console.cloud.tencent.com/tcb/scf/index)，点击“新建云函数”
-2. 函数名称请填写：`twikoo`，其余默认，点击“下一步”
+2. 函数名称请填写：`twikoo`，创建方式请选择：`空白函数`，运行环境请选择：`Nodejs 10.15`，函数内存请选择：`128MB`，点击“下一步”
 3. 打开 [index.js](https://imaegoo.coding.net/public/twikoo/twikoo/git/files/dev/src/function/twikoo/index.js)，全选代码、复制、粘贴到“函数代码”输入框中，点击“确定”
 4. 创建完成后，点击“twikoo"进入云函数详情页，进入“函数代码”标签，点击“文件 - 新建文件”，输入 `package.json`，回车
 5. 打开 [package.json](https://imaegoo.coding.net/public/twikoo/twikoo/git/files/dev/src/function/twikoo/package.json)，全选代码、复制、粘贴到代码框中，点击“保存并安装依赖”
@@ -46,30 +61,26 @@ git clone https://github.com/imaegoo/twikoo.git # 或 git clone https://e.coding
 cd twikoo
 ```
 > 如果您没有安装 Git，也可以从 [Release](https://github.com/imaegoo/twikoo/releases) 页面下载最新的 Source code<br>
-> 如果您所在的地区访问 Github 速度慢，您可以尝试另一个仓库地址：[https://imaegoo.coding.net/public/twikoo/twikoo/git](https://imaegoo.coding.net/public/twikoo/twikoo/git)
+> 如果您所在的地区访问 Github 速度慢，也可以尝试另一个仓库地址：[https://imaegoo.coding.net/public/twikoo/twikoo/git](https://imaegoo.coding.net/public/twikoo/twikoo/git)
 2. 安装依赖项
 ``` sh
 npm install # 或 yarn install
 ```
-3. 设置环境id
-``` sh
-echo 您的环境id > envId.txt
-```
-4. 授权云开发环境（此命令会弹出浏览器要求授权，需在有图形界面的系统下进行）
+3. 授权云开发环境（此命令会弹出浏览器要求授权，需在有图形界面的系统下进行）
 ``` sh
 npm run login # 或 yarn run login
 ```
-5. 自动部署
+4. 自动部署
 ``` sh
-npm run deploy # 或 yarn deploy
+npm run deploy -- -e 您的环境id # 或 yarn deploy -e 您的环境id
 ```
 
 ::: tip 提示
 更新 Twikoo 版本时，请执行
 ``` sh
 git pull
-npm install
-npm run deploy
+npm install # 或 yarn install
+npm run deploy -- -e 您的环境id # 或 yarn deploy -e 您的环境id
 ```
 更新现有的云函数
 :::

@@ -1,4 +1,6 @@
-# Twikoo
+<img src="./docs/static/logo.png" width="300" alt="Twikoo">
+
+----
 
 [![](https://img.shields.io/npm/v/twikoo)](https://www.npmjs.com/package/twikoo)
 [![](https://img.shields.io/bundlephobia/minzip/twikoo)](https://bundlephobia.com/result?p=twikoo)
@@ -43,6 +45,10 @@ A simple, safe, free comment system based on Tencent CloudBase (tcb).
 > <img height="300" alt="1080829142" src="https://www.imaegoo.com/gallery/2020/hello-twikoo.png" />
 
 <!-- ## 贡献者 | Contributors -->
+
+## 特别感谢 | Special Thanks
+
+图标设计：[Maemo Lee](https://www.maemo.cc)
 
 <!-- ## 捐赠 | Donate -->
 

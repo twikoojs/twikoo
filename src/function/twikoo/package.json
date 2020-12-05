@@ -10,7 +10,9 @@
     "cheerio": "^1.0.0-rc.3",
     "dompurify": "^2.2.2",
     "jsdom": "^16.4.0",
+    "marked": "^1.2.5",
     "nodemailer": "^6.4.16",
-    "querystring": "^0.2.0"
+    "querystring": "^0.2.0",
+    "xml2js": "^0.4.23"
   }
 }

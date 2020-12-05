@@ -15,6 +15,8 @@ const $ = require('cheerio') // jQuery 服务器版
 const { AkismetClient } = require('akismet-api') // 反垃圾 API
 const createDOMPurify = require('dompurify') // 反 XSS
 const { JSDOM } = require('jsdom') // document.window 服务器版
+const xml2js = require('xml2js') // XML 解析
+const marked = require('marked') // Markdown 解析
 
 // 云函数 SDK / tencent cloudbase sdk
 const app = tcb.init({ env: tcb.SYMBOL_CURRENT_ENV })
@@ -72,6 +74,9 @@ exports.main = async (event, context) => {
         break
       case 'COMMENT_DELETE_FOR_ADMIN':
         res = await commentDeleteForAdmin(event)
+        break
+      case 'COMMENT_IMPORT_FOR_ADMIN':
+        res = await commentImportForAdmin(event)
         break
       case 'COMMENT_LIKE':
         res = await commentLike(event)
@@ -381,6 +386,243 @@ async function commentDeleteForAdmin (event) {
     res.message = '请先登录'
   }
   return res
+}
+
+// 管理员导入评论
+async function commentImportForAdmin (event) {
+  const res = {}
+  let logText = ''
+  const log = (message) => {
+    logText += `${new Date().toLocaleString()} ${message}\n`
+  }
+  const isAdminUser = await isAdmin()
+  if (isAdminUser) {
+    try {
+      validate(event, ['source', 'fileId'])
+      log(`开始导入 ${event.source}`)
+      switch (event.source) {
+        case 'valine': {
+          const valineDb = await readFile(event.fileId, 'json', log)
+          await commentImportValine(valineDb, log)
+          break
+        }
+        case 'disqus': {
+          const disqusDb = await readFile(event.fileId, 'xml', log)
+          await commentImportDisqus(disqusDb, log)
+          break
+        }
+        case 'artalk': {
+          const artalkDb = await readFile(event.fileId, 'json', log)
+          await commentImportArtalk(artalkDb, log)
+          break
+        }
+        default:
+          throw new Error(`不支持 ${event.source} 的导入，请更新 Twikoo 云函数至最新版本`)
+      }
+      // 删除导入完成的文件
+      await app.deleteFile({ fileList: [event.fileId] })
+    } catch (e) {
+      log(e.message)
+    }
+    res.code = RES_CODE.SUCCESS
+    res.log = logText
+    console.log(logText)
+  } else {
+    res.code = RES_CODE.NEED_LOGIN
+    res.message = '请先登录'
+  }
+  return res
+}
+
+// 读取云存储中的文件并转为 js object
+async function readFile (fileId, type, log) {
+  try {
+    const result = await app.downloadFile({ fileID: fileId })
+    log('评论文件下载成功')
+    let content = result.fileContent.toString('utf8')
+    log('评论文件读取成功')
+    if (type === 'json') {
+      content = JSON.parse(content)
+      log('评论文件 JSON 解析成功')
+    } else if (type === 'xml') {
+      content = await xml2js.parseStringPromise(content)
+      log('评论文件 XML 解析成功')
+    }
+    return content
+  } catch (e) {
+    log(`评论文件读取失败：${e.message}`)
+  }
+}
+
+// Valine 导入
+async function commentImportValine (valineDb, log) {
+  if (!valineDb || !valineDb.results) {
+    log('Valine 评论文件格式有误')
+    return
+  }
+  const comments = []
+  log(`共 ${valineDb.results.length} 条评论`)
+  for (const comment of valineDb.results) {
+    try {
+      const parsed = {
+        _id: comment.objectId,
+        nick: comment.nick,
+        ip: comment.ip,
+        mail: comment.mail,
+        mailMd5: comment.mailMd5,
+        isSpam: comment.isSpam,
+        ua: comment.ua || '',
+        link: comment.link,
+        pid: comment.pid,
+        rid: comment.rid,
+        master: false,
+        comment: comment.comment,
+        url: comment.url,
+        created: new Date(comment.createdAt).getTime(),
+        updated: new Date(comment.updatedAt).getTime()
+      }
+      comments.push(parsed)
+      log(`${comment.objectId} 解析成功`)
+    } catch (e) {
+      log(`${comment.objectId} 解析失败：${e.message}`)
+    }
+  }
+  log(`解析成功 ${comments.length} 条评论`)
+  const ids = await bulkSaveComments(comments)
+  log(`导入成功 ${ids.length} 条评论`)
+  return comments
+}
+
+// Disqus 导入
+async function commentImportDisqus (disqusDb, log) {
+  if (!disqusDb || !disqusDb.disqus || !disqusDb.disqus.thread || !disqusDb.disqus.post) {
+    log('Disqus 评论文件格式有误')
+    return
+  }
+  const comments = []
+  const getParent = (post) => {
+    return post.parent ? disqusDb.disqus.post.find((item) => item.$['dsq:id'] === post.parent[0].$['dsq:id']) : null
+  }
+  let threads = []
+  try {
+    threads = disqusDb.disqus.thread.map((thread) => {
+      return {
+        id: thread.$['dsq:id'],
+        title: thread.title[0],
+        url: thread.id[0],
+        href: thread.link[0]
+      }
+    })
+  } catch (e) {
+    log(`无法读取 thread：${e.message}`)
+    return
+  }
+  log(`共 ${disqusDb.disqus.post.length} 条评论`)
+  for (const post of disqusDb.disqus.post) {
+    try {
+      const threadId = post.thread[0].$['dsq:id']
+      const thread = threads.find((item) => item.id === threadId)
+      const parent = getParent(post)
+      let root
+      if (parent) {
+        let grandParent = parent
+        while (true) {
+          if (grandParent) root = grandParent
+          else break
+          grandParent = getParent(grandParent)
+        }
+      }
+      comments.push({
+        _id: post.$['dsq:id'],
+        nick: post.author[0].name[0],
+        mail: '',
+        link: '',
+        url: thread.url,
+        href: thread.href,
+        comment: post.message[0],
+        ua: '',
+        ip: '',
+        isSpam: post.isSpam[0] === 'true' || post.isDeleted[0] === 'true',
+        master: false,
+        pid: parent ? parent.$['dsq:id'] : null,
+        rid: root ? root.$['dsq:id'] : null,
+        created: new Date(post.createdAt[0]).getTime(),
+        updated: Date.now()
+      })
+      log(`${post.$['dsq:id']} 解析成功`)
+    } catch (e) {
+      log(`${post.$['dsq:id']} 解析失败：${e.message}`)
+    }
+  }
+  log(`解析成功 ${comments.length} 条评论`)
+  const ids = await bulkSaveComments(comments)
+  log(`导入成功 ${ids.length} 条评论`)
+  return comments
+}
+
+// Artalk 导入
+async function commentImportArtalk (artalkDb, log) {
+  const comments = []
+  if (!artalkDb || !artalkDb.length) {
+    log('Artalk 评论文件格式有误')
+    return
+  }
+  const getRelativeUrl = (url) => {
+    let x = url.indexOf('/')
+    for (let i = 0; i < 2; i++) {
+      x = url.indexOf('/', x + 1)
+    }
+    return url.substring(x)
+  }
+  marked.setOptions({
+    renderer: new marked.Renderer(),
+    gfm: true,
+    tables: true,
+    breaks: true,
+    pedantic: false,
+    sanitize: true,
+    smartLists: true,
+    smartypants: true
+  })
+  log(`共 ${artalkDb.length} 条评论`)
+  for (const comment of artalkDb) {
+    try {
+      const parsed = {
+        _id: `artalk${comment.id}`,
+        nick: comment.nick,
+        ip: comment.ip,
+        mail: comment.email,
+        mailMd5: md5(comment.email),
+        isSpam: false,
+        ua: comment.ua || '',
+        link: comment.link,
+        pid: comment.rid ? `artalk${comment.rid}` : '',
+        rid: comment.rid ? `artalk${comment.rid}` : '',
+        master: false,
+        comment: DOMPurify.sanitize(marked(comment.content)),
+        url: getRelativeUrl(comment.page_key),
+        href: comment.page_key,
+        created: new Date(comment.date).getTime(),
+        updated: Date.now()
+      }
+      comments.push(parsed)
+      log(`${comment.id} 解析成功`)
+    } catch (e) {
+      log(`${comment.id} 解析失败：${e.message}`)
+    }
+  }
+  log(`解析成功 ${comments.length} 条评论`)
+  const ids = await bulkSaveComments(comments)
+  log(`导入成功 ${ids.length} 条评论`)
+  return comments
+}
+
+// 批量导入评论
+async function bulkSaveComments (comments) {
+  const batchRes = await db
+    .collection('comment')
+    .add(comments)
+  return batchRes.ids
 }
 
 // 点赞 / 取消点赞

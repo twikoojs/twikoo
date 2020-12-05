@@ -1,4 +1,6 @@
-# 简介
+<img src="./static/logo.png" width="300" alt="Twikoo">
+
+----
 
 [![](https://img.shields.io/npm/v/twikoo)](https://www.npmjs.com/package/twikoo)
 [![](https://img.shields.io/bundlephobia/minzip/twikoo)](https://bundlephobia.com/result?p=twikoo)
@@ -67,6 +69,10 @@ A simple, safe, free comment system based on Tencent CloudBase (tcb).
 | 计划中 | P3 | 评论框粘贴图片 |
 
 <!-- ## 贡献者 | Contributors -->
+
+## 特别感谢
+
+图标设计：[Maemo Lee](https://www.maemo.cc)
 
 <!-- ## 捐赠 | Donate -->
 

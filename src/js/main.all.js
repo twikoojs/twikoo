@@ -5,6 +5,7 @@ import { getCommentsCountApi, getRecentCommentsApi } from './utils'
 import cloudbase from '@cloudbase/js-sdk/app'
 import '@cloudbase/js-sdk/auth'
 import '@cloudbase/js-sdk/functions'
+import '@cloudbase/js-sdk/storage'
 
 async function initTcb (options) {
   return await install(cloudbase, options)

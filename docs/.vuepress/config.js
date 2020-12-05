@@ -3,7 +3,7 @@ module.exports = {
   description: 'Twikoo 中文文档',
   themeConfig: {
     sidebar: [
-      '/',
+      ['/', '简介'],
       '/quick-start',
       '/faq',
       '/api',

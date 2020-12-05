@@ -53,6 +53,11 @@ const getCommentsCountApi = async (tcb, options) => {
 
 const getRecentCommentsApi = async (tcb, options) => {
   const result = await call(tcb, 'GET_RECENT_COMMENTS', options)
+  // 封装头像和相对评论时间
+  for (const comment of result.result.data) {
+    comment.avatar = `https://gravatar.loli.net/avatar/${comment.mailMd5}`
+    comment.relativeTime = timeago(comment.created)
+  }
   return result.result.data
 }
 

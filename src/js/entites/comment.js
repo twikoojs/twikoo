@@ -12,7 +12,8 @@ class Comment {
     this.link = model.link // 网址
 
     /* 评论数据 */
-    this.url = model.url // 评论地址
+    this.url = model.url // 相对评论地址
+    this.href = model.href // 完整评论地址
     this.comment = model.comment // 评论内容
     this.ua = model.ua // UserAgent
     this.ip = model.ip // IP 地址

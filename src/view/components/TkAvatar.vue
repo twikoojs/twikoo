@@ -24,9 +24,9 @@ export default {
   computed: {
     avatar () {
       if (this.mailMd5) {
-        return `https://gravatar.loli.net/avatar/${this.mailMd5}`
+        return `https://gravatar.loli.net/avatar/${this.mailMd5}?d=identicon`
       } else if (this.mail) {
-        return `https://gravatar.loli.net/avatar/${md5(this.mail)}`
+        return `https://gravatar.loli.net/avatar/${md5(this.mail)}?d=identicon`
       } else {
         return ''
       }

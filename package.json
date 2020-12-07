@@ -1,6 +1,6 @@
 {
   "name": "twikoo",
-  "version": "0.2.9",
+  "version": "0.3.0",
   "description": "A simple comment system based on Tencent CloudBase (tcb).",
   "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
   "license": "MIT",
@@ -12,21 +12,22 @@
     "type": "git",
     "url": "https://github.com/imaegoo/twikoo.git"
   },
-  "homepage": "https://github.com/imaegoo/twikoo",
+  "homepage": "https://twikoo.js.org",
   "scripts": {
     "dev": "webpack-dev-server",
     "serve": "webpack-dev-server",
     "build": "webpack",
     "analyze": "webpack --profile --json > stats.json && webpack-bundle-analyzer stats.json",
     "login": "tcb login",
+    "logout": "tcb logout",
     "deploy": "tcb fn deploy twikoo --force",
     "lint": "eslint",
     "docs:dev": "vuepress dev docs",
     "docs:build": "vuepress build docs"
   },
   "devDependencies": {
-    "@cloudbase/cli": "^1.0.4",
-    "copy-webpack-plugin": "^6.3.1",
+    "@cloudbase/cli": "^1.0.7",
+    "copy-webpack-plugin": "^6.3.2",
     "css-loader": "^3.6.0",
     "eslint": "^7.13.0",
     "eslint-config-standard": "^16.0.2",
@@ -48,7 +49,7 @@
     "@fortawesome/fontawesome-free": "^5.15.1",
     "blueimp-md5": "^2.18.0",
     "element-ui": "^2.14.1",
-    "marked": "^1.2.4",
+    "marked": "^1.2.5",
     "vue": "^2.6.12"
   }
 }

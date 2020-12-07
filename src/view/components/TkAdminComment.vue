@@ -65,7 +65,7 @@ export default {
       this.getComments()
     },
     handleView (comment) {
-      window.open(comment.href || comment.url)
+      window.open(`${comment.url}#${comment._id}`)
     },
     async handleDelete (comment) {
       this.loading = true

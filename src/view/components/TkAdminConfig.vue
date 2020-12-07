@@ -34,7 +34,9 @@ export default {
             { key: 'SITE_NAME', desc: '网站名称', ph: '示例：虹墨空间站', value: '' },
             { key: 'SITE_URL', desc: '网站地址', ph: '示例：https://www.imaegoo.com', value: '' },
             { key: 'BLOGGER_EMAIL', desc: '博主的邮箱地址，用于邮件通知、博主标识。', ph: '示例：12345@qq.com', value: '' },
-            { key: 'COMMENT_PAGE_SIZE', desc: '评论列表分页大小，默认为 8。', ph: '示例：8', value: '' }
+            { key: 'COMMENT_PAGE_SIZE', desc: '评论列表分页大小，默认为 8。', ph: '示例：8', value: '' },
+            { key: 'MASTER_TAG', desc: '博主标识自定义文字，默认为 “博主”。', ph: '示例：站长', value: '' },
+            { key: 'COMMENT_BG_IMG', desc: '评论框自定义背景图片 URL 地址。', ph: '', value: '' }
           ]
         },
         {
@@ -55,8 +57,15 @@ export default {
             { key: 'SENDER_EMAIL', desc: '邮件通知邮箱地址。对于大多数邮箱服务商，SENDER_EMAIL 必须和 SMTP_USER 保持一致，否则无法发送邮件。', ph: '示例：blog@imaegoo.com', value: '' },
             { key: 'SENDER_NAME', desc: '邮件通知标题。', ph: '示例：虹墨空间站评论提醒', value: '' },
             { key: 'SMTP_SERVICE', desc: '邮件通知邮箱服务商。支持："126", "163", "1und1", "AOL", "DebugMail", "DynectEmail", "FastMail", "GandiMail", "Gmail", "Godaddy", "GodaddyAsia", "GodaddyEurope", "Hotmail", "Mail.ru", "Maildev", "Mailgun", "Mailjet", "Mailosaur", "Mandrill", "Naver", "OpenMailBox", "Outlook365", "Postmark", "QQ", "QQex", "SES", "SES-EU-WEST-1", "SES-US-EAST-1", "SES-US-WEST-2", "SendCloud", "SendGrid", "SendPulse", "SendinBlue", "Sparkpost", "Yahoo", "Yandex", "Zoho", "hot.ee", "iCloud", "mail.ee", "qiye.aliyun"', ph: '示例：QQ', value: '' },
+            { key: 'SMTP_HOST', desc: '自定义 SMTP 服务器地址。如您已配置 SMTP_SERVICE，此项请留空。', ph: '示例：smtp.qq.com', value: '', secret: true },
+            { key: 'SMTP_PORT', desc: '自定义 SMTP 端口。如您已配置 SMTP_SERVICE，此项请留空。', ph: '示例：465', value: '', secret: true },
+            { key: 'SMTP_SECURE', desc: '自定义 SMTP 是否使用TLS。如您已配置 SMTP_SERVICE，此项请留空。', ph: '示例：true', value: '', secret: true },
             { key: 'SMTP_USER', desc: '邮件通知邮箱用户名。', ph: '示例：blog@imaegoo.com', value: '' },
-            { key: 'SMTP_PASS', desc: '邮件通知邮箱密码，QQ邮箱请填写授权码。', ph: '示例：password', value: '', secret: true }
+            { key: 'SMTP_PASS', desc: '邮件通知邮箱密码，QQ邮箱请填写授权码。', ph: '示例：password', value: '', secret: true },
+            { key: 'MAIL_SUBJECT', desc: '自定义通知邮件主题，留空则使用默认主题。', ph: '示例：您在虹墨空间站上的评论收到了回复', value: '' },
+            { key: 'MAIL_TEMPLATE', desc: '自定义通知邮件模板，留空则使用默认模板。可包含的字段：${SITE_URL}, ${SITE_NAME}, ${PARENT_NICK}, ${PARENT_COMMENT}, ${NICK}, ${COMMENT}, ${POST_URL}', ph: '', value: '' },
+            { key: 'MAIL_SUBJECT_ADMIN', desc: '自定义博主通知邮件主题，留空则使用默认主题。', ph: '示例：虹墨空间站上有新评论了', value: '' },
+            { key: 'MAIL_TEMPLATE_ADMIN', desc: '自定义博主通知邮件模板，留空则使用默认模板。可包含的字段：${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}', ph: '', value: '' }
           ]
         }
       ],

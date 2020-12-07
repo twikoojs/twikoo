@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v0.2.9
+ * Twikoo cloudbase function v0.3.0
  * (c) 2020-2020 iMaeGoo
  * Released under the MIT License.
  */
@@ -29,7 +29,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '0.2.9'
+const VERSION = '0.3.0'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -705,14 +705,25 @@ async function sendMail (comment) {
 // 初始化邮件插件
 async function initMailer () {
   try {
-    if (!config || !config.SMTP_SERVICE || !config.SMTP_USER || !config.SMTP_PASS) throw new Error('数据库配置不存在')
-    transporter = nodemailer.createTransport({
-      service: config.SMTP_SERVICE,
+    if (!config || !config.SMTP_USER || !config.SMTP_PASS) {
+      throw new Error('数据库配置不存在')
+    }
+    const transportConfig = {
       auth: {
         user: config.SMTP_USER,
         pass: config.SMTP_PASS
       }
-    })
+    }
+    if (config.SMTP_SERVICE) {
+      transportConfig.service = config.SMTP_SERVICE
+    } else if (config.SMTP_HOST) {
+      transportConfig.host = config.SMTP_HOST
+      transportConfig.port = parseInt(config.SMTP_PORT)
+      transportConfig.secure = config.SMTP_SECURE === 'true'
+    } else {
+      throw new Error('SMTP 服务器没有配置')
+    }
+    transporter = nodemailer.createTransport(transportConfig)
     transporter.verify(function (error, success) {
       if (error) throw new Error('SMTP 邮箱配置异常：', error)
       else if (success) console.log('SMTP 邮箱配置正常')
@@ -734,15 +745,25 @@ async function noticeMaster (comment) {
   const SITE_URL = config.SITE_URL
   const POST_URL = comment.href || SITE_URL + comment.url
   const emailSubject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}上有新评论了`
-  const emailContent = config.MAIL_TEMPLATE_ADMIN || `
-    <div style="border-top:2px solid #12addb;box-shadow:0 1px 3px #aaaaaa;line-height:180%;padding:0 15px 12px;margin:50px auto;font-size:12px;">
-      <h2 style="border-bottom:1px solid #dddddd;font-size:14px;font-weight:normal;padding:13px 0 10px 8px;">
-        您在<a style="text-decoration:none;color: #12addb;" href="${SITE_URL}" target="_blank">${SITE_NAME}</a>上的文章有了新的评论
-      </h2>
-      <p><strong>${NICK}</strong>回复说：</p>
-      <div style="background-color: #f5f5f5;padding: 10px 15px;margin:18px 0;word-wrap:break-word;">${COMMENT}</div>
-      <p>您可以点击<a style="text-decoration:none; color:#12addb" href="${POST_URL}" target="_blank">查看回复的完整內容</a><br></p>
-    </div>`
+  let emailContent
+  if (config.MAIL_TEMPLATE_ADMIN) {
+    emailContent = config.MAIL_TEMPLATE_ADMIN
+      .replace(/\${SITE_URL}/g, SITE_URL)
+      .replace(/\${SITE_NAME}/g, SITE_NAME)
+      .replace(/\${NICK}/g, NICK)
+      .replace(/\${COMMENT}/g, COMMENT)
+      .replace(/\${POST_URL}/g, POST_URL)
+  } else {
+    emailContent = `
+      <div style="border-top:2px solid #12addb;box-shadow:0 1px 3px #aaaaaa;line-height:180%;padding:0 15px 12px;margin:50px auto;font-size:12px;">
+        <h2 style="border-bottom:1px solid #dddddd;font-size:14px;font-weight:normal;padding:13px 0 10px 8px;">
+          您在<a style="text-decoration:none;color: #12addb;" href="${SITE_URL}" target="_blank">${SITE_NAME}</a>上的文章有了新的评论
+        </h2>
+        <p><strong>${NICK}</strong>回复说：</p>
+        <div style="background-color: #f5f5f5;padding: 10px 15px;margin:18px 0;word-wrap:break-word;">${COMMENT}</div>
+        <p>您可以点击<a style="text-decoration:none; color:#12addb" href="${POST_URL}" target="_blank">查看回复的完整內容</a><br></p>
+      </div>`
+  }
   let sendResult
   try {
     sendResult = await transporter.sendMail({
@@ -810,22 +831,34 @@ async function noticeReply (currentComment) {
   const POST_URL = (currentComment.href || config.SITE_URL + currentComment.url) + '#' + currentComment._id
   const SITE_URL = config.SITE_URL
   const emailSubject = config.MAIL_SUBJECT || `${PARENT_NICK}，您在『${SITE_NAME}』上的评论收到了回复`
-  const emailContent = config.MAIL_TEMPLATE || `
-    <div style="border-top:2px solid #12ADDB;box-shadow:0 1px 3px #AAAAAA;line-height:180%;padding:0 15px 12px;margin:50px auto;font-size:12px;">
-      <h2 style="border-bottom:1px solid #dddddd;font-size:14px;font-weight:normal;padding:13px 0 10px 8px;">
-        您在<a style="text-decoration:none;color: #12ADDB;" href="${SITE_URL}" target="_blank">${SITE_NAME}</a>上的评论有了新的回复
-      </h2>
-      ${PARENT_NICK} 同学，您曾发表评论：
-      <div style="padding:0 12px 0 12px;margin-top:18px">
-        <div style="background-color: #f5f5f5;padding: 10px 15px;margin:18px 0;word-wrap:break-word;">${PARENT_COMMENT}</div>
-        <p><strong>${NICK}</strong>回复说：</p>
-        <div style="background-color: #f5f5f5;padding: 10px 15px;margin:18px 0;word-wrap:break-word;">${COMMENT}</div>
-        <p>
-          您可以点击<a style="text-decoration:none; color:#12addb" href="${POST_URL}" target="_blank">查看回复的完整內容</a>，
-          欢迎再次光临<a style="text-decoration:none; color:#12addb" href="${SITE_URL}" target="_blank">${SITE_NAME}</a>。<br>
-        </p>
-      </div>
-    </div>`
+  let emailContent
+  if (config.MAIL_TEMPLATE) {
+    emailContent = config.MAIL_TEMPLATE
+      .replace(/\${SITE_URL}/g, SITE_URL)
+      .replace(/\${SITE_NAME}/g, SITE_NAME)
+      .replace(/\${PARENT_NICK}/g, PARENT_NICK)
+      .replace(/\${PARENT_COMMENT}/g, PARENT_COMMENT)
+      .replace(/\${NICK}/g, NICK)
+      .replace(/\${COMMENT}/g, COMMENT)
+      .replace(/\${POST_URL}/g, POST_URL)
+  } else {
+    emailContent = `
+      <div style="border-top:2px solid #12ADDB;box-shadow:0 1px 3px #AAAAAA;line-height:180%;padding:0 15px 12px;margin:50px auto;font-size:12px;">
+        <h2 style="border-bottom:1px solid #dddddd;font-size:14px;font-weight:normal;padding:13px 0 10px 8px;">
+          您在<a style="text-decoration:none;color: #12ADDB;" href="${SITE_URL}" target="_blank">${SITE_NAME}</a>上的评论有了新的回复
+        </h2>
+        ${PARENT_NICK} 同学，您曾发表评论：
+        <div style="padding:0 12px 0 12px;margin-top:18px">
+          <div style="background-color: #f5f5f5;padding: 10px 15px;margin:18px 0;word-wrap:break-word;">${PARENT_COMMENT}</div>
+          <p><strong>${NICK}</strong>回复说：</p>
+          <div style="background-color: #f5f5f5;padding: 10px 15px;margin:18px 0;word-wrap:break-word;">${COMMENT}</div>
+          <p>
+            您可以点击<a style="text-decoration:none; color:#12addb" href="${POST_URL}" target="_blank">查看回复的完整內容</a>，
+            欢迎再次光临<a style="text-decoration:none; color:#12addb" href="${SITE_URL}" target="_blank">${SITE_NAME}</a>。<br>
+          </p>
+        </div>
+      </div>`
+  }
   let sendResult
   try {
     sendResult = await transporter.sendMail({
@@ -1065,7 +1098,9 @@ function getConfig () {
     code: RES_CODE.SUCCESS,
     config: {
       SITE_NAME: config.SITE_NAME,
-      SITE_URL: config.SITE_URL
+      SITE_URL: config.SITE_URL,
+      MASTER_TAG: config.MASTER_TAG,
+      COMMENT_BG_IMG: config.COMMENT_BG_IMG
     }
   }
 }

@@ -6,6 +6,7 @@
         <tk-meta-input :nick="nick" :mail="mail" :link="link" @update="onMetaUpdate" />
         <el-input class="tk-input"
             type="textarea"
+            ref="textarea"
             v-model="comment"
             placeholder="请输入内容"
             :autosize="{ minRows: 3 }"
@@ -44,7 +45,8 @@ export default {
   },
   props: {
     replyId: String,
-    pid: String
+    pid: String,
+    config: Object
   },
   data () {
     return {
@@ -106,6 +108,19 @@ export default {
       this.comment = ''
       this.isSending = false
       this.$emit('load')
+    },
+    onBgImgChange () {
+      if (this.config.COMMENT_BG_IMG && this.$refs.textarea) {
+        this.$refs.textarea.$refs.textarea.style['background-image'] = `url("${this.config.COMMENT_BG_IMG}")`
+      }
+    }
+  },
+  mounted () {
+    this.onBgImgChange()
+  },
+  watch: {
+    'config.COMMENT_BG_IMG': function () {
+      this.onBgImgChange()
     }
   }
 }
@@ -149,6 +164,10 @@ export default {
 }
 .tk-input {
   flex: 1;
+}
+.tk-input /deep/ .el-textarea__inner {
+  background-position: right bottom;
+  background-repeat: no-repeat;
 }
 .tk-preview-container {
   margin-left: 3rem;

@@ -8,7 +8,7 @@
           <a class="tk-nick tk-nick-link" v-if="convertedLink" :href="convertedLink" target="_blank">
             <strong>{{ comment.nick }}</strong>
           </a>
-          <span class="tk-tag tk-tag-green" v-if="comment.master">博主</span>
+          <span class="tk-tag tk-tag-green" v-if="comment.master">{{ config.MASTER_TAG || '博主' }}</span>
           <small class="tk-time">{{ displayCreated }}</small>
         </div>
         <tk-action :liked="comment.liked"
@@ -30,6 +30,7 @@
         <tk-comment v-for="reply in comment.replies"
             :key="reply.id"
             :comment="reply"
+            :config="config"
             @load="onLoad"
             @reply="onReplyReply" />
       </div>
@@ -37,6 +38,7 @@
       <tk-submit v-if="replying"
           :reply-id="comment.id"
           :pid="pid"
+          :config="config"
           @load="onLoad"
           @cancel="onCancel" />
       <div class="tk-expand" v-if="showExpand" @click="onExpand">展开</div>
@@ -97,7 +99,8 @@ export default {
   },
   props: {
     comment: Object,
-    replying: Boolean
+    replying: Boolean,
+    config: Object
   },
   computed: {
     displayCreated () {

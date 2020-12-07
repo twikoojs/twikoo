@@ -1,6 +1,6 @@
 <template>
   <div class="tk-comments">
-    <tk-submit @load="initComments" />
+    <tk-submit @load="initComments" :config="config" />
     <div class="tk-comments-container" v-loading="loading">
       <div class="tk-comments-title">
         <span>{{ count }} 条评论</span>
@@ -11,6 +11,7 @@
         :key="comment.id"
         :comment="comment"
         :replying="replyId === comment.id"
+        :config="config"
         @reply="onReply"
         @load="initComments" />
       <div class="tk-expand" v-if="showExpand" @click="onExpand" v-loading="loadingMore">查看更多</div>
@@ -33,6 +34,7 @@ export default {
     return {
       loading: true,
       loadingMore: false,
+      config: {},
       comments: [],
       showExpand: true,
       count: 0,
@@ -41,6 +43,12 @@ export default {
     }
   },
   methods: {
+    async initConfig () {
+      const result = await call(this.$tcb, 'GET_CONFIG', event)
+      if (result && result.result && result.result.config) {
+        this.config = result.result.config
+      }
+    },
     async initComments () {
       this.loading = true
       await this.getComments({
@@ -64,7 +72,7 @@ export default {
       if (comments && comments.result && comments.result.data) {
         this.comments = event.before ? this.comments.concat(comments.result.data) : comments.result.data
         this.showExpand = comments.result.more
-        this.count = comments.result.count || this.comments.length
+        this.count = comments.result.count || this.comments.length || 0
       }
     },
     onReply (id) {
@@ -75,6 +83,7 @@ export default {
     }
   },
   mounted () {
+    this.initConfig()
     this.initComments()
   }
 }

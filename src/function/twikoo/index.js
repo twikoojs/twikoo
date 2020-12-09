@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v0.3.0
+ * Twikoo cloudbase function v0.3.1
  * (c) 2020-2020 iMaeGoo
  * Released under the MIT License.
  */
@@ -29,7 +29,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '0.3.0'
+const VERSION = '0.3.1'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -293,6 +293,7 @@ function toCommentDto (comment, uid, replies = [], comments = []) {
   return {
     id: comment._id,
     nick: comment.nick,
+    avatar: comment.avatar,
     mailMd5: comment.mailMd5 || md5(comment.mail),
     link: comment.link,
     comment: comment.comment,
@@ -828,7 +829,7 @@ async function noticeReply (currentComment) {
   const NICK = currentComment.nick
   const COMMENT = currentComment.comment
   const PARENT_COMMENT = parentComment.comment
-  const POST_URL = (currentComment.href || config.SITE_URL + currentComment.url) + '#' + currentComment._id
+  const POST_URL = (currentComment.href || config.SITE_URL + currentComment.url) + '#' + currentComment.pid
   const SITE_URL = config.SITE_URL
   const emailSubject = config.MAIL_SUBJECT || `${PARENT_NICK}，您在『${SITE_NAME}』上的评论收到了回复`
   let emailContent
@@ -894,6 +895,11 @@ async function parse (comment) {
     updated: timestamp
   }
   commentDo.isSpam = await checkSpam(commentDo)
+  if (isQQ(comment.mail)) {
+    commentDo.mail = addQQMailSuffix(comment.mail)
+    commentDo.mailMd5 = md5(commentDo.mail)
+    commentDo.avatar = await getQQAvatar(comment.mail)
+  }
   return commentDo
 }
 
@@ -1093,14 +1099,36 @@ async function getRecentComments (event) {
   return res
 }
 
+function isQQ (mail) {
+  return /^[1-9][0-9]{4,10}$/.test(mail) ||
+    /^[1-9][0-9]{4,10}@qq.com$/.test(mail)
+}
+
+function addQQMailSuffix (mail) {
+  if (/^[1-9][0-9]{4,10}$/.test(mail)) return `${mail}@qq.com`
+  else return mail
+}
+
+async function getQQAvatar (qq) {
+  const qqNum = qq.replace(/@qq.com/g, '')
+  const result = await axios.get(`https://ptlogin2.qq.com/getface?imgtype=4&uin=${qqNum}`)
+  if (result && result.data) {
+    const start = result.data.indexOf('http')
+    const end = result.data.indexOf('"', start)
+    return result.data.substring(start, end)
+  }
+}
+
 function getConfig () {
   return {
     code: RES_CODE.SUCCESS,
     config: {
+      VERSION,
       SITE_NAME: config.SITE_NAME,
       SITE_URL: config.SITE_URL,
       MASTER_TAG: config.MASTER_TAG,
-      COMMENT_BG_IMG: config.COMMENT_BG_IMG
+      COMMENT_BG_IMG: config.COMMENT_BG_IMG,
+      GRAVATAR_CDN: config.GRAVATAR_CDN
     }
   }
 }

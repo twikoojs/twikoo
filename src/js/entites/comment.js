@@ -9,6 +9,7 @@ class Comment {
     this.nick = model.nick // 昵称
     this.mail = model.mail // 邮箱
     this.mailMd5 = model.mailMd5 // 邮箱 MD5
+    this.avatar = model.avatar // 头像 URL
     this.link = model.link // 网址
 
     /* 评论数据 */

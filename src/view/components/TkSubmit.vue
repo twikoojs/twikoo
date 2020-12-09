@@ -1,7 +1,7 @@
 <template>
   <div class="tk-submit">
     <div class="tk-row">
-      <tk-avatar :mail="mail" />
+      <tk-avatar :config="config" :mail="mail" />
       <div class="tk-col">
         <tk-meta-input :nick="nick" :mail="mail" :link="link" @update="onMetaUpdate" />
         <el-input class="tk-input"
@@ -62,10 +62,10 @@ export default {
   },
   computed: {
     canSend () {
-      return !this.isSending
-          && !!this.nick
-          && !!this.mail
-          && !!this.comment
+      return !this.isSending &&
+        !!this.nick &&
+        !!this.mail &&
+        !!this.comment
     }
   },
   methods: {

@@ -58,6 +58,7 @@ A simple, safe, free comment system based on Tencent CloudBase (tcb).
 
 ``` sh
 yarn dev # 开发 (http://localhost:9820/demo.html)
+yarn lint # 代码检查
 yarn build # 编译 (dist/twikoo.all.min.js)
 ```
 

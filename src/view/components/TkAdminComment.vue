@@ -3,7 +3,7 @@
     <div class="tk-admin-comment-list">
       <div class="tk-admin-comment-item" v-for="comment in comments" :key="comment._id">
         <div class="tk-admin-comment-meta">
-          <tk-avatar :mail="comment.mail" :link="comment.link" />
+          <tk-avatar :config="serverConfig" :avatar="comment.avatar" :mail="comment.mail" :link="comment.link" />
           <span v-if="!comment.link">{{ comment.nick }}</span>
           <a v-if="comment.link" :href="convertLink(comment.link)" target="_blank">{{ comment.nick }}</a>
           <span v-if="comment.mail">&nbsp;(<a :href="`mailto:${comment.mail}`">{{ comment.mail }}</a>)</span>
@@ -41,6 +41,7 @@ export default {
     return {
       loading: true,
       comments: [],
+      serverConfig: {},
       count: 0,
       docPerPage,
       currentPage: 1
@@ -59,6 +60,12 @@ export default {
         this.comments = res.result.data
       }
       this.loading = false
+    },
+    async getConfig () {
+      const res = await call(this.$tcb, 'GET_CONFIG_FOR_ADMIN')
+      if (res.result && !res.result.code) {
+        this.serverConfig = res.result.config
+      }
     },
     switchPage (e) {
       this.currentPage = e
@@ -86,6 +93,7 @@ export default {
     }
   },
   mounted () {
+    this.getConfig()
     this.getComments()
   }
 }

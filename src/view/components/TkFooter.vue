@@ -7,7 +7,7 @@
 
 <script>
 import { version } from '../../../package.json'
-import { call, getQQAvatar } from '../../js/utils'
+import { call } from '../../js/utils'
 
 export default {
   data () {
@@ -34,7 +34,6 @@ export default {
   },
   mounted () {
     this.getCounter()
-    getQQAvatar('29553407')
   }
 }
 </script>

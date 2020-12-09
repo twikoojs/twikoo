@@ -1110,12 +1110,17 @@ function addQQMailSuffix (mail) {
 }
 
 async function getQQAvatar (qq) {
-  const qqNum = qq.replace(/@qq.com/g, '')
-  const result = await axios.get(`https://ptlogin2.qq.com/getface?imgtype=4&uin=${qqNum}`)
-  if (result && result.data) {
-    const start = result.data.indexOf('http')
-    const end = result.data.indexOf('"', start)
-    return result.data.substring(start, end)
+  try {
+    const qqNum = qq.replace(/@qq.com/g, '')
+    const result = await axios.get(`https://ptlogin2.qq.com/getface?imgtype=4&uin=${qqNum}`)
+    if (result && result.data) {
+      const start = result.data.indexOf('http')
+      const end = result.data.indexOf('"', start)
+      if (start === -1 || end === -1) return null
+      return result.data.substring(start, end)
+    }
+  } catch (e) {
+    console.error('获取 QQ 头像失败：', e)
   }
 }
 

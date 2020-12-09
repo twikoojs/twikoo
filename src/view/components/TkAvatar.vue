@@ -1,17 +1,19 @@
 <template>
   <div class="tk-avatar" :class="{ 'tk-clickable': !!link }" @click="onClick">
-    <div class="tk-avatar-img" v-if="!avatar" v-html="iconUser"></div>
-    <img class="tk-avatar-img" v-if="avatar" :src="avatar" alt="avatar">
+    <div class="tk-avatar-img" v-if="!avatarInner" v-html="iconUser"></div>
+    <img class="tk-avatar-img" v-if="avatarInner" :src="avatarInner" alt="avatar">
   </div>
 </template>
 
 <script>
 import md5 from 'blueimp-md5'
-import { convertLink } from '../../js/utils'
+import { convertLink, isQQ, getQQAvatar } from '../../js/utils'
 import iconUser from '@fortawesome/fontawesome-free/svgs/solid/user-circle.svg'
 
 export default {
   props: {
+    config: Object,
+    avatar: String,
     mail: String,
     mailMd5: String,
     link: String
@@ -22,11 +24,22 @@ export default {
     }
   },
   computed: {
-    avatar () {
-      if (this.mailMd5) {
-        return `https://gravatar.loli.net/avatar/${this.mailMd5}?d=identicon`
+    gravatarCdn () {
+      if (this.config && this.config.GRAVATAR_CDN) {
+        return this.config.GRAVATAR_CDN
+      } else {
+        return 'gravatar.loli.net'
+      }
+    },
+    avatarInner () {
+      if (this.avatar) {
+        return this.avatar
+      } else if (this.mailMd5) {
+        return `https://${this.gravatarCdn}/avatar/${this.mailMd5}?d=identicon`
+      } else if (this.mail && isQQ(this.mail)) {
+        return getQQAvatar(this.mail)
       } else if (this.mail) {
-        return `https://gravatar.loli.net/avatar/${md5(this.mail)}?d=identicon`
+        return `https://${this.gravatarCdn}/avatar/${md5(this.mail)}?d=identicon`
       } else {
         return ''
       }

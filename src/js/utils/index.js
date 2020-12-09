@@ -1,6 +1,7 @@
 import timeago from './timeago'
 import marked from './marked'
 import call from './api'
+import { isQQ, getQQAvatar } from './avatar'
 
 const isNotSet = (option) => {
   return option === undefined || option === null || option === ''
@@ -70,6 +71,8 @@ export {
   marked,
   call,
   getFuncVer,
+  isQQ,
+  getQQAvatar,
   getCommentsCountApi,
   getRecentCommentsApi
 }

@@ -42,5 +42,9 @@ module.exports = {
   devServer: {
     contentBase: BUILD_PATH,
     port: 9820
+  },
+  performance: {
+    maxEntrypointSize: 524288,
+    maxAssetSize: 524288
   }
 }

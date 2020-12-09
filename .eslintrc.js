@@ -1,19 +1,20 @@
 module.exports = {
   env: {
     browser: true,
-    es6: true
+    es2021: true,
+    node: true
   },
   extends: [
+    'plugin:vue/essential',
     'standard'
   ],
-  globals: {
-    Atomics: 'readonly',
-    SharedArrayBuffer: 'readonly'
-  },
   parserOptions: {
-    ecmaVersion: 11,
+    ecmaVersion: 12,
     sourceType: 'module'
   },
+  plugins: [
+    'vue'
+  ],
   rules: {
   }
 }

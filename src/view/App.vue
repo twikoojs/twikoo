@@ -1,7 +1,6 @@
 <template>
   <div id="twikoo" class="twikoo">
     <tk-comments @admin="showAdmin = true" />
-    <tk-counter />
     <tk-footer />
     <tk-admin :show="showAdmin" @close="showAdmin = false" />
   </div>
@@ -9,14 +8,12 @@
 
 <script>
 import TkComments from './components/TkComments.vue'
-import TkCounter from './components/TkCounter.vue'
 import TkFooter from './components/TkFooter.vue'
 import TkAdmin from './components/TkAdmin.vue'
 
 export default {
   components: {
     TkComments,
-    TkCounter,
     TkFooter,
     TkAdmin
   },

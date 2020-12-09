@@ -17,6 +17,7 @@
       <el-button size="small" type="primary" @click="saveConfig">保存</el-button>
       <el-button size="small" type="info" @click="resetConfig">重置</el-button>
     </div>
+    <div class="tk-admin-config-message">{{ message }}</div>
   </div>
 </template>
 
@@ -36,7 +37,8 @@ export default {
             { key: 'BLOGGER_EMAIL', desc: '博主的邮箱地址，用于邮件通知、博主标识。', ph: '示例：12345@qq.com', value: '' },
             { key: 'COMMENT_PAGE_SIZE', desc: '评论列表分页大小，默认为 8。', ph: '示例：8', value: '' },
             { key: 'MASTER_TAG', desc: '博主标识自定义文字，默认为 “博主”。', ph: '示例：站长', value: '' },
-            { key: 'COMMENT_BG_IMG', desc: '评论框自定义背景图片 URL 地址。', ph: '', value: '' }
+            { key: 'COMMENT_BG_IMG', desc: '评论框自定义背景图片 URL 地址。', ph: '', value: '' },
+            { key: 'GRAVATAR_CDN', desc: '自定义头像 CDN 地址。如：cn.gravatar.com, sdn.geekzu.org, gravatar.loli.net', ph: '示例：sdn.geekzu.org', value: '' }
           ]
         },
         {
@@ -63,13 +65,16 @@ export default {
             { key: 'SMTP_USER', desc: '邮件通知邮箱用户名。', ph: '示例：blog@imaegoo.com', value: '' },
             { key: 'SMTP_PASS', desc: '邮件通知邮箱密码，QQ邮箱请填写授权码。', ph: '示例：password', value: '', secret: true },
             { key: 'MAIL_SUBJECT', desc: '自定义通知邮件主题，留空则使用默认主题。', ph: '示例：您在虹墨空间站上的评论收到了回复', value: '' },
+            // eslint-disable-next-line no-template-curly-in-string
             { key: 'MAIL_TEMPLATE', desc: '自定义通知邮件模板，留空则使用默认模板。可包含的字段：${SITE_URL}, ${SITE_NAME}, ${PARENT_NICK}, ${PARENT_COMMENT}, ${NICK}, ${COMMENT}, ${POST_URL}', ph: '', value: '' },
             { key: 'MAIL_SUBJECT_ADMIN', desc: '自定义博主通知邮件主题，留空则使用默认主题。', ph: '示例：虹墨空间站上有新评论了', value: '' },
+            // eslint-disable-next-line no-template-curly-in-string
             { key: 'MAIL_TEMPLATE_ADMIN', desc: '自定义博主通知邮件模板，留空则使用默认模板。可包含的字段：${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}', ph: '', value: '' }
           ]
         }
       ],
-      serverConfig: {}
+      serverConfig: {},
+      message: ''
     }
   },
   methods: {
@@ -83,8 +88,8 @@ export default {
       this.loading = false
     },
     resetConfig () {
-      for (let settingGroup of this.settings) {
-        for (let setting of settingGroup.items) {
+      for (const settingGroup of this.settings) {
+        for (const setting of settingGroup.items) {
           if (this.serverConfig[setting.key]) {
             setting.value = this.serverConfig[setting.key]
           }
@@ -93,9 +98,10 @@ export default {
     },
     async saveConfig () {
       this.loading = true
+      this.message = '正在保存'
       const config = {}
-      for (let settingGroup of this.settings) {
-        for (let setting of settingGroup.items) {
+      for (const settingGroup of this.settings) {
+        for (const setting of settingGroup.items) {
           const oldValue = this.serverConfig[setting.key]
           const newValue = setting.value
           if (oldValue !== newValue) {
@@ -106,6 +112,7 @@ export default {
       logger.log('保存配置', config)
       await call(this.$tcb, 'SET_CONFIG', { config })
       await this.readConfig()
+      this.message = '保存成功'
       this.loading = false
     }
   },
@@ -156,5 +163,9 @@ export default {
   align-items: center;
   justify-content: center;
   margin-top: 1em;
+}
+.tk-admin-config-message {
+  margin-top: 0.5em;
+  text-align: center;
 }
 </style>

@@ -1,6 +1,10 @@
 <template>
   <div class="tk-comment" :id="comment.id">
-    <tk-avatar :nick="comment.nick" :mail-md5="comment.mailMd5" :link="convertedLink" />
+    <tk-avatar :config="config"
+        :nick="comment.nick"
+        :avatar="comment.avatar"
+        :mail-md5="comment.mailMd5"
+        :link="convertedLink" />
     <div class="tk-main">
       <div class="tk-row">
         <div class="tk-meta">
@@ -11,8 +15,8 @@
           <span class="tk-tag tk-tag-green" v-if="comment.master">{{ config.MASTER_TAG || '博主' }}</span>
           <small class="tk-time">{{ displayCreated }}</small>
         </div>
-        <tk-action :liked="comment.liked"
-            :like-count="comment.like"
+        <tk-action :liked="liked"
+            :like-count="like"
             :replies-count="comment.replies.length"
             @like="onLike"
             @reply="onReply" />
@@ -93,6 +97,9 @@ export default {
   data () {
     return {
       pid: '',
+      like: 0,
+      liked: false,
+      likeLoading: false,
       isExpanded: false,
       hasExpand: false
     }
@@ -122,7 +129,7 @@ export default {
   methods: {
     getIconBy (name, list) {
       const lowerCaseName = name.toLowerCase()
-      for (let key in list) {
+      for (const key in list) {
         if (lowerCaseName.indexOf(key) !== -1) return list[key]
       }
       return iconOther
@@ -132,14 +139,17 @@ export default {
         this.hasExpand = this.$refs['tk-replies'].scrollHeight > 200
       }
     },
-    onLike () {
-      call(this.$tcb, 'COMMENT_LIKE', { id: this.comment.id })
-      if (this.comment.liked) {
-        this.comment.like--
+    async onLike () {
+      if (this.likeLoading) return // 防止连续点击
+      this.likeLoading = true
+      await call(this.$tcb, 'COMMENT_LIKE', { id: this.comment.id })
+      if (this.liked) {
+        this.like--
       } else {
-        this.comment.like++
+        this.like++
       }
-      this.comment.liked = !this.comment.liked
+      this.liked = !this.liked
+      this.likeLoading = false
     },
     onReply () {
       this.$emit('reply', this.comment.id)
@@ -165,6 +175,15 @@ export default {
   },
   mounted () {
     this.$nextTick(this.showExpandIfNeed)
+  },
+  watch: {
+    'comment.like': {
+      handler: function (like) {
+        this.like = this.comment.like
+        this.liked = this.comment.liked
+      },
+      immediate: true
+    }
   }
 }
 </script>

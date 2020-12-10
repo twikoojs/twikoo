@@ -234,8 +234,8 @@ export default {
 }
 .tk-tag {
   display: inline-block;
-  padding: 0 0.5rem;
-  font-size: 0.75rem;
+  padding: 0 0.5em;
+  font-size: 0.75em;
   background-color: #f2f6fc;
 }
 .tk-tag-green {

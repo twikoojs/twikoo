@@ -2,11 +2,13 @@
 
 ## 如何修改头像？
 
-请前往 [https://cn.gravatar.com](https://cn.gravatar.com) 注册并设定头像。
+请前往 [https://cn.gravatar.com](https://cn.gravatar.com) 通过邮箱注册并设定头像，评论时，请留下相同的邮箱。
 
-## 我忘记了管理员密码，如何重置？
+访客还可以通过输入数字 QQ 邮箱地址，使用 QQ 头像发表评论。
 
-如忘记密码，请前往[云开发控制台](https://console.cloud.tencent.com/tcb/database/collection/config)删除 config.ADMIN_PASS 配置项，然后前往 Twikoo 管理面板重新设置密码。
+## 如何修改、重置管理员密码？
+
+请前往[云开发控制台](https://console.cloud.tencent.com/tcb/database/collection/config)删除 config.ADMIN_PASS 配置项，然后前往 Twikoo 管理面板重新设置密码。
 
 ## 如何获得管理面板的私钥文件？
 
@@ -38,3 +40,8 @@
 * 云函数：40,000 GBs/月
 
 Twikoo 云函数的内存消耗恒定为 0.1GB，由此可计算出 Twikoo 云函数每月有长达 400,000 秒的运行时长，而免费资源的瓶颈主要在数据库日读取次数限制。建议站长关注免费资源的使用情况。
+
+## 如何更新 Twikoo 版本？
+
+1. **更新云函数**：登录[环境-云函数](https://console.cloud.tencent.com/tcb/scf/index)，点击 twikoo，点击函数代码，将新的云函数代码（[index.js](https://imaegoo.coding.net/public/twikoo/twikoo/git/files/dev/src/function/twikoo/index.js) 和 [package.json](https://imaegoo.coding.net/public/twikoo/twikoo/git/files/dev/src/function/twikoo/package.json) 两个文件）粘贴、点击保存并安装依赖即可。
+2. **更新网站**：修改主题配置中的 Twikoo CDN 地址 `https://cdn.jsdelivr.net/npm/twikoo@x.x.x/dist/twikoo.all.min.js` 中的 `x.x.x`，使之与云函数版本号相同，然后部署网站。

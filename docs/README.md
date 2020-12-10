@@ -63,10 +63,10 @@ A simple, safe, free comment system based on Tencent CloudBase (tcb).
 | 已完成 | P1 | 评论管理 |
 | 已完成 | P2 | 人工审核 |
 | 已完成 | P2 | AKISMET 审核 |
-| 开发中 | P2 | 完整 Markdown 适配 |
+| 推　迟 | P2 | 完整 Markdown 适配 |
 | 计划中 | P3 | Emoji 表情 |
 | 计划中 | P3 | 图片表情 |
-| 计划中 | P3 | 评论框粘贴图片 |
+| 开发中 | P3 | 评论框粘贴图片 |
 
 <!-- ## 贡献者 | Contributors -->
 

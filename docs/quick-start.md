@@ -43,7 +43,7 @@ Twikoo 使用云开发作为评论后台，每个云开发用户均长期享受1
 5. 打开 [package.json](https://imaegoo.coding.net/public/twikoo/twikoo/git/files/dev/src/function/twikoo/package.json)，全选代码、复制、粘贴到代码框中，点击“保存并安装依赖”
 
 ::: tip 提示
-更新 Twikoo 版本时，直接前往云函数详情页，将新的云函数代码（[index.js](https://imaegoo.coding.net/public/twikoo/twikoo/git/files/dev/src/function/twikoo/index.js) 和 [package.json](https://imaegoo.coding.net/public/twikoo/twikoo/git/files/dev/src/function/twikoo/package.json) 两个文件）粘贴、保存并安装依赖即可。
+[如何更新 Twikoo 版本？](faq.html#如何更新-twikoo-版本)
 :::
 
 ### ② 脚本方式（不推荐）
@@ -76,13 +76,13 @@ npm run deploy -- -e 您的环境id # 或 yarn deploy -e 您的环境id
 ```
 
 ::: tip 提示
-更新 Twikoo 版本时，请执行
+脚本部署用户更新 Twikoo 版本时，请执行
 ``` sh
 git pull
 npm install # 或 yarn install
 npm run deploy -- -e 您的环境id # 或 yarn deploy -e 您的环境id
 ```
-更新现有的云函数
+更新现有的云函数，并同时更新网站 Twikoo CDN 地址中的版本号，使之保持一致
 :::
 
 ## 配置使用

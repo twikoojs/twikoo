@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v0.3.1
+ * Twikoo cloudbase function v0.3.2
  * (c) 2020-2020 iMaeGoo
  * Released under the MIT License.
  */
@@ -29,7 +29,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '0.3.1'
+const VERSION = '0.3.2'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -1085,6 +1085,7 @@ async function getRecentComments (event) {
         id: comment._id,
         url: comment.url,
         nick: comment.nick,
+        avatar: getAvatar(comment),
         mailMd5: comment.mailMd5 || md5(comment.mail),
         link: comment.link,
         comment: comment.comment,
@@ -1097,6 +1098,16 @@ async function getRecentComments (event) {
     return res
   }
   return res
+}
+
+function getAvatar (comment) {
+  if (comment.avatar) {
+    return comment.avatar
+  } else {
+    const gravatarCdn = config.GRAVATAR_CDN || 'gravatar.loli.net'
+    const mailMd5 = comment.mailMd5 || md5(comment.mail)
+    return `https://${gravatarCdn}/avatar/${mailMd5}?d=identicon`
+  }
 }
 
 function isQQ (mail) {

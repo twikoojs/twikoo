@@ -8,7 +8,7 @@
 
 ## 如何修改、重置管理员密码？
 
-如忘记密码，请前往[云开发控制台](https://console.cloud.tencent.com/tcb/database/collection/config)删除 config.ADMIN_PASS 配置项，然后前往 Twikoo 管理面板重新设置密码。
+请前往[云开发控制台](https://console.cloud.tencent.com/tcb/database/collection/config)删除 config.ADMIN_PASS 配置项，然后前往 Twikoo 管理面板重新设置密码。
 
 ## 如何获得管理面板的私钥文件？
 

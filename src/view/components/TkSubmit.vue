@@ -148,7 +148,6 @@ export default {
         this.paste(this.getImagePlaceholder(fileIndex, fileType))
         this.uploadPhoto(fileIndex, fileName, fileType, photo)
       }
-      e.preventDefault()
     },
     async uploadPhoto (fileIndex, fileName, fileType, photo) {
       try {
@@ -159,9 +158,6 @@ export default {
         if (uploadResult.fileID) {
           const tempUrlResult = await this.$tcb.app.getTempFileURL({ fileList: [uploadResult.fileID] })
           const tempFileUrl = tempUrlResult.fileList[0].tempFileURL
-          console.log(this.comment)
-          console.log(this.getImagePlaceholder(fileIndex, fileType))
-          console.log(`![${fileName}](${tempFileUrl})`)
           this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `![${fileName}](${tempFileUrl})`)
         }
       } catch (e) {

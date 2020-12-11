@@ -38,6 +38,19 @@ import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
 import { marked, call } from '../../js/utils'
 
+const imageTypes = [
+  'apng',
+  'bmp',
+  'gif',
+  'jpeg',
+  'jpg',
+  'png',
+  'svg',
+  'tif',
+  'tiff',
+  'webp'
+]
+
 export default {
   components: {
     TkAvatar,
@@ -66,6 +79,9 @@ export default {
         !!this.nick &&
         !!this.mail &&
         !!this.comment
+    },
+    textarea () {
+      return this.$refs.textarea ? this.$refs.textarea.$refs.textarea : null
     }
   },
   methods: {
@@ -110,13 +126,70 @@ export default {
       this.$emit('load')
     },
     onBgImgChange () {
-      if (this.config.COMMENT_BG_IMG && this.$refs.textarea) {
-        this.$refs.textarea.$refs.textarea.style['background-image'] = `url("${this.config.COMMENT_BG_IMG}")`
+      if (this.config.COMMENT_BG_IMG && this.textarea) {
+        this.textarea.style['background-image'] = `url("${this.config.COMMENT_BG_IMG}")`
       }
+    },
+    onPaste (e) {
+      if (!e.clipboardData) return
+      let photo
+      if (e.clipboardData.files[0]) {
+        photo = e.clipboardData.files[0]
+      } else if (e.clipboardData.items[0] && e.clipboardData.items[0].getAsFile()) {
+        photo = e.clipboardData.items[0].getAsFile()
+      }
+      if (photo) {
+        const nameSplit = photo.name.split('.')
+        const fileType = nameSplit.length > 1 ? nameSplit.pop() : ''
+        if (imageTypes.indexOf(fileType) === -1) return
+        const userId = this.$tcb.auth.currentUser.uid
+        const fileIndex = `${Date.now()}-${userId}`
+        const fileName = nameSplit.join('.')
+        this.paste(this.getImagePlaceholder(fileIndex, fileType))
+        this.uploadPhoto(fileIndex, fileName, fileType, photo)
+      }
+      e.preventDefault()
+    },
+    async uploadPhoto (fileIndex, fileName, fileType, photo) {
+      try {
+        const uploadResult = await this.$tcb.app.uploadFile({
+          cloudPath: `img/${fileIndex}.${fileType}`,
+          filePath: photo
+        })
+        if (uploadResult.fileID) {
+          const tempUrlResult = await this.$tcb.app.getTempFileURL({ fileList: [uploadResult.fileID] })
+          const tempFileUrl = tempUrlResult.fileList[0].tempFileURL
+          console.log(this.comment)
+          console.log(this.getImagePlaceholder(fileIndex, fileType))
+          console.log(`![${fileName}](${tempFileUrl})`)
+          this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `![${fileName}](${tempFileUrl})`)
+        }
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    paste (text) {
+      if (document.selection) {
+        document.selection.createRange().text = text
+      } else if (this.textarea.selectionStart || this.textarea.selectionStart === 0) {
+        const n = this.textarea.selectionStart
+        const r = this.textarea.selectionEnd
+        this.comment = this.comment.substring(0, n) + text + this.comment.substring(r, this.comment.length)
+        this.textarea.selectionStart = n + text.length
+        this.textarea.selectionEnd = n + text.length
+      } else {
+        this.comment += text
+      }
+    },
+    getImagePlaceholder(fileIndex, fileType) {
+      return `![图片上传中${fileIndex}.${fileType}]()`
     }
   },
   mounted () {
     this.onBgImgChange()
+    if (this.textarea) {
+      this.textarea.addEventListener('paste', this.onPaste)
+    }
   },
   watch: {
     'config.COMMENT_BG_IMG': function () {

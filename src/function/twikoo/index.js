@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v0.3.2
+ * Twikoo cloudbase function v0.3.3
  * (c) 2020-2020 iMaeGoo
  * Released under the MIT License.
  */
@@ -29,7 +29,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '0.3.2'
+const VERSION = '0.3.3'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -244,7 +244,7 @@ async function commentGet (event) {
       // 还有更多评论
       more = true
       // 删除多读的 1 条
-      main.data.splice(limit - 1, 1)
+      main.data.splice(limit, 1)
     }
     // 读取回复楼
     const reply = await db

@@ -18,9 +18,7 @@
         </div>
       </div>
     </div>
-    <el-pagination background
-        layout="total, pager, jumper"
-        :pager-count="5"
+    <tk-pagination
         :page-size="docPerPage"
         :total="count"
         @current-change="switchPage" />
@@ -30,12 +28,14 @@
 <script>
 import { call, convertLink } from '../../js/utils'
 import TkAvatar from './TkAvatar.vue'
+import TkPagination from './TkPagination.vue'
 
 const docPerPage = 5
 
 export default {
   components: {
-    TkAvatar
+    TkAvatar,
+    TkPagination
   },
   data () {
     return {

@@ -5,20 +5,17 @@ import Input from 'element-ui/lib/input'
 import Loading from 'element-ui/lib/loading'
 import Tabs from 'element-ui/lib/tabs'
 import TabPane from 'element-ui/lib/tab-pane'
-import Pagination from 'element-ui/lib/pagination'
 import 'element-ui/lib/theme-chalk/button.css'
 import 'element-ui/lib/theme-chalk/input.css'
 import 'element-ui/lib/theme-chalk/loading.css'
 import 'element-ui/lib/theme-chalk/tabs.css'
 import 'element-ui/lib/theme-chalk/tab-pane.css'
-import 'element-ui/lib/theme-chalk/pagination.css'
 
 Vue.use(Button)
 Vue.use(Input)
 Vue.use(Loading)
 Vue.use(Tabs)
 Vue.use(TabPane)
-Vue.use(Pagination)
 
 const render = (data = {}, options = {}) => {
   Vue.prototype.$tcb = data

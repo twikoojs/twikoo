@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v0.3.2
+ * Twikoo cloudbase function v0.3.3
  * (c) 2020-2020 iMaeGoo
  * Released under the MIT License.
  */
@@ -29,7 +29,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '0.3.2'
+const VERSION = '0.3.3'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -221,7 +221,7 @@ async function commentGet (event) {
     const query = {}
     const limit = parseInt(config.COMMENT_PAGE_SIZE) || 8
     let more = false
-    query.url = event.url
+    query.url = _.in(getUrlQuery(event.url))
     query.rid = _.in(['', null])
     query.isSpam = _.neq(true)
     // 读取总条数
@@ -244,7 +244,7 @@ async function commentGet (event) {
       // 还有更多评论
       more = true
       // 删除多读的 1 条
-      main.data.splice(limit - 1, 1)
+      main.data.splice(limit, 1)
     }
     // 读取回复楼
     const reply = await db
@@ -261,6 +261,12 @@ async function commentGet (event) {
     res.message = e.message
   }
   return res
+}
+
+// 同时查询 /path 和 /path/ 的评论
+function getUrlQuery (url) {
+  const variantUrl = url[url.length - 1] === '/' ? url.substring(0, url.length - 1) : `${url}/`
+  return [url, variantUrl]
 }
 
 // 筛除隐私字段，拼接回复列表
@@ -1038,7 +1044,7 @@ async function getCommentsCount (event) {
     validate(event, ['urls'])
     const query = {}
     query.isSpam = _.neq(true)
-    query.url = _.in(event.urls)
+    query.url = _.in(getUrlsQuery(event.urls))
     if (!event.includeReply) {
       query.rid = _.in(['', null])
     }
@@ -1061,6 +1067,14 @@ async function getCommentsCount (event) {
     return res
   }
   return res
+}
+
+function getUrlsQuery (urls) {
+  const query = []
+  for (const url of urls) {
+    if (url) query.push(...getUrlQuery(url))
+  }
+  return query
 }
 
 /**

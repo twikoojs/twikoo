@@ -57,6 +57,7 @@ export default {
       this.loading = false
     },
     async onExpand () {
+      if (this.loadingMore) return
       this.loadingMore = true
       const before = this.comments
         .map((item) => item.created)

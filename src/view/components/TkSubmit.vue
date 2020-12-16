@@ -10,10 +10,12 @@
             v-model="comment"
             placeholder="请输入内容"
             :autosize="{ minRows: 3 }"
-            @input="updatePreview" />
+            @input="updatePreview"
+            @keyup.enter.native="onEnterKeyUp($event)" />
       </div>
     </div>
     <div class="tk-row actions">
+      <div class="OwO" ref="owo"></div>
       <a class="tk-action-icon" alt="Markdown is supported" href="https://guides.github.com/features/mastering-markdown/" target="_blank" v-html="iconMarkdown"></a>
       <el-button class="tk-cancel"
           v-if="!!replyId"
@@ -37,6 +39,7 @@ import iconMarkdown from '@fortawesome/fontawesome-free/svgs/brands/markdown.svg
 import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
 import { marked, call } from '../../js/utils'
+import OwO from '../lib/owo'
 
 const imageTypes = [
   'apng',
@@ -65,6 +68,7 @@ export default {
     return {
       isSending: false,
       isPreviewing: false,
+      owo: null,
       comment: '',
       commentHtml: '',
       nick: '',
@@ -78,13 +82,24 @@ export default {
       return !this.isSending &&
         !!this.nick &&
         !!this.mail &&
-        !!this.comment
+        !!this.comment.trim()
     },
     textarea () {
       return this.$refs.textarea ? this.$refs.textarea.$refs.textarea : null
     }
   },
   methods: {
+    initOwo () {
+      this.owo = new OwO({
+        logo: 'OωO', // OwO button text, default: `OωO表情`
+        container: this.$refs.owo, // OwO container, default: `document.getElementsByClassName('OwO')[0]`
+        target: this.textarea, // OwO target input or textarea, default: `document.getElementsByTagName('textarea')[0]`
+        api: 'https://cdn.jsdelivr.net/gh/imaegoo/emotion@main/owo.json', // OwO Emoticon data api, default: `https://cdn.jsdelivr.net/npm/owo/demo/OwO.json`
+        position: 'down', // OwO body position, default: `down`
+        width: '100%', // OwO body width, default: `100%`
+        maxHeight: '250px' // OwO body max-height, default: `250px`
+      })
+    },
     onMetaUpdate (metaData) {
       this.nick = metaData.nick
       this.mail = metaData.mail
@@ -120,6 +135,11 @@ export default {
         this.onSendComplete()
       }
     },
+    addEventListener () {
+      if (this.textarea) {
+        this.textarea.addEventListener('paste', this.onPaste)
+      }
+    },
     onSendComplete () {
       this.comment = ''
       this.isSending = false
@@ -128,6 +148,13 @@ export default {
     onBgImgChange () {
       if (this.config.COMMENT_BG_IMG && this.textarea) {
         this.textarea.style['background-image'] = `url("${this.config.COMMENT_BG_IMG}")`
+      }
+    },
+    onEnterKeyUp (event) {
+      // 按 Ctrl + Enter / Command + Enter 发送
+      if ((event.ctrlKey || event.metaKey) && this.canSend) {
+        this.send()
+        event.preventDefault()
       }
     },
     onPaste (e) {
@@ -177,15 +204,14 @@ export default {
         this.comment += text
       }
     },
-    getImagePlaceholder(fileIndex, fileType) {
+    getImagePlaceholder (fileIndex, fileType) {
       return `![图片上传中${fileIndex}.${fileType}]()`
     }
   },
   mounted () {
+    this.initOwo()
+    this.addEventListener()
     this.onBgImgChange()
-    if (this.textarea) {
-      this.textarea.addEventListener('paste', this.onPaste)
-    }
   },
   watch: {
     'config.COMMENT_BG_IMG': function () {
@@ -215,7 +241,7 @@ export default {
 .tk-row.actions {
   margin-top: 1rem;
   margin-bottom: 1rem;
-  margin-left: 3rem;
+  margin-left: 3.5rem;
   justify-content: flex-end;
 }
 .tk-action-icon {
@@ -244,5 +270,8 @@ export default {
   padding: 5px 15px;
   border: 1px solid #80808050;
   border-radius: 4px;
+}
+.OwO {
+  flex: 1;
 }
 </style>

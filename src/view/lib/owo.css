@@ -1,0 +1,162 @@
+/*!
+ * OwO v1.0.2
+ * Source: https://github.com/DIYgod/OwO/blob/master/dist/OwO.min.css
+ * Author: DIYgod
+ * Modified by: iMaeGoo
+ * Released under the MIT License.
+ */
+
+.OwO {
+  position: relative;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.OwO:hover .OwO-logo {
+  color: #444;
+}
+
+.OwO.OwO-open .OwO-logo {
+  border-radius: 4px 4px 0 0;
+  border-bottom: none;
+  color: #444;
+}
+
+.OwO.OwO-open .OwO-body {
+  display: block;
+}
+
+.OwO.OwO-up .OwO-body {
+  top: inherit;
+  bottom: 21px;
+  border-radius: 4px 4px 4px 0;
+}
+
+.OwO.OwO-up .OwO-body .OwO-bar .OwO-packages li:nth-child(1) {
+  border-radius: 0;
+}
+
+.OwO.OwO-up.OwO-open .OwO-logo {
+  border: 1px solid #ddd;
+  border-radius: 0 0 4px 4px;
+  border-top: none;
+}
+
+.OwO .OwO-logo {
+  position: relative;
+  display: inline-block;
+  color: #888;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+  padding: 2px 5px;
+  cursor: pointer;
+  height: 22px;
+  box-sizing: border-box;
+  line-height: 16px;
+}
+
+.OwO .OwO-logo:hover span {
+  display: inline-block;
+}
+
+.OwO .OwO-body {
+  display: none;
+  position: absolute;
+  width: 400px;
+  background: #fff;
+  border: 1px solid #ddd;
+  top: 21px;
+  border-radius: 0 4px 4px 4px;
+}
+
+.OwO .OwO-body .OwO-items {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  display: none;
+  padding: 10px;
+  margin: 0;
+  overflow: scroll;
+  font-size: 0;
+}
+
+.OwO .OwO-body .OwO-items .OwO-item {
+  list-style-type: none;
+  background: #f7f7f7;
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: inline-block;
+  font-size: 12px;
+  line-height: 14px;
+  margin: 0 10px 12px 0;
+  cursor: pointer;
+  -webkit-transition: .3s;
+  transition: .3s;
+}
+
+.OwO .OwO-body .OwO-items .OwO-item:hover {
+  background: #eee;
+  box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
+}
+
+.OwO .OwO-body .OwO-items-emoji .OwO-item {
+  font-size: 20px;
+  line-height: 19px;
+}
+
+.OwO .OwO-body .OwO-items-image .OwO-item {
+  max-width: calc(25% - 10px);
+  box-sizing: border-box;
+}
+
+.OwO .OwO-body .OwO-items-image .OwO-item img {
+  max-width: 100%;
+}
+
+.OwO .OwO-body .OwO-items-show {
+  display: block;
+}
+
+.OwO .OwO-body .OwO-bar {
+  width: 100%;
+  height: 30px;
+  border-top: 1px solid #ddd;
+  background: #fff;
+  border-radius: 0 0 4px 4px;
+  color: #444;
+}
+
+.OwO .OwO-body .OwO-bar .OwO-packages {
+  margin: 0;
+  padding: 0;
+  font-size: 0;
+}
+
+.OwO .OwO-body .OwO-bar .OwO-packages li {
+  list-style-type: none;
+  display: inline-block;
+  line-height: 30px;
+  font-size: 14px;
+  padding: 0 10px;
+  cursor: pointer;
+  margin-right: 3px;
+}
+
+.OwO .OwO-body .OwO-bar .OwO-packages li:nth-child(1) {
+  border-radius: 0 0 0 3px;
+}
+
+.OwO .OwO-body .OwO-bar .OwO-packages li:hover {
+  background: #eee;
+}
+
+.OwO .OwO-body .OwO-bar .OwO-packages .OwO-package-active {
+  background: #eee;
+  -webkit-transition: .3s;
+  transition: .3s;
+}

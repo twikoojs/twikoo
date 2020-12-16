@@ -66,7 +66,7 @@ yarn build # 编译 (dist/twikoo.all.min.js)
 
 ## 国际化 | I18N
 
-鉴于腾讯云云开发在中国以外地区的支持程度（文档只有中文版本，环境没有国际版本，在中国以外地区访问缓慢），本项目暂无国际化计划，请各位站长知悉。<br>
+鉴于腾讯云云开发在中国以外地区的支持程度（文档只有中文版本，环境没有国际版本，在中国以外地区访问缓慢），本项目暂无国际化计划。有国际化需求的站长，推荐使用另一个安全的评论系统 [Waline](https://waline.js.org/)。<br>
 There are no plans to internationalize this project.
 
 ## 许可 | License

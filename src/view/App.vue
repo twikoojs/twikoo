@@ -74,7 +74,7 @@ export default {
 }
 .twikoo .el-button:not(.el-button--primary):not(.el-button--text) {
   color: currentColor;
-  background-color: #90939920;
+  background-color: #90939910;
   border-color: #90939930;
 }
 .twikoo .el-button:not(.el-button--primary):not(.el-button--text):active,

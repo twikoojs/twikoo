@@ -56,7 +56,7 @@ export default {
 .twikoo .el-textarea__inner {
   color: currentColor;
   background-color: transparent;
-  border-color: #90939930;
+  border-color: #90939950;
 }
 .twikoo .el-input__inner:hover,
 .twikoo .el-textarea__inner:hover {
@@ -69,13 +69,14 @@ export default {
 .twikoo .el-input-group__append,
 .twikoo .el-input-group__prepend {
   color: currentColor;
+  background-clip: padding-box;
   background-color: #90939920;
-  border-color: #90939930;
+  border-color: #90939950;
 }
 .twikoo .el-button:not(.el-button--primary):not(.el-button--text) {
   color: currentColor;
   background-color: #90939910;
-  border-color: #90939930;
+  border-color: #90939950;
 }
 .twikoo .el-button:not(.el-button--primary):not(.el-button--text):active,
 .twikoo .el-button:not(.el-button--primary):not(.el-button--text):focus,

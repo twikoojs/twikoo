@@ -7,21 +7,10 @@
  */
 
 .OwO {
-  position: relative;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-}
-
-.OwO:hover .OwO-logo {
-  color: #444;
-}
-
-.OwO.OwO-open .OwO-logo {
-  border-radius: 4px 4px 0 0;
-  border-bottom: none;
-  color: #444;
 }
 
 .OwO.OwO-open .OwO-body {
@@ -38,38 +27,19 @@
   border-radius: 0;
 }
 
-.OwO.OwO-up.OwO-open .OwO-logo {
-  border: 1px solid #ddd;
-  border-radius: 0 0 4px 4px;
-  border-top: none;
-}
-
 .OwO .OwO-logo {
-  position: relative;
-  display: inline-block;
-  color: #888;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 13px;
-  padding: 2px 5px;
-  cursor: pointer;
-  height: 22px;
-  box-sizing: border-box;
-  line-height: 16px;
-}
-
-.OwO .OwO-logo:hover span {
-  display: inline-block;
+  width: 1.125em;
+  display: flex;
 }
 
 .OwO .OwO-body {
   display: none;
   position: absolute;
-  width: 400px;
+  left: 0;
+  right: 0;
   background: #fff;
   border: 1px solid #ddd;
-  top: 21px;
+  top: 2em;
   border-radius: 0 4px 4px 4px;
 }
 
@@ -81,7 +51,7 @@
   display: none;
   padding: 10px;
   margin: 0;
-  overflow: scroll;
+  overflow: auto;
   font-size: 0;
 }
 

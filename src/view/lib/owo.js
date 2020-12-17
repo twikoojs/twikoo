@@ -13,7 +13,6 @@ export default class OwO {
       container: document.getElementsByClassName('OwO')[0],
       target: document.getElementsByTagName('textarea')[0],
       position: 'down',
-      width: '100%',
       maxHeight: '250px',
       api: 'https://cdn.jsdelivr.net/npm/owo/demo/OwO.json'
     }
@@ -48,8 +47,8 @@ export default class OwO {
     this.packages = Object.keys(this.odata)
 
     // fill in HTML
-    let html = `<div class="OwO-logo"><span>${option.logo}</span></div>` +
-        `<div class="OwO-body" style="width: ${option.width}">`
+    let html = `<div class="OwO-logo">${option.logo}</div>` +
+        '<div class="OwO-body">'
 
     for (let i = 0; i < this.packages.length; i++) {
       html += `<ul class="OwO-items OwO-items-${this.odata[this.packages[i]].type}" style="max-height: ${parseInt(option.maxHeight) - 53 + 'px'};">`
@@ -88,7 +87,16 @@ export default class OwO {
       if (target) {
         const cursorPos = this.area.selectionEnd
         const areaValue = this.area.value
-        this.area.value = areaValue.slice(0, cursorPos) + target.innerHTML + areaValue.slice(cursorPos)
+        let innerHTML = target.innerHTML
+        if (innerHTML.indexOf('<img') !== -1) {
+          // 图片表情转换为 markdown
+          const start = innerHTML.indexOf('src="') + 'src="'.length
+          const end = innerHTML.indexOf('"', start)
+          if (start !== -1 && end !== -1) {
+            innerHTML = `![${target.title || ''}](${innerHTML.substring(start, end)})`
+          }
+        }
+        this.area.value = areaValue.slice(0, cursorPos) + innerHTML + areaValue.slice(cursorPos)
         // 手动触发 input 事件
         this.area.dispatchEvent(new InputEvent('input'))
         this.area.focus()

@@ -15,8 +15,12 @@
       </div>
     </div>
     <div class="tk-row actions">
-      <div class="OwO" ref="owo"></div>
-      <a class="tk-action-icon" alt="Markdown is supported" href="https://guides.github.com/features/mastering-markdown/" target="_blank" v-html="iconMarkdown"></a>
+      <div class="tk-row-actions-start">
+        <div class="tk-action-icon OwO" ref="owo"></div>
+        <div class="tk-action-icon" v-html="iconImage" @click="openSelectImage"></div>
+        <input class="tk-input-image" type="file" accept="image/*" value="" ref="inputFile" @change="onSelectImage" />
+      </div>
+      <a class="tk-action-icon __markdown" alt="Markdown is supported" href="https://guides.github.com/features/mastering-markdown/" target="_blank" v-html="iconMarkdown"></a>
       <el-button class="tk-cancel"
           v-if="!!replyId"
           size="small"
@@ -36,6 +40,8 @@
 
 <script>
 import iconMarkdown from '@fortawesome/fontawesome-free/svgs/brands/markdown.svg'
+import iconEmotion from '@fortawesome/fontawesome-free/svgs/regular/laugh.svg'
+import iconImage from '@fortawesome/fontawesome-free/svgs/regular/image.svg'
 import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
 import { marked, call } from '../../js/utils'
@@ -74,7 +80,8 @@ export default {
       nick: '',
       mail: '',
       link: '',
-      iconMarkdown
+      iconMarkdown,
+      iconImage
     }
   },
   computed: {
@@ -91,12 +98,11 @@ export default {
   methods: {
     initOwo () {
       this.owo = new OwO({
-        logo: 'OωO', // OwO button text, default: `OωO表情`
+        logo: iconEmotion, // OwO button text, default: `OωO表情`
         container: this.$refs.owo, // OwO container, default: `document.getElementsByClassName('OwO')[0]`
         target: this.textarea, // OwO target input or textarea, default: `document.getElementsByTagName('textarea')[0]`
-        api: 'https://cdn.jsdelivr.net/gh/imaegoo/emotion@main/owo.json', // OwO Emoticon data api, default: `https://cdn.jsdelivr.net/npm/owo/demo/OwO.json`
+        api: 'https://cdn.jsdelivr.net/gh/imaegoo/emotion@8d0d03b/owo.json', // OwO Emoticon data api, default: `https://cdn.jsdelivr.net/npm/owo/demo/OwO.json`
         position: 'down', // OwO body position, default: `down`
-        width: '100%', // OwO body width, default: `100%`
         maxHeight: '250px' // OwO body max-height, default: `250px`
       })
     },
@@ -157,6 +163,13 @@ export default {
         event.preventDefault()
       }
     },
+    openSelectImage () {
+      this.$refs.inputFile.click()
+    },
+    onSelectImage () {
+      const photo = this.$refs.inputFile.files[0]
+      this.parseAndUploadPhoto(photo)
+    },
     onPaste (e) {
       if (!e.clipboardData) return
       let photo
@@ -165,16 +178,18 @@ export default {
       } else if (e.clipboardData.items[0] && e.clipboardData.items[0].getAsFile()) {
         photo = e.clipboardData.items[0].getAsFile()
       }
-      if (photo) {
-        const nameSplit = photo.name.split('.')
-        const fileType = nameSplit.length > 1 ? nameSplit.pop() : ''
-        if (imageTypes.indexOf(fileType) === -1) return
-        const userId = this.$tcb.auth.currentUser.uid
-        const fileIndex = `${Date.now()}-${userId}`
-        const fileName = nameSplit.join('.')
-        this.paste(this.getImagePlaceholder(fileIndex, fileType))
-        this.uploadPhoto(fileIndex, fileName, fileType, photo)
-      }
+      this.parseAndUploadPhoto(photo)
+    },
+    parseAndUploadPhoto (photo) {
+      if (!photo) return
+      const nameSplit = photo.name.split('.')
+      const fileType = nameSplit.length > 1 ? nameSplit.pop() : ''
+      if (imageTypes.indexOf(fileType) === -1) return
+      const userId = this.$tcb.auth.currentUser.uid
+      const fileIndex = `${Date.now()}-${userId}`
+      const fileName = nameSplit.join('.')
+      this.paste(this.getImagePlaceholder(fileIndex, fileType))
+      this.uploadPhoto(fileIndex, fileName, fileType, photo)
     },
     async uploadPhoto (fileIndex, fileName, fileType, photo) {
       try {
@@ -250,12 +265,19 @@ export default {
   width: 1.25em;
   line-height: 0;
   margin-right: 10px;
+  cursor: pointer;
 }
-.tk-action-icon /deep/ svg {
+.tk-action-icon /deep/ svg:hover {
+  opacity: 0.8;
+}
+.tk-action-icon.__markdown /deep/ svg {
   fill: #909399;
 }
 .tk-avatar {
   margin-right: 1rem;
+}
+.tk-input-image {
+  display: none;
 }
 .tk-input {
   flex: 1;
@@ -271,7 +293,10 @@ export default {
   border: 1px solid #80808050;
   border-radius: 4px;
 }
-.OwO {
+.tk-row-actions-start {
+  position: relative;
   flex: 1;
+  display: flex;
+  align-items: center;
 }
 </style>

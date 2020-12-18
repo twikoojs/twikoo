@@ -208,6 +208,16 @@ export default {
   backdrop-filter: blur(5px);
   transition: all 0.5s ease;
 }
+.tk-admin::-webkit-scrollbar {
+  width: 5px;
+  background-color: transparent;
+}
+.tk-admin::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+.tk-admin::-webkit-scrollbar-thumb {
+  background-color: #ffffff50;
+}
 .tk-admin.__show {
   left: 0;
 }

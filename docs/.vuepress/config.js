@@ -7,6 +7,7 @@ module.exports = {
       '/quick-start',
       '/faq',
       '/api',
+      '/cms',
       '/link'
     ],
     lastUpdated: true,

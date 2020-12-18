@@ -38,19 +38,27 @@ export default {
             { key: 'COMMENT_PAGE_SIZE', desc: '评论列表分页大小，默认为 8。', ph: '示例：8', value: '' },
             { key: 'MASTER_TAG', desc: '博主标识自定义文字，默认为 “博主”。', ph: '示例：站长', value: '' },
             { key: 'COMMENT_BG_IMG', desc: '评论框自定义背景图片 URL 地址。', ph: '', value: '' },
-            { key: 'GRAVATAR_CDN', desc: '自定义头像 CDN 地址。如：cn.gravatar.com, sdn.geekzu.org, gravatar.loli.net', ph: '示例：sdn.geekzu.org', value: '' }
+            { key: 'GRAVATAR_CDN', desc: '自定义头像 CDN 地址。如：cn.gravatar.com, sdn.geekzu.org, gravatar.loli.net', ph: '示例：sdn.geekzu.org', value: '' },
+            { key: 'SHOW_IMAGE', desc: '启用插入图片功能，默认为：true', ph: '示例：false', value: '' },
+            { key: 'SHOW_EMOTION', desc: '启用插入表情功能，默认为：true', ph: '示例：false', value: '' },
+            { key: 'EMOTION_CDN', desc: '表情 CDN，默认为：https://cdn.jsdelivr.net/gh/imaegoo/emotion/owo.json', ph: '', value: '' },
+            { key: 'COMMENT_PLACEHOLDER', desc: '评论框提示信息，可用<br>换行，默认为空', ph: '示例：', value: '' }
           ]
         },
         {
           name: '反垃圾',
           items: [
-            { key: 'AKISMET_KEY', desc: 'Akismet 反垃圾评论，用于垃圾评论检测，设为 "MANUAL_REVIEW" 开启人工审核，留空不使用反垃圾。注册：https://akismet.com', ph: '示例：8651783edxxx', value: '' }
+            { key: 'AKISMET_KEY', desc: 'Akismet 反垃圾评论，用于垃圾评论检测，设为 "MANUAL_REVIEW" 开启人工审核，留空不使用反垃圾。注册：https://akismet.com', ph: '示例：8651783edxxx', value: '' },
+            { key: 'QCLOUD_SECRET_ID', desc: '腾讯云 secret id，用于垃圾评论检测。同时设置腾讯云和 Akismet 时，只有腾讯云会生效。注册：https://twikoo.js.org/cms.html', ph: '示例：AKIDBgZDdnbTw9D4ey9qPkrkwtb2Do9EwIHw', value: '' },
+            { key: 'QCLOUD_SECRET_KEY', desc: '腾讯云 secret key', ph: '示例：XrkOnvKWS7WeXbP1QZT76rPgtpWx73D7', value: '' },
+            { key: 'LIMIT_PER_MINUTE', desc: '每个 IP 每 10 分钟最多发表多少条评论，默认：0（无限制）', ph: '示例：5', value: '' }
           ]
         },
         {
           name: '微信通知',
           items: [
-            { key: 'SC_SENDKEY', desc: 'Server酱（sc.ftqq.com）微信推送的 SCKEY', ph: '示例：SCT1364TKdsiGjGvyAZNYDVnuHW12345', value: '' }
+            { key: 'SC_SENDKEY', desc: 'Server酱（sc.ftqq.com）微信推送的 SCKEY', ph: '示例：SCT1364TKdsiGjGvyAZNYDVnuHW12345', value: '' },
+            { key: 'SC_MAIL_NOTIFY', desc: '是否同时通过微信和邮件 2 种方式通知博主，默认只通过微信通知博主，默认：false', ph: '示例：true', value: '' }
           ]
         },
         {
@@ -127,16 +135,6 @@ export default {
   overflow-y: auto;
   padding-right: 0.5em;
 }
-.tk-admin-config-groups::-webkit-scrollbar {
-  width: 5px;
-  background-color: transparent;
-}
-.tk-admin-config-groups::-webkit-scrollbar-track {
-  background-color: transparent;
-}
-.tk-admin-config-groups::-webkit-scrollbar-thumb {
-  background-color: #ffffff50;
-}
 .tk-admin-config-group-title {
   margin-top: 1em;
   font-size: 1.25rem;
@@ -157,6 +155,7 @@ export default {
 }
 .tk-admin-config-desc {
   margin-top: 0.5em;
+  font-size: 0.75em;
 }
 .tk-admin-config-actions {
   display: flex;

@@ -41,6 +41,7 @@ module.exports = {
   ],
   devServer: {
     contentBase: BUILD_PATH,
+    disableHostCheck: true,
     port: 9820
   },
   performance: {

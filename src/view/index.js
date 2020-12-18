@@ -10,6 +10,7 @@ import 'element-ui/lib/theme-chalk/input.css'
 import 'element-ui/lib/theme-chalk/loading.css'
 import 'element-ui/lib/theme-chalk/tabs.css'
 import 'element-ui/lib/theme-chalk/tab-pane.css'
+import './lib/owo.css'
 
 Vue.use(Button)
 Vue.use(Input)

@@ -913,7 +913,7 @@ async function parse (comment) {
 
 // 垃圾评论检测
 async function checkSpam (comment) {
-  // 限制每个 IP 每分钟发表的评论数量
+  // 限制每个 IP 每 10 分钟发表的评论数量
   const limitPerMinute = parseInt(config.LIMIT_PER_MINUTE)
   if (limitPerMinute) {
     let count = await db
@@ -1193,7 +1193,8 @@ function getConfig () {
       GRAVATAR_CDN: config.GRAVATAR_CDN,
       SHOW_IMAGE: config.SHOW_IMAGE || 'true',
       SHOW_EMOTION: config.SHOW_EMOTION || 'true',
-      EMOTION_CDN: config.EMOTION_CDN
+      EMOTION_CDN: config.EMOTION_CDN,
+      COMMENT_PLACEHOLDER: config.COMMENT_PLACEHOLDER
     }
   }
 }

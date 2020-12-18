@@ -41,7 +41,8 @@ export default {
             { key: 'GRAVATAR_CDN', desc: '自定义头像 CDN 地址。如：cn.gravatar.com, sdn.geekzu.org, gravatar.loli.net', ph: '示例：sdn.geekzu.org', value: '' },
             { key: 'SHOW_IMAGE', desc: '启用插入图片功能，默认为：true', ph: '示例：false', value: '' },
             { key: 'SHOW_EMOTION', desc: '启用插入表情功能，默认为：true', ph: '示例：false', value: '' },
-            { key: 'EMOTION_CDN', desc: '表情 CDN，默认为：https://cdn.jsdelivr.net/gh/imaegoo/emotion/owo.json', ph: '', value: '' }
+            { key: 'EMOTION_CDN', desc: '表情 CDN，默认为：https://cdn.jsdelivr.net/gh/imaegoo/emotion/owo.json', ph: '', value: '' },
+            { key: 'COMMENT_PLACEHOLDER', desc: '评论框提示信息，可用<br>换行，默认为空', ph: '示例：', value: '' }
           ]
         },
         {
@@ -132,16 +133,6 @@ export default {
 .tk-admin-config-groups {
   overflow-y: auto;
   padding-right: 0.5em;
-}
-.tk-admin-config-groups::-webkit-scrollbar {
-  width: 5px;
-  background-color: transparent;
-}
-.tk-admin-config-groups::-webkit-scrollbar-track {
-  background-color: transparent;
-}
-.tk-admin-config-groups::-webkit-scrollbar-thumb {
-  background-color: #ffffff50;
 }
 .tk-admin-config-group-title {
   margin-top: 1em;

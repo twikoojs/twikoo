@@ -8,7 +8,7 @@
             type="textarea"
             ref="textarea"
             v-model="comment"
-            placeholder="请输入内容"
+            :placeholder="config.COMMENT_PLACEHOLDER ? config.COMMENT_PLACEHOLDER.replace(/<br>/g, '\n') : ''"
             :autosize="{ minRows: 3 }"
             @input="updatePreview"
             @keyup.enter.native="onEnterKeyUp($event)" />
@@ -104,14 +104,16 @@ export default {
   },
   methods: {
     initOwo () {
-      this.owo = new OwO({
-        logo: iconEmotion, // OwO button text, default: `OωO表情`
-        container: this.$refs.owo, // OwO container, default: `document.getElementsByClassName('OwO')[0]`
-        target: this.textarea, // OwO target input or textarea, default: `document.getElementsByTagName('textarea')[0]`
-        api: 'https://cdn.jsdelivr.net/gh/imaegoo/emotion@8d0d03b/owo.json', // OwO Emoticon data api, default: `https://cdn.jsdelivr.net/npm/owo/demo/OwO.json`
-        position: 'down', // OwO body position, default: `down`
-        maxHeight: '250px' // OwO body max-height, default: `250px`
-      })
+      if (this.config.SHOW_EMOTION === 'true') {
+        this.owo = new OwO({
+          logo: iconEmotion, // OwO button text, default: `OωO表情`
+          container: this.$refs.owo, // OwO container, default: `document.getElementsByClassName('OwO')[0]`
+          target: this.textarea, // OwO target input or textarea, default: `document.getElementsByTagName('textarea')[0]`
+          api: this.config.EMOTION_CDN || 'https://cdn.jsdelivr.net/gh/imaegoo/emotion/owo.json', // OwO Emoticon data api, default: `https://cdn.jsdelivr.net/npm/owo/demo/OwO.json`
+          position: 'down', // OwO body position, default: `down`
+          maxHeight: '250px' // OwO body max-height, default: `250px`
+        })
+      }
     },
     onMetaUpdate (metaData) {
       this.nick = metaData.nick
@@ -238,6 +240,9 @@ export default {
     this.onBgImgChange()
   },
   watch: {
+    'config.SHOW_EMOTION': function () {
+      this.initOwo()
+    },
     'config.COMMENT_BG_IMG': function () {
       this.onBgImgChange()
     }
@@ -263,11 +268,17 @@ export default {
   margin-bottom: 0.5rem;
 }
 .tk-row.actions {
+  position: relative;
   margin-top: 1rem;
   margin-bottom: 1rem;
   margin-left: 3.5rem;
   align-items: center;
   justify-content: flex-end;
+}
+.tk-row-actions-start {
+  flex: 1;
+  display: flex;
+  align-items: center;
 }
 .tk-action-icon {
   align-self: center;
@@ -309,11 +320,5 @@ export default {
   padding: 5px 15px;
   border: 1px solid #80808050;
   border-radius: 4px;
-}
-.tk-row-actions-start {
-  position: relative;
-  flex: 1;
-  display: flex;
-  align-items: center;
 }
 </style>

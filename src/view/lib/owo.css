@@ -37,6 +37,7 @@
   position: absolute;
   left: 0;
   right: 0;
+  max-width: 500px;
   background: #fff;
   border: 1px solid #ddd;
   top: 2em;

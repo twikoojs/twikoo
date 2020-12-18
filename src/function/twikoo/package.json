@@ -2,6 +2,7 @@
   "name": "twikoo-func",
   "main": "index.js",
   "dependencies": {
+    "@cloudbase/manager-node": "^3.8.2",
     "@cloudbase/node-sdk": "^2.4.4",
     "akismet-api": "^5.1.0",
     "axios": "^0.21.0",

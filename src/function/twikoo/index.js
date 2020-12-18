@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v0.3.3
+ * Twikoo cloudbase function v0.4.0
  * (c) 2020-2020 iMaeGoo
  * Released under the MIT License.
  */
@@ -17,6 +17,8 @@ const createDOMPurify = require('dompurify') // 反 XSS
 const { JSDOM } = require('jsdom') // document.window 服务器版
 const xml2js = require('xml2js') // XML 解析
 const marked = require('marked') // Markdown 解析
+const CryptoJS = require('crypto-js') // 编解码
+const tencentcloud = require('tencentcloud-sdk-nodejs') // 腾讯云 API NODEJS SDK
 
 // 云函数 SDK / tencent cloudbase sdk
 const app = tcb.init({ env: tcb.SYMBOL_CURRENT_ENV })
@@ -29,7 +31,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '0.3.3'
+const VERSION = '0.4.0'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -911,55 +913,85 @@ async function parse (comment) {
 
 // 垃圾评论检测
 async function checkSpam (comment) {
-  // 使用全局配置，不需要重新读取配置
-  if (!config.AKISMET_KEY) {
-    return false
-  } else if (config.AKISMET_KEY === 'MANUAL_REVIEW') {
+  // 限制每个 IP 每分钟发表的评论数量
+  const limitPerMinute = parseInt(config.LIMIT_PER_MINUTE)
+  if (limitPerMinute) {
+    let count = await db
+      .collection('comment')
+      .where({
+        ip: comment.ip,
+        created: _.gt(Date.now() - 600000)
+      })
+      .count()
+    count = count.total
+    if (count > limitPerMinute) {
+      throw new Error('发言频率过高')
+    }
+  }
+  // 内容安全检测
+  if (config.AKISMET_KEY === 'MANUAL_REVIEW') {
     console.log('已使用人工审核模式，评论审核后才会发表~')
     return true
-  } else {
+  } else if ((config.QCLOUD_SECRET_ID && config.QCLOUD_SECRET_KEY) || config.AKISMET_KEY) {
     // Akismet 服务响应慢，影响用户体验，通过调用自身，实现开启新的云函数进程，异步检测的效果
     try {
-      await app.callFunction({
+      const isSpam = await app.callFunction({
         name: 'twikoo',
         data: {
           event: 'CHECK_SPAM',
-          comment,
-          key: config.AKISMET_KEY,
-          blog: config.SITE_URL
+          comment
         }
       }, { timeout: 300 }) // 设置较短的 timeout 来实现异步
+      return isSpam.result.isSpam
     } catch (e) {
       console.log('开始异步检测垃圾评论')
     }
-    return false // 暂时放行
   }
+  return false
 }
 
 // 异步检测垃圾评论
 async function checkSpamAction (event, context) {
   if (!isRecursion(context)) return { code: RES_CODE.FORBIDDEN }
   try {
+    let isSpam
     const comment = event.comment
-    const akismetClient = new AkismetClient({
-      key: event.key,
-      blog: event.blog
-    })
-    const isValid = await akismetClient.verifyKey()
-    if (!isValid) {
-      console.log('Akismet key 不可用：', event.key)
-      return
+    if (config.QCLOUD_SECRET_ID && config.QCLOUD_SECRET_KEY) {
+      // 腾讯云内容安全
+      const client = new tencentcloud.tms.v20200713.Client({
+        credential: { secretId: config.QCLOUD_SECRET_ID, secretKey: config.QCLOUD_SECRET_KEY },
+        region: 'ap-shanghai',
+        profile: { httpProfile: { endpoint: 'tms.tencentcloudapi.com' } }
+      })
+      const checkResult = await client.TextModeration({
+        Content: CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(comment.comment)),
+        Device: { IP: comment.ip },
+        User: { Nickname: comment.nick }
+      })
+      console.log('腾讯云返回结果：', checkResult)
+      isSpam = checkResult.EvilFlag !== 0
+    } else if (config.AKISMET_KEY) {
+      // Akismet
+      const akismetClient = new AkismetClient({
+        key: event.key,
+        blog: event.blog
+      })
+      const isValid = await akismetClient.verifyKey()
+      if (!isValid) {
+        console.log('Akismet key 不可用：', event.key)
+        return
+      }
+      isSpam = await akismetClient.checkSpam({
+        user_ip: comment.ip,
+        user_agent: comment.ua,
+        permalink: comment.href,
+        comment_type: comment.rid ? 'reply' : 'comment',
+        comment_author: comment.nick,
+        comment_author_email: comment.mail,
+        comment_author_url: comment.link,
+        comment_content: comment.comment
+      })
     }
-    const isSpam = await akismetClient.checkSpam({
-      user_ip: comment.ip,
-      user_agent: comment.ua,
-      permalink: comment.href,
-      comment_type: comment.rid ? 'reply' : 'comment',
-      comment_author: comment.nick,
-      comment_author_email: comment.mail,
-      comment_author_url: comment.link,
-      comment_content: comment.comment
-    })
     console.log('垃圾评论检测结果：', isSpam)
     if (isSpam) {
       await db
@@ -972,7 +1004,7 @@ async function checkSpamAction (event, context) {
     }
     return { code: RES_CODE.SUCCESS, isSpam }
   } catch (err) {
-    console.error('Akismet 异常：', err)
+    console.error('垃圾评论检测异常：', err)
     return { code: RES_CODE.AKISMET_ERROR, message: err.message }
   }
 }
@@ -1158,7 +1190,10 @@ function getConfig () {
       SITE_URL: config.SITE_URL,
       MASTER_TAG: config.MASTER_TAG,
       COMMENT_BG_IMG: config.COMMENT_BG_IMG,
-      GRAVATAR_CDN: config.GRAVATAR_CDN
+      GRAVATAR_CDN: config.GRAVATAR_CDN,
+      SHOW_IMAGE: config.SHOW_IMAGE || 'true',
+      SHOW_EMOTION: config.SHOW_EMOTION || 'true',
+      EMOTION_CDN: config.EMOTION_CDN
     }
   }
 }

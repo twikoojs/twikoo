@@ -16,11 +16,17 @@
     </div>
     <div class="tk-row actions">
       <div class="tk-row-actions-start">
-        <div class="tk-action-icon OwO" ref="owo"></div>
-        <div class="tk-action-icon" v-html="iconImage" @click="openSelectImage"></div>
+        <div class="tk-action-icon OwO" v-show="config.SHOW_EMOTION === 'true'" ref="owo"></div>
+        <div class="tk-action-icon" v-show="config.SHOW_IMAGE === 'true'" v-html="iconImage" @click="openSelectImage"></div>
         <input class="tk-input-image" type="file" accept="image/*" value="" ref="inputFile" @change="onSelectImage" />
+        <div class="tk-error-message">{{ errorMessage }}</div>
       </div>
-      <a class="tk-action-icon __markdown" alt="Markdown is supported" href="https://guides.github.com/features/mastering-markdown/" target="_blank" v-html="iconMarkdown"></a>
+      <a class="tk-action-icon __markdown"
+          alt="Markdown is supported"
+          href="https://guides.github.com/features/mastering-markdown/"
+          target="_blank"
+          rel="noopener noreferrer"
+          v-html="iconMarkdown"></a>
       <el-button class="tk-cancel"
           v-if="!!replyId"
           size="small"
@@ -44,7 +50,7 @@ import iconEmotion from '@fortawesome/fontawesome-free/svgs/regular/laugh.svg'
 import iconImage from '@fortawesome/fontawesome-free/svgs/regular/image.svg'
 import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
-import { marked, call } from '../../js/utils'
+import { marked, call, logger } from '../../js/utils'
 import OwO from '../lib/owo'
 
 const imageTypes = [
@@ -74,6 +80,7 @@ export default {
     return {
       isSending: false,
       isPreviewing: false,
+      errorMessage: '',
       owo: null,
       comment: '',
       commentHtml: '',
@@ -136,20 +143,22 @@ export default {
         pid: this.pid ? this.pid : this.replyId,
         rid: this.replyId
       }
-      const id = await call(this.$tcb, 'COMMENT_SUBMIT', comment)
-      if (id && id.result && id.result.id) {
-        this.onSendComplete()
+      const sendResult = await call(this.$tcb, 'COMMENT_SUBMIT', comment)
+      if (sendResult && sendResult.result && sendResult.result.id) {
+        this.isSending = false
+        this.comment = ''
+        this.errorMessage = ''
+        this.$emit('load')
+      } else {
+        this.isSending = false
+        logger.error('评论失败', sendResult)
+        this.errorMessage = `评论失败: ${sendResult.result.message}`
       }
     },
     addEventListener () {
       if (this.textarea) {
         this.textarea.addEventListener('paste', this.onPaste)
       }
-    },
-    onSendComplete () {
-      this.comment = ''
-      this.isSending = false
-      this.$emit('load')
     },
     onBgImgChange () {
       if (this.config.COMMENT_BG_IMG && this.textarea) {
@@ -181,7 +190,7 @@ export default {
       this.parseAndUploadPhoto(photo)
     },
     parseAndUploadPhoto (photo) {
-      if (!photo) return
+      if (!photo || this.config.SHOW_IMAGE !== 'true') return
       const nameSplit = photo.name.split('.')
       const fileType = nameSplit.length > 1 ? nameSplit.pop() : ''
       if (imageTypes.indexOf(fileType) === -1) return
@@ -194,7 +203,7 @@ export default {
     async uploadPhoto (fileIndex, fileName, fileType, photo) {
       try {
         const uploadResult = await this.$tcb.app.uploadFile({
-          cloudPath: `img/${fileIndex}.${fileType}`,
+          cloudPath: `tk-img/${fileIndex}.${fileType}`,
           filePath: photo
         })
         if (uploadResult.fileID) {
@@ -257,6 +266,7 @@ export default {
   margin-top: 1rem;
   margin-bottom: 1rem;
   margin-left: 3.5rem;
+  align-items: center;
   justify-content: flex-end;
 }
 .tk-action-icon {
@@ -266,12 +276,19 @@ export default {
   line-height: 0;
   margin-right: 10px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 .tk-action-icon /deep/ svg:hover {
   opacity: 0.8;
 }
 .tk-action-icon.__markdown /deep/ svg {
   fill: #909399;
+}
+.tk-error-message {
+  word-break: break-all;
+  color: #ff0000;
+  font-size: 0.75em;
+  flex-shrink: 1;
 }
 .tk-avatar {
   margin-right: 1rem;

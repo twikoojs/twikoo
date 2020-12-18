@@ -8,11 +8,13 @@
     "blueimp-md5": "^2.18.0",
     "bowser": "^2.11.0",
     "cheerio": "^1.0.0-rc.3",
+    "crypto-js": "^4.0.0",
     "dompurify": "^2.2.3",
     "jsdom": "^16.4.0",
     "marked": "^1.2.5",
     "nodemailer": "^6.4.16",
     "querystring": "^0.2.0",
+    "tencentcloud-sdk-nodejs": "^4.0.33",
     "xml2js": "^0.4.23"
   }
 }

@@ -748,6 +748,7 @@ async function initMailer () {
 async function noticeMaster (comment) {
   if (!transporter) if (!await initMailer()) return
   if (config.BLOGGER_EMAIL === comment.mail) return
+  if (config.SC_MAIL_NOTIFY !== 'true' && config.SC_SENDKEY) return
   const SITE_NAME = config.SITE_NAME
   const NICK = comment.nick
   const COMMENT = comment.comment

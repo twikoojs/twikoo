@@ -57,7 +57,8 @@ export default {
         {
           name: '微信通知',
           items: [
-            { key: 'SC_SENDKEY', desc: 'Server酱（sc.ftqq.com）微信推送的 SCKEY', ph: '示例：SCT1364TKdsiGjGvyAZNYDVnuHW12345', value: '' }
+            { key: 'SC_SENDKEY', desc: 'Server酱（sc.ftqq.com）微信推送的 SCKEY', ph: '示例：SCT1364TKdsiGjGvyAZNYDVnuHW12345', value: '' },
+            { key: 'SC_MAIL_NOTIFY', desc: '是否同时通过微信和邮件 2 种方式通知博主，默认只通过微信通知博主，默认：false', ph: '示例：true', value: '' }
           ]
         },
         {

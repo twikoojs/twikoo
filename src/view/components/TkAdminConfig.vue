@@ -34,7 +34,7 @@ export default {
           items: [
             { key: 'SITE_NAME', desc: '网站名称', ph: '示例：虹墨空间站', value: '' },
             { key: 'SITE_URL', desc: '网站地址', ph: '示例：https://www.imaegoo.com', value: '' },
-            { key: 'BLOGGER_EMAIL', desc: '博主的邮箱地址，用于邮件通知。', ph: '示例：12345@qq.com', value: '' },
+            { key: 'BLOGGER_EMAIL', desc: '博主的邮箱地址，用于邮件通知、博主标识。', ph: '示例：12345@qq.com', value: '' },
             { key: 'COMMENT_PAGE_SIZE', desc: '评论列表分页大小，默认为 8。', ph: '示例：8', value: '' },
             { key: 'MASTER_TAG', desc: '博主标识自定义文字，默认为 “博主”。', ph: '示例：站长', value: '' },
             { key: 'COMMENT_BG_IMG', desc: '评论框自定义背景图片 URL 地址。', ph: '', value: '' },

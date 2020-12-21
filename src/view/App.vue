@@ -28,7 +28,6 @@ export default {
 <style>
 .twikoo {
   position: relative;
-  overflow: hidden;
 }
 .twikoo svg {
   width: 100%;
@@ -49,6 +48,11 @@ export default {
 }
 .tk-expand:active {
   background-color: #00000030;
+}
+.tk-content img {
+  max-width: 300px;
+  max-height: 300px;
+  vertical-align: middle;
 }
 
 /* element-ui overwrite */

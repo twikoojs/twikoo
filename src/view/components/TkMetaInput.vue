@@ -3,7 +3,7 @@
     <el-input v-for="metaInput in metaInputs"
         :key="metaInput.key"
         :name="metaInput.name"
-        :placeholder="metaInput.placeholder"
+        :placeholder="requiredFields[metaInput.key] ? '必填' : '选填'"
         v-model="metaData[metaInput.key]"
         type="text"
         size="small"
@@ -15,16 +15,17 @@
 
 <script>
 const metaInputs = [
-  { key: 'nick', locale: '昵称', placeholder: '必填', name: 'nick' },
-  { key: 'mail', locale: '邮箱', placeholder: '必填', name: 'mail' },
-  { key: 'link', locale: '网址', placeholder: '选填', name: 'link' }
+  { key: 'nick', locale: '昵称', name: 'nick' },
+  { key: 'mail', locale: '邮箱', name: 'mail' },
+  { key: 'link', locale: '网址', name: 'link' }
 ]
 
 export default {
   props: {
     nick: String,
     mail: String,
-    link: String
+    link: String,
+    config: Object
   },
   data () {
     return {
@@ -33,6 +34,16 @@ export default {
         nick: '',
         mail: '',
         link: ''
+      }
+    }
+  },
+  computed: {
+    requiredFields () {
+      const requiredFieldsSetting = this.config.REQUIRED_FIELDS
+      return {
+        nick: requiredFieldsSetting ? requiredFieldsSetting.indexOf('nick') !== -1 : true,
+        mail: requiredFieldsSetting ? requiredFieldsSetting.indexOf('mail') !== -1 : true,
+        link: requiredFieldsSetting ? requiredFieldsSetting.indexOf('link') !== -1 : false
       }
     }
   },
@@ -48,7 +59,17 @@ export default {
     },
     updateMeta () {
       localStorage.setItem('twikoo', JSON.stringify(this.metaData))
-      this.$emit('update', this.metaData)
+      this.$emit('update', {
+        meta: this.metaData,
+        valid: this.checkValid()
+      })
+    },
+    checkValid () {
+      return (
+        (this.metaData.nick || !this.requiredFields.nick) &&
+        (this.metaData.mail || !this.requiredFields.mail) &&
+        (this.metaData.link || !this.requiredFields.link)
+      )
     },
     onMetaChange () {
       this.updateMeta()
@@ -57,7 +78,16 @@ export default {
   watch: {
     nick (newVal) { this.metaData.nick = newVal },
     mail (newVal) { this.metaData.mail = newVal },
-    link (newVal) { this.metaData.link = newVal }
+    link (newVal) { this.metaData.link = newVal },
+    requiredFields: {
+      handler (val, oldVal) {
+        this.$emit('update', {
+          meta: this.metaData,
+          valid: this.checkValid()
+        })
+      },
+      deep: true
+    }
   },
   mounted () {
     this.initMeta()

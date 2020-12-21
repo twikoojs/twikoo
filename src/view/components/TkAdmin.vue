@@ -1,55 +1,57 @@
 <template>
-  <div class="tk-admin" :class="{ '__show': show }" v-loading="loading">
-    <a class="tk-admin-close" @click="onClose" v-html="iconClose"></a>
-    <div class="tk-login-title" v-if="needUpdate">
-      <div>若要使用评论管理，请更新 Twikoo 云函数</div>
-      <a href="https://twikoo.js.org/quick-start.html" target="_blank">https://twikoo.js.org/quick-start.html</a>
-    </div>
-    <div v-if="!needUpdate">
-      <div class="tk-login" v-if="!isLogin && isSetPassword">
-        <div class="tk-login-title">Twikoo 评论管理</div>
-        <el-input class="tk-password" placeholder="请输入" v-model="password" show-password @keyup.enter.native="onLogin" ref="focusme">
-          <template slot="prepend">密码</template>
-          <el-button slot="append" @click="onLogin">登录</el-button>
-        </el-input>
-        <div class="tk-login-msg" v-if="loginErrorMessage">
-          {{ loginErrorMessage }}
-          <a href="https://twikoo.js.org/faq.html" rel="noopener noreferrer" target="_blank">忘记密码</a>
-        </div>
+  <div class="tk-admin-container">
+    <div class="tk-admin" :class="{ '__show': show }" v-loading="loading">
+      <a class="tk-admin-close" @click="onClose" v-html="iconClose"></a>
+      <div class="tk-login-title" v-if="needUpdate">
+        <div>若要使用评论管理，请更新 Twikoo 云函数</div>
+        <a href="https://twikoo.js.org/quick-start.html" target="_blank">https://twikoo.js.org/quick-start.html</a>
       </div>
-      <div class="tk-regist" v-if="!isLogin && !isSetPassword">
-        <div class="tk-login-title">Twikoo 评论管理</div>
-        <el-input class="tk-password" placeholder="请粘贴私钥文件内容" v-if="!isSetCredentials" v-model="credentials" ref="focusme">
-          <template slot="prepend">私钥文件</template>
-        </el-input>
-        <el-input class="tk-password" placeholder="密码" v-model="password" show-password>
-          <template slot="prepend">设置密码</template>
-        </el-input>
-        <el-input class="tk-password" placeholder="确认密码" v-model="passwordConfirm" show-password>
-          <template slot="prepend">确认密码</template>
-        </el-input>
-        <el-button class="tk-regist-button" :disabled="!canRegist" @click="onRegist">注册</el-button>
-        <div class="tk-login-msg" v-if="loginErrorMessage">{{ loginErrorMessage }}</div>
-        <div class="tk-login-msg" v-if="!isSetCredentials">
-          <a href="https://twikoo.js.org/faq.html" rel="noopener noreferrer" target="_blank">如何获得私钥</a>
+      <div v-if="!needUpdate">
+        <div class="tk-login" v-if="!isLogin && isSetPassword">
+          <div class="tk-login-title">Twikoo 评论管理</div>
+          <el-input class="tk-password" placeholder="请输入" v-model="password" show-password @keyup.enter.native="onLogin" ref="focusme">
+            <template slot="prepend">密码</template>
+            <el-button slot="append" @click="onLogin">登录</el-button>
+          </el-input>
+          <div class="tk-login-msg" v-if="loginErrorMessage">
+            {{ loginErrorMessage }}
+            <a href="https://twikoo.js.org/faq.html" rel="noopener noreferrer" target="_blank">忘记密码</a>
+          </div>
         </div>
-      </div>
-      <div class="tk-panel" v-if="isLogin">
-        <div class="tk-panel-title">
-          <div>Twikoo 管理面板</div>
-          <a class="tk-panel-logout" @click="onLogout">退出登录</a>
+        <div class="tk-regist" v-if="!isLogin && !isSetPassword">
+          <div class="tk-login-title">Twikoo 评论管理</div>
+          <el-input class="tk-password" placeholder="请粘贴私钥文件内容" v-if="!isSetCredentials" v-model="credentials" ref="focusme">
+            <template slot="prepend">私钥文件</template>
+          </el-input>
+          <el-input class="tk-password" placeholder="密码" v-model="password" show-password>
+            <template slot="prepend">设置密码</template>
+          </el-input>
+          <el-input class="tk-password" placeholder="确认密码" v-model="passwordConfirm" show-password>
+            <template slot="prepend">确认密码</template>
+          </el-input>
+          <el-button class="tk-regist-button" :disabled="!canRegist" @click="onRegist">注册</el-button>
+          <div class="tk-login-msg" v-if="loginErrorMessage">{{ loginErrorMessage }}</div>
+          <div class="tk-login-msg" v-if="!isSetCredentials">
+            <a href="https://twikoo.js.org/faq.html" rel="noopener noreferrer" target="_blank">如何获得私钥</a>
+          </div>
         </div>
-        <el-tabs v-model="activeTabName">
-          <el-tab-pane label="评论管理" name="comment">
-            <tk-admin-comment />
-          </el-tab-pane>
-          <el-tab-pane label="配置管理" name="config">
-            <tk-admin-config />
-          </el-tab-pane>
-          <el-tab-pane label="导入" name="import">
-            <tk-admin-import />
-          </el-tab-pane>
-        </el-tabs>
+        <div class="tk-panel" v-if="isLogin">
+          <div class="tk-panel-title">
+            <div>Twikoo 管理面板</div>
+            <a class="tk-panel-logout" @click="onLogout">退出登录</a>
+          </div>
+          <el-tabs v-model="activeTabName">
+            <el-tab-pane label="评论管理" name="comment">
+              <tk-admin-comment />
+            </el-tab-pane>
+            <el-tab-pane label="配置管理" name="config">
+              <tk-admin-config />
+            </el-tab-pane>
+            <el-tab-pane label="导入" name="import">
+              <tk-admin-import />
+            </el-tab-pane>
+          </el-tabs>
+        </div>
       </div>
     </div>
   </div>
@@ -197,6 +199,15 @@ export default {
 </script>
 
 <style scoped>
+.tk-admin-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
 .tk-admin {
   position: absolute;
   top: 0;
@@ -204,6 +215,7 @@ export default {
   width: 100%;
   height: 100%;
   overflow-y: auto;
+  pointer-events: all;
   background-color: #00000099;
   backdrop-filter: blur(5px);
   transition: all 0.5s ease;

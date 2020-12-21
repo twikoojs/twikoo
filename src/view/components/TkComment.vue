@@ -1,5 +1,5 @@
 <template>
-  <div class="tk-comment" :id="comment.id">
+  <div class="tk-comment" :id="comment.id" ref="tk-comment">
     <tk-avatar :config="config"
         :nick="comment.nick"
         :avatar="comment.avatar"
@@ -139,6 +139,11 @@ export default {
         this.hasExpand = this.$refs['tk-replies'].scrollHeight > 200
       }
     },
+    scrollToComment () {
+      if (window.location.hash.indexOf(this.comment.id) !== -1) {
+        this.$refs['tk-comment'].scrollIntoView()
+      }
+    },
     async onLike () {
       if (this.likeLoading) return // 防止连续点击
       this.likeLoading = true
@@ -175,6 +180,7 @@ export default {
   },
   mounted () {
     this.$nextTick(this.showExpandIfNeed)
+    this.$nextTick(this.scrollToComment)
   },
   watch: {
     'comment.like': {

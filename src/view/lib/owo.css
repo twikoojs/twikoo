@@ -42,6 +42,7 @@
   border: 1px solid #ddd;
   top: 2em;
   border-radius: 0 4px 4px;
+  z-index: 1000;
 }
 
 .OwO .OwO-body .OwO-items {

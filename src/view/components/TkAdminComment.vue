@@ -9,7 +9,7 @@
           <span v-if="comment.mail">&nbsp;(<a :href="`mailto:${comment.mail}`">{{ comment.mail }}</a>)</span>
           <span v-if="comment.isSpam">&nbsp;(已隐藏)</span>
         </div>
-        <div class="tk-admin-comment-text">{{ comment.commentText }}</div>
+        <div class="tk-content" v-html="comment.comment"></div>
         <div class="tk-admin-actions" slot="content">
           <el-button size="mini" type="text" @click="handleView(comment)">查看</el-button>
           <el-button size="mini" type="text" v-if="comment.isSpam" @click="handleSpam(comment, false)">显示</el-button>
@@ -19,8 +19,9 @@
       </div>
     </div>
     <tk-pagination
-        :page-size="docPerPage"
+        :page-size="pageSize"
         :total="count"
+        @page-size-change="onPageSizeChange"
         @current-change="switchPage" />
   </div>
 </template>
@@ -30,7 +31,7 @@ import { call, convertLink } from '../../js/utils'
 import TkAvatar from './TkAvatar.vue'
 import TkPagination from './TkPagination.vue'
 
-const docPerPage = 5
+const defaultPageSize = 5
 
 export default {
   components: {
@@ -43,7 +44,7 @@ export default {
       comments: [],
       serverConfig: {},
       count: 0,
-      docPerPage,
+      pageSize: defaultPageSize,
       currentPage: 1
     }
   },
@@ -52,7 +53,7 @@ export default {
     async getComments () {
       this.loading = true
       const res = await call(this.$tcb, 'COMMENT_GET_FOR_ADMIN', {
-        per: this.docPerPage,
+        per: this.pageSize,
         page: this.currentPage
       })
       if (res.result && !res.result.code) {
@@ -66,6 +67,10 @@ export default {
       if (res.result && !res.result.code) {
         this.serverConfig = res.result.config
       }
+    },
+    onPageSizeChange (newPageSize) {
+      this.pageSize = newPageSize
+      this.getComments()
     },
     switchPage (e) {
       this.currentPage = e

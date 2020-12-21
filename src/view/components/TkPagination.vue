@@ -1,6 +1,17 @@
 <template>
   <div class="tk-pagination">
-    <div>共 {{ total }} 条</div>
+    <div class="tk-pagination-options" v-if="!!pageCount">
+      <div>共 {{ total }} 条</div>
+      <el-input
+          class="el-pagination__editor is-in-pagination"
+          type="number"
+          min="1"
+          max="100"
+          :value="userPageSize ? userPageSize : pageSize"
+          @input="handleInputPageSize"
+          @change="pageSizeChamge" />
+      <span>条/页</span>
+    </div>
     <div class="tk-pagination-pagers">
       <div class="tk-pagination-pager"
           :class="{ __current: pager.page === currentPage }"
@@ -8,7 +19,7 @@
           :key="pager.page"
           @click="currentChange(pager.page)">{{ pager.title }}</div>
     </div>
-    <div v-if="!!pageCount">
+    <div class="tk-pagination-options" v-if="!!pageCount">
       <span>前往</span>
       <el-input
           class="el-pagination__editor is-in-pagination"
@@ -39,6 +50,7 @@ export default {
     return {
       currentPage: 1,
       userInput: 0,
+      userPageSize: 0,
       pagers: []
     }
   },
@@ -68,8 +80,15 @@ export default {
       this.$emit('current-change', this.currentPage)
       this.generatePager()
     },
+    pageSizeChamge (pageSize) {
+      this.userPageSize = 0
+      this.$emit('page-size-change', parseInt(pageSize))
+    },
     handleInput (pageNum) {
       this.userInput = parseInt(pageNum)
+    },
+    handleInputPageSize (pageSize) {
+      this.userPageSize = parseInt(pageSize)
     }
   },
   watch: {
@@ -78,6 +97,11 @@ export default {
         this.generatePager()
       },
       immediate: true
+    },
+    pageSize: {
+      handler () {
+        this.generatePager()
+      }
     }
   }
 }
@@ -92,6 +116,10 @@ export default {
   width: 100%;
   align-items: center;
   justify-content: space-between;
+}
+.tk-pagination-options {
+  display: flex;
+  align-items: center;
 }
 .tk-pagination-pager {
   width: 2em;

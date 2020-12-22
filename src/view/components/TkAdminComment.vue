@@ -9,7 +9,7 @@
           <span v-if="comment.mail">&nbsp;(<a :href="`mailto:${comment.mail}`">{{ comment.mail }}</a>)</span>
           <span v-if="comment.isSpam">&nbsp;(已隐藏)</span>
         </div>
-        <div class="tk-content" v-html="comment.comment"></div>
+        <div class="tk-content" v-html="comment.comment" ref="comments"></div>
         <div class="tk-admin-actions" slot="content">
           <el-button size="mini" type="text" @click="handleView(comment)">查看</el-button>
           <el-button size="mini" type="text" v-if="comment.isSpam" @click="handleSpam(comment, false)">显示</el-button>
@@ -60,6 +60,7 @@ export default {
         this.count = res.result.count
         this.comments = res.result.data
       }
+      this.$nextTick(this.handleLinks)
       this.loading = false
     },
     async getConfig () {
@@ -78,6 +79,15 @@ export default {
     },
     handleView (comment) {
       window.open(`${comment.url}#${comment._id}`)
+    },
+    handleLinks () {
+      const aEls = []
+      this.$refs.comments.forEach((comment) => {
+        aEls.push(...comment.getElementsByTagName('a'))
+      })
+      for (const aEl of aEls) {
+        aEl.setAttribute('target', '_blank')
+      }
     },
     async handleDelete (comment) {
       this.loading = true

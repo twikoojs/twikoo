@@ -23,7 +23,7 @@
       </div>
       <div class="tk-content">
         <span v-if="comment.pid">回复 <a :href="`#${comment.pid}`">@{{ comment.ruser }}</a> :</span>
-        <span v-html="comment.comment"></span>
+        <span v-html="comment.comment" ref="comment"></span>
       </div>
       <div class="tk-extras" v-if="comment.os || comment.browser">
         <div class="tk-extra"><span class="tk-icon" v-html="iconOs"></span>&nbsp;{{ comment.os }}</div>
@@ -144,6 +144,12 @@ export default {
         this.$refs['tk-comment'].scrollIntoView()
       }
     },
+    handleLinks () {
+      const aEls = this.$refs.comment.getElementsByTagName('a')
+      for (const aEl of aEls) {
+        aEl.setAttribute('target', '_blank')
+      }
+    },
     async onLike () {
       if (this.likeLoading) return // 防止连续点击
       this.likeLoading = true
@@ -181,6 +187,7 @@ export default {
   mounted () {
     this.$nextTick(this.showExpandIfNeed)
     this.$nextTick(this.scrollToComment)
+    this.$nextTick(this.handleLinks)
   },
   watch: {
     'comment.like': {

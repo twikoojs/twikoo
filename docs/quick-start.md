@@ -104,7 +104,13 @@ Butterfly 目前支持 Twikoo，请查看 [Butterfly 安裝文檔(四) 主題配
 ``` html
 <div id="tcomment"></div>
 <script src="https://cdn.jsdelivr.net/npm/twikoo@0.4.2/dist/twikoo.all.min.js"></script>
-<script>twikoo.init({ envId: '您的环境id', el: '#tcomment' })</script>
+<script>
+twikoo.init({
+  envId: '您的环境id',
+  // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，如果您的环境地域不是上海，需传此参数
+  el: '#tcomment'
+})
+</script>
 ```
 
 > 建议使用 CDN 引入 Twikoo 的用户在链接地址上锁定版本，以免将来 Twikoo 升级时受到非兼容性更新的影响。
@@ -125,7 +131,11 @@ npm install twikoo # 或 yarn add twikoo
 
 ``` js
 import twikoo from 'twikoo' // 或 const twikoo = require('twikoo')
-twikoo.init({ envId: '您的环境id', el: '#tcomment' })
+twikoo.init({
+  envId: '您的环境id',
+  // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，如果您的环境地域不是上海，需传此参数
+  el: '#tcomment'
+})
 ```
 
 ## 开启管理面板

@@ -39,12 +39,15 @@ function checkOptions (options) {
 }
 
 async function init (options) {
-  initApp(options.envId)
+  initApp(options)
   await initAuth()
 }
 
-function initApp (envId) {
-  tcb.app = tcb.sdk.init({ env: envId })
+function initApp (options) {
+  tcb.app = tcb.sdk.init({
+    env: options.envId,
+    region: options.region
+  })
 }
 
 async function initAuth () {

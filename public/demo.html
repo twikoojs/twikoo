@@ -15,6 +15,7 @@
     function init() {
       twikoo.init({
         envId: document.getElementById('envId').value,
+        region: document.getElementById('region').value,
         el: '#tcomment'
       });
     }
@@ -31,7 +32,7 @@
           </div>
           <div class="navbar-end">
             <div class="navbar-item">
-              <a class="button is-light" href="#">View on Github</a>
+              <a class="button is-light" href="https://github.com/imaegoo/twikoo">View on Github</a>
             </div>
           </div>
         </div>
@@ -46,6 +47,12 @@
             <label class="label">环境 ID | Environment ID: <code>envId</code></label>
             <div class="control">
               <input class="input" id="envId" type="text" placeholder="e.g imaegoo-16fe3d" value="imaegoo-16fe3d">
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">环境地域 | Region: <code>region</code></label>
+            <div class="control">
+              <input class="input" id="region" type="text" placeholder="e.g ap-guangzhou" value="ap-shanghai">
             </div>
           </div>
           <div class="field">

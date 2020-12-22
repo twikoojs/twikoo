@@ -887,6 +887,9 @@ async function noticeReply (currentComment) {
 // 将评论转为数据库存储格式
 async function parse (comment) {
   const timestamp = Date.now()
+  const isAdminUser = await isAdmin()
+  const isBloggerMail = comment.mail === config.BLOGGER_EMAIL
+  if (isBloggerMail && !isAdminUser) throw new Error('请先登录管理面板，再使用博主身份发送评论')
   const commentDo = {
     nick: comment.nick ? comment.nick : '匿名',
     mail: comment.mail ? comment.mail : '',
@@ -894,7 +897,7 @@ async function parse (comment) {
     link: comment.link ? comment.link : '',
     ua: comment.ua,
     ip: auth.getClientIP(),
-    master: config ? comment.mail === config.BLOGGER_EMAIL : false,
+    master: isBloggerMail,
     url: comment.url,
     href: comment.href,
     comment: DOMPurify.sanitize(comment.comment),

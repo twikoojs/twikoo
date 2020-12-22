@@ -3,12 +3,13 @@
 .DS_Store
 .babelrc
 .editorconfig
+.eslintignore
 .eslintrc.js
 .github
 .gitignore
 .npmignore
 _config.js
-cloudbaserc.js
+cloudbaserc.json
 dist/demo.css
 dist/demo.html
 dist/index.html

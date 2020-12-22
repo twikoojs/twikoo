@@ -201,9 +201,13 @@ export default {
       const fileIndex = `${Date.now()}-${userId}`
       const fileName = nameSplit.join('.')
       this.paste(this.getImagePlaceholder(fileIndex, fileType))
-      this.uploadPhoto(fileIndex, fileName, fileType, photo)
+      if (this.config.IMAGE_CDN === '7bu') {
+        this.uploadPhotoTo7Bu(fileIndex, fileName, fileType, photo)
+      } else {
+        this.uploadPhotoToQcloud(fileIndex, fileName, fileType, photo)
+      }
     },
-    async uploadPhoto (fileIndex, fileName, fileType, photo) {
+    async uploadPhotoToQcloud (fileIndex, fileName, fileType, photo) {
       try {
         const uploadResult = await this.$tcb.app.uploadFile({
           cloudPath: `tk-img/${fileIndex}.${fileType}`,
@@ -217,6 +221,28 @@ export default {
       } catch (e) {
         console.error(e)
       }
+    },
+    uploadPhotoTo7Bu (fileIndex, fileName, fileType, photo) {
+      return new Promise((resolve) => {
+        try {
+          const url = 'https://7bu.top/api/upload'
+          const formData = new FormData()
+          const xhr = new XMLHttpRequest()
+          formData.append('image', photo)
+          xhr.onreadystatechange = () => {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+              console.log(xhr.responseText)
+              const uploadResult = JSON.parse(xhr.responseText)
+              this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `![${fileName}](${uploadResult.data.url})`)
+              resolve()
+            }
+          }
+          xhr.open('POST', url)
+          xhr.send(formData)
+        } catch (e) {
+          console.error(e)
+        }
+      })
     },
     paste (text) {
       if (document.selection) {

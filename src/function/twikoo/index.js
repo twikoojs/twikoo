@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v0.4.1
+ * Twikoo cloudbase function v0.4.2
  * (c) 2020-2020 iMaeGoo
  * Released under the MIT License.
  */
@@ -31,7 +31,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '0.4.1'
+const VERSION = '0.4.2'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -1193,6 +1193,7 @@ function getConfig () {
       COMMENT_BG_IMG: config.COMMENT_BG_IMG,
       GRAVATAR_CDN: config.GRAVATAR_CDN,
       SHOW_IMAGE: config.SHOW_IMAGE || 'true',
+      IMAGE_CDN: config.IMAGE_CDN,
       SHOW_EMOTION: config.SHOW_EMOTION || 'true',
       EMOTION_CDN: config.EMOTION_CDN,
       COMMENT_PLACEHOLDER: config.COMMENT_PLACEHOLDER,

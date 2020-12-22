@@ -40,6 +40,7 @@ export default {
             { key: 'COMMENT_BG_IMG', desc: '评论框自定义背景图片 URL 地址。', ph: '', value: '' },
             { key: 'GRAVATAR_CDN', desc: '自定义头像 CDN 地址。如：cn.gravatar.com, sdn.geekzu.org, gravatar.loli.net', ph: '示例：sdn.geekzu.org', value: '' },
             { key: 'SHOW_IMAGE', desc: '启用插入图片功能，默认为：true', ph: '示例：false', value: '' },
+            { key: 'IMAGE_CDN', desc: '插入图片所使用的图床，目前支持：7bu、qcloud，默认为：qcloud', ph: '示例：false', value: '' },
             { key: 'SHOW_EMOTION', desc: '启用插入表情功能，默认为：true', ph: '示例：false', value: '' },
             { key: 'EMOTION_CDN', desc: '表情 CDN，默认为：https://cdn.jsdelivr.net/gh/imaegoo/emotion/owo.json', ph: '', value: '' },
             { key: 'COMMENT_PLACEHOLDER', desc: '评论框提示信息，可用<br>换行，默认为空', ph: '示例：', value: '' },

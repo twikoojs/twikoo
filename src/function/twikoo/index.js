@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v0.4.0
+ * Twikoo cloudbase function v0.4.1
  * (c) 2020-2020 iMaeGoo
  * Released under the MIT License.
  */
@@ -31,7 +31,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '0.4.0'
+const VERSION = '0.4.1'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -888,7 +888,7 @@ async function noticeReply (currentComment) {
 async function parse (comment) {
   const timestamp = Date.now()
   const commentDo = {
-    nick: comment.nick ? comment.nick : 'Anonymous',
+    nick: comment.nick ? comment.nick : '匿名',
     mail: comment.mail ? comment.mail : '',
     mailMd5: comment.mail ? md5(comment.mail) : '',
     link: comment.link ? comment.link : '',
@@ -1195,7 +1195,8 @@ function getConfig () {
       SHOW_IMAGE: config.SHOW_IMAGE || 'true',
       SHOW_EMOTION: config.SHOW_EMOTION || 'true',
       EMOTION_CDN: config.EMOTION_CDN,
-      COMMENT_PLACEHOLDER: config.COMMENT_PLACEHOLDER
+      COMMENT_PLACEHOLDER: config.COMMENT_PLACEHOLDER,
+      REQUIRED_FIELDS: config.REQUIRED_FIELDS
     }
   }
 }

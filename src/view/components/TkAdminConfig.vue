@@ -4,7 +4,7 @@
       <div class="tk-admin-config-group" v-for="settingGroup in settings" :key="settingGroup.name">
         <div class="tk-admin-config-group-title">{{ settingGroup.name }}</div>
         <div class="tk-admin-config-item" v-for="setting in settingGroup.items" :key="setting.key">
-          <div class="tk-admin-config-title">{{ setting.key }}</div>
+          <div class="tk-admin-config-title" :title="setting.key">{{ setting.key }}</div>
           <div class="tk-admin-config-input">
             <el-input v-model="setting.value" :placeholder="setting.ph" size="small" :show-password="setting.secret" />
           </div>
@@ -42,7 +42,8 @@ export default {
             { key: 'SHOW_IMAGE', desc: '启用插入图片功能，默认为：true', ph: '示例：false', value: '' },
             { key: 'SHOW_EMOTION', desc: '启用插入表情功能，默认为：true', ph: '示例：false', value: '' },
             { key: 'EMOTION_CDN', desc: '表情 CDN，默认为：https://cdn.jsdelivr.net/gh/imaegoo/emotion/owo.json', ph: '', value: '' },
-            { key: 'COMMENT_PLACEHOLDER', desc: '评论框提示信息，可用<br>换行，默认为空', ph: '示例：', value: '' }
+            { key: 'COMMENT_PLACEHOLDER', desc: '评论框提示信息，可用<br>换行，默认为空', ph: '示例：', value: '' },
+            { key: 'REQUIRED_FIELDS', desc: '评论必填信息，设为 nick,mail,link 代表全必填，设为 none 代表全选填，默认：nick,mail', ph: '示例：nick,mail,link', value: '' }
           ]
         },
         {
@@ -50,7 +51,7 @@ export default {
           items: [
             { key: 'AKISMET_KEY', desc: 'Akismet 反垃圾评论，用于垃圾评论检测，设为 "MANUAL_REVIEW" 开启人工审核，留空不使用反垃圾。注册：https://akismet.com', ph: '示例：8651783edxxx', value: '' },
             { key: 'QCLOUD_SECRET_ID', desc: '腾讯云 secret id，用于垃圾评论检测。同时设置腾讯云和 Akismet 时，只有腾讯云会生效。注册：https://twikoo.js.org/cms.html', ph: '示例：AKIDBgZDdnbTw9D4ey9qPkrkwtb2Do9EwIHw', value: '' },
-            { key: 'QCLOUD_SECRET_KEY', desc: '腾讯云 secret key', ph: '示例：XrkOnvKWS7WeXbP1QZT76rPgtpWx73D7', value: '' },
+            { key: 'QCLOUD_SECRET_KEY', desc: '腾讯云 secret key', ph: '示例：XrkOnvKWS7WeXbP1QZT76rPgtpWx73D7', value: '', secret: true },
             { key: 'LIMIT_PER_MINUTE', desc: '每个 IP 每 10 分钟最多发表多少条评论，默认：0（无限制）', ph: '示例：5', value: '' }
           ]
         },

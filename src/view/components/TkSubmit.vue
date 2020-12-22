@@ -3,7 +3,7 @@
     <div class="tk-row">
       <tk-avatar :config="config" :mail="mail" />
       <div class="tk-col">
-        <tk-meta-input :nick="nick" :mail="mail" :link="link" @update="onMetaUpdate" />
+        <tk-meta-input :nick="nick" :mail="mail" :link="link" @update="onMetaUpdate" :config="config" />
         <el-input class="tk-input"
             type="textarea"
             ref="textarea"
@@ -80,6 +80,7 @@ export default {
     return {
       isSending: false,
       isPreviewing: false,
+      isMetaValid: false,
       errorMessage: '',
       owo: null,
       comment: '',
@@ -94,8 +95,7 @@ export default {
   computed: {
     canSend () {
       return !this.isSending &&
-        !!this.nick &&
-        !!this.mail &&
+        !!this.isMetaValid &&
         !!this.comment.trim()
     },
     textarea () {
@@ -115,10 +115,11 @@ export default {
         })
       }
     },
-    onMetaUpdate (metaData) {
-      this.nick = metaData.nick
-      this.mail = metaData.mail
-      this.link = metaData.link
+    onMetaUpdate (updates) {
+      this.nick = updates.meta.nick
+      this.mail = updates.meta.mail
+      this.link = updates.meta.link
+      this.isMetaValid = updates.valid
     },
     cancel () {
       this.$emit('cancel')

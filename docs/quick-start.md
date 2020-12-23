@@ -98,7 +98,7 @@ Volantis 目前支持 Twikoo，请查看 [hexo-theme-volantis/_config.yml](https
 ``` yml
 comments:
   twikoo:
-    js: https://cdn.jsdelivr.net/npm/twikoo@0.4.2/dist/twikoo.all.min.js
+    js: https://cdn.jsdelivr.net/npm/twikoo@0.4.3/dist/twikoo.all.min.js
     envId: xxxxxxxxxxxxxxx # 腾讯云环境id
 ```
 
@@ -110,7 +110,7 @@ comments:
 comment:
   type: twikoo
   envId: xxxxxxxxxxxxxxx # 腾讯云环境id
-  jsUrl: https://cdn.jsdelivr.net/npm/twikoo@0.4.2/dist/twikoo.all.min.js
+  jsUrl: https://cdn.jsdelivr.net/npm/twikoo@0.4.3/dist/twikoo.all.min.js
 ```
 
 ### 通过 CDN 引入
@@ -121,7 +121,7 @@ comment:
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@0.4.2/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@0.4.3/dist/twikoo.all.min.js"></script>
 <script>
 twikoo.init({
   envId: '您的环境id',

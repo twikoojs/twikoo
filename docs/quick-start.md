@@ -91,9 +91,27 @@ npm run deploy -- -e 您的环境id # 或 yarn deploy -e 您的环境id
 
 Butterfly 目前支持 Twikoo，请查看 [Butterfly 安裝文檔(四) 主題配置-2](https://butterfly.js.org/posts/ceeb73f/#%E8%A9%95%E8%AB%96)
 
+### 在 Hexo Volantis 主题使用
+
+Volantis 目前支持 Twikoo，请查看 [hexo-theme-volantis/_config.yml](https://github.com/volantis-x/hexo-theme-volantis/blob/master/_config.yml)
+
+``` yml
+comments:
+  twikoo:
+    js: https://cdn.jsdelivr.net/npm/twikoo@0.4.2/dist/twikoo.all.min.js
+    envId: xxxxxxxxxxxxxxx # 腾讯云环境id
+```
+
 ### 在 Hexo Icarus 主题使用
 
 [魔改版 Icarus](https://github.com/imaegoo/hexo-theme-icarus)目前支持 Twikoo，官方版 Icarus 暂不支持，适配工作将会在近期完成
+
+``` yml
+comment:
+  type: twikoo
+  envId: xxxxxxxxxxxxxxx # 腾讯云环境id
+  jsUrl: https://cdn.jsdelivr.net/npm/twikoo@0.4.2/dist/twikoo.all.min.js
+```
 
 ### 通过 CDN 引入
 

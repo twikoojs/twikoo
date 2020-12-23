@@ -57,16 +57,7 @@ A simple, safe, free comment system based on Tencent CloudBase (tcb).
 
 ## 开发计划
 
-| 状态 | 优先级 | 计划 |
-| ---- | ---- | ---- |
-| 已完成 | P0 | 文档撰写 |
-| 已完成 | P1 | 评论管理 |
-| 已完成 | P2 | 人工审核 |
-| 已完成 | P2 | AKISMET 审核 |
-| 推　迟 | P2 | 完整 Markdown 适配 |
-| 计划中 | P3 | Emoji 表情 |
-| 计划中 | P3 | 图片表情 |
-| 开发中 | P3 | 评论框粘贴图片 |
+[https://github.com/imaegoo/twikoo/projects/1](https://github.com/imaegoo/twikoo/projects/1)
 
 <!-- ## 贡献者 | Contributors -->
 

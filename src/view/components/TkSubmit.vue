@@ -40,7 +40,7 @@
           :disabled="!canSend"
           @click="send">{{ isSending ? '发送中' : '发送' }}</el-button>
     </div>
-    <div class="tk-preview-container" v-if="isPreviewing" v-html="commentHtml"></div>
+    <div class="tk-preview-container" v-if="isPreviewing" v-html="commentHtml" ref="comment-preview"></div>
   </div>
 </template>
 
@@ -50,7 +50,7 @@ import iconEmotion from '@fortawesome/fontawesome-free/svgs/regular/laugh.svg'
 import iconImage from '@fortawesome/fontawesome-free/svgs/regular/image.svg'
 import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
-import { marked, call, logger } from '../../js/utils'
+import { marked, call, logger, renderMath } from '../../js/utils'
 import OwO from '../lib/owo'
 
 const imageTypes = [
@@ -131,6 +131,7 @@ export default {
     updatePreview () {
       if (this.isPreviewing) {
         this.commentHtml = marked(this.comment)
+        this.$nextTick(() => { renderMath(this.$refs['comment-preview']) })
       }
     },
     async send () {

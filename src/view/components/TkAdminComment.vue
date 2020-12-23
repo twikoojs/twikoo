@@ -1,6 +1,6 @@
 <template>
   <div class="tk-admin-comment" v-loading="loading">
-    <div class="tk-admin-comment-list">
+    <div class="tk-admin-comment-list" ref="comment-list">
       <div class="tk-admin-comment-item" v-for="comment in comments" :key="comment._id">
         <div class="tk-admin-comment-meta">
           <tk-avatar :config="serverConfig" :avatar="comment.avatar" :mail="comment.mail" :link="comment.link" />
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { call, convertLink } from '../../js/utils'
+import { call, convertLink, renderMath } from '../../js/utils'
 import TkAvatar from './TkAvatar.vue'
 import TkPagination from './TkPagination.vue'
 
@@ -61,6 +61,7 @@ export default {
         this.comments = res.result.data
       }
       this.$nextTick(this.handleLinks)
+      this.$nextTick(() => { renderMath(this.$refs['comment-list']) })
       this.loading = false
     },
     async getConfig () {

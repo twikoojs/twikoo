@@ -61,6 +61,15 @@ const getRecentCommentsApi = async (tcb, options) => {
   return result.result.data
 }
 
+const renderMath = (el) => {
+  if (typeof renderMathInElement === 'function') {
+    /* eslint-disable-next-line no-undef */
+    renderMathInElement(el, {
+      throwOnError: false
+    })
+  }
+}
+
 export {
   isNotSet,
   logger,
@@ -73,5 +82,6 @@ export {
   isQQ,
   getQQAvatar,
   getCommentsCountApi,
-  getRecentCommentsApi
+  getRecentCommentsApi,
+  renderMath
 }

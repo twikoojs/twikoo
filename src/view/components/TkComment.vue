@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { timeago, convertLink, call } from '../../js/utils'
+import { timeago, convertLink, call, renderMath } from '../../js/utils'
 import TkAction from './TkAction.vue'
 import TkAvatar from './TkAvatar.vue'
 import TkSubmit from './TkSubmit.vue'
@@ -188,6 +188,8 @@ export default {
     this.$nextTick(this.showExpandIfNeed)
     this.$nextTick(this.scrollToComment)
     this.$nextTick(this.handleLinks)
+    this.$nextTick(this.renderMathInElement)
+    this.$nextTick(() => { renderMath(this.$refs.comment) })
   },
   watch: {
     'comment.like': {

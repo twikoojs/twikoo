@@ -754,7 +754,7 @@ async function noticeMaster (comment) {
   const NICK = comment.nick
   const COMMENT = comment.comment
   const SITE_URL = config.SITE_URL
-  const POST_URL = comment.href || SITE_URL + comment.url
+  const POST_URL = appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
   const emailSubject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}上有新评论了`
   let emailContent
   if (config.MAIL_TEMPLATE_ADMIN) {
@@ -801,7 +801,7 @@ async function noticeWeChat (comment) {
   const NICK = comment.nick
   const COMMENT = $(comment.comment).text()
   const SITE_URL = config.SITE_URL
-  const POST_URL = comment.href || SITE_URL + comment.url
+  const POST_URL = appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
   const emailSubject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}上有新评论了`
   const emailContent = `${NICK}回复说：\n${COMMENT}\n您可以点击 ${POST_URL} 查看回复的完整內容`
   let scApiUrl = 'https://sc.ftqq.com'
@@ -839,7 +839,7 @@ async function noticeQQ (comment) {
   const IP = comment.ip
   const COMMENT = $(comment.comment).text()
   const SITE_URL = config.SITE_URL
-  const POST_URL = comment.href || SITE_URL + comment.url
+  const POST_URL = appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
   const emailSubject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}上有新评论了`
   const emailContent = `评论人：${NICK}(${MAIL})\n评论人IP：${IP}\n评论内容：${COMMENT}\n您可以点击 ${POST_URL} 查看回复的完整內容`
   const qmApiUrl = 'https://qmsg.zendee.cn'
@@ -868,7 +868,7 @@ async function noticeReply (currentComment) {
   const NICK = currentComment.nick
   const COMMENT = currentComment.comment
   const PARENT_COMMENT = parentComment.comment
-  const POST_URL = (currentComment.href || config.SITE_URL + currentComment.url) + '#' + currentComment.pid
+  const POST_URL = appendHashToUrl(currentComment.href || config.SITE_URL + currentComment.url, currentComment.id)
   const SITE_URL = config.SITE_URL
   const emailSubject = config.MAIL_SUBJECT || `${PARENT_NICK}，您在『${SITE_NAME}』上的评论收到了回复`
   let emailContent
@@ -912,6 +912,14 @@ async function noticeReply (currentComment) {
   }
   console.log('回复通知结果：', sendResult)
   return sendResult
+}
+
+function appendHashToUrl (url, hash) {
+  if (url.indexOf('#') === -1) {
+    return `${url}#${hash}`
+  } else {
+    return `${url.substring(0, url.indexOf('#'))}#${hash}`
+  }
 }
 
 // 将评论转为数据库存储格式

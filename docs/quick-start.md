@@ -91,9 +91,27 @@ npm run deploy -- -e 您的环境id # 或 yarn deploy -e 您的环境id
 
 Butterfly 目前支持 Twikoo，请查看 [Butterfly 安裝文檔(四) 主題配置-2](https://butterfly.js.org/posts/ceeb73f/#%E8%A9%95%E8%AB%96)
 
+### 在 Hexo Volantis 主题使用
+
+Volantis 目前支持 Twikoo，请查看 [hexo-theme-volantis/_config.yml](https://github.com/volantis-x/hexo-theme-volantis/blob/master/_config.yml)
+
+``` yml
+comments:
+  twikoo:
+    js: https://cdn.jsdelivr.net/npm/twikoo@0.4.2/dist/twikoo.all.min.js
+    envId: xxxxxxxxxxxxxxx # 腾讯云环境id
+```
+
 ### 在 Hexo Icarus 主题使用
 
 [魔改版 Icarus](https://github.com/imaegoo/hexo-theme-icarus)目前支持 Twikoo，官方版 Icarus 暂不支持，适配工作将会在近期完成
+
+``` yml
+comment:
+  type: twikoo
+  envId: xxxxxxxxxxxxxxx # 腾讯云环境id
+  jsUrl: https://cdn.jsdelivr.net/npm/twikoo@0.4.2/dist/twikoo.all.min.js
+```
 
 ### 通过 CDN 引入
 
@@ -103,8 +121,14 @@ Butterfly 目前支持 Twikoo，请查看 [Butterfly 安裝文檔(四) 主題配
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@0.4.1/dist/twikoo.all.min.js"></script>
-<script>twikoo.init({ envId: '您的环境id', el: '#tcomment' })</script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@0.4.2/dist/twikoo.all.min.js"></script>
+<script>
+twikoo.init({
+  envId: '您的环境id',
+  // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，如果您的环境地域不是上海，需传此参数
+  el: '#tcomment'
+})
+</script>
 ```
 
 > 建议使用 CDN 引入 Twikoo 的用户在链接地址上锁定版本，以免将来 Twikoo 升级时受到非兼容性更新的影响。
@@ -125,7 +149,11 @@ npm install twikoo # 或 yarn add twikoo
 
 ``` js
 import twikoo from 'twikoo' // 或 const twikoo = require('twikoo')
-twikoo.init({ envId: '您的环境id', el: '#tcomment' })
+twikoo.init({
+  envId: '您的环境id',
+  // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，如果您的环境地域不是上海，需传此参数
+  el: '#tcomment'
+})
 ```
 
 ## 开启管理面板

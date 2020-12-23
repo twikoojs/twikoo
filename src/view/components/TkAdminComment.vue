@@ -1,6 +1,6 @@
 <template>
   <div class="tk-admin-comment" v-loading="loading">
-    <div class="tk-admin-comment-list">
+    <div class="tk-admin-comment-list" ref="comment-list">
       <div class="tk-admin-comment-item" v-for="comment in comments" :key="comment._id">
         <div class="tk-admin-comment-meta">
           <tk-avatar :config="serverConfig" :avatar="comment.avatar" :mail="comment.mail" :link="comment.link" />
@@ -9,7 +9,7 @@
           <span v-if="comment.mail">&nbsp;(<a :href="`mailto:${comment.mail}`">{{ comment.mail }}</a>)</span>
           <span v-if="comment.isSpam">&nbsp;(已隐藏)</span>
         </div>
-        <div class="tk-content" v-html="comment.comment"></div>
+        <div class="tk-content" v-html="comment.comment" ref="comments"></div>
         <div class="tk-admin-actions" slot="content">
           <el-button size="mini" type="text" @click="handleView(comment)">查看</el-button>
           <el-button size="mini" type="text" v-if="comment.isSpam" @click="handleSpam(comment, false)">显示</el-button>
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { call, convertLink } from '../../js/utils'
+import { call, convertLink, renderLinks, renderMath } from '../../js/utils'
 import TkAvatar from './TkAvatar.vue'
 import TkPagination from './TkPagination.vue'
 
@@ -60,6 +60,10 @@ export default {
         this.count = res.result.count
         this.comments = res.result.data
       }
+      this.$nextTick(() => {
+        renderLinks(this.$refs.comments)
+        renderMath(this.$refs['comment-list'])
+      })
       this.loading = false
     },
     async getConfig () {

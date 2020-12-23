@@ -6,15 +6,19 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
   <title>Twikoo Demo</title>
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bulma@0.8.2/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
   <link rel="stylesheet" type="text/css" href="demo.css">
 </head>
 
 <body>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js" integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js" integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
   <script type="text/javascript" src="./twikoo.all.min.js" charset="utf-8"></script>
   <script type="text/javascript">
     function init() {
       twikoo.init({
         envId: document.getElementById('envId').value,
+        region: document.getElementById('region').value,
         el: '#tcomment'
       });
     }
@@ -31,7 +35,7 @@
           </div>
           <div class="navbar-end">
             <div class="navbar-item">
-              <a class="button is-light" href="#">View on Github</a>
+              <a class="button is-light" href="https://github.com/imaegoo/twikoo">View on Github</a>
             </div>
           </div>
         </div>
@@ -46,6 +50,12 @@
             <label class="label">环境 ID | Environment ID: <code>envId</code></label>
             <div class="control">
               <input class="input" id="envId" type="text" placeholder="e.g imaegoo-16fe3d" value="imaegoo-16fe3d">
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">环境地域 | Region: <code>region</code></label>
+            <div class="control">
+              <input class="input" id="region" type="text" placeholder="e.g ap-guangzhou" value="ap-shanghai">
             </div>
           </div>
           <div class="field">

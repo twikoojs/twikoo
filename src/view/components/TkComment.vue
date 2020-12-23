@@ -23,7 +23,7 @@
       </div>
       <div class="tk-content">
         <span v-if="comment.pid">回复 <a :href="`#${comment.pid}`">@{{ comment.ruser }}</a> :</span>
-        <span v-html="comment.comment"></span>
+        <span v-html="comment.comment" ref="comment"></span>
       </div>
       <div class="tk-extras" v-if="comment.os || comment.browser">
         <div class="tk-extra"><span class="tk-icon" v-html="iconOs"></span>&nbsp;{{ comment.os }}</div>
@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { timeago, convertLink, call } from '../../js/utils'
+import { timeago, convertLink, call, renderLinks, renderMath } from '../../js/utils'
 import TkAction from './TkAction.vue'
 import TkAvatar from './TkAvatar.vue'
 import TkSubmit from './TkSubmit.vue'
@@ -181,6 +181,10 @@ export default {
   mounted () {
     this.$nextTick(this.showExpandIfNeed)
     this.$nextTick(this.scrollToComment)
+    this.$nextTick(() => {
+      renderLinks(this.$refs.comment)
+      renderMath(this.$refs.comment)
+    })
   },
   watch: {
     'comment.like': {

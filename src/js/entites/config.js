@@ -9,7 +9,7 @@ class Config {
     this.SMTP_USER = model.SMTP_USER
     this.SMTP_PASS = model.SMTP_PASS
     this.SC_SENDKEY = model.SC_SENDKEY
-	this.QM_SENDKEY = model.QM_SENDKEY
+    this.QM_SENDKEY = model.QM_SENDKEY
     this.SENDER_NAME = model.SENDER_NAME
     this.SENDER_EMAIL = model.SENDER_EMAIL
     this.BLOGGER_EMAIL = model.BLOGGER_EMAIL

@@ -708,7 +708,7 @@ async function sendMail (comment) {
     noticeMaster(comment),
     noticeReply(comment),
     noticeWeChat(comment),
-	noticeQQ(comment)
+    noticeQQ(comment)
   ]).catch(console.error)
 }
 
@@ -824,7 +824,7 @@ async function noticeWeChat (comment) {
 }
 
 // QQ通知
-async function noticeQQ(comment) {
+async function noticeQQ (comment) {
   if (!config.QM_SENDKEY) {
     console.log('没有配置 qmsg 酱，放弃QQ通知')
     return
@@ -842,12 +842,12 @@ async function noticeQQ(comment) {
   const POST_URL = comment.href || SITE_URL + comment.url
   const emailSubject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}上有新评论了`
   const emailContent = `评论人：${NICK}(${MAIL})\n评论人IP：${IP}\n评论内容：${COMMENT}\n您可以点击 ${POST_URL} 查看回复的完整內容`
-  let qmApiUrl = 'https://qmsg.zendee.cn'
-  let qmApiParam = {
-    msg: emailSubject + "\n" + emailContent
+  const qmApiUrl = 'https://qmsg.zendee.cn'
+  const qmApiParam = {
+    msg: emailSubject + '\n' + emailContent
   }
   const sendResult = await axios.post(`${qmApiUrl}/send/${config.QM_SENDKEY}`, qs.stringify(qmApiParam), {
-    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
   })
   console.log('QQ通知结果：', sendResult)
 }

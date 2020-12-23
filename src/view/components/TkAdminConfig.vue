@@ -60,7 +60,7 @@ export default {
           name: '通知',
           items: [
             { key: 'SC_SENDKEY', desc: 'Server酱（sc.ftqq.com）微信推送的 SCKEY', ph: '示例：SCT1364TKdsiGjGvyAZNYDVnuHW12345', value: '' },
-			{ key: 'QM_SENDKEY', desc: 'Qmsg酱（qmsg.zendee.cn）QQ推送的 KEY', ph: '示例：k2ni28jkmn72tqdvqryt9827u0o9nbpok', value: '' },
+            { key: 'QM_SENDKEY', desc: 'Qmsg酱（qmsg.zendee.cn）QQ推送的 KEY', ph: '示例：k2ni28jkmn72tqdvqryt9827u0o9nbpok', value: '' },
             { key: 'SC_MAIL_NOTIFY', desc: '是否同时通过微信和邮件 2 种方式通知博主，默认只通过微信通知博主，默认：false', ph: '示例：true', value: '' }
           ]
         },

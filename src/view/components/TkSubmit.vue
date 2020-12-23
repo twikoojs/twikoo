@@ -50,7 +50,7 @@ import iconEmotion from '@fortawesome/fontawesome-free/svgs/regular/laugh.svg'
 import iconImage from '@fortawesome/fontawesome-free/svgs/regular/image.svg'
 import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
-import { marked, call, logger, renderMath } from '../../js/utils'
+import { marked, call, logger, renderLinks, renderMath } from '../../js/utils'
 import OwO from '../lib/owo'
 
 const imageTypes = [
@@ -131,7 +131,10 @@ export default {
     updatePreview () {
       if (this.isPreviewing) {
         this.commentHtml = marked(this.comment)
-        this.$nextTick(() => { renderMath(this.$refs['comment-preview']) })
+        this.$nextTick(() => {
+          renderLinks(this.$refs['comment-preview'])
+          renderMath(this.$refs['comment-preview'])
+        })
       }
     },
     async send () {
@@ -232,7 +235,6 @@ export default {
           formData.append('image', photo)
           xhr.onreadystatechange = () => {
             if (xhr.readyState === 4 && xhr.status === 200) {
-              console.log(xhr.responseText)
               const uploadResult = JSON.parse(xhr.responseText)
               this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `![${fileName}](${uploadResult.data.url})`)
               resolve()

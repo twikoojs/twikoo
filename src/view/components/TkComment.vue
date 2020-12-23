@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { timeago, convertLink, call, renderMath } from '../../js/utils'
+import { timeago, convertLink, call, renderLinks, renderMath } from '../../js/utils'
 import TkAction from './TkAction.vue'
 import TkAvatar from './TkAvatar.vue'
 import TkSubmit from './TkSubmit.vue'
@@ -144,12 +144,6 @@ export default {
         this.$refs['tk-comment'].scrollIntoView()
       }
     },
-    handleLinks () {
-      const aEls = this.$refs.comment.getElementsByTagName('a')
-      for (const aEl of aEls) {
-        aEl.setAttribute('target', '_blank')
-      }
-    },
     async onLike () {
       if (this.likeLoading) return // 防止连续点击
       this.likeLoading = true
@@ -187,9 +181,10 @@ export default {
   mounted () {
     this.$nextTick(this.showExpandIfNeed)
     this.$nextTick(this.scrollToComment)
-    this.$nextTick(this.handleLinks)
-    this.$nextTick(this.renderMathInElement)
-    this.$nextTick(() => { renderMath(this.$refs.comment) })
+    this.$nextTick(() => {
+      renderLinks(this.$refs.comment)
+      renderMath(this.$refs.comment)
+    })
   },
   watch: {
     'comment.like': {

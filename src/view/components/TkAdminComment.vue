@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { call, convertLink, renderMath } from '../../js/utils'
+import { call, convertLink, renderLinks, renderMath } from '../../js/utils'
 import TkAvatar from './TkAvatar.vue'
 import TkPagination from './TkPagination.vue'
 
@@ -60,8 +60,10 @@ export default {
         this.count = res.result.count
         this.comments = res.result.data
       }
-      this.$nextTick(this.handleLinks)
-      this.$nextTick(() => { renderMath(this.$refs['comment-list']) })
+      this.$nextTick(() => {
+        renderLinks(this.$refs.comments)
+        renderMath(this.$refs['comment-list'])
+      })
       this.loading = false
     },
     async getConfig () {
@@ -80,15 +82,6 @@ export default {
     },
     handleView (comment) {
       window.open(`${comment.url}#${comment._id}`)
-    },
-    handleLinks () {
-      const aEls = []
-      this.$refs.comments.forEach((comment) => {
-        aEls.push(...comment.getElementsByTagName('a'))
-      })
-      for (const aEl of aEls) {
-        aEl.setAttribute('target', '_blank')
-      }
     },
     async handleDelete (comment) {
       this.loading = true

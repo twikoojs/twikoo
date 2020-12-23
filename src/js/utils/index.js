@@ -61,6 +61,20 @@ const getRecentCommentsApi = async (tcb, options) => {
   return result.result.data
 }
 
+const renderLinks = (el) => {
+  let aEls = []
+  if (el instanceof Array) {
+    el.forEach((item) => {
+      aEls.push(...item.getElementsByTagName('a'))
+    })
+  } else if (el instanceof Element) {
+    aEls = el.getElementsByTagName('a')
+  }
+  for (const aEl of aEls) {
+    aEl.setAttribute('target', '_blank')
+  }
+}
+
 const renderMath = (el) => {
   if (typeof renderMathInElement === 'function') {
     /* eslint-disable-next-line no-undef */
@@ -83,5 +97,6 @@ export {
   getQQAvatar,
   getCommentsCountApi,
   getRecentCommentsApi,
+  renderLinks,
   renderMath
 }

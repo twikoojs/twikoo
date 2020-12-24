@@ -133,7 +133,7 @@ export default {
         this.commentHtml = marked(this.comment)
         this.$nextTick(() => {
           renderLinks(this.$refs['comment-preview'])
-          renderMath(this.$refs['comment-preview'])
+          renderMath(this.$refs['comment-preview'], this.$twikoo.katex)
         })
       }
     },

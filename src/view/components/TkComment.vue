@@ -193,7 +193,7 @@ export default {
     this.$nextTick(this.scrollToComment)
     this.$nextTick(() => {
       renderLinks(this.$refs.comment)
-      renderMath(this.$refs.comment)
+      renderMath(this.$refs.comment, this.$twikoo.katex)
     })
   },
   watch: {

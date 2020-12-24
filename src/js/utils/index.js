@@ -75,12 +75,19 @@ const renderLinks = (el) => {
   }
 }
 
-const renderMath = (el) => {
+const renderMath = (el, options) => {
+  const defaultOptions = {
+    delimiters: [
+      { left: '$$', right: '$$', display: true },
+      { left: '$', right: '$', display: false },
+      { left: '\\(', right: '\\)', display: false },
+      { left: '\\[', right: '\\]', display: true }
+    ],
+    throwOnError: false
+  }
   if (typeof renderMathInElement === 'function') {
     /* eslint-disable-next-line no-undef */
-    renderMathInElement(el, {
-      throwOnError: false
-    })
+    renderMathInElement(el, options || defaultOptions)
   }
 }
 

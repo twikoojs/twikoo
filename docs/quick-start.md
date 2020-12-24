@@ -102,6 +102,15 @@ comments:
     envId: xxxxxxxxxxxxxxx # 腾讯云环境id
 ```
 
+### 在 Hexo Ayer 主题使用
+
+Ayer 目前支持 Twikoo，请查看 [hexo-theme-ayer/_config.yml](https://github.com/Shen-Yu/hexo-theme-ayer/blob/master/_config.yml)
+
+``` yml
+twikoo:
+  envId: xxxxxxxxxxxxxxx # 腾讯云环境id
+```
+
 ### 在 Hexo Icarus 主题使用
 
 [魔改版 Icarus](https://github.com/imaegoo/hexo-theme-icarus)目前支持 Twikoo，官方版 Icarus 暂不支持，适配工作将会在近期完成

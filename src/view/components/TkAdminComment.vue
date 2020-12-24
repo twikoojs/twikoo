@@ -62,7 +62,7 @@ export default {
       }
       this.$nextTick(() => {
         renderLinks(this.$refs.comments)
-        renderMath(this.$refs['comment-list'])
+        renderMath(this.$refs['comment-list'], this.$twikoo.katex)
       })
       this.loading = false
     },

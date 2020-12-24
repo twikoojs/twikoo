@@ -2,8 +2,11 @@
   <ParentLayout>
     <template #page-bottom>
       <div class="page-edit">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js" integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js" integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
         <div id="twikoo"></div>
-        <script src="https://cdn.jsdelivr.net/npm/twikoo@0.4.2/dist/twikoo.all.min.js" ref="twikooJs"></script>
+        <script src="https://cdn.jsdelivr.net/npm/twikoo@0.4.3/dist/twikoo.all.min.js" ref="twikooJs"></script>
       </div>
     </template>
   </ParentLayout>

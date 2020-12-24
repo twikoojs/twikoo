@@ -13,7 +13,9 @@
             <strong>{{ comment.nick }}</strong>
           </a>
           <span class="tk-tag tk-tag-green" v-if="comment.master">{{ config.MASTER_TAG || '博主' }}</span>
-          <small class="tk-time">{{ displayCreated }}</small>
+          <small class="tk-time">
+            <time :datetime="jsonTimestamp" :title="localeTime">{{ displayCreated }}</time>
+          </small>
         </div>
         <tk-action :liked="liked"
             :like-count="like"
@@ -35,6 +37,7 @@
             :key="reply.id"
             :comment="reply"
             :config="config"
+            @expand="onExpand"
             @load="onLoad"
             @reply="onReplyReply" />
       </div>
@@ -113,6 +116,12 @@ export default {
     displayCreated () {
       return timeago(this.comment.created)
     },
+    jsonTimestamp () {
+      return new Date(this.comment.created).toJSON()
+    },
+    localeTime () {
+      return new Date(this.comment.created).toLocaleString()
+    },
     iconOs () {
       return this.getIconBy(this.comment.os, osList)
     },
@@ -142,6 +151,7 @@ export default {
     scrollToComment () {
       if (window.location.hash.indexOf(this.comment.id) !== -1) {
         this.$refs['tk-comment'].scrollIntoView()
+        this.$emit('expand')
       }
     },
     async onLike () {
@@ -183,7 +193,7 @@ export default {
     this.$nextTick(this.scrollToComment)
     this.$nextTick(() => {
       renderLinks(this.$refs.comment)
-      renderMath(this.$refs.comment)
+      renderMath(this.$refs.comment, this.$twikoo.katex)
     })
   },
   watch: {

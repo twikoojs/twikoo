@@ -1238,7 +1238,8 @@ function getConfig () {
       SHOW_EMOTION: config.SHOW_EMOTION || 'true',
       EMOTION_CDN: config.EMOTION_CDN,
       COMMENT_PLACEHOLDER: config.COMMENT_PLACEHOLDER,
-      REQUIRED_FIELDS: config.REQUIRED_FIELDS
+      REQUIRED_FIELDS: config.REQUIRED_FIELDS,
+      HIDE_ADMIN_CRYPT: config.HIDE_ADMIN_CRYPT
     }
   }
 }

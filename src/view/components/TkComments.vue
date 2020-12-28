@@ -4,7 +4,7 @@
     <div class="tk-comments-container" v-loading="loading">
       <div class="tk-comments-title">
         <span>{{ count }} 条评论</span>
-        <span class="tk-icon" v-html="iconSetting" @click="openAdmin"></span>
+        <span class="tk-icon" v-if="showAdminEntry" v-html="iconSetting" @click="openAdmin"></span>
       </div>
       <div class="tk-comments-no" v-if="!loading && !comments.length">没有评论</div>
       <tk-comment v-for="comment in comments"
@@ -29,6 +29,9 @@ export default {
   components: {
     TkSubmit,
     TkComment
+  },
+  props: {
+    showAdminEntry: Boolean
   },
   data () {
     return {

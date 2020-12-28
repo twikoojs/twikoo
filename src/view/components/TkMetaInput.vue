@@ -71,8 +71,16 @@ export default {
         (this.metaData.link || !this.requiredFields.link)
       )
     },
+    checkAdminCrypt () {
+      const app = this.$root.$children[0]
+      const showAdminEntry = this.config.HIDE_ADMIN_CRYPT
+        ? this.config.HIDE_ADMIN_CRYPT === this.metaData.nick
+        : true
+      app.onShowAdminEntry(showAdminEntry)
+    },
     onMetaChange () {
       this.updateMeta()
+      this.checkAdminCrypt()
     }
   },
   watch: {
@@ -87,6 +95,9 @@ export default {
         })
       },
       deep: true
+    },
+    'config.VERSION' () {
+      this.checkAdminCrypt()
     }
   },
   mounted () {

@@ -1,6 +1,6 @@
 <template>
   <div id="twikoo" class="twikoo">
-    <tk-comments @admin="showAdmin = true" />
+    <tk-comments @admin="showAdmin = true" :show-admin-entry="showAdminEntry" />
     <tk-footer />
     <tk-admin :show="showAdmin" @close="showAdmin = false" />
   </div>
@@ -19,7 +19,13 @@ export default {
   },
   data () {
     return {
-      showAdmin: false
+      showAdmin: false,
+      showAdminEntry: false
+    }
+  },
+  methods: {
+    onShowAdminEntry (showAdminEntry) {
+      this.showAdminEntry = showAdminEntry
     }
   }
 }

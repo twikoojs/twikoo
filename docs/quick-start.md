@@ -134,8 +134,9 @@ comment:
 <script>
 twikoo.init({
   envId: '您的环境id',
+  el: '#tcomment',
   // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，如果您的环境地域不是上海，需传此参数
-  el: '#tcomment'
+  // path: 'window.location.pathname', // 用于区分不同文章的自定义 js 文章路径，请勿随意传值！
 })
 </script>
 ```
@@ -160,8 +161,9 @@ npm install twikoo # 或 yarn add twikoo
 import twikoo from 'twikoo' // 或 const twikoo = require('twikoo')
 twikoo.init({
   envId: '您的环境id',
+  el: '#tcomment',
   // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，如果您的环境地域不是上海，需传此参数
-  el: '#tcomment'
+  // path: 'window.location.pathname', // 用于区分不同文章的自定义 js 路径，如果您的文章路径不是 location.pathname，需传此参数
 })
 ```
 

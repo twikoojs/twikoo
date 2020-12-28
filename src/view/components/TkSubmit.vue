@@ -156,12 +156,16 @@ export default {
     },
     async send () {
       this.isSending = true
+      const url = this.$twikoo.path
+        // eslint-disable-next-line no-eval
+        ? eval(this.$twikoo.path)
+        : window.location.pathname
       const comment = {
         nick: this.nick,
         mail: this.mail,
         link: this.link,
         ua: navigator.userAgent,
-        url: window.location.pathname,
+        url,
         href: window.location.href,
         comment: marked(this.comment),
         pid: this.pid ? this.pid : this.replyId,

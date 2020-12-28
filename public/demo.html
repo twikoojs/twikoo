@@ -18,8 +18,9 @@
     function init() {
       twikoo.init({
         envId: document.getElementById('envId').value,
+        el: '#tcomment',
         region: document.getElementById('region').value,
-        el: '#tcomment'
+        path: document.getElementById('path').value
       });
     }
   </script>
@@ -56,6 +57,12 @@
             <label class="label">环境地域 | Region: <code>region</code></label>
             <div class="control">
               <input class="input" id="region" type="text" placeholder="e.g ap-guangzhou" value="ap-shanghai">
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">文章路径 | Path: <code>path</code></label>
+            <div class="control">
+              <input class="input" id="path" type="text" placeholder="e.g window.location.pathname" value="window.location.pathname">
             </div>
           </div>
           <div class="field">

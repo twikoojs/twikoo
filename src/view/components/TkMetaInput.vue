@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import { isQQ } from '../../js/utils'
+
 const metaInputs = [
   { key: 'nick', locale: '昵称', name: 'nick' },
   { key: 'mail', locale: '邮箱', name: 'mail' },
@@ -71,8 +73,42 @@ export default {
         (this.metaData.link || !this.requiredFields.link)
       )
     },
+    checkQQ () {
+      if (isQQ(this.metaData.nick)) {
+        // 模仿 Valine 的操作逻辑，当用户在 [昵称] 输入 QQ 号时
+        // 1. 自动填充数字 QQ 邮箱到 [邮箱]
+        // 2. 自动填充 QQ 昵称到 [昵称] (使用了 https://docs.tenapi.cn/ 提供的接口，感谢作者：I Am I)
+        // 3. 自动显示 QQ 头像
+        const qqNum = this.metaData.nick.replace(/@qq.com/g, '')
+        const qqMail = `${qqNum}@qq.com`
+        this.metaData.mail = qqMail
+        this.getQQNick(qqNum)
+      }
+    },
+    getQQNick (qqNum) {
+      const url = `https://tenapi.cn/qqname?qq=${qqNum}`
+      const xhr = new XMLHttpRequest()
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          const response = JSON.parse(xhr.responseText)
+          this.metaData.nick = response.name
+          this.updateMeta()
+        }
+      }
+      xhr.open('GET', url)
+      xhr.send()
+    },
+    checkAdminCrypt () {
+      const app = this.$root.$children[0]
+      const showAdminEntry = this.config.HIDE_ADMIN_CRYPT
+        ? this.config.HIDE_ADMIN_CRYPT === this.metaData.nick
+        : true
+      app.onShowAdminEntry(showAdminEntry)
+    },
     onMetaChange () {
+      this.checkQQ()
       this.updateMeta()
+      this.checkAdminCrypt()
     }
   },
   watch: {
@@ -87,6 +123,9 @@ export default {
         })
       },
       deep: true
+    },
+    'config.VERSION' () {
+      this.checkAdminCrypt()
     }
   },
   mounted () {

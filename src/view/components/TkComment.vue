@@ -28,8 +28,14 @@
         <span v-html="comment.comment" ref="comment"></span>
       </div>
       <div class="tk-extras" v-if="comment.os || comment.browser">
-        <div class="tk-extra"><span class="tk-icon" v-html="iconOs"></span>&nbsp;{{ comment.os }}</div>
-        <div class="tk-extra"><span class="tk-icon" v-html="iconBrowser"></span>&nbsp;{{ comment.browser }}</div>
+        <div class="tk-extra">
+          <span class="tk-icon" v-html="iconOs"></span>
+          <span class="tk-extra-text">&nbsp;{{ comment.os }}</span>
+        </div>
+        <div class="tk-extra">
+          <span class="tk-icon" v-html="iconBrowser"></span>
+          <span class="tk-extra-text">&nbsp;{{ comment.browser }}</span>
+        </div>
       </div>
       <!-- 回复列表 -->
       <div class="tk-replies" :class="{ 'tk-replies-expand': isExpanded || !showExpand }" ref="tk-replies">
@@ -234,19 +240,20 @@ export default {
   font-size: 0.875em;
   display: flex;
   flex-wrap: wrap;
-  margin-top: 0.5rem;
 }
 .tk-extra {
+  margin-top: 0.5rem;
   margin-right: 0.75rem;
+  display: flex;
+  align-items: center;
 }
 .tk-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  vertical-align: sub;
   height: 1em;
   width: 1em;
-  line-height: 0;
+  line-height: 1;
+}
+.tk-extra-text {
+  line-height: 1;
 }
 .tk-icon /deep/ svg {
   width: 100%;

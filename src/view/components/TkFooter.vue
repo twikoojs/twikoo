@@ -18,8 +18,12 @@ export default {
   },
   methods: {
     async getCounter () {
+      const url = this.$twikoo.path
+        // eslint-disable-next-line no-eval
+        ? eval(this.$twikoo.path)
+        : window.location.pathname
       const result = await call(this.$tcb, 'COUNTER_GET', {
-        url: window.location.pathname,
+        url,
         href: window.location.href,
         title: document.title
       })

@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v0.4.3
+ * Twikoo cloudbase function v0.4.4
  * (c) 2020-2020 iMaeGoo
  * Released under the MIT License.
  */
@@ -31,7 +31,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '0.4.3'
+const VERSION = '0.4.4'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -1238,7 +1238,8 @@ function getConfig () {
       SHOW_EMOTION: config.SHOW_EMOTION || 'true',
       EMOTION_CDN: config.EMOTION_CDN,
       COMMENT_PLACEHOLDER: config.COMMENT_PLACEHOLDER,
-      REQUIRED_FIELDS: config.REQUIRED_FIELDS
+      REQUIRED_FIELDS: config.REQUIRED_FIELDS,
+      HIDE_ADMIN_CRYPT: config.HIDE_ADMIN_CRYPT
     }
   }
 }

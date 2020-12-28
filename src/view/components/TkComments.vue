@@ -4,7 +4,7 @@
     <div class="tk-comments-container" v-loading="loading">
       <div class="tk-comments-title">
         <span>{{ count }} 条评论</span>
-        <span class="tk-icon" v-html="iconSetting" @click="openAdmin"></span>
+        <span class="tk-icon" v-if="showAdminEntry" v-html="iconSetting" @click="openAdmin"></span>
       </div>
       <div class="tk-comments-no" v-if="!loading && !comments.length">没有评论</div>
       <tk-comment v-for="comment in comments"
@@ -30,6 +30,9 @@ export default {
     TkSubmit,
     TkComment
   },
+  props: {
+    showAdminEntry: Boolean
+  },
   data () {
     return {
       loading: true,
@@ -51,21 +54,24 @@ export default {
     },
     async initComments () {
       this.loading = true
-      await this.getComments({
-        url: window.location.pathname
-      })
+      const url = this.$twikoo.path
+        // eslint-disable-next-line no-eval
+        ? eval(this.$twikoo.path)
+        : window.location.pathname
+      await this.getComments({ url })
       this.loading = false
     },
     async onExpand () {
       if (this.loadingMore) return
       this.loadingMore = true
+      const url = this.$twikoo.path
+        // eslint-disable-next-line no-eval
+        ? eval(this.$twikoo.path)
+        : window.location.pathname
       const before = this.comments
         .map((item) => item.created)
         .sort((a, b) => a - b)[0] // 最小值
-      await this.getComments({
-        url: window.location.pathname,
-        before
-      })
+      await this.getComments({ url, before })
       this.loadingMore = false
     },
     async getComments (event) {

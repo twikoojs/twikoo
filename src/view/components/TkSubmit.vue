@@ -10,13 +10,13 @@
             v-model="comment"
             :placeholder="config.COMMENT_PLACEHOLDER ? config.COMMENT_PLACEHOLDER.replace(/<br>/g, '\n') : ''"
             :autosize="{ minRows: 3 }"
-            @input="updatePreview"
+            @input="onCommentInput"
             @keyup.enter.native="onEnterKeyUp($event)" />
       </div>
     </div>
     <div class="tk-row actions">
       <div class="tk-row-actions-start">
-        <div class="tk-action-icon OwO" v-show="config.SHOW_EMOTION === 'true'" ref="owo"></div>
+        <div class="tk-action-icon OwO" v-show="config.SHOW_EMOTION === 'true'" v-clickoutside="closeOwo" ref="owo"></div>
         <div class="tk-action-icon" v-show="config.SHOW_IMAGE === 'true'" v-html="iconImage" @click="openSelectImage"></div>
         <input class="tk-input-image" type="file" accept="image/*" value="" ref="inputFile" @change="onSelectImage" />
         <div class="tk-error-message">{{ errorMessage }}</div>
@@ -48,6 +48,7 @@
 import iconMarkdown from '@fortawesome/fontawesome-free/svgs/brands/markdown.svg'
 import iconEmotion from '@fortawesome/fontawesome-free/svgs/regular/laugh.svg'
 import iconImage from '@fortawesome/fontawesome-free/svgs/regular/image.svg'
+import Clickoutside from 'element-ui/src/utils/clickoutside'
 import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
 import { marked, call, logger, renderLinks, renderMath } from '../../js/utils'
@@ -70,6 +71,9 @@ export default {
   components: {
     TkAvatar,
     TkMetaInput
+  },
+  directives: {
+    Clickoutside
   },
   props: {
     replyId: String,
@@ -103,6 +107,15 @@ export default {
     }
   },
   methods: {
+    initDraft () {
+      const draft = localStorage.getItem('twikoo-draft')
+      if (!this.comment && draft) {
+        this.comment = draft
+      }
+    },
+    saveDraft () {
+      localStorage.setItem('twikoo-draft', this.comment)
+    },
     initOwo () {
       if (this.config.SHOW_EMOTION === 'true') {
         this.owo = new OwO({
@@ -124,6 +137,10 @@ export default {
     cancel () {
       this.$emit('cancel')
     },
+    onCommentInput () {
+      this.saveDraft()
+      this.updatePreview()
+    },
     preview () {
       this.isPreviewing = !this.isPreviewing
       this.updatePreview()
@@ -139,12 +156,16 @@ export default {
     },
     async send () {
       this.isSending = true
+      const url = this.$twikoo.path
+        // eslint-disable-next-line no-eval
+        ? eval(this.$twikoo.path)
+        : window.location.pathname
       const comment = {
         nick: this.nick,
         mail: this.mail,
         link: this.link,
         ua: navigator.userAgent,
-        url: window.location.pathname,
+        url,
         href: window.location.href,
         comment: marked(this.comment),
         pid: this.pid ? this.pid : this.replyId,
@@ -177,6 +198,11 @@ export default {
       if ((event.ctrlKey || event.metaKey) && this.canSend) {
         this.send()
         event.preventDefault()
+      }
+    },
+    closeOwo () {
+      if (this.owo.container.classList.contains('OwO-open')) {
+        this.owo.toggle()
       }
     },
     openSelectImage () {
@@ -265,6 +291,7 @@ export default {
     }
   },
   mounted () {
+    this.initDraft()
     this.initOwo()
     this.addEventListener()
     this.onBgImgChange()

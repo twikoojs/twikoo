@@ -98,7 +98,7 @@ Volantis 目前支持 Twikoo，请查看 [hexo-theme-volantis/_config.yml](https
 ``` yml
 comments:
   twikoo:
-    js: https://cdn.jsdelivr.net/npm/twikoo@0.4.3/dist/twikoo.all.min.js
+    js: https://cdn.jsdelivr.net/npm/twikoo@0.4.4/dist/twikoo.all.min.js
     envId: xxxxxxxxxxxxxxx # 腾讯云环境id
 ```
 
@@ -119,7 +119,7 @@ twikoo:
 comment:
   type: twikoo
   envId: xxxxxxxxxxxxxxx # 腾讯云环境id
-  jsUrl: https://cdn.jsdelivr.net/npm/twikoo@0.4.3/dist/twikoo.all.min.js
+  jsUrl: https://cdn.jsdelivr.net/npm/twikoo@0.4.4/dist/twikoo.all.min.js
 ```
 
 ### 通过 CDN 引入
@@ -130,12 +130,13 @@ comment:
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@0.4.3/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@0.4.4/dist/twikoo.all.min.js"></script>
 <script>
 twikoo.init({
   envId: '您的环境id',
+  el: '#tcomment',
   // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，如果您的环境地域不是上海，需传此参数
-  el: '#tcomment'
+  // path: 'window.location.pathname', // 用于区分不同文章的自定义 js 文章路径，请勿随意传值！
 })
 </script>
 ```
@@ -160,8 +161,9 @@ npm install twikoo # 或 yarn add twikoo
 import twikoo from 'twikoo' // 或 const twikoo = require('twikoo')
 twikoo.init({
   envId: '您的环境id',
+  el: '#tcomment',
   // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，如果您的环境地域不是上海，需传此参数
-  el: '#tcomment'
+  // path: 'window.location.pathname', // 用于区分不同文章的自定义 js 路径，如果您的文章路径不是 location.pathname，需传此参数
 })
 ```
 

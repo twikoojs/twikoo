@@ -177,6 +177,7 @@ export default {
         this.comment = ''
         this.errorMessage = ''
         this.$emit('load')
+        this.saveDraft()
       } else {
         this.isSending = false
         logger.error('评论失败', sendResult)

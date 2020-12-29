@@ -26,7 +26,10 @@
     "docs:build": "vuepress build docs"
   },
   "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
     "@cloudbase/cli": "^1.0.7",
+    "babel-loader": "^8.2.2",
     "copy-webpack-plugin": "^6.4.0",
     "css-loader": "^3.6.0",
     "eslint": "^7.15.0",

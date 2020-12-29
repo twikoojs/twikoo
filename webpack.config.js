@@ -16,7 +16,8 @@ module.exports = {
     rules: [
       { test: /\.vue$/, loader: 'vue-loader' },
       { test: /\.css$/, use: ['vue-style-loader', 'css-loader'] },
-      { test: /\.svg$/, loader: 'svg-inline-loader' }
+      { test: /\.svg$/, loader: 'svg-inline-loader' },
+      { test: /\.m?js$/, exclude: /node_modules/, use: { loader: 'babel-loader', options: { presets: ['@babel/preset-env'] } } }
     ]
   },
   entry: {

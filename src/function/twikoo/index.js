@@ -117,8 +117,13 @@ exports.main = async (event, context) => {
         res = await checkSpamAction(event, context)
         break
       default:
-        res.code = RES_CODE.EVENT_NOT_EXIST
-        res.message = '请更新 Twikoo 云函数至最新版本'
+        if (event.event) {
+          res.code = RES_CODE.EVENT_NOT_EXIST
+          res.message = '请更新 Twikoo 云函数至最新版本'
+        } else {
+          res.code = RES_CODE.SUCCESS
+          res.message = 'Twikoo 云函数运行正常'
+        }
     }
   } catch (e) {
     console.error('Twikoo 遇到错误，请参考以下错误信息。如有疑问，请反馈至 https://github.com/imaegoo/twikoo/issues')

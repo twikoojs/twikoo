@@ -15,7 +15,20 @@
     "name": "twikoo",
     "plugins": {
       "function": {
-        "use": "@cloudbase/framework-plugin-function"
+        "use": "@cloudbase/framework-plugin-function",
+        "inputs": {
+          "functionRootPath": "./src/function",
+          "functions": [
+            {
+              "name": "twikoo",
+              "timeout": 30,
+              "envVariables": {},
+              "runtime": "Nodejs10.15",
+              "memory": 128
+            }
+          ],
+          "servicePaths": {}
+        }
       }
     }
   }

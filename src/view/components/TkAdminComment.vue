@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { call, convertLink, renderLinks, renderMath } from '../../js/utils'
+import { call, convertLink, renderLinks, renderMath, renderCode } from '../../js/utils'
 import TkAvatar from './TkAvatar.vue'
 import TkPagination from './TkPagination.vue'
 
@@ -63,6 +63,7 @@ export default {
       this.$nextTick(() => {
         renderLinks(this.$refs.comments)
         renderMath(this.$refs['comment-list'], this.$twikoo.katex)
+        this.highlightCode()
       })
       this.loading = false
     },
@@ -70,6 +71,7 @@ export default {
       const res = await call(this.$tcb, 'GET_CONFIG_FOR_ADMIN')
       if (res.result && !res.result.code) {
         this.serverConfig = res.result.config
+        if (!this.serverConfig.HIGHLIGHT) this.serverConfig.HIGHLIGHT = 'true'
       }
     },
     onPageSizeChange (newPageSize) {
@@ -99,11 +101,19 @@ export default {
       })
       await this.getComments()
       this.loading = false
+    },
+    highlightCode () {
+      if (this.serverConfig.HIGHLIGHT === 'true') {
+        renderCode(this.$refs['comment-list'], this.serverConfig.HIGHLIGHT_THEME)
+      }
     }
   },
-  mounted () {
-    this.getConfig()
-    this.getComments()
+  async mounted () {
+    await Promise.all([
+      this.getConfig(),
+      this.getComments()
+    ])
+    this.highlightCode()
   }
 }
 </script>

@@ -45,7 +45,9 @@ export default {
             { key: 'EMOTION_CDN', desc: '表情 CDN，默认为：https://cdn.jsdelivr.net/gh/imaegoo/emotion/owo.json', ph: '', value: '' },
             { key: 'COMMENT_PLACEHOLDER', desc: '评论框提示信息，可用<br>换行，默认为空', ph: '示例：', value: '' },
             { key: 'REQUIRED_FIELDS', desc: '评论必填信息，设为 nick,mail,link 代表全必填，设为 none 代表全选填，默认：nick,mail', ph: '示例：nick,mail,link', value: '' },
-            { key: 'HIDE_ADMIN_CRYPT', desc: '隐藏管理面板入口。可设置一个“暗号”，只有在“昵称”一栏输入相同的“暗号”时，管理面板入口才会显示，留空则不隐藏管理入口', ph: '示例：admin', value: '' }
+            { key: 'HIDE_ADMIN_CRYPT', desc: '隐藏管理面板入口。可设置一个“暗号”，只有在“昵称”一栏输入相同的“暗号”时，管理面板入口才会显示，留空则不隐藏管理入口', ph: '示例：admin', value: '' },
+            { key: 'HIGHLIGHT', desc: '启用代码高亮功能。如果您的主题和代码高亮有冲突，请设为 false。默认：true', ph: '示例：false', value: '' },
+            { key: 'HIGHLIGHT_THEME', desc: '代码高亮主题，可选：default、coy、dark、funky、okaidia、solarizedlight、tomorrow、twilight，访问 https://prismjs.com 可预览主题效果。如果您的主题和代码高亮有冲突，请设为 none。默认：none', ph: '示例：tomorrow', value: '' }
           ]
         },
         {

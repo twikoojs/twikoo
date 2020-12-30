@@ -14,14 +14,21 @@ A simple, safe, free comment system based on Tencent CloudBase (tcb).
 
 * 免费搭建（※1）
 * 隐私安全（※2）
-* 支持邮件与微信通知（※3）
+* 支持邮件、微信、QQ通知（※3）
 * 支持反垃圾评论（※4）
 
 注：<br>
 ※1 Twikoo 使用云开发作为评论后台，每个用户均长期享受1个免费的标准型基础版1资源套餐<br>
 ※2 Twikoo 通过云函数控制敏感字段（邮箱、IP、环境配置等）不会泄露<br>
-※3 微信提醒基于 [Server酱](https://sc.ftqq.com/3.version)，需自行注册并获取API key<br>
-※4 反垃圾基于 [akismet.com](https://akismet.com/)，需自行注册并获取API key
+※3 微信提醒基于 [Server酱](https://sc.ftqq.com/3.version)，QQ 提醒基于 [Qmsg酱](https://qmsg.zendee.cn/)，需自行注册并获取 API key<br>
+※4 反垃圾基于 [akismet.com](https://akismet.com/) 或 [腾讯云内容安全](https://console.cloud.tencent.com/cms/text/overview)，需自行注册并获取 API key
+
+## 完整功能列表
+
+<details>
+<summary>点击展开</summary>
+* 点赞
+</details>
 
 ## 预览 | Preview
 

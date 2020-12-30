@@ -51,7 +51,7 @@ import iconImage from '@fortawesome/fontawesome-free/svgs/regular/image.svg'
 import Clickoutside from 'element-ui/src/utils/clickoutside'
 import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
-import { marked, call, logger, renderLinks, renderMath } from '../../js/utils'
+import { marked, call, logger, renderLinks, renderMath, renderCode } from '../../js/utils'
 import OwO from '../lib/owo'
 
 const imageTypes = [
@@ -151,6 +151,9 @@ export default {
         this.$nextTick(() => {
           renderLinks(this.$refs['comment-preview'])
           renderMath(this.$refs['comment-preview'], this.$twikoo.katex)
+          if (this.config.HIGHLIGHT === 'true') {
+            renderCode(this.$refs['comment-preview'], this.config.HIGHLIGHT_THEME)
+          }
         })
       }
     },

@@ -38,14 +38,21 @@ export default {
             { key: 'COMMENT_PAGE_SIZE', desc: '评论列表分页大小，默认为 8。', ph: '示例：8', value: '' },
             { key: 'MASTER_TAG', desc: '博主标识自定义文字，默认为 “博主”。', ph: '示例：站长', value: '' },
             { key: 'COMMENT_BG_IMG', desc: '评论框自定义背景图片 URL 地址。', ph: '', value: '' },
-            { key: 'GRAVATAR_CDN', desc: '自定义头像 CDN 地址。如：cn.gravatar.com, sdn.geekzu.org, gravatar.loli.net', ph: '示例：sdn.geekzu.org', value: '' },
+            { key: 'GRAVATAR_CDN', desc: '自定义头像 CDN 地址。如：cn.gravatar.com, sdn.geekzu.org, gravatar.loli.net，默认：cn.gravatar.com', ph: '示例：sdn.geekzu.org', value: '' },
+            { key: 'COMMENT_PLACEHOLDER', desc: '评论框提示信息，可用<br>换行，默认为空', ph: '示例：', value: '' },
+            { key: 'REQUIRED_FIELDS', desc: '评论必填信息，设为 nick,mail,link 代表全必填，设为 none 代表全选填，默认：nick,mail', ph: '示例：nick,mail,link', value: '' },
+            { key: 'HIDE_ADMIN_CRYPT', desc: '隐藏管理面板入口。可设置一个“暗号”，只有在“昵称”一栏输入相同的“暗号”时，管理面板入口才会显示，留空则不隐藏管理入口', ph: '示例：admin', value: '' }
+          ]
+        },
+        {
+          name: '插件',
+          items: [
             { key: 'SHOW_IMAGE', desc: '启用插入图片功能，默认为：true', ph: '示例：false', value: '' },
             { key: 'IMAGE_CDN', desc: '插入图片所使用的图床，目前支持：7bu、qcloud，默认为：qcloud', ph: '示例：false', value: '' },
             { key: 'SHOW_EMOTION', desc: '启用插入表情功能，默认为：true', ph: '示例：false', value: '' },
             { key: 'EMOTION_CDN', desc: '表情 CDN，默认为：https://cdn.jsdelivr.net/gh/imaegoo/emotion/owo.json', ph: '', value: '' },
-            { key: 'COMMENT_PLACEHOLDER', desc: '评论框提示信息，可用<br>换行，默认为空', ph: '示例：', value: '' },
-            { key: 'REQUIRED_FIELDS', desc: '评论必填信息，设为 nick,mail,link 代表全必填，设为 none 代表全选填，默认：nick,mail', ph: '示例：nick,mail,link', value: '' },
-            { key: 'HIDE_ADMIN_CRYPT', desc: '隐藏管理面板入口。可设置一个“暗号”，只有在“昵称”一栏输入相同的“暗号”时，管理面板入口才会显示，留空则不隐藏管理入口', ph: '示例：admin', value: '' }
+            { key: 'HIGHLIGHT', desc: '启用代码高亮功能。如果您的主题和代码高亮有冲突，请设为 false。默认：true', ph: '示例：false', value: '' },
+            { key: 'HIGHLIGHT_THEME', desc: '代码高亮主题，可选：default、coy、dark、funky、okaidia、solarizedlight、tomorrow、twilight，访问 https://prismjs.com 可预览主题效果。如果您的主题和代码高亮有冲突，请设为 none。默认：none', ph: '示例：tomorrow', value: '' }
           ]
         },
         {
@@ -58,7 +65,7 @@ export default {
           ]
         },
         {
-          name: '通知',
+          name: '即时通知',
           items: [
             { key: 'SC_SENDKEY', desc: 'Server酱（sc.ftqq.com）微信推送的 SCKEY', ph: '示例：SCT1364TKdsiGjGvyAZNYDVnuHW12345', value: '' },
             { key: 'QM_SENDKEY', desc: 'Qmsg酱（qmsg.zendee.cn）QQ推送的 KEY', ph: '示例：k2ni28jkmn72tqdvqryt9827u0o9nbpok', value: '' },

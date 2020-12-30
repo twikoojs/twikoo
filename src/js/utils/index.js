@@ -1,5 +1,6 @@
 import timeago from './timeago'
 import marked from './marked'
+import renderCode from './highlight'
 import call from './api'
 import { isQQ, getQQAvatar } from './avatar'
 
@@ -98,6 +99,7 @@ export {
   timestamp,
   convertLink,
   marked,
+  renderCode,
   call,
   getFuncVer,
   isQQ,

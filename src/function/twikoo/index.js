@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v0.4.5
+ * Twikoo cloudbase function v0.5.0
  * (c) 2020-2020 iMaeGoo
  * Released under the MIT License.
  */
@@ -31,7 +31,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '0.4.5'
+const VERSION = '0.5.0'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -1197,7 +1197,7 @@ function getAvatar (comment) {
   if (comment.avatar) {
     return comment.avatar
   } else {
-    const gravatarCdn = config.GRAVATAR_CDN || 'gravatar.loli.net'
+    const gravatarCdn = config.GRAVATAR_CDN || 'cn.gravatar.com'
     const mailMd5 = comment.mailMd5 || md5(comment.mail)
     return `https://${gravatarCdn}/avatar/${mailMd5}?d=identicon`
   }
@@ -1244,7 +1244,9 @@ function getConfig () {
       EMOTION_CDN: config.EMOTION_CDN,
       COMMENT_PLACEHOLDER: config.COMMENT_PLACEHOLDER,
       REQUIRED_FIELDS: config.REQUIRED_FIELDS,
-      HIDE_ADMIN_CRYPT: config.HIDE_ADMIN_CRYPT
+      HIDE_ADMIN_CRYPT: config.HIDE_ADMIN_CRYPT,
+      HIGHLIGHT: config.HIGHLIGHT || 'true',
+      HIGHLIGHT_THEME: config.HIGHLIGHT_THEME
     }
   }
 }

@@ -46,7 +46,7 @@ Twikoo 使用云开发作为评论后台，每个云开发用户均长期享受1
 [如何更新 Twikoo 版本？](faq.html#如何更新-twikoo-版本)
 :::
 
-### ② 脚本方式（不推荐）
+### ② 脚本方式
 
 ::: warning 注意
 * 请确保您已经安装了 [Node.js](https://nodejs.org/en/download/)
@@ -98,7 +98,7 @@ Volantis 目前支持 Twikoo，请查看 [hexo-theme-volantis/_config.yml](https
 ``` yml
 comments:
   twikoo:
-    js: https://cdn.jsdelivr.net/npm/twikoo@0.4.5/dist/twikoo.all.min.js
+    js: https://cdn.jsdelivr.net/npm/twikoo@0.5.0/dist/twikoo.all.min.js
     envId: xxxxxxxxxxxxxxx # 腾讯云环境id
 ```
 
@@ -119,7 +119,7 @@ twikoo:
 comment:
   type: twikoo
   envId: xxxxxxxxxxxxxxx # 腾讯云环境id
-  jsUrl: https://cdn.jsdelivr.net/npm/twikoo@0.4.5/dist/twikoo.all.min.js
+  jsUrl: https://cdn.jsdelivr.net/npm/twikoo@0.5.0/dist/twikoo.all.min.js
 ```
 
 ### 通过 CDN 引入
@@ -130,13 +130,13 @@ comment:
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@0.4.5/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@0.5.0/dist/twikoo.all.min.js"></script>
 <script>
 twikoo.init({
   envId: '您的环境id',
   el: '#tcomment',
   // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，如果您的环境地域不是上海，需传此参数
-  // path: 'window.location.pathname', // 用于区分不同文章的自定义 js 文章路径，请勿随意传值！
+  // path: 'window.location.pathname', // 用于区分不同文章的自定义 js 路径，如果您的文章路径不是 location.pathname，需传此参数
 })
 </script>
 ```

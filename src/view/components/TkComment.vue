@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { timeago, convertLink, call, renderLinks, renderMath } from '../../js/utils'
+import { timeago, convertLink, call, renderLinks, renderMath, renderCode } from '../../js/utils'
 import TkAction from './TkAction.vue'
 import TkAvatar from './TkAvatar.vue'
 import TkSubmit from './TkSubmit.vue'
@@ -207,6 +207,16 @@ export default {
       handler: function (like) {
         this.like = this.comment.like
         this.liked = this.comment.liked
+      },
+      immediate: true
+    },
+    'config.HIGHLIGHT': {
+      handler: function (highlight) {
+        if (highlight === 'true') {
+          this.$nextTick(() => {
+            renderCode(this.$refs.comment, this.config.HIGHLIGHT_THEME)
+          })
+        }
       },
       immediate: true
     }

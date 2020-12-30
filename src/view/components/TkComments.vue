@@ -6,7 +6,7 @@
         <span>{{ count }} 条评论</span>
         <span class="tk-icon" v-if="showAdminEntry" v-html="iconSetting" @click="openAdmin"></span>
       </div>
-      <div class="tk-comments-no" v-if="!loading && !comments.length">没有评论</div>
+      <div class="tk-comments-no" v-if="!loading && !comments.length">{{ errorMessage }}</div>
       <tk-comment v-for="comment in comments"
         :key="comment.id"
         :comment="comment"
@@ -37,6 +37,7 @@ export default {
     return {
       loading: true,
       loadingMore: false,
+      errorMessage: '没有评论',
       config: {},
       comments: [],
       showExpand: true,
@@ -75,11 +76,15 @@ export default {
       this.loadingMore = false
     },
     async getComments (event) {
-      const comments = await call(this.$tcb, 'COMMENT_GET', event)
-      if (comments && comments.result && comments.result.data) {
-        this.comments = event.before ? this.comments.concat(comments.result.data) : comments.result.data
-        this.showExpand = comments.result.more
-        this.count = comments.result.count || this.comments.length || 0
+      try {
+        const comments = await call(this.$tcb, 'COMMENT_GET', event)
+        if (comments && comments.result && comments.result.data) {
+          this.comments = event.before ? this.comments.concat(comments.result.data) : comments.result.data
+          this.showExpand = comments.result.more
+          this.count = comments.result.count || this.comments.length || 0
+        }
+      } catch (e) {
+        this.errorMessage = e.message
       }
     },
     onReply (id) {
@@ -112,6 +117,7 @@ export default {
 }
 .tk-comments-no {
   flex: 1;
+  text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;

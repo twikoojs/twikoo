@@ -46,7 +46,7 @@ Twikoo 使用云开发作为评论后台，每个云开发用户均长期享受1
 [如何更新 Twikoo 版本？](faq.html#如何更新-twikoo-版本)
 :::
 
-### ② 脚本方式（不推荐）
+### ② 脚本方式
 
 ::: warning 注意
 * 请确保您已经安装了 [Node.js](https://nodejs.org/en/download/)

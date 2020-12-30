@@ -8,7 +8,7 @@
 
 ## 如何修改、重置管理员密码？
 
-请前往[云开发控制台](https://console.cloud.tencent.com/tcb/database/collection/config)删除 config.ADMIN_PASS 配置项，然后前往 Twikoo 管理面板重新设置密码。
+请前往[云开发控制台](https://console.cloud.tencent.com/tcb/database/collection/config)编辑配置，删除 config.ADMIN_PASS 配置项，然后前往 Twikoo 管理面板重新设置密码。
 
 ## 如何获得管理面板的私钥文件？
 
@@ -18,7 +18,7 @@
 
 ## 如何开启文章访问量统计？
 
-文章访问量统计功能正在测试中，您可以在需要展示文章访问量的地方添加：
+您可以在需要展示文章访问量的地方添加：
 
 ``` html
 <span id="twikoo_visitors">0</span>
@@ -45,6 +45,10 @@ Twikoo 云函数的内存消耗恒定为 0.1GB，由此可计算出 Twikoo 云�
 
 1. **更新云函数**：登录[环境-云函数](https://console.cloud.tencent.com/tcb/scf/index)，点击 twikoo，点击函数代码，将新的云函数代码（[index.js](https://imaegoo.coding.net/public/twikoo/twikoo/git/files/dev/src/function/twikoo/index.js) 和 [package.json](https://imaegoo.coding.net/public/twikoo/twikoo/git/files/dev/src/function/twikoo/package.json) 两个文件）粘贴、点击保存并安装依赖即可。
 2. **更新网站**：修改主题配置中的 Twikoo CDN 地址 `https://cdn.jsdelivr.net/npm/twikoo@x.x.x/dist/twikoo.all.min.js` 中的 `x.x.x`，使之与云函数版本号相同，然后部署网站。
+
+::: tip 提示
+如果升级后出现无法读取评论列表，云函数报错，请在函数编辑页面，删除 `node_modules` 目录（删除需要半分钟左右，请耐心等待删除完成），再点击保存并安装依赖。如果仍然不能解决，请删除并重新创建 Twikoo 云函数。
+:::
 
 ## 如何启用 Katex 支持？
 

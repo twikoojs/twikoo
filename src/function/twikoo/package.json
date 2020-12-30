@@ -1,6 +1,15 @@
 {
   "name": "twikoo-func",
+  "version": "0.5.0",
+  "description": "A simple comment system based on Tencent CloudBase (tcb).",
+  "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
+  "license": "MIT",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imaegoo/twikoo.git"
+  },
+  "homepage": "https://twikoo.js.org",
   "dependencies": {
     "@cloudbase/manager-node": "^3.8.2",
     "@cloudbase/node-sdk": "^2.4.4",

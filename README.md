@@ -12,25 +12,73 @@ A simple, safe, free comment system based on Tencent CloudBase (tcb).
 
 ## 特色 | Features
 
-* 免费搭建（※1）
-* 隐私安全（※2）
-* 支持邮件、微信、QQ通知（※3）
-* 支持反垃圾评论（※4）
-
-注：<br>
-※1 Twikoo 使用云开发作为评论后台，每个用户均长期享受1个免费的标准型基础版1资源套餐<br>
-※2 Twikoo 通过云函数控制敏感字段（邮箱、IP、环境配置等）不会泄露<br>
-※3 微信提醒基于 [Server酱](https://sc.ftqq.com/3.version)，QQ 提醒基于 [Qmsg酱](https://qmsg.zendee.cn/)，需自行注册并获取 API key<br>
-※4 反垃圾基于 [akismet.com](https://akismet.com/) 或 [腾讯云内容安全](https://console.cloud.tencent.com/cms/text/overview)，需自行注册并获取 API key
-
-## 完整功能列表
-
 <details>
 <summary>点击展开</summary>
-* 点赞
+
+### 简单
+
+* 免费搭建（使用云开发作为评论后台，每个用户均长期享受1个免费的标准型基础版1资源套餐）
+* 简单部署（支持一键部署、网页部署、脚本部署）
+
+### 易用
+
+* 支持回复、点赞
+* 无需额外适配，支持搭配浅色主题与深色主题使用
+* 支持 API 调用，批量获取文章评论数、最新评论
+* 访客在昵称栏输入 QQ 号，会自动补全 QQ 昵称和 QQ 邮箱
+* 访客填写数字 QQ 邮箱，会使用 QQ 头像作为评论头像
+* 支持评论框粘贴图片（可禁用）
+* 支持插入图片（可禁用）
+* 支持去不图床、云开发图床
+* 支持插入表情（可禁用）
+* 支持 Ctrl + Enter 快捷回复
+* 评论框内容实时保存草稿，刷新不会丢失
+* [支持 Katex 公式](https://twikoo.js.org/faq.html#%E5%A6%82%E4%BD%95%E5%90%AF%E7%94%A8-katex-%E6%94%AF%E6%8C%81)
+* 支持按语言的代码高亮
+
+### 安全
+
+* 隐私信息安全（通过云函数控制敏感字段（邮箱、IP、环境配置等）不会泄露）
+* 支持 Akismet 垃圾评论检测（需自行注册 [akismet.com](https://akismet.com/)）
+* 支持腾讯云内容安全垃圾评论检测（需自行注册 [腾讯云内容安全](https://console.cloud.tencent.com/cms/text/overview)）
+* 支持人工审核模式
+* 防 XSS 注入
+* 支持限制每个 IP 每 10 分钟最多发表多少条评论
+
+### 即时
+
+* 支持邮件提醒（访客和博主）
+* 支持微信提醒（仅针对博主，基于 [Server酱](https://sc.ftqq.com/3.version)，需自行注册）
+* 支持 QQ 提醒（仅针对博主，基于 [Qmsg酱](https://qmsg.zendee.cn/)，需自行注册）
+
+### 个性
+
+* 支持自定义评论框背景图片
+* 支持自定义“博主”标识文字
+* 支持自定义通知邮件模板
+* 支持自定义评论框提示信息（placeholder）
+* 支持自定义表情列表（兼容 [OwO 的数据格式](https://cdn.jsdelivr.net/npm/owo@1.0.2/demo/OwO.json)）
+* 支持自定义【昵称】【邮箱】【网址】必填 / 选填
+* 支持自定义代码高亮主题
+
+### 便捷管理
+
+* 内嵌式管理面板，通过密码登录，可方便地查看评论、隐藏评论、删除评论、修改配置
+* 支持隐藏管理入口，通过输入暗号显示
+* 支持从 Valine、Artalk、Disqus 导入评论
+
+### 缺点
+
+* 国外请求较慢
+* 部署需要实名认证
+* 不支持 IE
+
 </details>
 
 ## 预览 | Preview
+
+<details>
+<summary>点击展开</summary>
 
 ### 评论
 
@@ -44,12 +92,16 @@ A simple, safe, free comment system based on Tencent CloudBase (tcb).
 
 ![推送通知](./docs/static/readme-3.jpg)
 
+</details>
+
 ## 快速上手 | Quick Start
 
 请查看[快速上手](https://twikoo.js.org/quick-start.html)
 
-> 如果你想获取更新动态、建言献策、参与内测，欢迎加入内测群：<br>
-> <img height="300" alt="1080829142" src="https://www.imaegoo.com/gallery/2020/hello-twikoo.png" />
+<details>
+<summary>如果你想获取更新动态、建言献策、参与内测，欢迎加入讨论群：1080829142</summary>
+<img height="300" alt="1080829142" src="https://www.imaegoo.com/gallery/2020/hello-twikoo.png" />
+</details>
 
 <!-- ## 贡献者 | Contributors -->
 
@@ -82,4 +134,9 @@ There are no plans to internationalize this project.
 
 ## 许可 | License
 
+<details>
+<summary>MIT License</summary>
+
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fimaegoo%2Ftwikoo.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fimaegoo%2Ftwikoo?ref=badge_large)
+
+</details>

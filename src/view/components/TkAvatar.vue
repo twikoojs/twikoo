@@ -28,7 +28,7 @@ export default {
       if (this.config && this.config.GRAVATAR_CDN) {
         return this.config.GRAVATAR_CDN
       } else {
-        return 'gravatar.loli.net'
+        return 'cn.gravatar.com'
       }
     },
     avatarInner () {

@@ -1,23 +1,23 @@
 # This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
 # For more information see: https://help.github.com/actions/language-and-framework-guides/publishing-nodejs-packages
 
-name: Publish
+name: Docs
 
 on:
   release:
     types: [created]
+  workflow_dispatch:
 
 jobs:
-  publish-npm:
+  publish-docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12
-          registry-url: https://registry.npmjs.org/
-      - run: yarn install
-      - run: yarn build
-      - run: yarn publish
+      - uses: jenkey2011/vuepress-deploy@ecff9f2
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          ACCESS_TOKEN: ${{ secrets.TWIKOO_TOKEN }}
+          TARGET_REPO: imaegoo/twikoo
+          TARGET_BRANCH: gh-pages
+          BUILD_SCRIPT: yarn && yarn docs:build
+          BUILD_DIR: docs/.vuepress/dist
+          CNAME: twikoo.js.org

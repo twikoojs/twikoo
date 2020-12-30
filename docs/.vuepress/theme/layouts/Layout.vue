@@ -45,3 +45,10 @@ export default {
   }
 }
 </script>
+
+<style>
+.tk-content {
+  overflow: auto;
+  max-height: 300px;
+}
+</style>

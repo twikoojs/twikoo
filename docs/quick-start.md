@@ -113,14 +113,7 @@ twikoo:
 
 ### 在 Hexo Icarus 主题使用
 
-[魔改版 Icarus](https://github.com/imaegoo/hexo-theme-icarus)目前支持 Twikoo，官方版 Icarus 暂不支持，适配工作将会在近期完成
-
-``` yml
-comment:
-  type: twikoo
-  envId: xxxxxxxxxxxxxxx # 腾讯云环境id
-  jsUrl: https://cdn.jsdelivr.net/npm/twikoo@0.5.0/dist/twikoo.all.min.js
-```
+请参考 [基于腾讯云，给你的 Icarus 博客配上 Twikoo 评论系统](https://anzifan.com/post/icarus_to_candy_2/) by 异次元de机智君💯
 
 ### 通过 CDN 引入
 

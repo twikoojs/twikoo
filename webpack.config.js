@@ -5,6 +5,7 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const ROOT_PATH = path.resolve(__dirname)
 const BUILD_PATH = path.resolve(ROOT_PATH, 'dist')
 const version = require('./package.json').version
+const TerserPlugin = require("terser-webpack-plugin");
 const banner =
   'Twikoo v' + version + '\n' +
   '(c) 2020-' + new Date().getFullYear() + ' iMaeGoo\n' +
@@ -17,7 +18,7 @@ module.exports = {
       { test: /\.vue$/, loader: 'vue-loader' },
       { test: /\.css$/, use: ['vue-style-loader', 'css-loader'] },
       { test: /\.svg$/, loader: 'svg-inline-loader' },
-      { test: /\.m?js$/, exclude: /node_modules/, use: { loader: 'babel-loader', options: { presets: ['@babel/preset-env'] } } }
+      { test: /\.js$/, use: { loader: 'babel-loader', options: { presets: ['@babel/preset-env'] ,plugins: ["@babel/plugin-transform-modules-commonjs","@babel/transform-runtime"]} } }
     ]
   },
   entry: {
@@ -31,6 +32,7 @@ module.exports = {
     library: 'twikoo',
     libraryTarget: 'umd'
   },
+  target: ['web', 'es5'],
   plugins: [
     new webpack.BannerPlugin(banner),
     new CopyPlugin({
@@ -38,12 +40,27 @@ module.exports = {
         { from: 'public/', to: './' }
       ]
     }),
-    new VueLoaderPlugin()
+    new VueLoaderPlugin(),
+    new TerserPlugin({
+	  parallel: 4,
+	  terserOptions: {
+	    ecma: 5,
+	    toplevel: true,
+	    ie8: true,
+	    safari10: true,
+     },
+    })
   ],
   devServer: {
-    contentBase: BUILD_PATH,
-    disableHostCheck: true,
-    port: 9820
+    dev: {
+      publicPath: BUILD_PATH,
+    },
+	static: [BUILD_PATH],
+    port: 9820,
+	host: 'localhost',
+	open:true,
+	hot:true,
+	compress: true,
   },
   performance: {
     maxEntrypointSize: 524288,

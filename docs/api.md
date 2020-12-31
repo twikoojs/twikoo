@@ -17,6 +17,7 @@
 ``` js
 twikoo.getCommentsCount({
   envId: '您的环境id', // 环境 ID
+  // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，如果您的环境地域不是上海，需传此参数
   urls: [ // 不包含协议、域名、参数的文章路径列表，必传参数
     '/2020/10/post-1.html',
     '/2020/11/post-2.html',
@@ -49,6 +50,7 @@ twikoo.getCommentsCount({
 ``` js
 twikoo.getRecentComments({
   envId: '您的环境id', // 环境 ID
+  // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，如果您的环境地域不是上海，需传此参数
   pageSize: 10, // 获取多少条，默认：10，最大：100
   includeReply: false // 是否包括最新回复，默认：false
 }).then(function (res) {

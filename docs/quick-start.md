@@ -24,6 +24,7 @@ Twikoo 使用云开发作为评论后台，每个云开发用户均长期享受1
 1. [注册云开发CloudBase](https://curl.qcloud.com/KnnJtUom)
 2. 进入[云开发控制台](https://console.cloud.tencent.com/tcb/)，新建环境，请按需配置环境<br>
 ::: tip 提示
+* 推荐创建上海环境。如选择广州环境，需要在 `twikoo.init()` 时额外指定环境 `region: "ap-guangzhou"`
 * 环境名称自由填写
 * 推荐选择计费方式`包年包月`，套餐版本`基础班 1`，超出免费额度不会收费
 * 如果提示选择“应用模板”，请选择“空模板”

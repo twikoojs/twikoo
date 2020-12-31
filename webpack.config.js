@@ -52,15 +52,17 @@ module.exports = {
     })
   ],
   devServer: {
-    dev: {
-      publicPath: BUILD_PATH,
-    },
-	static: [BUILD_PATH],
+    static: [{
+        directory: BUILD_PATH,
+        publicPath: '/dist/',
+        serveIndex: true,
+        watch: true,
+    },],
     port: 9820,
-	host: 'localhost',
-	open:true,
-	hot:true,
-	compress: true,
+    host: 'localhost',
+    open:true,
+    hot:true,
+    compress: true,
   },
   performance: {
     maxEntrypointSize: 524288,

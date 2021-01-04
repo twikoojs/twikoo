@@ -9,6 +9,7 @@
 .gitignore
 .npmignore
 _config.js
+babel.config.json
 cloudbaserc.json
 dist/demo.css
 dist/demo.html

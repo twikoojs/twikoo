@@ -568,7 +568,11 @@ async function commentImportDisqus (disqusDb, log) {
         nick: post.author[0].name[0],
         mail: '',
         link: '',
-        url: thread.url,
+        url: thread.url
+          ? thread.url.indexOf('http') === 0
+              ? getRelativeUrl(thread.url)
+              : thread.url
+          : getRelativeUrl(thread.href),
         href: thread.href,
         comment: post.message[0],
         ua: '',
@@ -591,19 +595,20 @@ async function commentImportDisqus (disqusDb, log) {
   return comments
 }
 
+function getRelativeUrl (url) {
+  let x = url.indexOf('/')
+  for (let i = 0; i < 2; i++) {
+    x = url.indexOf('/', x + 1)
+  }
+  return url.substring(x)
+}
+
 // Artalk 导入
 async function commentImportArtalk (artalkDb, log) {
   const comments = []
   if (!artalkDb || !artalkDb.length) {
     log('Artalk 评论文件格式有误')
     return
-  }
-  const getRelativeUrl = (url) => {
-    let x = url.indexOf('/')
-    for (let i = 0; i < 2; i++) {
-      x = url.indexOf('/', x + 1)
-    }
-    return url.substring(x)
   }
   marked.setOptions({
     renderer: new marked.Renderer(),

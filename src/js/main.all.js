@@ -1,4 +1,3 @@
-import '@babel/polyfill'
 import { version } from '../../package.json'
 import { install } from './tcb'
 import { render } from '../view'

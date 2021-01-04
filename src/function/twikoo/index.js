@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v0.5.0
+ * Twikoo cloudbase function v0.5.1
  * (c) 2020-2020 iMaeGoo
  * Released under the MIT License.
  */
@@ -31,7 +31,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '0.5.0'
+const VERSION = '0.5.1'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -456,7 +456,7 @@ async function readFile (fileId, type, log) {
     let content = result.fileContent.toString('utf8')
     log('评论文件读取成功')
     if (type === 'json') {
-      content = JSON.parse(content)
+      content = jsonParse(content)
       log('评论文件 JSON 解析成功')
     } else if (type === 'xml') {
       content = await xml2js.parseStringPromise(content)
@@ -465,6 +465,23 @@ async function readFile (fileId, type, log) {
     return content
   } catch (e) {
     log(`评论文件读取失败：${e.message}`)
+  }
+}
+
+// 兼容 Leancloud 两种 JSON 导出格式
+function jsonParse (content) {
+  try {
+    return JSON.parse(content)
+  } catch (e1) {
+    const results = []
+    const lines = content.split('\n')
+    for (const line of lines) {
+      // 逐行 JSON.parse
+      try {
+        results.push(JSON.parse(line))
+      } catch (e2) {}
+    }
+    return { results }
   }
 }
 
@@ -551,7 +568,11 @@ async function commentImportDisqus (disqusDb, log) {
         nick: post.author[0].name[0],
         mail: '',
         link: '',
-        url: thread.url,
+        url: thread.url
+          ? thread.url.indexOf('http') === 0
+              ? getRelativeUrl(thread.url)
+              : thread.url
+          : getRelativeUrl(thread.href),
         href: thread.href,
         comment: post.message[0],
         ua: '',
@@ -574,19 +595,20 @@ async function commentImportDisqus (disqusDb, log) {
   return comments
 }
 
+function getRelativeUrl (url) {
+  let x = url.indexOf('/')
+  for (let i = 0; i < 2; i++) {
+    x = url.indexOf('/', x + 1)
+  }
+  return url.substring(x)
+}
+
 // Artalk 导入
 async function commentImportArtalk (artalkDb, log) {
   const comments = []
   if (!artalkDb || !artalkDb.length) {
     log('Artalk 评论文件格式有误')
     return
-  }
-  const getRelativeUrl = (url) => {
-    let x = url.indexOf('/')
-    for (let i = 0; i < 2; i++) {
-      x = url.indexOf('/', x + 1)
-    }
-    return url.substring(x)
   }
   marked.setOptions({
     renderer: new marked.Renderer(),

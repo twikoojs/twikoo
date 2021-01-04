@@ -11,12 +11,12 @@
 _config.js
 babel.config.json
 cloudbaserc.json
+demo
 dist/demo.css
 dist/demo.html
 dist/index.html
 docs
 node_modules
-public
 src
 stats.json
 webpack.config.js

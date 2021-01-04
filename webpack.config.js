@@ -37,7 +37,7 @@ module.exports = {
     new webpack.BannerPlugin(banner),
     new CopyPlugin({
       patterns: [
-        { from: 'public/', to: './' }
+        { from: 'demo/', to: './' }
       ]
     }),
     new VueLoaderPlugin(),

@@ -18,6 +18,6 @@ jobs:
           ACCESS_TOKEN: ${{ secrets.TWIKOO_TOKEN }}
           TARGET_REPO: imaegoo/twikoo
           TARGET_BRANCH: gh-pages
-          BUILD_SCRIPT: yarn global add vuepress@1.7.1 && vuepress build docs
+          BUILD_SCRIPT: yarn global add vuepress@1.8.0 && vuepress build docs
           BUILD_DIR: docs/.vuepress/dist
           CNAME: twikoo.js.org

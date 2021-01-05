@@ -205,7 +205,7 @@ export default {
       }
     },
     closeOwo () {
-      if (this.owo.container.classList.contains('OwO-open')) {
+      if (this.owo && this.owo.container.classList.contains('OwO-open')) {
         this.owo.toggle()
       }
     },

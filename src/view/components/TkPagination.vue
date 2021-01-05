@@ -1,7 +1,11 @@
 <template>
   <div class="tk-pagination">
     <div class="tk-pagination-options" v-if="!!pageCount">
-      <div>共 {{ total }} 条</div>
+      <div>
+        <span>{{ t('PAGINATION_COUNT_PREFIX') }}</span>
+        <span>{{ total }}</span>
+        <span>{{ t('PAGINATION_COUNT_SUFFIX') }}</span>
+      </div>
       <el-input
           class="el-pagination__editor is-in-pagination"
           type="number"
@@ -10,7 +14,7 @@
           :value="userPageSize ? userPageSize : pageSize"
           @input="handleInputPageSize"
           @change="pageSizeChamge" />
-      <span>条/页</span>
+      <span>{{ t('PAGINATION_PAGESIZE') }}</span>
     </div>
     <div class="tk-pagination-pagers">
       <div class="tk-pagination-pager"
@@ -20,7 +24,7 @@
           @click="currentChange(pager.page)">{{ pager.title }}</div>
     </div>
     <div class="tk-pagination-options" v-if="!!pageCount">
-      <span>前往</span>
+      <span>{{ t('PAGINATION_GOTO_PREFIX') }}</span>
       <el-input
           class="el-pagination__editor is-in-pagination"
           type="number"
@@ -29,12 +33,14 @@
           :value="userInput ? userInput : currentPage"
           @input="handleInput"
           @change="currentChange" />
-      <span>页</span>
+      <span>{{ t('PAGINATION_GOTO_SUFFIX') }}</span>
     </div>
   </div>
 </template>
 
 <script>
+import { t } from '../../js/utils'
+
 export default {
   props: {
     pageSize: {
@@ -60,6 +66,7 @@ export default {
     }
   },
   methods: {
+    t,
     generatePager () {
       const pagers = []
       for (let page = 1; page <= this.pageCount; page++) {

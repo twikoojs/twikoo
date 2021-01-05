@@ -1,3 +1,4 @@
+import t from './i18n'
 import timeago from './timeago'
 import marked from './marked'
 import renderCode from './highlight'
@@ -93,6 +94,7 @@ const renderMath = (el, options) => {
 }
 
 export {
+  t,
   isNotSet,
   logger,
   timeago,

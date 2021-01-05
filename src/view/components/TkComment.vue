@@ -12,7 +12,7 @@
           <a class="tk-nick tk-nick-link" v-if="convertedLink" :href="convertedLink" target="_blank">
             <strong>{{ comment.nick }}</strong>
           </a>
-          <span class="tk-tag tk-tag-green" v-if="comment.master">{{ config.MASTER_TAG || '博主' }}</span>
+          <span class="tk-tag tk-tag-green" v-if="comment.master">{{ config.MASTER_TAG || t('COMMENT_MASTER_TAG') }}</span>
           <small class="tk-time">
             <time :datetime="jsonTimestamp" :title="localeTime">{{ displayCreated }}</time>
           </small>
@@ -24,7 +24,7 @@
             @reply="onReply" />
       </div>
       <div class="tk-content">
-        <span v-if="comment.pid">回复 <a :href="`#${comment.pid}`">@{{ comment.ruser }}</a> :</span>
+        <span v-if="comment.pid">{{ t('COMMENT_REPLIED') }} <a :href="`#${comment.pid}`">@{{ comment.ruser }}</a> :</span>
         <span v-html="comment.comment" ref="comment"></span>
       </div>
       <div class="tk-extras" v-if="comment.os || comment.browser">
@@ -54,13 +54,13 @@
           :config="config"
           @load="onLoad"
           @cancel="onCancel" />
-      <div class="tk-expand" v-if="showExpand" @click="onExpand">展开</div>
+      <div class="tk-expand" v-if="showExpand" @click="onExpand">{{ t('COMMENT_EXPAND') }}</div>
     </div>
   </div>
 </template>
 
 <script>
-import { timeago, convertLink, call, renderLinks, renderMath, renderCode } from '../../js/utils'
+import { timeago, convertLink, call, renderLinks, renderMath, renderCode, t } from '../../js/utils'
 import TkAction from './TkAction.vue'
 import TkAvatar from './TkAvatar.vue'
 import TkSubmit from './TkSubmit.vue'
@@ -142,6 +142,7 @@ export default {
     }
   },
   methods: {
+    t,
     getIconBy (name, list) {
       const lowerCaseName = name.toLowerCase()
       for (const key in list) {

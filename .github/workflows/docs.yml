@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: imaegoo/vuepress-deploy@5ba4288
+      - uses: imaegoo/vuepress-deploy@master
         env:
           ACCESS_TOKEN: ${{ secrets.TWIKOO_TOKEN }}
           TARGET_REPO: imaegoo/twikoo
           TARGET_BRANCH: gh-pages
-          BUILD_SCRIPT: yarn && yarn docs:build
+          BUILD_SCRIPT: yarn global add vuepress@1.8.0 && vuepress build docs
           BUILD_DIR: docs/.vuepress/dist
           CNAME: twikoo.js.org

@@ -1220,8 +1220,9 @@ function getAvatar (comment) {
     return comment.avatar
   } else {
     const gravatarCdn = config.GRAVATAR_CDN || 'cn.gravatar.com'
+    const defaultGravatar = config.DEFAULT_GRAVATAR || 'identicon'
     const mailMd5 = comment.mailMd5 || md5(comment.mail)
-    return `https://${gravatarCdn}/avatar/${mailMd5}?d=identicon`
+    return `https://${gravatarCdn}/avatar/${mailMd5}?d=${defaultGravatar}`
   }
 }
 
@@ -1260,6 +1261,7 @@ function getConfig () {
       MASTER_TAG: config.MASTER_TAG,
       COMMENT_BG_IMG: config.COMMENT_BG_IMG,
       GRAVATAR_CDN: config.GRAVATAR_CDN,
+      DEFAULT_GRAVATAR: config.DEFAULT_GRAVATAR,
       SHOW_IMAGE: config.SHOW_IMAGE || 'true',
       IMAGE_CDN: config.IMAGE_CDN,
       SHOW_EMOTION: config.SHOW_EMOTION || 'true',

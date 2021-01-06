@@ -31,15 +31,22 @@ export default {
         return 'cn.gravatar.com'
       }
     },
+    defaultGravatar () {
+      if (this.config && this.config.DEFAULT_GRAVATAR) {
+        return this.config.DEFAULT_GRAVATAR
+      } else {
+        return 'identicon'
+      }
+    },
     avatarInner () {
       if (this.avatar) {
         return this.avatar
       } else if (this.mailMd5) {
-        return `https://${this.gravatarCdn}/avatar/${this.mailMd5}?d=identicon`
+        return `https://${this.gravatarCdn}/avatar/${this.mailMd5}?d=${this.defaultGravatar}`
       } else if (this.mail && isQQ(this.mail)) {
         return getQQAvatar(this.mail)
       } else if (this.mail) {
-        return `https://${this.gravatarCdn}/avatar/${md5(this.mail)}?d=identicon`
+        return `https://${this.gravatarCdn}/avatar/${md5(this.mail)}?d=${this.defaultGravatar}`
       } else {
         return ''
       }

@@ -86,7 +86,7 @@ A simple, safe, free comment system based on Tencent CloudBase (tcb).
 
 ## 交流群
 
-如果你想获取更新动态、建言献策、参与内测，欢迎加入内测群：<br>
+如果你想获取更新动态、建言献策、参与测试，欢迎加入讨论群：<br>
 <img height="300" alt="1080829142" src="https://www.imaegoo.com/gallery/2020/hello-twikoo.png" />
 
 ## 浏览器支持
@@ -127,8 +127,7 @@ yarn build # 编译 (dist/twikoo.all.min.js)
 
 ## 国际化 | I18N
 
-鉴于腾讯云云开发在中国以外地区的支持程度（文档只有中文版本，环境没有国际版本，在中国以外地区访问缓慢），本项目暂无国际化计划。有国际化需求的，推荐使用另一个安全的评论系统 [Waline](https://waline.js.org/)。<br>
-There are no plans to internationalize this project.
+支持简体中文、繁体中文。欢迎[提交翻译 PR](https://github.com/imaegoo/twikoo/tree/dev/src/js/utils/i18n)。
 
 ## 许可
 

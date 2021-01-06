@@ -9,6 +9,7 @@ class Config {
     this.MASTER_TAG = model.MASTER_TAG
     this.COMMENT_BG_IMG = model.COMMENT_BG_IMG
     this.GRAVATAR_CDN = model.GRAVATAR_CDN
+    this.DEFAULT_GRAVATAR = model.DEFAULT_GRAVATAR
     this.SHOW_IMAGE = model.SHOW_IMAGE
     this.IMAGE_CDN = model.IMAGE_CDN
     this.SHOW_EMOTION = model.SHOW_EMOTION

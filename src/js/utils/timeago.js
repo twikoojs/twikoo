@@ -1,12 +1,12 @@
-import { logger } from '.'
+import { logger, t } from '.'
 
 const locale = {
   timeago: {
-    seconds: '秒前',
-    minutes: '分钟前',
-    hours: '小时前',
-    days: '天前',
-    now: '刚刚'
+    seconds: t('TIMEAGO_SECONDS'),
+    minutes: t('TIMEAGO_MINUTES'),
+    hours: t('TIMEAGO_HOURS'),
+    days: t('TIMEAGO_DAYS'),
+    now: t('TIMEAGO_NOW')
   }
 }
 

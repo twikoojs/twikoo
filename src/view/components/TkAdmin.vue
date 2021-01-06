@@ -3,51 +3,51 @@
     <div class="tk-admin" :class="{ '__show': show }" v-loading="loading">
       <a class="tk-admin-close" @click="onClose" v-html="iconClose"></a>
       <div class="tk-login-title" v-if="needUpdate">
-        <div>若要使用评论管理，请更新 Twikoo 云函数</div>
+        <div>{{ t('ADMIN_NEED_UPDATE') }}</div>
         <a href="https://twikoo.js.org/quick-start.html" target="_blank">https://twikoo.js.org/quick-start.html</a>
       </div>
       <div v-if="!needUpdate">
         <div class="tk-login" v-if="!isLogin && isSetPassword">
-          <div class="tk-login-title">Twikoo 评论管理</div>
-          <el-input class="tk-password" placeholder="请输入" v-model="password" show-password @keyup.enter.native="onLogin" ref="focusme">
-            <template slot="prepend">密码</template>
-            <el-button slot="append" @click="onLogin">登录</el-button>
+          <div class="tk-login-title">{{ t('ADMIN_LOGIN_TITLE') }}</div>
+          <el-input class="tk-password" :placeholder="t('ADMIN_PASSWORD_PLACEHOLDER')" v-model="password" show-password @keyup.enter.native="onLogin" ref="focusme">
+            <template slot="prepend">{{ t('ADMIN_PASSWORD') }}</template>
+            <el-button slot="append" @click="onLogin">{{ t('ADMIN_LOGIN') }}</el-button>
           </el-input>
           <div class="tk-login-msg" v-if="loginErrorMessage">
             {{ loginErrorMessage }}
-            <a href="https://twikoo.js.org/faq.html" rel="noopener noreferrer" target="_blank">忘记密码</a>
+            <a href="https://twikoo.js.org/faq.html" rel="noopener noreferrer" target="_blank">{{ t('ADMIN_FORGOT') }}</a>
           </div>
         </div>
         <div class="tk-regist" v-if="!isLogin && !isSetPassword">
-          <div class="tk-login-title">Twikoo 评论管理</div>
-          <el-input class="tk-password" placeholder="请粘贴私钥文件内容" v-if="!isSetCredentials" v-model="credentials" ref="focusme">
-            <template slot="prepend">私钥文件</template>
+          <div class="tk-login-title">{{ t('ADMIN_LOGIN_TITLE') }}</div>
+          <el-input class="tk-password" :placeholder="t('ADMIN_CREDENTIALS_PLACEHOLDER')" v-if="!isSetCredentials" v-model="credentials" ref="focusme">
+            <template slot="prepend">{{ t('ADMIN_CREDENTIALS') }}</template>
           </el-input>
-          <el-input class="tk-password" placeholder="密码" v-model="password" show-password>
-            <template slot="prepend">设置密码</template>
+          <el-input class="tk-password" :placeholder="t('ADMIN_SET_PASSWORD_PLACEHOLDER')" v-model="password" show-password>
+            <template slot="prepend">{{ t('ADMIN_SET_PASSWORD') }}</template>
           </el-input>
-          <el-input class="tk-password" placeholder="确认密码" v-model="passwordConfirm" show-password>
-            <template slot="prepend">确认密码</template>
+          <el-input class="tk-password" :placeholder="t('ADMIN_SET_PASSWORD_CONFIRM_PLACEHOLDER')" v-model="passwordConfirm" show-password>
+            <template slot="prepend">{{ t('ADMIN_SET_PASSWORD_CONFIRM') }}</template>
           </el-input>
-          <el-button class="tk-regist-button" :disabled="!canRegist" @click="onRegist">注册</el-button>
+          <el-button class="tk-regist-button" :disabled="!canRegist" @click="onRegist">{{ t('ADMIN_REGIST') }}</el-button>
           <div class="tk-login-msg" v-if="loginErrorMessage">{{ loginErrorMessage }}</div>
           <div class="tk-login-msg" v-if="!isSetCredentials">
-            <a href="https://twikoo.js.org/faq.html" rel="noopener noreferrer" target="_blank">如何获得私钥</a>
+            <a href="https://twikoo.js.org/faq.html" rel="noopener noreferrer" target="_blank">{{ t('ADMIN_CREDENTIALS_FAQ') }}</a>
           </div>
         </div>
         <div class="tk-panel" v-if="isLogin">
           <div class="tk-panel-title">
-            <div>Twikoo 管理面板</div>
-            <a class="tk-panel-logout" @click="onLogout">退出登录</a>
+            <div>{{ t('ADMIN_TITLE') }}</div>
+            <a class="tk-panel-logout" @click="onLogout">{{ t('ADMIN_LOGOUT') }}</a>
           </div>
           <el-tabs v-model="activeTabName">
-            <el-tab-pane label="评论管理" name="comment">
+            <el-tab-pane :label="t('ADMIN_COMMENT')" name="comment">
               <tk-admin-comment />
             </el-tab-pane>
-            <el-tab-pane label="配置管理" name="config">
+            <el-tab-pane :label="t('ADMIN_CONFIG')" name="config">
               <tk-admin-config />
             </el-tab-pane>
-            <el-tab-pane label="导入" name="import">
+            <el-tab-pane :label="t('ADMIN_IMPORT')" name="import">
               <tk-admin-import />
             </el-tab-pane>
           </el-tabs>
@@ -62,7 +62,7 @@ import md5 from 'blueimp-md5'
 import TkAdminComment from './TkAdminComment.vue'
 import TkAdminConfig from './TkAdminConfig.vue'
 import TkAdminImport from './TkAdminImport.vue'
-import { logger, call } from '../../js/utils'
+import { logger, call, t } from '../../js/utils'
 import iconClose from '@fortawesome/fontawesome-free/svgs/solid/times.svg'
 
 export default {
@@ -98,9 +98,10 @@ export default {
     }
   },
   methods: {
+    t,
     async onLogin () {
       if (!this.password) {
-        this.loginErrorMessage = '请输入密码'
+        this.loginErrorMessage = t('ADMIN_PASSWORD_REQUIRED')
         return
       }
       this.loading = true
@@ -146,7 +147,7 @@ export default {
         this.isSetPassword = true
         this.onLogin()
       } else {
-        this.loginErrorMessage = '注册失败'
+        this.loginErrorMessage = t('ADMIN_REGIST_FAILED')
         if (res.result.message) {
           this.loginErrorMessage += '，' + res.result.message
         }

@@ -27,7 +27,9 @@
               "memory": 128
             }
           ],
-          "servicePaths": {}
+          "servicePaths": {
+            "twikoo": "/twikoo"
+          }
         }
       }
     }

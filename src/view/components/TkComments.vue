@@ -3,7 +3,10 @@
     <tk-submit @load="initComments" :config="config" />
     <div class="tk-comments-container" v-loading="loading">
       <div class="tk-comments-title">
-        <span>{{ count }} 条评论</span>
+        <span class="tk-comments-count">
+          <span>{{ count }}</span>
+          <span>{{ t('COMMENTS_COUNT_SUFFIX') }}</span>
+        </span>
         <span class="tk-icon" v-if="showAdminEntry" v-html="iconSetting" @click="openAdmin"></span>
       </div>
       <div class="tk-comments-no" v-if="!loading && !comments.length">{{ errorMessage }}</div>
@@ -14,13 +17,13 @@
         :config="config"
         @reply="onReply"
         @load="initComments" />
-      <div class="tk-expand" v-if="showExpand" @click="onExpand" v-loading="loadingMore">查看更多</div>
+      <div class="tk-expand" v-if="showExpand" @click="onExpand" v-loading="loadingMore">{{ t('COMMENTS_EXPAND') }}</div>
     </div>
   </div>
 </template>
 
 <script>
-import { call } from '../../js/utils'
+import { call, t } from '../../js/utils'
 import TkSubmit from './TkSubmit.vue'
 import TkComment from './TkComment.vue'
 import iconSetting from '@fortawesome/fontawesome-free/svgs/solid/cog.svg'
@@ -37,7 +40,7 @@ export default {
     return {
       loading: true,
       loadingMore: false,
-      errorMessage: '没有评论',
+      errorMessage: t('COMMENTS_NO_COMMENTS'),
       config: {},
       comments: [],
       showExpand: true,
@@ -47,6 +50,7 @@ export default {
     }
   },
   methods: {
+    t,
     async initConfig () {
       const result = await call(this.$tcb, 'GET_CONFIG', event)
       if (result && result.result && result.result.config) {
@@ -75,6 +79,9 @@ export default {
       await this.getComments({ url, before })
       this.loadingMore = false
     },
+    onCommentLoaded () {
+      typeof this.$twikoo.onCommentLoaded === 'function' && this.$twikoo.onCommentLoaded()
+    },
     async getComments (event) {
       try {
         const comments = await call(this.$tcb, 'COMMENT_GET', event)
@@ -82,6 +89,7 @@ export default {
           this.comments = event.before ? this.comments.concat(comments.result.data) : comments.result.data
           this.showExpand = comments.result.more
           this.count = comments.result.count || this.comments.length || 0
+          this.$nextTick(this.onCommentLoaded)
         }
       } catch (e) {
         this.errorMessage = e.message

@@ -30,15 +30,15 @@
       <el-button class="tk-cancel"
           v-if="!!replyId"
           size="small"
-          @click="cancel">取消</el-button>
+          @click="cancel">{{ t('SUBMIT_CANCEL') }}</el-button>
       <el-button class="tk-preview"
           size="small"
-          @click="preview">预览</el-button>
+          @click="preview">{{ t('SUBMIT_PREVIEW') }}</el-button>
       <el-button class="tk-send"
           type="primary"
           size="small"
           :disabled="!canSend"
-          @click="send">{{ isSending ? '发送中' : '发送' }}</el-button>
+          @click="send">{{ isSending ? t('SUBMIT_SENDING') : t('SUBMIT_SEND') }}</el-button>
     </div>
     <div class="tk-preview-container" v-if="isPreviewing" v-html="commentHtml" ref="comment-preview"></div>
   </div>
@@ -51,7 +51,7 @@ import iconImage from '@fortawesome/fontawesome-free/svgs/regular/image.svg'
 import Clickoutside from 'element-ui/src/utils/clickoutside'
 import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
-import { marked, call, logger, renderLinks, renderMath, renderCode } from '../../js/utils'
+import { marked, call, logger, renderLinks, renderMath, renderCode, t } from '../../js/utils'
 import OwO from '../lib/owo'
 
 const imageTypes = [
@@ -107,6 +107,7 @@ export default {
     }
   },
   methods: {
+    t,
     initDraft () {
       const draft = localStorage.getItem('twikoo-draft')
       if (!this.comment && draft) {
@@ -205,7 +206,7 @@ export default {
       }
     },
     closeOwo () {
-      if (this.owo.container.classList.contains('OwO-open')) {
+      if (this.owo && this.owo.container.classList.contains('OwO-open')) {
         this.owo.toggle()
       }
     },

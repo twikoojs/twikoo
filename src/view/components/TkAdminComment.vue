@@ -7,14 +7,14 @@
           <span v-if="!comment.link">{{ comment.nick }}</span>
           <a v-if="comment.link" :href="convertLink(comment.link)" target="_blank">{{ comment.nick }}</a>
           <span v-if="comment.mail">&nbsp;(<a :href="`mailto:${comment.mail}`">{{ comment.mail }}</a>)</span>
-          <span v-if="comment.isSpam">&nbsp;(已隐藏)</span>
+          <span v-if="comment.isSpam">{{ t('ADMIN_COMMENT_IS_SPAM_SUFFIX') }}</span>
         </div>
         <div class="tk-content" v-html="comment.comment" ref="comments"></div>
         <div class="tk-admin-actions" slot="content">
-          <el-button size="mini" type="text" @click="handleView(comment)">查看</el-button>
-          <el-button size="mini" type="text" v-if="comment.isSpam" @click="handleSpam(comment, false)">显示</el-button>
-          <el-button size="mini" type="text" v-if="!comment.isSpam" @click="handleSpam(comment, true)">隐藏</el-button>
-          <el-button size="mini" type="text" @click="handleDelete(comment)">删除</el-button>
+          <el-button size="mini" type="text" @click="handleView(comment)">{{ t('ADMIN_COMMENT_VIEW') }}</el-button>
+          <el-button size="mini" type="text" v-if="comment.isSpam" @click="handleSpam(comment, false)">{{ t('ADMIN_COMMENT_SHOW') }}</el-button>
+          <el-button size="mini" type="text" v-if="!comment.isSpam" @click="handleSpam(comment, true)">{{ t('ADMIN_COMMENT_HIDE') }}</el-button>
+          <el-button size="mini" type="text" @click="handleDelete(comment)">{{ t('ADMIN_COMMENT_DELETE') }}</el-button>
         </div>
       </div>
     </div>
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { call, convertLink, renderLinks, renderMath, renderCode } from '../../js/utils'
+import { call, convertLink, renderLinks, renderMath, renderCode, t } from '../../js/utils'
 import TkAvatar from './TkAvatar.vue'
 import TkPagination from './TkPagination.vue'
 
@@ -49,6 +49,7 @@ export default {
     }
   },
   methods: {
+    t,
     convertLink,
     async getComments () {
       this.loading = true

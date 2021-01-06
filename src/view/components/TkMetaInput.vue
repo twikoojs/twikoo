@@ -3,7 +3,7 @@
     <el-input v-for="metaInput in metaInputs"
         :key="metaInput.key"
         :name="metaInput.name"
-        :placeholder="requiredFields[metaInput.key] ? '必填' : '选填'"
+        :placeholder="requiredFields[metaInput.key] ? t('META_INPUT_REQUIRED') : t('META_INPUT_NOT_REQUIRED')"
         v-model="metaData[metaInput.key]"
         type="text"
         size="small"
@@ -14,12 +14,12 @@
 </template>
 
 <script>
-import { isQQ } from '../../js/utils'
+import { isQQ, t } from '../../js/utils'
 
 const metaInputs = [
-  { key: 'nick', locale: '昵称', name: 'nick' },
-  { key: 'mail', locale: '邮箱', name: 'mail' },
-  { key: 'link', locale: '网址', name: 'link' }
+  { key: 'nick', locale: t('META_INPUT_NICK'), name: 'nick' },
+  { key: 'mail', locale: t('META_INPUT_MAIL'), name: 'mail' },
+  { key: 'link', locale: t('META_INPUT_LINK'), name: 'link' }
 ]
 
 export default {
@@ -50,6 +50,7 @@ export default {
     }
   },
   methods: {
+    t,
     initMeta () {
       if (localStorage.getItem('twikoo')) {
         const metaData = JSON.parse(localStorage.getItem('twikoo'))

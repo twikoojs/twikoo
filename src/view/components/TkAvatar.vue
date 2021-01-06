@@ -1,7 +1,7 @@
 <template>
-  <div class="tk-avatar" :class="{ 'tk-clickable': !!link }" @click="onClick">
+  <div class="tk-avatar" :class="{ 'tk-clickable': !!link, 'tk-has-avatar': !!avatarInner }" @click="onClick">
     <div class="tk-avatar-img" v-if="!avatarInner" v-html="iconUser"></div>
-    <img class="tk-avatar-img" v-if="avatarInner" :src="avatarInner" alt="avatar">
+    <img class="tk-avatar-img" v-if="avatarInner" :src="avatarInner" alt="">
   </div>
 </template>
 
@@ -62,6 +62,9 @@ export default {
   overflow: hidden;
   text-align: center;
   border-radius: 5px;
+}
+.tk-avatar.tk-has-avatar {
+  background-color: #90939920;
 }
 .tk-avatar.tk-clickable {
   cursor: pointer;

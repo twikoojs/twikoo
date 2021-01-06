@@ -20,7 +20,12 @@
         envId: document.getElementById('envId').value,
         el: '#tcomment',
         region: document.getElementById('region').value,
-        path: document.getElementById('path').value
+        path: document.getElementById('path').value,
+        onCommentLoaded: function () {
+          console.log('评论加载完成')
+        }
+      }).then(function () {
+        console.log('Twikoo 加载完成');
       });
     }
   </script>
@@ -73,6 +78,9 @@
           </div>
           <div class="control">
             <button class="button is-info" onclick="init()">加载 | Init</button>
+          </div>
+          <div class="field">
+            <a href="https://twikoo.js.org/quick-start.html#%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8" target="_blank">如何集成到博客中？</a>
           </div>
         </div>
         <div class="column">

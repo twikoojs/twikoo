@@ -290,6 +290,8 @@ export default {
 }
 .tk-content {
   margin-top: 0.5rem;
+  overflow: auto;
+  max-height: 500px;
 }
 .tk-comment /deep/ .vemoji {
   max-height: 2em;

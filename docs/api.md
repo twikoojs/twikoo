@@ -76,3 +76,43 @@ twikoo.getRecentComments({
   console.error(err);
 });
 ```
+
+## On Twikoo loaded
+
+Twikoo 成功挂载后的回调函数。<br>
+环境 ID 错误、网络异常、挂载失败等情况时不会触发。
+
+### Version
+
+`>= 0.5.2`
+
+### Example
+
+``` js
+twikoo.init({
+  ......
+}).then(function () {
+  console.log('Twikoo 加载完成');
+});
+```
+
+## On comment loaded
+
+评论加载成功后的回调函数。<br>
+发表评论后自动刷新评论时、加载下一页评论时，也会触发。<br>
+评论加载失败时不会触发。
+
+### Version
+
+`>= 0.5.2`
+
+### Example
+
+``` js
+twikoo.init({
+  ......,
+  onCommentLoaded: function () {
+    console.log('评论加载完成');
+  }
+});
+```

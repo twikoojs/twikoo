@@ -1343,7 +1343,7 @@ async function writeConfig (newConfig) {
     if (updated > 0) config = null
     return updated
   } catch (e) {
-    console.error('写入配置失败', e)
+    console.error('写入配置失败：', e)
     return null
   }
 }
@@ -1365,7 +1365,11 @@ async function createCollections () {
   const collections = ['comment', 'config', 'counter']
   const res = {}
   for (const collection of collections) {
-    res[collection] = await db.createCollection(collection)
+    try {
+      res[collection] = await db.createCollection(collection)
+    } catch (e) {
+      console.error('建立数据库失败：', e)
+    }
   }
   return res
 }

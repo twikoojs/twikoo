@@ -79,6 +79,9 @@ export default {
       await this.getComments({ url, before })
       this.loadingMore = false
     },
+    onCommentLoaded () {
+      typeof this.$twikoo.onCommentLoaded === 'function' && this.$twikoo.onCommentLoaded()
+    },
     async getComments (event) {
       try {
         const comments = await call(this.$tcb, 'COMMENT_GET', event)
@@ -86,6 +89,7 @@ export default {
           this.comments = event.before ? this.comments.concat(comments.result.data) : comments.result.data
           this.showExpand = comments.result.more
           this.count = comments.result.count || this.comments.length || 0
+          this.$nextTick(this.onCommentLoaded)
         }
       } catch (e) {
         this.errorMessage = e.message

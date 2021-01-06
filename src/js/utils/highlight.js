@@ -12,7 +12,8 @@ const renderCode = (el, theme) => {
 }
 
 const loadCss = (theme) => {
-  if (cssEl || !theme || theme === 'none') return
+  const twikooEl = document.getElementById('twikoo')
+  if ((cssEl && twikooEl.contains(cssEl)) || !theme || theme === 'none') return
   cssEl = document.createElement('link')
   if (theme === 'default') {
     cssEl.href = `${PRISM_CDN}/themes/prism.css`
@@ -21,7 +22,7 @@ const loadCss = (theme) => {
   }
   cssEl.rel = 'stylesheet'
   cssEl.type = 'text/css'
-  document.getElementById('twikoo').appendChild(cssEl)
+  twikooEl.appendChild(cssEl)
 }
 
 export default renderCode

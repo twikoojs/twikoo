@@ -41,15 +41,6 @@
 
 Twikoo 云函数的内存消耗恒定为 0.1GB，由此可计算出 Twikoo 云函数每月有长达 400,000 秒的运行时长，而免费资源的瓶颈主要在数据库日读取次数限制。建议站长关注免费资源的使用情况。
 
-## 如何更新 Twikoo 版本？
-
-1. **更新云函数**：登录[环境-云函数](https://console.cloud.tencent.com/tcb/scf/index)，点击 twikoo，点击函数代码，将新的云函数代码（[index.js](https://imaegoo.coding.net/public/twikoo/twikoo/git/files/dev/src/function/twikoo/index.js) 和 [package.json](https://imaegoo.coding.net/public/twikoo/twikoo/git/files/dev/src/function/twikoo/package.json) 两个文件）粘贴、点击保存并安装依赖即可。
-2. **更新网站**：修改主题配置中的 Twikoo CDN 地址 `https://cdn.jsdelivr.net/npm/twikoo@x.x.x/dist/twikoo.all.min.js` 中的 `x.x.x`，使之与云函数版本号相同，然后部署网站。
-
-::: tip 提示
-如果升级后出现无法读取评论列表，云函数报错，请在函数编辑页面，删除 `node_modules` 目录（删除需要半分钟左右，请耐心等待删除完成），再点击保存并安装依赖。如果仍然不能解决，请删除并重新创建 Twikoo 云函数。
-:::
-
 ## 如何启用 Katex 支持？
 
 Twikoo 支持 Katex 公式，但为了限制 Twikoo 的包大小，Twikoo 没有内置完整的 Katex，您需要[在页面中额外加载 katex.js](https://katex.org/docs/browser.html)。
@@ -83,3 +74,29 @@ twikoo.init({
   }
 });
 ```
+
+## 如何配置反垃圾？
+
+### 使用腾讯云内容安全服务
+
+Twikoo 支持接入腾讯云文本内容检测，使用深度学习技术，识别涉黄、涉政、涉恐等有害内容，同时支持用户配置词库，打击自定义的违规文本。
+
+腾讯云文本内容检测是付费服务，提供 1 个月的免费试用，之后价格为 25 元/万条。如果您对反垃圾评论要求不高，也可以使用免费的 Akismet。
+
+如何申请腾讯云文本内容检测
+
+1. 访问[腾讯云控制台-文本内容安全](https://console.cloud.tencent.com/cms/text/overview)，开通文本内容安全服务
+2. 访问[腾讯云控制台-用户列表](https://console.cloud.tencent.com/cam)，点击新建用户，点击快速创建
+3. 输入用户名，访问方式选择“编程访问”，用户权限取消“AdministratorAccess”，只勾选“QcloudCMSFullAccess”
+4. 点击“创建用户”
+5. 复制“成功新建用户”页面的“SecretId”和“SecretKey”，到 Twikoo 管理面板“反垃圾”模块中配置
+6. 测试反垃圾效果
+
+成功后，站长可以在[腾讯云控制台-自定义库管理](https://console.cloud.tencent.com/cms/text/lib)配置自定义文本内容过滤。
+
+### 使用 Akismet 反垃圾服务
+
+Akismet (Automattic Kismet) 是应用广泛的一个垃圾留言过滤系统，其作者是大名鼎鼎的 WordPress 创始人 Matt Mullenweg，Akismet 也是 WordPress 默认安装的插件，其使用非常广泛，设计目标便是帮助博客网站来过滤垃圾留言。
+
+1. 注册 [akismet.com](https://akismet.com)
+2. 选择 Akismet Personal 订阅，复制得到的 Akismet API Key，到 Twikoo 管理面板“反垃圾”模块中配置

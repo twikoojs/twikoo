@@ -1,25 +1,30 @@
 # 快速上手
 
-## 一键部署
+Twikoo 分为云函数和前端两部分，部署时请注意保存二者版本一致。
+
+* [云函数部署](#云函数部署)有 3 种方式，[一键部署](#一键部署)、[手动部署](#手动部署)和[命令行部署](#命令行部署)。
+* [前端部署](#前端部署)有 2 种方式，如果您的网站主题支持 Twikoo，您只需在配置文件中指定 Twikoo 即可；如果您的网站主题不支持 Twikoo，您需要修改源码手动引入 Twikoo 的 js 文件并初始化之。
+
+## 云函数部署
+
+### 一键部署
 
 1. 点击以下按钮将 Twikoo 一键部署到云开发<br>
 [![部署到云开发](https://main.qcloudimg.com/raw/67f5a389f1ac6f3b4d04c7256438e44f.svg)](https://console.cloud.tencent.com/tcb/env/index?action=CreateAndDeployCloudBaseProject&appUrl=https%3A%2F%2Fgithub.com%2Fimaegoo%2Ftwikoo&branch=dev)
 2. 进入[环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)，启用“匿名登录”
 3. 进入[环境-安全配置](https://console.cloud.tencent.com/tcb/env/safety)，将网站域名添加到“WEB安全域名”
 
-::: warning 注意
+::: tip 提示
 一键部署虽然方便，但是仅支持按量计费环境——也就是说，**一键部署的环境，当免费资源用尽后，将会产生费用**。且按量计费环境无法切换为包年包月环境。
 
 大多数情况下，免费资源能够满足日访问量在 10,000 以下的站点（参考：[免费资源如何计算？](faq.html#免费资源如何计算)）。
 
-如果您希望，当免费资源用尽时，不产生费用，请参考下面的教程手动部署。
+如果您希望，当免费资源用尽时，不产生费用，请参考[手动部署](#手动部署)。
 :::
 
-## 环境初始化
+### 手动部署
 
-[查看环境初始化与环境部署视频教程](https://www.bilibili.com/video/BV1MZ4y1G7VB)
-
-Twikoo 使用云开发作为评论后台，每个云开发用户均长期享受1个免费的标准型基础版1资源套餐。如果您已经拥有了一个免费版云开发环境，Twikoo 也可以与其他项目共用一个环境，请直接查看[环境部署](#环境部署)。
+如果您打算部署到一个现有的云开发环境，请直接从第 5 步开始。
 
 1. [注册云开发CloudBase](https://curl.qcloud.com/KnnJtUom)
 2. 进入[云开发控制台](https://console.cloud.tencent.com/tcb/)，新建环境，请按需配置环境<br>
@@ -31,62 +36,56 @@ Twikoo 使用云开发作为评论后台，每个云开发用户均长期享受1
 :::
 3. 进入[环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)，启用“匿名登录”
 4. 进入[环境-安全配置](https://console.cloud.tencent.com/tcb/env/safety)，将网站域名添加到“WEB安全域名”
-5. 复制环境Id备用
+5. 进入[环境-云函数](https://console.cloud.tencent.com/tcb/scf/index)，点击“新建云函数”
+6. 函数名称请填写：`twikoo`，创建方式请选择：`空白函数`，运行环境请选择：`Nodejs 10.15`，函数内存请选择：`128MB`，点击“下一步”
+7. 复制以下代码、粘贴到“函数代码”输入框中，点击“确定”
+``` js
+exports.main = require('twikoo-func').main
+```
+8. 创建完成后，点击“twikoo"进入云函数详情页，进入“函数代码”标签，点击“文件 - 新建文件”，输入 `package.json`，回车
+9. 复制以下代码、粘贴到代码框中，点击“保存并安装依赖”
+``` json
+{ "dependencies": { "twikoo-func": "0.6.0" } }
+```
 
-## 环境部署
-
-### ① 网页方式（推荐）
-
-1. 进入[环境-云函数](https://console.cloud.tencent.com/tcb/scf/index)，点击“新建云函数”
-2. 函数名称请填写：`twikoo`，创建方式请选择：`空白函数`，运行环境请选择：`Nodejs 10.15`，函数内存请选择：`128MB`，点击“下一步”
-3. 打开 [index.js](https://imaegoo.coding.net/public/twikoo/twikoo/git/files/dev/src/function/twikoo/index.js)，全选代码、复制、粘贴到“函数代码”输入框中，点击“确定”
-4. 创建完成后，点击“twikoo"进入云函数详情页，进入“函数代码”标签，点击“文件 - 新建文件”，输入 `package.json`，回车
-5. 打开 [package.json](https://imaegoo.coding.net/public/twikoo/twikoo/git/files/dev/src/function/twikoo/package.json)，全选代码、复制、粘贴到代码框中，点击“保存并安装依赖”
-
-::: tip 提示
-[如何更新 Twikoo 版本？](faq.html#如何更新-twikoo-版本)
-:::
-
-### ② 脚本方式
+### 命令行部署
 
 ::: warning 注意
+* **推荐使用一键部署或手动部署，命令行部署仅针对有 Node.js 经验的开发者。**
 * 请确保您已经安装了 [Node.js](https://nodejs.org/en/download/)
 * 请将命令、代码中“您的环境id”替换为您自己的环境id
-* 第4步会弹出浏览器要求授权，需在有图形界面的系统下进行
-* 请勿在 Termux 下操作。虽然可以部署成功，但是使用时会报错 `[FUNCTIONS_EXECUTE_FAIL] Error: EACCES: permission denied, open '/var/user/index.js'`，这是 cloudbase-cli 的问题
+* 第 7 步会弹出浏览器要求授权，需在有图形界面的系统下进行
+* 请勿在 Termux 下操作。虽然可以部署成功，但是使用时会报错 `[FUNCTIONS_EXECUTE_FAIL] Error: EACCES: permission denied, open '/var/user/index.js'`
 :::
 
-1. 克隆本仓库
+如果您打算部署到一个现有的云开发环境，请直接从第 5 步开始。
+
+1. [注册云开发CloudBase](https://curl.qcloud.com/KnnJtUom)
+2. 进入[云开发控制台](https://console.cloud.tencent.com/tcb/)，新建环境，请按需配置环境<br>
+3. 进入[环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)，启用“匿名登录”
+4. 进入[环境-安全配置](https://console.cloud.tencent.com/tcb/env/safety)，将网站域名添加到“WEB安全域名”
+5. 克隆本仓库
 ``` sh
 git clone https://github.com/imaegoo/twikoo.git # 或 git clone https://e.coding.net/imaegoo/twikoo/twikoo.git
 cd twikoo
 ```
 > 如果您没有安装 Git，也可以从 [Release](https://github.com/imaegoo/twikoo/releases) 页面下载最新的 Source code<br>
 > 如果您所在的地区访问 Github 速度慢，也可以尝试另一个仓库地址：[https://imaegoo.coding.net/public/twikoo/twikoo/git](https://imaegoo.coding.net/public/twikoo/twikoo/git)
-2. 安装依赖项
+6. 安装依赖项
 ``` sh
-npm install # 或 yarn install
+npm install -g yarn # 已安装 yarn 可以跳过此步
+yarn install
 ```
-3. 授权云开发环境（此命令会弹出浏览器要求授权，需在有图形界面的系统下进行）
+7. 授权云开发环境（此命令会弹出浏览器要求授权，需在有图形界面的系统下进行）
 ``` sh
-npm run login # 或 yarn run login
+yarn run login
 ```
-4. 自动部署
+8. 自动部署
 ``` sh
-npm run deploy -- -e 您的环境id # 或 yarn deploy -e 您的环境id
+yarn deploy -e 您的环境id
 ```
 
-::: tip 提示
-脚本部署用户更新 Twikoo 版本时，请执行
-``` sh
-git pull
-npm install # 或 yarn install
-npm run deploy -- -e 您的环境id # 或 yarn deploy -e 您的环境id
-```
-更新现有的云函数，并同时更新网站 Twikoo CDN 地址中的版本号，使之保持一致
-:::
-
-## 配置使用
+## 前端部署
 
 ### 在 Hexo Butterfly 主题使用
 
@@ -99,7 +98,7 @@ Volantis 目前支持 Twikoo，请查看 [hexo-theme-volantis/_config.yml](https
 ``` yml
 comments:
   twikoo:
-    js: https://cdn.jsdelivr.net/npm/twikoo@0.5.2/dist/twikoo.all.min.js
+    js: https://cdn.jsdelivr.net/npm/twikoo@0.6.0/dist/twikoo.all.min.js
     envId: xxxxxxxxxxxxxxx # 腾讯云环境id
 ```
 
@@ -124,7 +123,7 @@ twikoo:
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@0.5.2/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@0.6.0/dist/twikoo.all.min.js"></script>
 <script>
 twikoo.init({
   envId: '您的环境id',
@@ -166,3 +165,36 @@ twikoo.init({
 1. 进入[环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)，点击“自定义登录”右边的“私钥下载”，下载私钥文件
 2. 用文本编辑器打开私钥文件，复制全部内容
 3. 点击评论窗口的“小齿轮”图标，粘贴私钥文件内容，并设置管理员密码
+
+## 版本更新
+
+不同部署方式的更新方式也不同，请对号入座。更新部署成功后，请不要忘记同时更新前端的 Twikoo CDN 地址 `https://cdn.jsdelivr.net/npm/twikoo@x.x.x/dist/twikoo.all.min.js` 中的 `x.x.x`，使之与云函数版本号相同，然后部署网站。
+
+### 针对一键部署的更新方式
+
+登录[环境-我的应用](https://console.cloud.tencent.com/tcb/apps/index)，输入
+
+* 来源地址：`https://github.com/imaegoo/twikoo/tree/dev`
+* 部署分支：`dev`
+
+应用目录无需填写，点击“确定”，部署完成。
+
+### 针对手动部署的更新方式
+
+登录[环境-云函数](https://console.cloud.tencent.com/tcb/scf/index)，点击 twikoo，点击函数代码，打开 `package.json` 文件，将 `"twikoo-func": "x.x.x"` 其中的版本号修改为最新版本号，点击“保存并安装依赖”即可。
+
+::: tip 提示
+如果升级后出现无法读取评论列表，云函数报错，请在函数编辑页面，删除 `node_modules` 目录（删除需要半分钟左右，请耐心等待删除完成），再点击保存并安装依赖。如果仍然不能解决，请删除并重新创建 Twikoo 云函数。
+:::
+
+### 针对命令行部署的更新方式
+
+进入 Twikoo 源码目录，执行以下命令更新现有的云函数
+
+``` sh
+yarn deploy -e 您的环境id
+```
+
+### 自动更新
+
+考虑到可用性和安全性问题，Twikoo 没有实现自动更新，也没有计划实现自动更新。如果您希望实现自动更新，可以参考 MHuiG 基于 Github 工作流的 [twikoo-update](https://github.com/MHuiG/twikoo-update) 的实现方式。

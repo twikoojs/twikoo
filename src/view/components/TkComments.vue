@@ -9,7 +9,10 @@
         </span>
         <span class="tk-icon" v-if="showAdminEntry" v-html="iconSetting" @click="openAdmin"></span>
       </div>
-      <div class="tk-comments-no" v-if="!loading && !comments.length">{{ errorMessage }}</div>
+      <div class="tk-comments-no" v-if="!loading && !comments.length">
+        <span v-if="!errorMessage">{{ t('COMMENTS_NO_COMMENTS') }}</span>
+        <span v-if="errorMessage" class="tk-comments-error">{{ errorMessage }}</span>
+      </div>
       <tk-comment v-for="comment in comments"
         :key="comment.id"
         :comment="comment"
@@ -40,7 +43,7 @@ export default {
     return {
       loading: true,
       loadingMore: false,
-      errorMessage: t('COMMENTS_NO_COMMENTS'),
+      errorMessage: '',
       config: {},
       comments: [],
       showExpand: true,
@@ -129,6 +132,10 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.tk-comments-error {
+  font-size: 0.75em;
+  color: #ff0000;
 }
 .tk-icon {
   display: inline-flex;

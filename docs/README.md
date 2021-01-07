@@ -125,7 +125,7 @@ yarn build # 编译 (dist/twikoo.all.min.js)
 
 如果您的改动能够帮助到更多人，欢迎提交 Pull Request！
 
-## 国际化 | I18N
+## 国际化
 
 支持简体中文、繁体中文。欢迎[提交翻译 PR](https://github.com/imaegoo/twikoo/tree/dev/src/js/utils/i18n)。
 

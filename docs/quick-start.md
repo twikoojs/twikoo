@@ -24,7 +24,7 @@ Twikoo 分为云函数和前端两部分，部署时请注意保存二者版本�
 
 ### 手动部署
 
-如果您打算部署到一个现有的云开发环境，请直接从第 5 步开始。
+如果您打算部署到一个现有的云开发环境，请直接从第 3 步开始。
 
 1. [注册云开发CloudBase](https://curl.qcloud.com/KnnJtUom)
 2. 进入[云开发控制台](https://console.cloud.tencent.com/tcb/)，新建环境，请按需配置环境<br>
@@ -58,7 +58,7 @@ exports.main = require('twikoo-func').main
 * 请勿在 Termux 下操作。虽然可以部署成功，但是使用时会报错 `[FUNCTIONS_EXECUTE_FAIL] Error: EACCES: permission denied, open '/var/user/index.js'`
 :::
 
-如果您打算部署到一个现有的云开发环境，请直接从第 5 步开始。
+如果您打算部署到一个现有的云开发环境，请直接从第 3 步开始。
 
 1. [注册云开发CloudBase](https://curl.qcloud.com/KnnJtUom)
 2. 进入[云开发控制台](https://console.cloud.tencent.com/tcb/)，新建环境，请按需配置环境<br>

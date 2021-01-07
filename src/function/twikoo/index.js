@@ -122,7 +122,7 @@ exports.main = async (event, context) => {
           res.message = '请更新 Twikoo 云函数至最新版本'
         } else {
           res.code = RES_CODE.SUCCESS
-          res.message = 'Twikoo 云函数运行正常，请参考 https://twikoo.js.org/quick-start.html#%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8 完成前端的配置'
+          res.message = 'Twikoo 云函数运行正常，请参考 https://twikoo.js.org/quick-start.html#%E5%89%8D%E7%AB%AF%E9%83%A8%E7%BD%B2 完成前端的配置'
         }
     }
   } catch (e) {

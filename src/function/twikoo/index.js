@@ -116,6 +116,9 @@ exports.main = async (event, context) => {
       case 'CHECK_SPAM':
         res = await checkSpamAction(event, context)
         break
+      case 'SEND_MAIL':
+        res = await sendMail(event.comment)
+        break
       default:
         if (event.event) {
           res.code = RES_CODE.EVENT_NOT_EXIST
@@ -715,7 +718,14 @@ async function commentSubmit (event) {
   }
   const comment = await save(event)
   res.id = comment.id
-  await sendMail(comment)
+  try {
+    await app.callFunction({
+      name: 'twikoo',
+      data: { event: 'SEND_MAIL', comment }
+    }, { timeout: 300 }) // 设置较短的 timeout 来实现异步
+  } catch (e) {
+    console.log('开始异步发送评论通知')
+  }
   return res
 }
 

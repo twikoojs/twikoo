@@ -111,6 +111,18 @@ twikoo:
   envId: xxxxxxxxxxxxxxx # 腾讯云环境id
 ```
 
+### 在 Hexo NexT 主题使用
+
+在 Hexo 项目根目录执行 `npm install hexo-next-twikoo`，然后在配置中添加
+
+``` yml
+twikoo:
+  enable: true
+  visitor: true
+  envId: xxxxxxxxxxxxxxx # 腾讯云环境id
+  # region: ap-guangzhou # 环境地域，默认为 ap-shanghai
+```
+
 ### 在 Hexo Icarus 主题使用
 
 请参考 [基于腾讯云，给你的 Icarus 博客配上 Twikoo 评论系统](https://anzifan.com/post/icarus_to_candy_2/) by 异次元de机智君💯

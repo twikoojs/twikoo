@@ -117,7 +117,7 @@ exports.main = async (event, context) => {
         res = await checkSpamAction(event, context)
         break
       case 'SEND_MAIL':
-        res = await sendMail(event.comment)
+        res = await sendMail(event.comment, context)
         break
       default:
         if (event.event) {
@@ -740,13 +740,15 @@ async function save (event) {
 }
 
 // 发送通知
-async function sendMail (comment) {
+async function sendMail (comment, context) {
+  if (!isRecursion(context)) return { code: RES_CODE.FORBIDDEN }
   await Promise.all([
     noticeMaster(comment),
     noticeReply(comment),
     noticeWeChat(comment),
     noticeQQ(comment)
   ]).catch(console.error)
+  return { code: RES_CODE.SUCCESS }
 }
 
 // 初始化邮件插件

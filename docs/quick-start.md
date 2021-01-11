@@ -123,6 +123,16 @@ twikoo:
   # region: ap-guangzhou # 环境地域，默认为 ap-shanghai
 ```
 
+### 在 Hexo Matery 主题使用
+
+``` yml
+twikoo:
+  enable: true
+  envId: xxxxxxxxxxxxxxx # 环境 ID，搭建教程：https://twikoo.js.org/quick-start.html
+  # region: ap-guangzhou # 环境地域，默认为 ap-shanghai
+  # path: 'window.location.pathname' # 自定义文章路径
+```
+
 ### 在 Hexo Icarus 主题使用
 
 请参考 [基于腾讯云，给你的 Icarus 博客配上 Twikoo 评论系统](https://anzifan.com/post/icarus_to_candy_2/) by 异次元de机智君💯

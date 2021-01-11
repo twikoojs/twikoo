@@ -1,6 +1,6 @@
 {
   "name": "twikoo-func",
-  "version": "0.6.0",
+  "version": "1.0.0",
   "description": "A simple comment system based on Tencent CloudBase (tcb).",
   "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
   "license": "MIT",

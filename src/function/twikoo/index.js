@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v0.6.0
+ * Twikoo cloudbase function v1.0.0
  * (c) 2020-2021 iMaeGoo
  * Released under the MIT License.
  */
@@ -31,7 +31,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '0.6.0'
+const VERSION = '1.0.0'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -115,6 +115,9 @@ exports.main = async (event, context) => {
         break
       case 'CHECK_SPAM':
         res = await checkSpamAction(event, context)
+        break
+      case 'SEND_MAIL':
+        res = await sendMail(event.comment, context)
         break
       default:
         if (event.event) {
@@ -715,7 +718,14 @@ async function commentSubmit (event) {
   }
   const comment = await save(event)
   res.id = comment.id
-  await sendMail(comment)
+  try {
+    await app.callFunction({
+      name: 'twikoo',
+      data: { event: 'SEND_MAIL', comment }
+    }, { timeout: 300 }) // 设置较短的 timeout 来实现异步
+  } catch (e) {
+    console.log('开始异步发送评论通知')
+  }
   return res
 }
 
@@ -730,13 +740,15 @@ async function save (event) {
 }
 
 // 发送通知
-async function sendMail (comment) {
+async function sendMail (comment, context) {
+  if (!isRecursion(context)) return { code: RES_CODE.FORBIDDEN }
   await Promise.all([
     noticeMaster(comment),
     noticeReply(comment),
     noticeWeChat(comment),
     noticeQQ(comment)
   ]).catch(console.error)
+  return { code: RES_CODE.SUCCESS }
 }
 
 // 初始化邮件插件

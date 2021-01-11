@@ -24,7 +24,7 @@ Twikoo 分为云函数和前端两部分，部署时请注意保存二者版本�
 
 ### 手动部署
 
-如果您打算部署到一个现有的云开发环境，请直接从第 5 步开始。
+如果您打算部署到一个现有的云开发环境，请直接从第 3 步开始。
 
 1. [注册云开发CloudBase](https://curl.qcloud.com/KnnJtUom)
 2. 进入[云开发控制台](https://console.cloud.tencent.com/tcb/)，新建环境，请按需配置环境<br>
@@ -45,7 +45,7 @@ exports.main = require('twikoo-func').main
 8. 创建完成后，点击“twikoo"进入云函数详情页，进入“函数代码”标签，点击“文件 - 新建文件”，输入 `package.json`，回车
 9. 复制以下代码、粘贴到代码框中，点击“保存并安装依赖”
 ``` json
-{ "dependencies": { "twikoo-func": "0.6.0" } }
+{ "dependencies": { "twikoo-func": "1.0.0" } }
 ```
 
 ### 命令行部署
@@ -58,7 +58,7 @@ exports.main = require('twikoo-func').main
 * 请勿在 Termux 下操作。虽然可以部署成功，但是使用时会报错 `[FUNCTIONS_EXECUTE_FAIL] Error: EACCES: permission denied, open '/var/user/index.js'`
 :::
 
-如果您打算部署到一个现有的云开发环境，请直接从第 5 步开始。
+如果您打算部署到一个现有的云开发环境，请直接从第 3 步开始。
 
 1. [注册云开发CloudBase](https://curl.qcloud.com/KnnJtUom)
 2. 进入[云开发控制台](https://console.cloud.tencent.com/tcb/)，新建环境，请按需配置环境<br>
@@ -98,7 +98,7 @@ Volantis 目前支持 Twikoo，请查看 [hexo-theme-volantis/_config.yml](https
 ``` yml
 comments:
   twikoo:
-    js: https://cdn.jsdelivr.net/npm/twikoo@0.6.0/dist/twikoo.all.min.js
+    js: https://cdn.jsdelivr.net/npm/twikoo@1.0.0/dist/twikoo.all.min.js
     envId: xxxxxxxxxxxxxxx # 腾讯云环境id
 ```
 
@@ -109,6 +109,28 @@ Ayer 目前支持 Twikoo，请查看 [hexo-theme-ayer/_config.yml](https://githu
 ``` yml
 twikoo:
   envId: xxxxxxxxxxxxxxx # 腾讯云环境id
+```
+
+### 在 Hexo NexT 主题使用
+
+在 Hexo 项目根目录执行 `npm install hexo-next-twikoo`，然后在配置中添加
+
+``` yml
+twikoo:
+  enable: true
+  visitor: true
+  envId: xxxxxxxxxxxxxxx # 腾讯云环境id
+  # region: ap-guangzhou # 环境地域，默认为 ap-shanghai
+```
+
+### 在 Hexo Matery 主题使用
+
+``` yml
+twikoo:
+  enable: true
+  envId: xxxxxxxxxxxxxxx # 环境 ID，搭建教程：https://twikoo.js.org/quick-start.html
+  # region: ap-guangzhou # 环境地域，默认为 ap-shanghai
+  # path: 'window.location.pathname' # 自定义文章路径
 ```
 
 ### 在 Hexo Icarus 主题使用
@@ -123,7 +145,7 @@ twikoo:
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@0.6.0/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.0.0/dist/twikoo.all.min.js"></script>
 <script>
 twikoo.init({
   envId: '您的环境id',

@@ -40,17 +40,14 @@
             <div>{{ t('ADMIN_TITLE') }}</div>
             <a class="tk-panel-logout" @click="onLogout">{{ t('ADMIN_LOGOUT') }}</a>
           </div>
-          <el-tabs v-model="activeTabName">
-            <el-tab-pane :label="t('ADMIN_COMMENT')" name="comment">
-              <tk-admin-comment />
-            </el-tab-pane>
-            <el-tab-pane :label="t('ADMIN_CONFIG')" name="config">
-              <tk-admin-config />
-            </el-tab-pane>
-            <el-tab-pane :label="t('ADMIN_IMPORT')" name="import">
-              <tk-admin-import />
-            </el-tab-pane>
-          </el-tabs>
+          <div class="tk-tabs">
+            <div class="tk-tab" :class="{ __active: activeTabName === 'comment' }" @click="activeTabName = 'comment'">{{ t('ADMIN_COMMENT') }}</div>
+            <div class="tk-tab" :class="{ __active: activeTabName === 'config' }" @click="activeTabName = 'config'">{{ t('ADMIN_CONFIG') }}</div>
+            <div class="tk-tab" :class="{ __active: activeTabName === 'import' }" @click="activeTabName = 'import'">{{ t('ADMIN_IMPORT') }}</div>
+          </div>
+          <tk-admin-comment v-show="activeTabName === 'comment'" />
+          <tk-admin-config v-show="activeTabName === 'config'" />
+          <tk-admin-import v-show="activeTabName === 'import'" />
         </div>
       </div>
     </div>
@@ -273,36 +270,34 @@ export default {
   margin-top: 1rem;
 }
 .tk-panel {
+  color: #ffffff;
   padding: 2rem;
 }
 .tk-panel-title {
-  color: #ffffff;
   font-size: 1.5rem;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
 }
 .tk-panel-logout {
+  color: #ffffff;
   font-size: 1rem;
   text-decoration: underline;
-  color: #ffffff;
 }
-.tk-panel .el-tab-pane {
+.tk-panel .tk-tabs {
   display: flex;
-  flex-direction: column;
-  color: #ffffff;
+  margin-bottom: 1em;
+  border-bottom: 2px solid #c0c4cc;
 }
-.tk-panel /deep/ .el-tabs__item.is-active,
-.tk-panel /deep/ .el-tabs__item:hover {
-  color: #ffffff;
-}
-.tk-panel /deep/ .el-tabs__active-bar {
-  background-color: #ffffff;
-}
-.tk-panel /deep/ .el-tabs__item {
+.tk-panel .tk-tab {
   color: #c0c4cc;
+  cursor: pointer;
+  line-height: 2em;
+  margin-right: 2em;
+  margin-bottom: -2px;
 }
-.tk-panel /deep/ .el-tabs__nav-wrap::after {
-  background-color: #c0c4cc;
+.tk-panel .tk-tab.__active {
+  color: #ffffff;
+  border-bottom: 2px solid #ffffff;
 }
 </style>

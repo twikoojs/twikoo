@@ -357,6 +357,16 @@ module.exports = class Lexer {
         prevChar = '';
       }
       keepPrevChar = false;
+
+      // owo
+      if (token = this.tokenizer.owo(src)) {
+        src = src.substring(token.raw.length);
+        if (token.type) {
+          tokens.push(token);
+        }
+        continue;
+      }
+
       // escape
       if (token = this.tokenizer.escape(src)) {
         src = src.substring(token.raw.length);

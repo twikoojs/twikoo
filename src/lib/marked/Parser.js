@@ -207,6 +207,10 @@ module.exports = class Parser {
     for (i = 0; i < l; i++) {
       token = tokens[i];
       switch (token.type) {
+        case 'owo': {
+          out += renderer.owo(token.text);
+          break;
+        }
         case 'escape': {
           out += renderer.text(token.text);
           break;

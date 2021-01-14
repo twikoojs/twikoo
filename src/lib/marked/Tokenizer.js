@@ -592,6 +592,19 @@ module.exports = class Tokenizer {
     }
   }
 
+  owo(src) {
+    const cap = this.rules.inline.owo.exec(src);
+    if (cap) {
+      if (cap[0].length > 1) {
+        return {
+          type: 'owo',
+          raw: cap[0],
+          text: cap[1]
+        };
+      }
+    }
+  }
+
   autolink(src, mangle) {
     const cap = this.rules.inline.autolink.exec(src);
     if (cap) {

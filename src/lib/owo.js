@@ -14,7 +14,7 @@ export default class OwO {
       target: document.getElementsByTagName('textarea')[0],
       position: 'down',
       maxHeight: '250px',
-      api: 'https://cdn.jsdelivr.net/npm/owo/demo/OwO.json'
+      odata: {}
     }
     for (const defaultKey in defaultOption) {
       if (defaultOption[defaultKey] && !option[defaultKey]) {
@@ -27,19 +27,8 @@ export default class OwO {
       this.container.classList.add('OwO-up')
     }
 
-    const xhr = new XMLHttpRequest()
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState === 4) {
-        if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304) {
-          this.odata = JSON.parse(xhr.responseText)
-          this.init(option)
-        } else {
-          console.log('OwO data request was unsuccessful: ' + xhr.status)
-        }
-      }
-    }
-    xhr.open('get', option.api, true)
-    xhr.send(null)
+    this.odata = option.odata
+    setTimeout(() => { this.init(option) })
   }
 
   init (option) {
@@ -55,7 +44,8 @@ export default class OwO {
 
       const opackage = this.odata[this.packages[i]].container
       for (let i = 0; i < opackage.length; i++) {
-        html += `<li class="OwO-item" title="${opackage[i].text}">${opackage[i].icon}</li>`
+        const icon = opackage[i].icon.replace('<img', '<img loading="lazy"')
+        html += `<li class="OwO-item" title="${opackage[i].text}">${icon}</li>`
       }
 
       html += '</ul>'
@@ -88,7 +78,9 @@ export default class OwO {
         const cursorPos = this.area.selectionEnd
         const areaValue = this.area.value
         let innerHTML = target.innerHTML
-        if (innerHTML.indexOf('<img') !== -1) {
+        if (target.title) {
+          innerHTML = ':' + target.title + ': '
+        } else if (innerHTML.indexOf('<img') !== -1) {
           // 图片表情转换为 markdown
           const start = innerHTML.indexOf('src="') + 'src="'.length
           const end = innerHTML.indexOf('"', start)

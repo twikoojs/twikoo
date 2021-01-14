@@ -12,6 +12,19 @@ module.exports = class Renderer {
     this.options = options || defaults;
   }
 
+  owo(text) {
+    const odata = this.options.odata;
+    if (odata && odata[text]) {
+      return '<img class="tk-owo-emotion" src="'
+        + odata[text]
+        + '" alt=":'
+        + text
+        + ':">';
+    } else {
+      return ':' + text + ':';
+    }
+  }
+
   code(code, infostring, escaped) {
     const lang = (infostring || '').match(/\S*/)[0];
     if (this.options.highlight) {

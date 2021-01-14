@@ -1,3 +1,4 @@
 *.css
 *.md
 *.json
+src/lib/marked/*

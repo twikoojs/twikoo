@@ -13,6 +13,8 @@
             <strong>{{ comment.nick }}</strong>
           </a>
           <span class="tk-tag tk-tag-green" v-if="comment.master">{{ config.MASTER_TAG || t('COMMENT_MASTER_TAG') }}</span>
+          <span class="tk-tag tk-tag-red" v-if="comment.top">{{ t('COMMENT_TOP_TAG') }}</span>
+          <span class="tk-tag tk-tag-yellow" v-if="comment.isSpam">{{ t('COMMENT_REVIEWING_TAG') }}</span>
           <small class="tk-time">
             <time :datetime="jsonTimestamp" :title="localeTime">{{ displayCreated }}</time>
           </small>
@@ -281,6 +283,24 @@ export default {
   border: 1px solid #67c23a80;
   border-radius: 2px;
   color: #67c23a;
+}
+.tk-tag-yellow {
+  background-color: #e6a23c20;
+  border: 1px solid #e6a23c80;
+  border-radius: 2px;
+  color: #e6a23c;
+}
+.tk-tag-blue {
+  background-color: #409eff20;
+  border: 1px solid #409eff80;
+  border-radius: 2px;
+  color: #409eff;
+}
+.tk-tag-red {
+  background-color: #f56c6c20;
+  border: 1px solid #f56c6c80;
+  border-radius: 2px;
+  color: #f56c6c;
 }
 .tk-comment {
   margin-top: 1rem;

@@ -52,7 +52,7 @@ import Clickoutside from 'element-ui/src/utils/clickoutside'
 import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
 import { marked, call, logger, renderLinks, renderMath, renderCode, t } from '../../js/utils'
-import OwO from '../lib/owo'
+import OwO from '../../lib/owo'
 
 const imageTypes = [
   'apng',

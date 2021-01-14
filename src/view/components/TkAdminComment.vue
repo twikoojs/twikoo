@@ -14,6 +14,8 @@
           <el-button size="mini" type="text" @click="handleView(comment)">{{ t('ADMIN_COMMENT_VIEW') }}</el-button>
           <el-button size="mini" type="text" v-if="comment.isSpam" @click="handleSpam(comment, false)">{{ t('ADMIN_COMMENT_SHOW') }}</el-button>
           <el-button size="mini" type="text" v-if="!comment.isSpam" @click="handleSpam(comment, true)">{{ t('ADMIN_COMMENT_HIDE') }}</el-button>
+          <el-button size="mini" type="text" v-if="!comment.rid && comment.top" @click="handleTop(comment, false)">{{ t('ADMIN_COMMENT_UNTOP') }}</el-button>
+          <el-button size="mini" type="text" v-if="!comment.rid && !comment.top" @click="handleTop(comment, true)">{{ t('ADMIN_COMMENT_TOP') }}</el-button>
           <el-button size="mini" type="text" @click="handleDelete(comment)">{{ t('ADMIN_COMMENT_DELETE') }}</el-button>
         </div>
       </div>
@@ -94,11 +96,17 @@ export default {
       await this.getComments()
       this.loading = false
     },
-    async handleSpam (comment, isSpam) {
+    handleSpam (comment, isSpam) {
+      this.setComment(comment, { isSpam })
+    },
+    handleTop (comment, top) {
+      this.setComment(comment, { top })
+    },
+    async setComment (comment, set) {
       this.loading = true
       await call(this.$tcb, 'COMMENT_SET_FOR_ADMIN', {
         id: comment._id,
-        set: { isSpam }
+        set
       })
       await this.getComments()
       this.loading = false

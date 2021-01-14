@@ -228,12 +228,19 @@ async function commentGet (event) {
   try {
     validate(event, ['url'])
     const uid = await auth.getEndUserInfo().userInfo.uid
-    const query = {}
     const limit = parseInt(config.COMMENT_PAGE_SIZE) || 8
     let more = false
-    query.url = _.in(getUrlQuery(event.url))
-    query.rid = _.in(['', null])
-    query.isSpam = _.neq(true)
+    let condition
+    let query
+    condition = {
+      url: _.in(getUrlQuery(event.url)),
+      rid: _.in(['', null])
+    }
+    // 查询非垃圾评论 + 自己的评论
+    query = _.or(
+      { ...condition, isSpam: _.neq(true) },
+      { ...condition, uid: await getUid() }
+    )
     // 读取总条数
     const count = await db
       .collection('comment')
@@ -241,8 +248,14 @@ async function commentGet (event) {
       .count()
     // 读取主楼
     if (event.before) {
-      query.created = _.lt(event.before)
+      condition.created = _.lt(event.before)
     }
+    // 不包含置顶
+    condition.top = _.neq(true)
+    query = _.or(
+      { ...condition, isSpam: _.neq(true) },
+      { ...condition, uid: await getUid() }
+    )
     const main = await db
       .collection('comment')
       .where(query)
@@ -256,12 +269,35 @@ async function commentGet (event) {
       // 删除多读的 1 条
       main.data.splice(limit, 1)
     }
+    let top = []
+    if (!config.TOP_DISABLED && !event.before) {
+      // 查询置顶评论
+      query = {
+        ...condition,
+        top: true
+      }
+      top = await db
+        .collection('comment')
+        .where(query)
+        .orderBy('updated', 'desc')
+        .get()
+      // 合并置顶评论和非置顶评论
+      main.data = [
+        ...top.data,
+        ...main.data
+      ]
+    }
+    condition = {
+      rid: _.in(main.data.map((item) => item._id))
+    }
+    query = _.or(
+      { ...condition, isSpam: _.neq(true) },
+      { ...condition, uid: await getUid() }
+    )
     // 读取回复楼
     const reply = await db
       .collection('comment')
-      .where({
-        rid: _.in(main.data.map((item) => item._id))
-      })
+      .where(query)
       .get()
     res.data = parseComment([...main.data, ...reply.data], uid)
     res.more = more
@@ -322,6 +358,8 @@ function toCommentDto (comment, uid, replies = [], comments = []) {
     rid: comment.rid,
     pid: comment.pid,
     ruser: ruser(comment.pid, comments),
+    top: comment.top,
+    isSpam: comment.isSpam,
     created: comment.created,
     updated: comment.updated
   }
@@ -968,6 +1006,7 @@ async function parse (comment) {
   const isBloggerMail = comment.mail === config.BLOGGER_EMAIL
   if (isBloggerMail && !isAdminUser) throw new Error('请先登录管理面板，再使用博主身份发送评论')
   const commentDo = {
+    uid: await getUid(),
     nick: comment.nick ? comment.nick : '匿名',
     mail: comment.mail ? comment.mail : '',
     mailMd5: comment.mail ? md5(comment.mail) : '',
@@ -1360,6 +1399,12 @@ async function writeConfig (newConfig) {
     console.error('写入配置失败：', e)
     return null
   }
+}
+
+// 获取用户 ID
+async function getUid () {
+  const { userInfo } = await auth.getEndUserInfo()
+  return userInfo.uid
 }
 
 // 判断用户是否管理员

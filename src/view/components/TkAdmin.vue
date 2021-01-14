@@ -75,6 +75,7 @@ export default {
     return {
       iconClose,
       loading: true,
+      version: '',
       needUpdate: false,
       isLogin: false,
       isSetPassword: true,
@@ -176,6 +177,7 @@ export default {
       // 检查是否设置过密码
       try {
         const res = await call(this.$tcb, 'GET_PASSWORD_STATUS')
+        this.version = res.result.version
         this.isSetPassword = res.result.status
       } catch (e) {
         this.needUpdate = true

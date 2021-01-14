@@ -77,6 +77,7 @@ export default {
         ? eval(this.$twikoo.path)
         : window.location.pathname
       const before = this.comments
+        .filter((item) => !item.top)
         .map((item) => item.created)
         .sort((a, b) => a - b)[0] // 最小值
       await this.getComments({ url, before })

@@ -105,6 +105,6 @@ export default {
 }
 .twikoo .el-loading-mask {
   background-color: transparent;
-  backdrop-filter: blur(5px);
+  backdrop-filter: opacity(20%);
 }
 </style>

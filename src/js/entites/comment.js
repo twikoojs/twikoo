@@ -11,6 +11,7 @@ class Comment {
     this.mailMd5 = model.mailMd5 // 邮箱 MD5
     this.avatar = model.avatar // 头像 URL
     this.link = model.link // 网址
+    this.uid = model.uid // 评论人 User ID
 
     /* 评论数据 */
     this.url = model.url // 相对评论地址
@@ -22,6 +23,7 @@ class Comment {
     this.isSpam = model.isSpam // 是否垃圾评论
     this.master = model.master || false // 博主标识
     this.like = model.like // 赞数
+    this.top = model.top // 置顶
 
     /* 回复数据 */
     this.pid = model.pid // 回复的 ID

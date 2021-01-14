@@ -60,6 +60,10 @@ export default {
   max-height: 300px;
   vertical-align: middle;
 }
+.tk-owo-emotion,
+.twikoo .OwO-item img {
+  width: 3em;
+}
 
 /* element-ui overwrite */
 .twikoo .el-input__inner,
@@ -105,6 +109,6 @@ export default {
 }
 .twikoo .el-loading-mask {
   background-color: transparent;
-  backdrop-filter: blur(5px);
+  backdrop-filter: opacity(20%);
 }
 </style>

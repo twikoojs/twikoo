@@ -1,4 +1,4 @@
-import marked from 'marked'
+import marked from '../../lib/marked/marked'
 
 /**
  * https://marked.js.org/#/USING_ADVANCED.md

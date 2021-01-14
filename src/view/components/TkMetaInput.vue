@@ -3,9 +3,9 @@
     <el-input v-for="metaInput in metaInputs"
         :key="metaInput.key"
         :name="metaInput.name"
+        :type="metaInput.type"
         :placeholder="requiredFields[metaInput.key] ? t('META_INPUT_REQUIRED') : t('META_INPUT_NOT_REQUIRED')"
         v-model="metaData[metaInput.key]"
-        type="text"
         size="small"
         @change="onMetaChange">
       <template slot="prepend">{{ metaInput.locale }}</template>
@@ -17,10 +17,13 @@
 import { isQQ, t } from '../../js/utils'
 
 const metaInputs = [
-  { key: 'nick', locale: t('META_INPUT_NICK'), name: 'nick' },
-  { key: 'mail', locale: t('META_INPUT_MAIL'), name: 'mail' },
-  { key: 'link', locale: t('META_INPUT_LINK'), name: 'link' }
+  { key: 'nick', locale: t('META_INPUT_NICK'), name: 'nick', type: 'text' },
+  { key: 'mail', locale: t('META_INPUT_MAIL'), name: 'mail', type: 'email' },
+  { key: 'link', locale: t('META_INPUT_LINK'), name: 'link', type: 'text' }
 ]
+
+// 邮箱正则表达式来自 https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#validation
+const mailRegExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
 
 export default {
   props: {
@@ -68,9 +71,10 @@ export default {
       })
     },
     checkValid () {
+      const isValidMail = mailRegExp.test(this.metaData.mail)
       return (
         (this.metaData.nick || !this.requiredFields.nick) &&
-        (this.metaData.mail || !this.requiredFields.mail) &&
+        (isValidMail || !this.requiredFields.mail) &&
         (this.metaData.link || !this.requiredFields.link)
       )
     },
@@ -149,6 +153,10 @@ export default {
 }
 .tk-meta-input .el-input /deep/ .el-input-group__prepend {
   padding: 0 1rem;
+}
+.tk-meta-input .el-input /deep/ input:invalid {
+  border: 1px solid #f56c6c;
+  box-shadow: none;
 }
 @media screen and (max-width: 767px) {
   .tk-meta-input {

@@ -51,8 +51,8 @@ import iconImage from '@fortawesome/fontawesome-free/svgs/regular/image.svg'
 import Clickoutside from 'element-ui/src/utils/clickoutside'
 import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
-import { marked, call, logger, renderLinks, renderMath, renderCode, t } from '../../js/utils'
-import OwO from '../lib/owo'
+import { marked, call, logger, renderLinks, renderMath, renderCode, initOwoEmotion, initMarkedOwo, t } from '../../js/utils'
+import OwO from '../../lib/owo'
 
 const imageTypes = [
   'apng',
@@ -117,16 +117,18 @@ export default {
     saveDraft () {
       localStorage.setItem('twikoo-draft', this.comment)
     },
-    initOwo () {
+    async initOwo () {
       if (this.config.SHOW_EMOTION === 'true') {
+        const odata = await initOwoEmotion(this.config.EMOTION_CDN || 'https://cdn.jsdelivr.net/gh/imaegoo/emotion/owo.json')
         this.owo = new OwO({
           logo: iconEmotion, // OwO button text, default: `OωO表情`
           container: this.$refs.owo, // OwO container, default: `document.getElementsByClassName('OwO')[0]`
           target: this.textarea, // OwO target input or textarea, default: `document.getElementsByTagName('textarea')[0]`
-          api: this.config.EMOTION_CDN || 'https://cdn.jsdelivr.net/gh/imaegoo/emotion/owo.json', // OwO Emoticon data api, default: `https://cdn.jsdelivr.net/npm/owo/demo/OwO.json`
+          odata,
           position: 'down', // OwO body position, default: `down`
           maxHeight: '250px' // OwO body max-height, default: `250px`
         })
+        marked.setOptions({ odata: initMarkedOwo(odata) })
       }
     },
     onMetaUpdate (updates) {

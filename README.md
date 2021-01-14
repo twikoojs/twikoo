@@ -18,7 +18,7 @@ A simple, safe, free comment system based on Tencent CloudBase (tcb).
 ### 简单
 
 * 免费搭建（使用云开发作为评论后台，每个用户均长期享受1个免费的标准型基础版1资源套餐）
-* 简单部署（支持一键部署、网页部署、脚本部署）
+* 简单部署（支持一键部署、手动部署、命令行部署）
 
 ### 易用
 

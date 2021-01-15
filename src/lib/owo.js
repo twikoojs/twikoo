@@ -78,14 +78,16 @@ export default class OwO {
         const cursorPos = this.area.selectionEnd
         const areaValue = this.area.value
         let innerHTML = target.innerHTML
-        if (target.title) {
-          innerHTML = ':' + target.title + ': '
-        } else if (innerHTML.indexOf('<img') !== -1) {
-          // 图片表情转换为 markdown
-          const start = innerHTML.indexOf('src="') + 'src="'.length
-          const end = innerHTML.indexOf('"', start)
-          if (start !== -1 && end !== -1) {
-            innerHTML = `![${target.title || ''}](${innerHTML.substring(start, end)})`
+        if (innerHTML.indexOf('<img') !== -1) {
+          if (target.title) {
+            innerHTML = ':' + target.title + ': '
+          } else {
+            // 图片表情转换为 markdown
+            const start = innerHTML.indexOf('src="') + 'src="'.length
+            const end = innerHTML.indexOf('"', start)
+            if (start !== -1 && end !== -1) {
+              innerHTML = `![${target.title || ''}](${innerHTML.substring(start, end)})`
+            }
           }
         }
         this.area.value = areaValue.slice(0, cursorPos) + innerHTML + areaValue.slice(cursorPos)

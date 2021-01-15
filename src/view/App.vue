@@ -63,6 +63,7 @@ export default {
 .tk-owo-emotion,
 .twikoo .OwO-item img {
   width: 3em;
+  height: auto;
 }
 
 /* element-ui overwrite */

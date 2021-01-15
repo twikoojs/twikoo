@@ -91,6 +91,18 @@ yarn deploy -e 您的环境id
 
 Butterfly 目前支持 Twikoo，请查看 [Butterfly 安裝文檔(四) 主題配置-2](https://butterfly.js.org/posts/ceeb73f/#%E8%A9%95%E8%AB%96)
 
+### 在 Hexo Keep 主题使用
+
+Keep v3.3.0 已支持 Twikoo，请查看 [hexo-theme-keep/_config.yml](https://github.com/XPoet/hexo-theme-keep/blob/master/_config.yml)
+
+``` yml
+comment:
+  twikoo:
+    enable: true
+    env_id:                                  # Tencent cloud environment id
+    region:                                  # environment region. If select Guangzhou, fill in "ap-guangzhou".
+```
+
 ### 在 Hexo Volantis 主题使用
 
 Volantis 目前支持 Twikoo，请查看 [hexo-theme-volantis/_config.yml](https://github.com/volantis-x/hexo-theme-volantis/blob/master/_config.yml)

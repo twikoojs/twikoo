@@ -1279,7 +1279,7 @@ function getAvatar (comment) {
 
 function isQQ (mail) {
   return /^[1-9][0-9]{4,10}$/.test(mail) ||
-    /^[1-9][0-9]{4,10}@qq.com$/.test(mail)
+    /^[1-9][0-9]{4,10}@qq.com$/i.test(mail)
 }
 
 function addQQMailSuffix (mail) {
@@ -1289,7 +1289,7 @@ function addQQMailSuffix (mail) {
 
 async function getQQAvatar (qq) {
   try {
-    const qqNum = qq.replace(/@qq.com/g, '')
+    const qqNum = qq.replace(/@qq.com/ig, '')
     const result = await axios.get(`https://ptlogin2.qq.com/getface?imgtype=4&uin=${qqNum}`)
     if (result && result.data) {
       const start = result.data.indexOf('http')

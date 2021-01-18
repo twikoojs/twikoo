@@ -84,7 +84,7 @@ export default {
         // 1. 自动填充数字 QQ 邮箱到 [邮箱]
         // 2. 自动填充 QQ 昵称到 [昵称] (使用了 https://docs.tenapi.cn/ 提供的接口，感谢作者：I Am I)
         // 3. 自动显示 QQ 头像
-        const qqNum = this.metaData.nick.replace(/@qq.com/g, '')
+        const qqNum = this.metaData.nick.replace(/@qq.com/ig, '')
         const qqMail = `${qqNum}@qq.com`
         this.metaData.mail = qqMail
         this.getQQNick(qqNum)

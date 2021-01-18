@@ -1093,12 +1093,12 @@ async function checkSpamAction (event, context) {
     } else if (config.AKISMET_KEY) {
       // Akismet
       const akismetClient = new AkismetClient({
-        key: event.key,
-        blog: event.blog
+        key: config.AKISMET_KEY,
+        blog: config.SITE_URL
       })
       const isValid = await akismetClient.verifyKey()
       if (!isValid) {
-        console.log('Akismet key 不可用：', event.key)
+        console.log('Akismet key 不可用：', config.AKISMET_KEY)
         return
       }
       isSpam = await akismetClient.checkSpam({

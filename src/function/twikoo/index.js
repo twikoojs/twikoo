@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v1.1.1-beta
+ * Twikoo cloudbase function v1.1.2-beta
  * (c) 2020-2021 iMaeGoo
  * Released under the MIT License.
  */
@@ -31,7 +31,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.1.1-beta'
+const VERSION = '1.1.2-beta'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -1016,7 +1016,7 @@ async function parse (comment) {
     master: isBloggerMail,
     url: comment.url,
     href: comment.href,
-    comment: DOMPurify.sanitize(comment.comment),
+    comment: DOMPurify.sanitize(comment.comment, { FORBID_TAGS: ['style'], FORBID_ATTR: ['style'] }),
     pid: comment.pid ? comment.pid : comment.rid,
     rid: comment.rid,
     created: timestamp,

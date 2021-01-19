@@ -115,7 +115,7 @@ A simple, safe, free comment system based on Tencent CloudBase (tcb).
 
 ## 更新日志 & 开发计划 | Release notes & plans
 
-[更新日志](https://github.com/imaegoo/twikoo/releases) & [开发计划](https://github.com/imaegoo/twikoo/projects/1)
+[更新日志](https://github.com/imaegoo/twikoo/releases) & [开发计划](https://github.com/imaegoo/twikoo/projects/2)
 
 ## 开发 | Development
 

@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v1.1.1-beta
+ * Twikoo cloudbase function v1.1.2-beta
  * (c) 2020-2021 iMaeGoo
  * Released under the MIT License.
  */
@@ -31,7 +31,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.1.1-beta'
+const VERSION = '1.1.2-beta'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -1016,7 +1016,7 @@ async function parse (comment) {
     master: isBloggerMail,
     url: comment.url,
     href: comment.href,
-    comment: DOMPurify.sanitize(comment.comment),
+    comment: DOMPurify.sanitize(comment.comment, { FORBID_TAGS: ['style'], FORBID_ATTR: ['style'] }),
     pid: comment.pid ? comment.pid : comment.rid,
     rid: comment.rid,
     created: timestamp,
@@ -1093,12 +1093,12 @@ async function checkSpamAction (event, context) {
     } else if (config.AKISMET_KEY) {
       // Akismet
       const akismetClient = new AkismetClient({
-        key: event.key,
-        blog: event.blog
+        key: config.AKISMET_KEY,
+        blog: config.SITE_URL
       })
       const isValid = await akismetClient.verifyKey()
       if (!isValid) {
-        console.log('Akismet key 不可用：', event.key)
+        console.log('Akismet key 不可用：', config.AKISMET_KEY)
         return
       }
       isSpam = await akismetClient.checkSpam({
@@ -1279,7 +1279,7 @@ function getAvatar (comment) {
 
 function isQQ (mail) {
   return /^[1-9][0-9]{4,10}$/.test(mail) ||
-    /^[1-9][0-9]{4,10}@qq.com$/.test(mail)
+    /^[1-9][0-9]{4,10}@qq.com$/i.test(mail)
 }
 
 function addQQMailSuffix (mail) {
@@ -1289,7 +1289,7 @@ function addQQMailSuffix (mail) {
 
 async function getQQAvatar (qq) {
   try {
-    const qqNum = qq.replace(/@qq.com/g, '')
+    const qqNum = qq.replace(/@qq.com/ig, '')
     const result = await axios.get(`https://ptlogin2.qq.com/getface?imgtype=4&uin=${qqNum}`)
     if (result && result.data) {
       const start = result.data.indexOf('http')

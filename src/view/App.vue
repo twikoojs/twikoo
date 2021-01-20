@@ -71,10 +71,9 @@ export default {
 .twikoo .el-textarea__inner {
   color: currentColor;
   background-color: transparent;
-  border-color: #90939950;
 }
-.twikoo .el-input__inner:hover,
-.twikoo .el-textarea__inner:hover {
+
+.twikoo .el-input__inner:hover {
   border-color: #90939980;
 }
 .twikoo .el-input__inner:focus,

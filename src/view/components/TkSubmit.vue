@@ -377,6 +377,7 @@ export default {
 .tk-input /deep/ .el-textarea__inner {
   background-position: right bottom;
   background-repeat: no-repeat;
+  background-size: contain;
 }
 .tk-preview-container {
   margin-left: 3rem;

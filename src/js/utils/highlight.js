@@ -1,12 +1,13 @@
-import Prism from 'prismjs'
-import 'prismjs/plugins/autoloader/prism-autoloader'
-
 const PRISM_CDN = 'https://cdn.jsdelivr.net/npm/prismjs@1.22.0'
+let Prism
 let cssEl
 
-Prism.plugins.autoloader.languages_path = `${PRISM_CDN}/components/`
-
 const renderCode = (el, theme) => {
+  if (!Prism) {
+    Prism = require('prismjs')
+    require('prismjs/plugins/autoloader/prism-autoloader')
+    Prism.plugins.autoloader.languages_path = `${PRISM_CDN}/components/`
+  }
   loadCss(theme)
   Prism.highlightAllUnder(el)
 }

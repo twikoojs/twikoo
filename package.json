@@ -1,6 +1,6 @@
 {
   "name": "twikoo",
-  "version": "1.1.2-beta",
+  "version": "1.1.3-beta",
   "description": "A simple comment system based on Tencent CloudBase (tcb).",
   "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
   "license": "MIT",
@@ -55,7 +55,7 @@
     "webpack-dev-server": "^4.0.0-beta.0"
   },
   "dependencies": {
-    "@cloudbase/js-sdk": "1.3.4-alpha.1",
+    "@cloudbase/js-sdk": "1.4.0",
     "@fortawesome/fontawesome-free": "^5.15.1",
     "blueimp-md5": "^2.18.0",
     "element-ui": "^2.14.1",

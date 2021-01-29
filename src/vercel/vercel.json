@@ -1,0 +1,11 @@
+{
+  "name": "twikoo-vercel",
+  "version": 2,
+  "env": {
+    "MONGODB_URI": "@mongodb_uri"
+  },
+  "routes": [{
+    "src": "/(.*)",
+    "dest": "index.js"
+  }]
+}

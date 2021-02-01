@@ -1,11 +1,5 @@
 # 快速上手
 
-::: warning 注意：云开发免费额度变更
-腾讯云已取消免费的云开发基础版 1 套餐（参考[产品定价](https://cloud.tencent.com/document/product/876/39095)），同时还调整了按量计费环境的免费额度（参考[免费额度](https://cloud.tencent.com/document/product/876/47816)），新的免费额度数据库读操作数由原先的 50000 次 / 天降至 500 次 / 天，**已无法支撑 Twikoo 的运行需求**。请暂时放弃免费搭建或购买 6.9 元 / 月的新特惠基础版 1，Twikoo 将会尽快寻找解决方案。
-
-**此次免费额度变更暂时不会影响已有环境**，已有环境用户请勿随意销毁现有的基础版 1 环境。
-:::
-
 Twikoo 分为云函数和前端两部分，部署时请注意保存二者版本一致。
 
 * [云函数部署](#云函数部署)有 3 种方式，[一键部署](#一键部署)、[手动部署](#手动部署)和[命令行部署](#命令行部署)。
@@ -21,30 +15,26 @@ Twikoo 分为云函数和前端两部分，部署时请注意保存二者版本�
 3. 进入[环境-安全配置](https://console.cloud.tencent.com/tcb/env/safety)，将网站域名添加到“WEB安全域名”
 
 ::: tip 提示
-一键部署虽然方便，但是仅支持按量计费环境——也就是说，**一键部署的环境，当免费资源用尽后，将会产生费用**。且按量计费环境无法切换为包年包月环境。
-
-大多数情况下，免费资源能够满足日访问量在 10,000 以下的站点（参考：[免费资源如何计算？](faq.html#免费资源如何计算)）。
-
-如果您希望，当免费资源用尽时，不产生费用，请参考[手动部署](#手动部署)。
+一键部署虽然方便，但是仅支持按量计费环境——也就是说，**一键部署的环境，当免费资源用尽后，将会产生费用**。且按量计费环境无法切换为包年包月环境。免费额度数据库读操作数只有 500 次 / 天，**无法支撑 Twikoo 的运行需求**。Twikoo 建议您[手动部署](#手动部署)以节约成本。
 :::
 
 ### 手动部署
 
 如果您打算部署到一个现有的云开发环境，请直接从第 3 步开始。
 
-1. [注册云开发CloudBase](https://curl.qcloud.com/KnnJtUom)
-2. 进入[云开发控制台](https://console.cloud.tencent.com/tcb/)，新建环境，请按需配置环境<br>
+1. 进入[云开发CloudBase](https://curl.qcloud.com/KnnJtUom)活动页面，滚动到“新用户专享”部分，选择适合的套餐（一般 0 元套餐即可），点击“立即购买”，按提示创建好环境。
 ::: tip 提示
 * 推荐创建上海环境。如选择广州环境，需要在 `twikoo.init()` 时额外指定环境 `region: "ap-guangzhou"`
 * 环境名称自由填写
 * 推荐选择计费方式`包年包月`，套餐版本`基础班 1`，超出免费额度不会收费
 * 如果提示选择“应用模板”，请选择“空模板”
 :::
+2. 进入[云开发控制台](https://console.cloud.tencent.com/tcb/)<br>
 3. 进入[环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)，启用“匿名登录”
 4. 进入[环境-安全配置](https://console.cloud.tencent.com/tcb/env/safety)，将网站域名添加到“WEB安全域名”
 5. 进入[环境-云函数](https://console.cloud.tencent.com/tcb/scf/index)，点击“新建云函数”
 6. 函数名称请填写：`twikoo`，创建方式请选择：`空白函数`，运行环境请选择：`Nodejs 10.15`，函数内存请选择：`128MB`，点击“下一步”
-7. 复制以下代码、粘贴到“函数代码”输入框中，点击“确定”
+7. 清空输入框中的示例代码，复制以下代码、粘贴到“函数代码”输入框中，点击“确定”
 ``` js
 exports.main = require('twikoo-func').main
 ```
@@ -57,7 +47,7 @@ exports.main = require('twikoo-func').main
 ### 命令行部署
 
 ::: warning 注意
-* **推荐使用一键部署或手动部署，命令行部署仅针对有 Node.js 经验的开发者。**
+* **推荐使用手动部署，命令行部署仅针对有 Node.js 经验的开发者。**
 * 请确保您已经安装了 [Node.js](https://nodejs.org/en/download/)
 * 请将命令、代码中“您的环境id”替换为您自己的环境id
 * 第 7 步会弹出浏览器要求授权，需在有图形界面的系统下进行
@@ -66,8 +56,8 @@ exports.main = require('twikoo-func').main
 
 如果您打算部署到一个现有的云开发环境，请直接从第 3 步开始。
 
-1. [注册云开发CloudBase](https://curl.qcloud.com/KnnJtUom)
-2. 进入[云开发控制台](https://console.cloud.tencent.com/tcb/)，新建环境，请按需配置环境<br>
+1. 进入[云开发CloudBase](https://curl.qcloud.com/KnnJtUom)活动页面，滚动到“新用户专享”部分，选择适合的套餐（一般 0 元套餐即可），点击“立即购买”，按提示创建好环境。
+2. 进入[云开发控制台](https://console.cloud.tencent.com/tcb/)<br>
 3. 进入[环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)，启用“匿名登录”
 4. 进入[环境-安全配置](https://console.cloud.tencent.com/tcb/env/safety)，将网站域名添加到“WEB安全域名”
 5. 克隆本仓库

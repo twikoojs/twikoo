@@ -611,8 +611,8 @@ async function commentImportDisqus (disqusDb, log) {
         link: '',
         url: thread.url
           ? thread.url.indexOf('http') === 0
-              ? getRelativeUrl(thread.url)
-              : thread.url
+            ? getRelativeUrl(thread.url)
+            : thread.url
           : getRelativeUrl(thread.href),
         href: thread.href,
         comment: post.message[0],

@@ -245,6 +245,9 @@ export default {
   color: inherit;
   text-decoration: none;
 }
+.tk-replies .tk-nick-link {
+  font-size: .9em;
+}
 .tk-nick-link:hover {
   color: #409eff;
 }
@@ -312,6 +315,9 @@ export default {
   margin-top: 0.5rem;
   overflow: auto;
   max-height: 500px;
+}
+.tk-replies .tk-content {
+  font-size: .9em;
 }
 .tk-comment /deep/ .vemoji {
   max-height: 2em;

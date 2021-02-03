@@ -70,6 +70,10 @@ export default {
   text-align: center;
   border-radius: 5px;
 }
+.tk-replies .tk-avatar {
+  height: 1.6rem;
+  width: 1.6rem;
+}
 .tk-avatar.tk-has-avatar {
   background-color: #90939920;
 }
@@ -78,6 +82,9 @@ export default {
 }
 .tk-avatar .tk-avatar-img {
   height: 2.5rem;
+}
+.tk-replies .tk-avatar .tk-avatar-img {
+  height: 1.6rem;
 }
 .tk-avatar .tk-avatar-img /deep/ svg {
   fill: #c0c4cc;

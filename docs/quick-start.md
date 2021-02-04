@@ -145,6 +145,18 @@ twikoo:
 
 请参考 [基于腾讯云，给你的 Icarus 博客配上 Twikoo 评论系统](https://anzifan.com/post/icarus_to_candy_2/) by 异次元de机智君💯
 
+### 在 Hexo MengD(萌典) 主题使用
+MengD(萌典) 目前支持 Twikoo，请查看 [hexo-theme-MengD/_config.yml](https://github.com/lete114/hexo-theme-MengD/blob/master/_config.yml)
+``` yml
+# twikoo
+## https://twikoo.js.org/
+twikoo:
+  envId: xxxxxxxxx # 你的环境id
+  region: ap-shanghai # 环境地域，ap-shanghai / ap-guangzhou
+  path: window.location.pathname  # 用于区分不同文章的自定义 js 路径，如果您的文章路径不是 location.pathname，需传此参数
+  option: 
+```
+
 ### 通过 CDN 引入
 
 ::: tip 提示

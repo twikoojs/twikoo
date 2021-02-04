@@ -234,7 +234,8 @@ export default {
   left: 0;
 }
 .tk-admin-close {
-  position: absolute;
+  position: sticky;
+  float: right;
   display: block;
   top: 0;
   right: 0;

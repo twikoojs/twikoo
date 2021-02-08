@@ -70,6 +70,7 @@ export default {
           items: [
             { key: 'SC_SENDKEY', desc: t('ADMIN_CONFIG_ITEM_SC_SENDKEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}SCT1364TKdsiGjGvyAZNYDVnuHW12345`, value: '' },
             { key: 'QM_SENDKEY', desc: t('ADMIN_CONFIG_ITEM_QM_SENDKEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}k2ni28jkmn72tqdvqryt9827u0o9nbpok`, value: '' },
+            { key: 'PUSH_PLUS_TOKEN', desc: t('ADMIN_CONFIG_ITEM_PUSH_PLUS_TOKEN'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}f8ae2b8a107a408b803896a0ec012345`, value: '' },
             { key: 'SC_MAIL_NOTIFY', desc: t('ADMIN_CONFIG_ITEM_SC_MAIL_NOTIFY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}true`, value: '' }
           ]
         },

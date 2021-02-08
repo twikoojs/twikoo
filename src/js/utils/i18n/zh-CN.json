@@ -32,6 +32,7 @@
   "ADMIN_CONFIG_ITEM_MAIL_TEMPLATE": "自定义通知邮件模板，留空则使用默认模板。可包含的字段：${SITE_URL}, ${SITE_NAME}, ${PARENT_NICK}, ${PARENT_COMMENT}, ${NICK}, ${COMMENT}, ${POST_URL}",
   "ADMIN_CONFIG_ITEM_MAIL_TEMPLATE_ADMIN": "自定义博主通知邮件模板，留空则使用默认模板。可包含的字段：${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}",
   "ADMIN_CONFIG_ITEM_MASTER_TAG": "博主标识自定义文字，默认为 “博主”。",
+  "ADMIN_CONFIG_ITEM_PUSH_PLUS_TOKEN": "推送加（pushplus.hxtrip.com）推送的 Token",
   "ADMIN_CONFIG_ITEM_QCLOUD_SECRET_ID": "腾讯云 secret id，用于垃圾评论检测。同时设置腾讯云和 Akismet 时，只有腾讯云会生效。注册：https://twikoo.js.org/cms.html",
   "ADMIN_CONFIG_ITEM_QCLOUD_SECRET_KEY": "腾讯云 secret key",
   "ADMIN_CONFIG_ITEM_QM_SENDKEY": "Qmsg酱（qmsg.zendee.cn）QQ推送的 KEY",

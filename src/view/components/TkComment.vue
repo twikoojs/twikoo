@@ -18,6 +18,12 @@
           <small class="tk-time">
             <time :datetime="jsonTimestamp" :title="localeTime">{{ displayCreated }}</time>
           </small>
+          <small class="tk-actions" v-if="isLogin">
+            <a v-if="comment.isSpam" @click="handleSpam(false)">{{ t('ADMIN_COMMENT_SHOW') }}</a>
+            <a v-if="!comment.isSpam" @click="handleSpam(true)">{{ t('ADMIN_COMMENT_HIDE') }}</a>
+            <a v-if="!comment.rid && comment.top" @click="handleTop(false)">{{ t('ADMIN_COMMENT_UNTOP') }}</a>
+            <a v-if="!comment.rid && !comment.top" @click="handleTop(true)">{{ t('ADMIN_COMMENT_TOP') }}</a>
+          </small>
         </div>
         <tk-action :liked="liked"
             :like-count="like"
@@ -112,7 +118,8 @@ export default {
       liked: false,
       likeLoading: false,
       isExpanded: false,
-      hasExpand: false
+      hasExpand: false,
+      isLogin: false
     }
   },
   props: {
@@ -195,6 +202,26 @@ export default {
     },
     onExpand () {
       this.isExpanded = true
+    },
+    async checkAuth () {
+      // 检查用户身份
+      const currentUser = await this.$tcb.auth.getCurrenUser()
+      this.isLogin = currentUser.loginType === 'CUSTOM'
+    },
+    handleSpam (isSpam) {
+      this.setComment({ isSpam })
+    },
+    handleTop (top) {
+      this.setComment({ top })
+    },
+    async setComment (set) {
+      this.loading = true
+      await call(this.$tcb, 'COMMENT_SET_FOR_ADMIN', {
+        id: this.comment.id,
+        set
+      })
+      this.loading = false
+      this.$emit('load')
     }
   },
   mounted () {
@@ -204,6 +231,7 @@ export default {
       renderLinks(this.$refs.comment)
       renderMath(this.$refs.comment, this.$twikoo.katex)
     })
+    this.checkAuth()
   },
   watch: {
     'comment.like': {
@@ -250,6 +278,13 @@ export default {
 }
 .tk-nick-link:hover {
   color: #409eff;
+}
+.tk-actions {
+  display: none;
+  margin-left: 1em;
+}
+.tk-comment:hover .tk-actions {
+  display: inline;
 }
 .tk-extras {
   color: #999999;

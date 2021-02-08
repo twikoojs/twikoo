@@ -1,4 +1,4 @@
-const PRISM_CDN = 'https://cdn.jsdelivr.net/npm/prismjs@1.22.0'
+const PRISM_CDN = 'https://cdn.jsdelivr.net/npm/prismjs@1.23.0'
 let Prism
 let cssEl
 

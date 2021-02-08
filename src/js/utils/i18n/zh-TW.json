@@ -32,6 +32,7 @@
   "ADMIN_CONFIG_ITEM_MAIL_TEMPLATE": "自定義通知郵件模板，留空則使用預設模板。可包含的欄位：${SITE_URL}, ${SITE_NAME}, ${PARENT_NICK}, ${PARENT_COMMENT}, ${NICK}, ${COMMENT}, ${POST_URL}",
   "ADMIN_CONFIG_ITEM_MAIL_TEMPLATE_ADMIN": "自定義博主通知郵件模板，留空則使用預設模板。可包含的欄位：${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}",
   "ADMIN_CONFIG_ITEM_MASTER_TAG": "博主標識自定義文字，預設為 “博主”。",
+  "ADMIN_CONFIG_ITEM_PUSH_PLUS_TOKEN": "推送加（pushplus.hxtrip.com）推送的 Token",
   "ADMIN_CONFIG_ITEM_QCLOUD_SECRET_ID": "騰訊雲 secret id，用於垃圾評論檢測。同時設定騰訊雲和 Akismet 時，只有騰訊雲會生效。註冊：https://twikoo.js.org/cms.html",
   "ADMIN_CONFIG_ITEM_QCLOUD_SECRET_KEY": "騰訊雲 secret key",
   "ADMIN_CONFIG_ITEM_QM_SENDKEY": "Qmsg醬（qmsg.zendee.cn）QQ推送的 KEY",

@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v1.2.0
+ * Twikoo cloudbase function v1.2.1-beta
  * (c) 2020-2021 iMaeGoo
  * Released under the MIT License.
  */
@@ -31,7 +31,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.2.0'
+const VERSION = '1.2.1-beta'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -228,6 +228,7 @@ async function commentGet (event) {
   try {
     validate(event, ['url'])
     const uid = await auth.getEndUserInfo().userInfo.uid
+    const isAdminUser = await isAdmin()
     const limit = parseInt(config.COMMENT_PAGE_SIZE) || 8
     let more = false
     let condition
@@ -237,10 +238,7 @@ async function commentGet (event) {
       rid: _.in(['', null])
     }
     // 查询非垃圾评论 + 自己的评论
-    query = _.or(
-      { ...condition, isSpam: _.neq(true) },
-      { ...condition, uid: await getUid() }
-    )
+    query = getCommentQuery({ condition, uid, isAdminUser })
     // 读取总条数
     const count = await db
       .collection('comment')
@@ -252,10 +250,7 @@ async function commentGet (event) {
     }
     // 不包含置顶
     condition.top = _.neq(true)
-    query = _.or(
-      { ...condition, isSpam: _.neq(true) },
-      { ...condition, uid: await getUid() }
-    )
+    query = getCommentQuery({ condition, uid, isAdminUser })
     const main = await db
       .collection('comment')
       .where(query)
@@ -290,10 +285,7 @@ async function commentGet (event) {
     condition = {
       rid: _.in(main.data.map((item) => item._id))
     }
-    query = _.or(
-      { ...condition, isSpam: _.neq(true) },
-      { ...condition, uid: await getUid() }
-    )
+    query = getCommentQuery({ condition, uid, isAdminUser })
     // 读取回复楼
     const reply = await db
       .collection('comment')
@@ -307,6 +299,13 @@ async function commentGet (event) {
     res.message = e.message
   }
   return res
+}
+
+function getCommentQuery ({ condition, uid, isAdminUser }) {
+  return _.or(
+    { ...condition, isSpam: _.neq(isAdminUser ? 'imaegoo' : true) },
+    { ...condition, uid }
+  )
 }
 
 // 同时查询 /path 和 /path/ 的评论
@@ -784,6 +783,7 @@ async function sendMail (comment, context) {
     noticeMaster(comment),
     noticeReply(comment),
     noticeWeChat(comment),
+    noticePushPlus(comment),
     noticeQQ(comment)
   ]).catch(console.error)
   return { code: RES_CODE.SUCCESS }
@@ -826,7 +826,15 @@ async function initMailer () {
 async function noticeMaster (comment) {
   if (!transporter) if (!await initMailer()) return
   if (config.BLOGGER_EMAIL === comment.mail) return
-  if (config.SC_MAIL_NOTIFY !== 'true' && config.SC_SENDKEY) return
+  const IM_PUSH_CONFIGS = [
+    'SC_SENDKEY',
+    'QM_SENDKEY',
+    'PUSH_PLUS_TOKEN'
+  ]
+  // 判断是否存在即时消息推送配置
+  const hasIMPushConfig = IM_PUSH_CONFIGS.some(item => !!config[item])
+  // 存在即时消息推送配置，则默认不发送邮件给博主
+  if (hasIMPushConfig && config.SC_MAIL_NOTIFY !== 'true') return
   const SITE_NAME = config.SITE_NAME
   const NICK = comment.nick
   const COMMENT = comment.comment
@@ -874,30 +882,42 @@ async function noticeWeChat (comment) {
     return
   }
   if (config.BLOGGER_EMAIL === comment.mail) return
-  const SITE_NAME = config.SITE_NAME
-  const NICK = comment.nick
-  const COMMENT = $(comment.comment).text()
-  const SITE_URL = config.SITE_URL
-  const POST_URL = appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
-  const emailSubject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}上有新评论了`
-  const emailContent = `${NICK}回复说：\n${COMMENT}\n您可以点击 ${POST_URL} 查看回复的完整內容`
+  const pushContent = getIMPushContent(comment)
   let scApiUrl = 'https://sc.ftqq.com'
   let scApiParam = {
-    text: emailSubject,
-    desp: emailContent
+    text: pushContent.subject,
+    desp: pushContent.content
   }
   if (config.SC_SENDKEY.substring(0, 3).toLowerCase() === 'sct') {
     // 兼容 server 酱测试专版
     scApiUrl = 'https://sctapi.ftqq.com'
     scApiParam = {
-      title: emailSubject,
-      desp: emailContent
+      title: pushContent.subject,
+      desp: pushContent.content
     }
   }
   const sendResult = await axios.post(`${scApiUrl}/${config.SC_SENDKEY}.send`, qs.stringify(scApiParam), {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
   })
   console.log('微信通知结果：', sendResult)
+}
+
+// pushplus 通知
+async function noticePushPlus (comment) {
+  if (!config.PUSH_PLUS_TOKEN) {
+    console.log('没有配置 pushplus，放弃通知')
+    return
+  }
+  if (config.BLOGGER_EMAIL === comment.mail) return
+  const pushContent = getIMPushContent(comment)
+  const ppApiUrl = 'http://pushplus.hxtrip.com/send'
+  const ppApiParam = {
+    token: config.PUSH_PLUS_TOKEN,
+    title: pushContent.subject,
+    content: pushContent.content
+  }
+  const sendResult = await axios.post(ppApiUrl, ppApiParam)
+  console.log('pushplus 通知结果：', sendResult)
 }
 
 // QQ通知
@@ -907,26 +927,32 @@ async function noticeQQ (comment) {
     return
   }
   if (config.BLOGGER_EMAIL === comment.mail) return
-  const SITE_NAME = config.SITE_NAME
-  // 昵称
-  const NICK = comment.nick
-  // 邮箱
-  const MAIL = comment.mail
-  // ip
-  const IP = comment.ip
-  const COMMENT = $(comment.comment).text()
-  const SITE_URL = config.SITE_URL
-  const POST_URL = appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
-  const emailSubject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}上有新评论了`
-  const emailContent = `评论人：${NICK}(${MAIL})\n评论人IP：${IP}\n评论内容：${COMMENT}\n您可以点击 ${POST_URL} 查看回复的完整內容`
+  const pushContent = getIMPushContent(comment)
   const qmApiUrl = 'https://qmsg.zendee.cn'
   const qmApiParam = {
-    msg: emailSubject + '\n' + emailContent
+    msg: pushContent.subject + '\n' + pushContent.content.replace(/<br>/g, '\n')
   }
   const sendResult = await axios.post(`${qmApiUrl}/send/${config.QM_SENDKEY}`, qs.stringify(qmApiParam), {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
   })
   console.log('QQ通知结果：', sendResult)
+}
+
+// 即时消息推送内容获取
+function getIMPushContent (comment) {
+  const SITE_NAME = config.SITE_NAME
+  const NICK = comment.nick
+  const MAIL = comment.mail
+  const IP = comment.ip
+  const COMMENT = $(comment.comment).text()
+  const SITE_URL = config.SITE_URL
+  const POST_URL = appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
+  const subject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}有新评论了`
+  const content = `评论人：${NICK}(${MAIL})<br>评论人IP：${IP}<br>评论内容：${COMMENT}<br>您可以点击 ${POST_URL} 查看回复的完整內容`
+  return {
+    subject,
+    content
+  }
 }
 
 // 回复通知
@@ -1022,7 +1048,7 @@ async function parse (comment) {
     created: timestamp,
     updated: timestamp
   }
-  commentDo.isSpam = await checkSpam(commentDo)
+  commentDo.isSpam = isAdminUser ? false : await checkSpam(commentDo)
   if (isQQ(comment.mail)) {
     commentDo.mail = addQQMailSuffix(comment.mail)
     commentDo.mailMd5 = md5(commentDo.mail)

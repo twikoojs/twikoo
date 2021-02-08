@@ -10,7 +10,7 @@
           <span v-if="comment.isSpam">{{ t('ADMIN_COMMENT_IS_SPAM_SUFFIX') }}</span>
         </div>
         <div class="tk-content" v-html="comment.comment" ref="comments"></div>
-        <div class="tk-admin-actions" slot="content">
+        <div class="tk-admin-actions">
           <el-button size="mini" type="text" @click="handleView(comment)">{{ t('ADMIN_COMMENT_VIEW') }}</el-button>
           <el-button size="mini" type="text" v-if="comment.isSpam" @click="handleSpam(comment, false)">{{ t('ADMIN_COMMENT_SHOW') }}</el-button>
           <el-button size="mini" type="text" v-if="!comment.isSpam" @click="handleSpam(comment, true)">{{ t('ADMIN_COMMENT_HIDE') }}</el-button>

@@ -11,20 +11,20 @@
   },
   "homepage": "https://twikoo.js.org",
   "dependencies": {
-    "@cloudbase/manager-node": "^3.8.2",
-    "@cloudbase/node-sdk": "^2.4.4",
+    "@cloudbase/manager-node": "^3.9.0",
+    "@cloudbase/node-sdk": "^2.5.0",
     "akismet-api": "^5.1.0",
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "blueimp-md5": "^2.18.0",
     "bowser": "^2.11.0",
-    "cheerio": "^1.0.0-rc.3",
+    "cheerio": "^1.0.0-rc.5",
     "crypto-js": "^4.0.0",
-    "dompurify": "^2.2.3",
+    "dompurify": "^2.2.6",
     "jsdom": "^16.4.0",
-    "marked": "^1.2.5",
-    "nodemailer": "^6.4.16",
+    "marked": "^2.0.0",
+    "nodemailer": "^6.4.17",
     "querystring": "^0.2.0",
-    "tencentcloud-sdk-nodejs": "^4.0.33",
+    "tencentcloud-sdk-nodejs": "^4.0.65",
     "xml2js": "^0.4.23"
   }
 }

@@ -35,6 +35,8 @@ module.exports = class Renderer {
       }
     }
 
+    code = code.replace(/\n$/, '') + '\n';
+
     if (!lang) {
       return '<pre><code>'
         + (escaped ? code : escape(code, true))

@@ -59,7 +59,7 @@
     "@fortawesome/fontawesome-free": "^5.15.2",
     "blueimp-md5": "^2.18.0",
     "element-ui": "^2.15.0",
-    "marked": "^1.2.5",
+    "marked": "^2.0.0",
     "owo": "^1.0.2",
     "prismjs": "^1.23.0",
     "vue": "^2.6.12"

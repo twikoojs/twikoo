@@ -1,5 +1,5 @@
 /*!
- * Twikoo twikoo function v0.0.1-alpha
+ * Twikoo vercel function v0.0.1-alpha
  * (c) 2020-2021 iMaeGoo
  * Released under the MIT License.
  */
@@ -35,12 +35,12 @@ module.exports = async (req, response) => {
   await connectToDatabase(process.env.MONGODB_URI)
   // await readConfig()
   try {
-    switch (event.event) {
+    switch (req.event) {
       case 'GET_FUNC_VERSION':
         res = getFuncVersion()
         break
       default:
-        if (res.event) {
+        if (req.event) {
           res.code = RES_CODE.EVENT_NOT_EXIST
           res.message = '请更新 Twikoo 云函数至最新版本'
         } else {
@@ -50,7 +50,7 @@ module.exports = async (req, response) => {
     }
   } catch (e) {
     console.error('Twikoo 遇到错误，请参考以下错误信息。如有疑问，请反馈至 https://github.com/imaegoo/twikoo/issues')
-    console.error('请求参数：', event)
+    console.error('请求参数：', req)
     console.error('错误信息：', e)
     res.code = RES_CODE.FAIL
     res.message = e.message

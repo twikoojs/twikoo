@@ -1,6 +1,6 @@
 {
   "name": "twikoo-vercel",
-  "version": "1.1.3-beta",
+  "version": "0.0.1-alpha",
   "description": "A simple comment system based on Tencent CloudBase (tcb).",
   "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
   "license": "MIT",
@@ -11,8 +11,6 @@
   },
   "homepage": "https://twikoo.js.org",
   "dependencies": {
-    "@cloudbase/manager-node": "^3.8.2",
-    "@cloudbase/node-sdk": "^2.4.4",
     "akismet-api": "^5.1.0",
     "axios": "^0.21.0",
     "blueimp-md5": "^2.18.0",
@@ -22,6 +20,7 @@
     "dompurify": "^2.2.3",
     "jsdom": "^16.4.0",
     "marked": "^1.2.5",
+    "mongodb": "^3.6.3",
     "nodemailer": "^6.4.16",
     "querystring": "^0.2.0",
     "tencentcloud-sdk-nodejs": "^4.0.33",

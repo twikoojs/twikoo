@@ -1,6 +1,6 @@
 <template>
   <div class="tk-admin-import">
-    <div class="tk-admin-import-warn">
+    <div class="tk-admin-warn tk-admin-import-warn">
       <p>{{ t('ADMIN_IMPORT_WARN') }}</p>
       <p>{{ warnText[source] }}</p>
     </div>
@@ -91,12 +91,6 @@ export default {
 .tk-admin-import {
   display: flex;
   flex-direction: column;
-}
-.tk-admin-import-warn {
-  padding: 1rem 1.5rem;
-  background-color: #fff7d0;
-  border-left: 0.5rem solid #e7c000;
-  color: #6b5900;
 }
 .tk-admin-import-label {
   margin-top: 1em;

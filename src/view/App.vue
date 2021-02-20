@@ -112,4 +112,11 @@ export default {
   background-color: transparent;
   backdrop-filter: opacity(20%);
 }
+.tk-admin-warn {
+  padding: 1rem 1.5rem;
+  background-color: #fff7d0;
+  border-left: 0.5rem solid #e7c000;
+  color: #6b5900;
+  align-self: stretch;
+}
 </style>

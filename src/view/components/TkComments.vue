@@ -30,6 +30,7 @@ import { call, t } from '../../js/utils'
 import TkSubmit from './TkSubmit.vue'
 import TkComment from './TkComment.vue'
 import iconSetting from '@fortawesome/fontawesome-free/svgs/solid/cog.svg'
+import Vue from 'vue'
 
 export default {
   components: {
@@ -55,9 +56,10 @@ export default {
   methods: {
     t,
     async initConfig () {
-      const result = await call(this.$tcb, 'GET_CONFIG', event)
+      const result = await call(this.$tcb, 'GET_CONFIG')
       if (result && result.result && result.result.config) {
         this.config = result.result.config
+        Vue.prototype.$twikoo.serverConfig = result.result.config
       }
     },
     async initComments () {

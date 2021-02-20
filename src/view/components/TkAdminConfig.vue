@@ -1,5 +1,10 @@
 <template>
   <div class="tk-admin-config" v-loading="loading">
+    <div class="tk-admin-warn" v-if="clientVersion !== serverVersion">
+      <span>前端版本：{{ clientVersion }}，</span>
+      <span>云函数版本：{{ serverVersion }}，</span>
+      <span>请参考&nbsp;<a href="https://twikoo.js.org/quick-start.html#%E7%89%88%E6%9C%AC%E6%9B%B4%E6%96%B0" target="_blank">版本更新</a>&nbsp;进行升级</span>
+    </div>
     <div class="tk-admin-config-groups">
       <div class="tk-admin-config-group" v-for="settingGroup in settings" :key="settingGroup.name">
         <div class="tk-admin-config-group-title">{{ settingGroup.name }}</div>
@@ -23,6 +28,7 @@
 
 <script>
 import { call, logger, t } from '../../js/utils'
+import { version } from '../../../package.json'
 
 export default {
   data () {
@@ -62,7 +68,8 @@ export default {
             { key: 'AKISMET_KEY', desc: t('ADMIN_CONFIG_ITEM_AKISMET_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}8651783edxxx`, value: '' },
             { key: 'QCLOUD_SECRET_ID', desc: t('ADMIN_CONFIG_ITEM_QCLOUD_SECRET_ID'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}AKIDBgZDdnbTw9D4ey9qPkrkwtb2Do9EwIHw`, value: '' },
             { key: 'QCLOUD_SECRET_KEY', desc: t('ADMIN_CONFIG_ITEM_QCLOUD_SECRET_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}XrkOnvKWS7WeXbP1QZT76rPgtpWx73D7`, value: '', secret: true },
-            { key: 'LIMIT_PER_MINUTE', desc: t('ADMIN_CONFIG_ITEM_LIMIT_PER_MINUTE'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}5`, value: '' }
+            { key: 'LIMIT_PER_MINUTE', desc: t('ADMIN_CONFIG_ITEM_LIMIT_PER_MINUTE'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}5`, value: '' },
+            { key: 'FORBIDDEN_WORDS', desc: t('ADMIN_CONFIG_ITEM_FORBIDDEN_WORDS'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}快递,空包`, value: '' }
           ]
         },
         {
@@ -95,6 +102,8 @@ export default {
         }
       ],
       serverConfig: {},
+      serverVersion: this.$twikoo.serverConfig.VERSION,
+      clientVersion: version,
       message: ''
     }
   },

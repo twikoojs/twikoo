@@ -1,5 +1,10 @@
 <template>
   <div class="tk-admin-comment" v-loading="loading">
+    <div class="tk-admin-warn" v-if="clientVersion !== serverVersion">
+      <span>前端版本：{{ clientVersion }}，</span>
+      <span>云函数版本：{{ serverVersion }}，</span>
+      <span>请参考&nbsp;<a href="https://twikoo.js.org/quick-start.html#%E7%89%88%E6%9C%AC%E6%9B%B4%E6%96%B0" target="_blank">版本更新</a>&nbsp;进行升级</span>
+    </div>
     <div class="tk-admin-comment-list" ref="comment-list">
       <div class="tk-admin-comment-item" v-for="comment in comments" :key="comment._id">
         <div class="tk-admin-comment-meta">
@@ -30,6 +35,7 @@
 
 <script>
 import { call, convertLink, renderLinks, renderMath, renderCode, t } from '../../js/utils'
+import { version } from '../../../package.json'
 import TkAvatar from './TkAvatar.vue'
 import TkPagination from './TkPagination.vue'
 
@@ -45,6 +51,8 @@ export default {
       loading: true,
       comments: [],
       serverConfig: {},
+      serverVersion: this.$twikoo.serverConfig.VERSION,
+      clientVersion: version,
       count: 0,
       pageSize: defaultPageSize,
       currentPage: 1
@@ -136,6 +144,9 @@ export default {
 .tk-admin-comment a {
   color: currentColor;
   text-decoration: underline;
+}
+.tk-admin-comment-list {
+  margin-top: 1em;
 }
 .tk-admin-comment-list,
 .tk-admin-comment-item {

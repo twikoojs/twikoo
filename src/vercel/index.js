@@ -77,7 +77,7 @@ async function connectToDatabase (uri) {
   const client = await MongoClient.connect(uri, { useNewUrlParser: true })
   // Select the database through the connection,
   // using the database path of the connection string
-  db = await client.db(url.parse(uri).pathname.substr(1))
+  db = await client.db(url.URL(uri).pathname.substr(1))
   // Cache the database connection and return the connection
   return db
 }

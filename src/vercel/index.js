@@ -39,6 +39,9 @@ module.exports = async (req, response) => {
       case 'GET_FUNC_VERSION':
         res = getFuncVersion()
         break
+      case 'ANONYMOUS_SIGN_IN':
+        response.setHeader('Set-Cookie', ['ck=value; Expires=Tue, 01 Dec 2022 00:00:00 GMT; HttpOnly'])
+        break
       default:
         if (req.event) {
           res.code = RES_CODE.EVENT_NOT_EXIST

@@ -21,6 +21,7 @@
   "ADMIN_CONFIG_ITEM_COMMENT_PLACEHOLDER": "评论框提示信息，可用<br>换行，默认为空",
   "ADMIN_CONFIG_ITEM_DEFAULT_GRAVATAR": "默认的头像显示。默认值为 \"identicon\"，可选： 404、mp、identicon、monsterid、wavatar、retro、robohash、blank",  
   "ADMIN_CONFIG_ITEM_EMOTION_CDN": "表情 CDN，默认为：https://cdn.jsdelivr.net/gh/imaegoo/emotion/owo.json",
+  "ADMIN_CONFIG_ITEM_FORBIDDEN_WORDS": "违禁词配置，包含违禁词的内容会直接标记为垃圾评论。英文逗号分隔。",
   "ADMIN_CONFIG_ITEM_GRAVATAR_CDN": "自定义头像 CDN 地址。如：cn.gravatar.com, sdn.geekzu.org, gravatar.loli.net，默认：cn.gravatar.com",
   "ADMIN_CONFIG_ITEM_HIDE_ADMIN_CRYPT": "隐藏管理面板入口。可设置一个“暗号”，只有在“昵称”一栏输入相同的“暗号”时，管理面板入口才会显示，留空则不隐藏管理入口",
   "ADMIN_CONFIG_ITEM_HIGHLIGHT": "启用代码高亮功能。如果您的主题和代码高亮有冲突，请设为 false。默认：true",

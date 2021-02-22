@@ -83,45 +83,27 @@ yarn deploy -e 您的环境id
 
 ## 前端部署
 
-### 在 Hexo Butterfly 主题使用
+### 在 Hexo 中使用
 
-Butterfly 目前支持 Twikoo，请查看 [Butterfly 安裝文檔(四) 主題配置-2](https://butterfly.js.org/posts/ceeb73f/#%E8%A9%95%E8%AB%96)
+#### 在 [Hexo Butterfly](https://github.com/jerryc127/hexo-theme-butterfly) 主题使用
 
-### 在 Hexo Keep 主题使用
+请参考 [Butterfly 安裝文檔(四) 主題配置-2](https://butterfly.js.org/posts/ceeb73f/#%E8%A9%95%E8%AB%96) 进行配置
 
-Keep v3.3.0 已支持 Twikoo，请查看 [hexo-theme-keep/_config.yml](https://github.com/XPoet/hexo-theme-keep/blob/master/_config.yml)
+#### 在 [Hexo Keep](https://github.com/XPoet/hexo-theme-keep) 主题使用
 
-``` yml
-comment:
-  twikoo:
-    enable: true
-    env_id:                                  # Tencent cloud environment id
-    region:                                  # environment region. If select Guangzhou, fill in "ap-guangzhou".
-```
+请参考 [hexo-theme-keep/_config.yml](https://github.com/XPoet/hexo-theme-keep/blob/master/_config.yml) 进行配置
 
-### 在 Hexo Volantis 主题使用
+#### 在 [Hexo Volantis](https://github.com/volantis-x/hexo-theme-volantis) 主题使用
 
-Volantis 目前支持 Twikoo，请查看 [hexo-theme-volantis/_config.yml](https://github.com/volantis-x/hexo-theme-volantis/blob/master/_config.yml)
+请参考 [hexo-theme-volantis/_config.yml](https://github.com/volantis-x/hexo-theme-volantis/blob/master/_config.yml) 进行配置
 
-``` yml
-comments:
-  twikoo:
-    js: https://cdn.jsdelivr.net/npm/twikoo@1.2.0/dist/twikoo.all.min.js
-    envId: xxxxxxxxxxxxxxx # 腾讯云环境id
-```
+#### 在 [Hexo Ayer](https://github.com/Shen-Yu/hexo-theme-ayer) 主题使用
 
-### 在 Hexo Ayer 主题使用
+请参考 [hexo-theme-ayer/_config.yml](https://github.com/Shen-Yu/hexo-theme-ayer/blob/master/_config.yml) 进行配置
 
-Ayer 目前支持 Twikoo，请查看 [hexo-theme-ayer/_config.yml](https://github.com/Shen-Yu/hexo-theme-ayer/blob/master/_config.yml)
+#### 在 [Hexo NexT](https://github.com/next-theme/hexo-theme-next) 主题使用
 
-``` yml
-twikoo:
-  envId: xxxxxxxxxxxxxxx # 腾讯云环境id
-```
-
-### 在 Hexo NexT 主题使用
-
-在 Hexo 项目根目录执行 `npm install hexo-next-twikoo`，然后在配置中添加
+**暂不支持 NexT 8 以下的版本**，请先升级到 NexT 8。然后在 Hexo 项目根目录执行 `npm install hexo-next-twikoo`，然后在配置中添加
 
 ``` yml
 twikoo:
@@ -131,31 +113,29 @@ twikoo:
   # region: ap-guangzhou # 环境地域，默认为 ap-shanghai
 ```
 
-### 在 Hexo Matery 主题使用
+#### 在 [Hexo Matery](https://github.com/blinkfox/hexo-theme-matery) 主题使用
 
-``` yml
-twikoo:
-  enable: true
-  envId: xxxxxxxxxxxxxxx # 环境 ID，搭建教程：https://twikoo.js.org/quick-start.html
-  # region: ap-guangzhou # 环境地域，默认为 ap-shanghai
-  # path: 'window.location.pathname' # 自定义文章路径
-```
+请参考 [hexo-theme-matery/_config.yml](https://github.com/blinkfox/hexo-theme-matery/blob/develop/_config.yml) 进行配置
 
-### 在 Hexo Icarus 主题使用
+#### 在 [Hexo Icarus](https://github.com/ppoffice/hexo-theme-icarus) 主题使用
 
 请参考 [基于腾讯云，给你的 Icarus 博客配上 Twikoo 评论系统](https://anzifan.com/post/icarus_to_candy_2/) by 异次元de机智君💯
 
-### 在 Hexo MengD(萌典) 主题使用
-MengD(萌典) 目前支持 Twikoo，请查看 [hexo-theme-MengD/_config.yml](https://github.com/lete114/hexo-theme-MengD/blob/master/_config.yml)
-``` yml
-# twikoo
-## https://twikoo.js.org/
-twikoo:
-  envId: xxxxxxxxx # 你的环境id
-  region: ap-shanghai # 环境地域，ap-shanghai / ap-guangzhou
-  path: window.location.pathname  # 用于区分不同文章的自定义 js 路径，如果您的文章路径不是 location.pathname，需传此参数
-  option: 
-```
+#### 在 [Hexo MengD(萌典)](https://github.com/lete114/hexo-theme-MengD) 主题使用
+
+请参考 [hexo-theme-MengD/_config.yml](https://github.com/lete114/hexo-theme-MengD/blob/master/_config.yml) 进行配置
+
+#### 在 [hexo-theme-fluid](https://github.com/fluid-dev/hexo-theme-fluid) 主题使用
+
+请参考 [配置指南-评论](https://hexo.fluid-dev.com/docs/guide/#%E8%AF%84%E8%AE%BA) 进行配置
+
+#### 在 [hexo-theme-cards](https://github.com/ChrAlpha/hexo-theme-cards) 主题使用
+
+请参考 [hexo-theme-cards/_config.yml](https://github.com/ChrAlpha/hexo-theme-cards/blob/master/_config.yml) 进行配置
+
+#### 在 [maupassant-hexo](https://github.com/tufu9441/maupassant-hexo) 主题使用
+
+请参考 [maupassant-hexo/_config.yml](https://github.com/tufu9441/maupassant-hexo/blob/master/_config.yml) 进行配置
 
 ### 通过 CDN 引入
 

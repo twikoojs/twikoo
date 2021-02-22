@@ -21,6 +21,7 @@
   "ADMIN_CONFIG_ITEM_COMMENT_PLACEHOLDER": "評論框提示資訊，可用<br>換行，預設為空",
   "ADMIN_CONFIG_ITEM_DEFAULT_GRAVATAR": "預設的頭像顯示。預設值為 \"identicon\"，可選： 404、mp、identicon、monsterid、wavatar、retro、robohash、blank",
   "ADMIN_CONFIG_ITEM_EMOTION_CDN": "表情 CDN，預設為：https://cdn.jsdelivr.net/gh/imaegoo/emotion/owo.json",
+  "ADMIN_CONFIG_ITEM_FORBIDDEN_WORDS": "違禁詞配置，包含違禁詞嘅內容會直接標記為垃圾評論。英文逗號分隔。",
   "ADMIN_CONFIG_ITEM_GRAVATAR_CDN": "自定義頭像 CDN 地址。如：cn.gravatar.com, sdn.geekzu.org, gravatar.loli.net，預設：cn.gravatar.com",
   "ADMIN_CONFIG_ITEM_HIDE_ADMIN_CRYPT": "隱藏管理面板入口。可設定一個“暗號”，只有在“暱稱”一欄輸入相同的“暗號”時，管理面板入口才會顯示，留空則不隱藏管理入口",
   "ADMIN_CONFIG_ITEM_HIGHLIGHT": "啟用程式碼高亮功能。如果您的主題和程式碼高亮有衝突，請設為 false。預設：true",

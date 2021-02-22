@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v1.2.2-beta
+ * Twikoo cloudbase function v1.2.3-beta
  * (c) 2020-2021 iMaeGoo
  * Released under the MIT License.
  */
@@ -31,7 +31,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.2.2-beta'
+const VERSION = '1.2.3-beta'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -755,14 +755,6 @@ async function commentSubmit (event) {
   }
   const comment = await save(event)
   res.id = comment.id
-  try {
-    await app.callFunction({
-      name: 'twikoo',
-      data: { event: 'SEND_MAIL', comment }
-    }, { timeout: 300 }) // 设置较短的 timeout 来实现异步
-  } catch (e) {
-    console.log('开始异步发送评论通知')
-  }
   return res
 }
 
@@ -787,6 +779,18 @@ async function sendMail (comment, context) {
     noticeQQ(comment)
   ]).catch(console.error)
   return { code: RES_CODE.SUCCESS }
+}
+
+async function sendMailAsync (comment) {
+  if (comment.isSpam) return
+  try {
+    await app.callFunction({
+      name: 'twikoo',
+      data: { event: 'SEND_MAIL', comment }
+    }, { timeout: 300 }) // 设置较短的 timeout 来实现异步
+  } catch (e) {
+    console.log('开始异步发送评论通知')
+  }
 }
 
 // 初始化邮件插件
@@ -1078,6 +1082,9 @@ async function checkSpam (comment) {
   if (config.AKISMET_KEY === 'MANUAL_REVIEW') {
     console.log('已使用人工审核模式，评论审核后才会发表~')
     return true
+  } else if (checkSpamKeyword(comment)) {
+    console.log('包含违禁词，直接标记为垃圾评论~')
+    return true
   } else if ((config.QCLOUD_SECRET_ID && config.QCLOUD_SECRET_KEY) || config.AKISMET_KEY) {
     // Akismet 服务响应慢，影响用户体验，通过调用自身，实现开启新的云函数进程，异步检测的效果
     try {
@@ -1091,6 +1098,18 @@ async function checkSpam (comment) {
       return isSpam.result.isSpam
     } catch (e) {
       console.log('开始异步检测垃圾评论')
+    }
+  }
+  return false
+}
+
+// 违禁词检测
+function checkSpamKeyword (comment) {
+  if (config.FORBIDDEN_WORDS) {
+    for (const forbiddenWord of config.FORBIDDEN_WORDS.trim().split(',')) {
+      if (comment.comment.indexOf(forbiddenWord) !== -1) {
+        return true
+      }
     }
   }
   return false
@@ -1147,6 +1166,8 @@ async function checkSpamAction (event, context) {
           isSpam,
           updated: Date.now()
         })
+    } else {
+      await sendMailAsync(comment)
     }
     return { code: RES_CODE.SUCCESS, isSpam }
   } catch (err) {
@@ -1276,6 +1297,7 @@ async function getRecentComments (event) {
       return {
         id: comment._id,
         url: comment.url,
+        href: comment.href,
         nick: comment.nick,
         avatar: getAvatar(comment),
         mailMd5: comment.mailMd5 || md5(comment.mail),

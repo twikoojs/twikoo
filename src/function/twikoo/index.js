@@ -755,6 +755,14 @@ async function commentSubmit (event) {
   }
   const comment = await save(event)
   res.id = comment.id
+  try {
+    await app.callFunction({
+      name: 'twikoo',
+      data: { event: 'SEND_MAIL', comment }
+    }, { timeout: 300 }) // 设置较短的 timeout 来实现异步
+  } catch (e) {
+    console.log('开始异步发送评论通知')
+  }
   return res
 }
 
@@ -779,18 +787,6 @@ async function sendMail (comment, context) {
     noticeQQ(comment)
   ]).catch(console.error)
   return { code: RES_CODE.SUCCESS }
-}
-
-async function sendMailAsync (comment) {
-  if (comment.isSpam) return
-  try {
-    await app.callFunction({
-      name: 'twikoo',
-      data: { event: 'SEND_MAIL', comment }
-    }, { timeout: 300 }) // 设置较短的 timeout 来实现异步
-  } catch (e) {
-    console.log('开始异步发送评论通知')
-  }
 }
 
 // 初始化邮件插件
@@ -1166,8 +1162,6 @@ async function checkSpamAction (event, context) {
           isSpam,
           updated: Date.now()
         })
-    } else {
-      await sendMailAsync(comment)
     }
     return { code: RES_CODE.SUCCESS, isSpam }
   } catch (err) {

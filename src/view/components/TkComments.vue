@@ -3,7 +3,7 @@
     <tk-submit @load="initComments" :config="config" />
     <div class="tk-comments-container" v-loading="loading">
       <div class="tk-comments-title">
-        <span class="tk-comments-count">
+        <span class="tk-comments-count" :class="{ __hidden: !comments.length }">
           <span>{{ count }}</span>
           <span>{{ t('COMMENTS_COUNT_SUFFIX') }}</span>
         </span>
@@ -20,7 +20,7 @@
         :config="config"
         @reply="onReply"
         @load="initComments" />
-      <div class="tk-expand" v-if="showExpand" @click="onExpand" v-loading="loadingMore">{{ t('COMMENTS_EXPAND') }}</div>
+      <div class="tk-expand" v-if="showExpand && !loading" @click="onExpand" v-loading="loadingMore">{{ t('COMMENTS_EXPAND') }}</div>
     </div>
   </div>
 </template>
@@ -123,6 +123,9 @@ export default {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
+}
+.tk-comments-count.__hidden {
+  visibility: hidden;
 }
 .tk-comments-container {
   min-height: 10rem;

@@ -5,6 +5,19 @@
       <span>云函数版本：{{ serverVersion }}，</span>
       <span>请参考&nbsp;<a href="https://twikoo.js.org/quick-start.html#%E7%89%88%E6%9C%AC%E6%9B%B4%E6%96%B0" target="_blank">版本更新</a>&nbsp;进行升级</span>
     </div>
+    <div class="tk-admin-comment-filter">
+      <el-input
+          class="tk-admin-comment-filter-keyword"
+          size="small"
+          v-model="filter.keyword"
+          placeholder="搜索昵称、邮箱、网址、IP、评论正文、文章地址" />
+      <select class="tk-admin-comment-filter-type" v-model="filter.type">
+        <option value="">全部</option>
+        <option value="VISIBLE">只看可见</option>
+        <option value="HIDDEN">只看隐藏</option>
+      </select>
+      <el-button size="small" type="primary" @click="getComments">搜索</el-button>
+    </div>
     <div class="tk-admin-comment-list" ref="comment-list">
       <div class="tk-admin-comment-item" v-for="comment in comments" :key="comment._id">
         <div class="tk-admin-comment-meta">
@@ -55,7 +68,8 @@ export default {
       clientVersion: version,
       count: 0,
       pageSize: defaultPageSize,
-      currentPage: 1
+      currentPage: 1,
+      filter: { keyword: '', type: '' }
     }
   },
   methods: {
@@ -65,7 +79,9 @@ export default {
       this.loading = true
       const res = await call(this.$tcb, 'COMMENT_GET_FOR_ADMIN', {
         per: this.pageSize,
-        page: this.currentPage
+        page: this.currentPage,
+        keyword: this.filter.keyword,
+        type: this.filter.type
       })
       if (res.result && !res.result.code) {
         this.count = res.result.count
@@ -97,6 +113,7 @@ export default {
       window.open(`${comment.url}#${comment._id}`)
     },
     async handleDelete (comment) {
+      if (!confirm(t('ADMIN_COMMENT_DELETE_CONFIRM'))) return
       this.loading = true
       await call(this.$tcb, 'COMMENT_DELETE_FOR_ADMIN', {
         id: comment._id
@@ -145,6 +162,30 @@ export default {
   color: currentColor;
   text-decoration: underline;
 }
+.tk-admin-comment-filter {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.tk-admin-comment-filter-keyword {
+  flex: 1;
+}
+.tk-admin-comment-filter-type {
+  height: 32px;
+  margin: 0 0.5em;
+  padding: 0 0.5em;
+  color: #ffffff;
+  background: none;
+  border: 1px solid #90939950;
+  border-radius: 4px;
+  position: relative;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+}
+.tk-admin-comment-filter-type:focus {
+  border-color: #409eff;
+}
 .tk-admin-comment-list {
   margin-top: 1em;
 }
@@ -166,30 +207,5 @@ export default {
 .tk-admin-actions {
   display: flex;
   margin-bottom: 1em;
-}
-.tk-admin-comment .el-pagination {
-  color: #c0c4cc;
-  margin-top: 1rem;
-}
-.tk-admin-comment /deep/ .el-input {
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-}
-.tk-admin-comment /deep/ .el-pagination__total,
-.tk-admin-comment /deep/ .el-pagination__jump,
-.tk-admin-comment /deep/ .el-pager li:hover,
-.tk-admin-comment /deep/ .el-pager li.active {
-  color: #ffffff;
-}
-.tk-admin-comment /deep/ .el-pager li,
-.tk-admin-comment /deep/ .el-pagination.is-background .el-pager li,
-.tk-admin-comment /deep/ .el-input__inner {
-  background-color: transparent;
-  color: #ffffff;
-}
-.tk-admin-comment /deep/ .el-icon-more::before,
-.tk-admin-comment /deep/ .el-icon-d-arrow-left::before,
-.tk-admin-comment /deep/ .el-icon-d-arrow-right::before {
-  content: '...';
 }
 </style>

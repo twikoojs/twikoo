@@ -162,6 +162,9 @@ export default {
   color: currentColor;
   text-decoration: underline;
 }
+.tk-admin-warn {
+  margin-bottom: 1em;
+}
 .tk-admin-comment-filter {
   width: 100%;
   display: flex;

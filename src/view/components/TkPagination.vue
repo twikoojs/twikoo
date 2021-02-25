@@ -7,7 +7,6 @@
         <span>{{ t('PAGINATION_COUNT_SUFFIX') }}</span>
       </div>
       <el-input
-          class="el-pagination__editor is-in-pagination"
           type="number"
           min="1"
           max="100"
@@ -26,7 +25,6 @@
     <div class="tk-pagination-options" v-if="!!pageCount">
       <span>{{ t('PAGINATION_GOTO_PREFIX') }}</span>
       <el-input
-          class="el-pagination__editor is-in-pagination"
           type="number"
           min="1"
           :max="pageCount"

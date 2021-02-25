@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v1.2.3-beta
+ * Twikoo cloudbase function v1.2.4-beta
  * (c) 2020-2021 iMaeGoo
  * Released under the MIT License.
  */
@@ -31,7 +31,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.2.3-beta'
+const VERSION = '1.2.4-beta'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -86,6 +86,9 @@ exports.main = async (event, context) => {
       case 'COMMENT_SUBMIT':
         res = await commentSubmit(event)
         break
+      case 'POST_SUBMIT':
+        res = await postSubmit(event.comment, context)
+        break
       case 'COUNTER_GET':
         res = await counterGet(event)
         break
@@ -112,12 +115,6 @@ exports.main = async (event, context) => {
         break
       case 'GET_RECENT_COMMENTS': // >= 0.2.7
         res = await getRecentComments(event)
-        break
-      case 'CHECK_SPAM':
-        res = await checkSpamAction(event, context)
-        break
-      case 'SEND_MAIL':
-        res = await sendMail(event.comment, context)
         break
       default:
         if (event.event) {
@@ -378,8 +375,12 @@ async function commentGetForAdmin (event) {
     validate(event, ['per', 'page'])
     const collection = db
       .collection('comment')
-    const count = await collection.count()
+    const condition = getCommentSearchCondition(event)
+    const count = await collection
+      .where(condition)
+      .count()
     const data = await collection
+      .where(condition)
       .orderBy('created', 'desc')
       .skip(event.per * (event.page - 1))
       .limit(event.per)
@@ -392,6 +393,36 @@ async function commentGetForAdmin (event) {
     res.message = '请先登录'
   }
   return res
+}
+
+function getCommentSearchCondition (event) {
+  let condition = {}
+  if (event.type) {
+    switch (event.type) {
+      case 'VISIBLE':
+        condition = { isSpam: _.neq(true) }
+        break
+      case 'HIDDEN':
+        condition = { isSpam: true }
+        break
+    }
+  }
+  if (event.keyword) {
+    const regExp = new db.RegExp({
+      regexp: event.keyword,
+      options: 'i'
+    })
+    condition = _.or(
+      { ...condition, nick: regExp },
+      { ...condition, mail: regExp },
+      { ...condition, link: regExp },
+      { ...condition, ip: regExp },
+      { ...condition, comment: regExp },
+      { ...condition, url: regExp },
+      { ...condition, href: regExp }
+    )
+  }
+  return condition
 }
 
 function parseCommentForAdmin (comments) {
@@ -735,7 +766,12 @@ async function like (id, uid) {
 }
 
 /**
- * 提交评论
+ * 提交评论。分为多个步骤
+ * 1. 参数校验
+ * 2. 预检测垃圾评论（包括限流、人工审核、违禁词检测等）
+ * 3. 保存到数据库
+ * 4. 触发异步任务（包括 IM 通知、邮件通知、第三方垃圾评论检测
+ *    等，因为这些任务比较耗时，所以要放在另一个线程进行）
  * @param {String} event.nick 昵称
  * @param {String} event.mail 邮箱
  * @param {String} event.link 网址
@@ -747,20 +783,29 @@ async function like (id, uid) {
  */
 async function commentSubmit (event) {
   const res = {}
-  try {
-    validate(event, ['url', 'ua', 'comment'])
-  } catch (e) {
-    res.message = e.message
-    return res
-  }
-  const comment = await save(event)
+  // 参数校验
+  validate(event, ['url', 'ua', 'comment'])
+  // 限流
+  await limitFilter()
+  // 预检测、转换
+  const data = await parse(event)
+  // 保存
+  const comment = await save(data)
   res.id = comment.id
+  // 异步垃圾检测、发送评论通知
+  try {
+    await app.callFunction({
+      name: 'twikoo',
+      data: { event: 'POST_SUBMIT', comment }
+    }, { timeout: 300 }) // 设置较短的 timeout 来实现异步
+  } catch (e) {
+    console.log('开始异步垃圾检测、发送评论通知')
+  }
   return res
 }
 
 // 保存评论
-async function save (event) {
-  const data = await parse(event)
+async function save (data) {
   const result = await db
     .collection('comment')
     .add(data)
@@ -768,29 +813,28 @@ async function save (event) {
   return data
 }
 
-// 发送通知
-async function sendMail (comment, context) {
+// 异步垃圾检测、发送评论通知
+async function postSubmit (comment, context) {
   if (!isRecursion(context)) return { code: RES_CODE.FORBIDDEN }
+  // 垃圾检测
+  await postCheckSpam(comment)
+  // 发送通知
+  await sendNotice(comment)
+  return { code: RES_CODE.SUCCESS }
+}
+
+// 发送通知
+async function sendNotice (comment) {
+  if (comment.isSpam && config.NOTIFY_SPAM === 'false') return
   await Promise.all([
     noticeMaster(comment),
     noticeReply(comment),
     noticeWeChat(comment),
     noticePushPlus(comment),
     noticeQQ(comment)
-  ]).catch(console.error)
-  return { code: RES_CODE.SUCCESS }
-}
-
-async function sendMailAsync (comment) {
-  if (comment.isSpam) return
-  try {
-    await app.callFunction({
-      name: 'twikoo',
-      data: { event: 'SEND_MAIL', comment }
-    }, { timeout: 300 }) // 设置较短的 timeout 来实现异步
-  } catch (e) {
-    console.log('开始异步发送评论通知')
-  }
+  ]).catch(err => {
+    console.error('邮件通知异常：', err)
+  })
 }
 
 // 初始化邮件插件
@@ -1049,10 +1093,10 @@ async function parse (comment) {
     comment: DOMPurify.sanitize(comment.comment, { FORBID_TAGS: ['style'], FORBID_ATTR: ['style'] }),
     pid: comment.pid ? comment.pid : comment.rid,
     rid: comment.rid,
+    isSpam: isAdminUser ? false : preCheckSpam(comment.comment),
     created: timestamp,
     updated: timestamp
   }
-  commentDo.isSpam = isAdminUser ? false : await checkSpam(commentDo)
   if (isQQ(comment.mail)) {
     commentDo.mail = addQQMailSuffix(comment.mail)
     commentDo.mailMd5 = md5(commentDo.mail)
@@ -1061,15 +1105,15 @@ async function parse (comment) {
   return commentDo
 }
 
-// 垃圾评论检测
-async function checkSpam (comment) {
+// 限流
+async function limitFilter () {
   // 限制每个 IP 每 10 分钟发表的评论数量
   const limitPerMinute = parseInt(config.LIMIT_PER_MINUTE)
   if (limitPerMinute) {
     let count = await db
       .collection('comment')
       .where({
-        ip: comment.ip,
+        ip: auth.getClientIP(),
         created: _.gt(Date.now() - 600000)
       })
       .count()
@@ -1078,36 +1122,19 @@ async function checkSpam (comment) {
       throw new Error('发言频率过高')
     }
   }
-  // 内容安全检测
-  if (config.AKISMET_KEY === 'MANUAL_REVIEW') {
-    console.log('已使用人工审核模式，评论审核后才会发表~')
-    return true
-  } else if (checkSpamKeyword(comment)) {
-    console.log('包含违禁词，直接标记为垃圾评论~')
-    return true
-  } else if ((config.QCLOUD_SECRET_ID && config.QCLOUD_SECRET_KEY) || config.AKISMET_KEY) {
-    // Akismet 服务响应慢，影响用户体验，通过调用自身，实现开启新的云函数进程，异步检测的效果
-    try {
-      const isSpam = await app.callFunction({
-        name: 'twikoo',
-        data: {
-          event: 'CHECK_SPAM',
-          comment
-        }
-      }, { timeout: 300 }) // 设置较短的 timeout 来实现异步
-      return isSpam.result.isSpam
-    } catch (e) {
-      console.log('开始异步检测垃圾评论')
-    }
-  }
-  return false
 }
 
-// 违禁词检测
-function checkSpamKeyword (comment) {
-  if (config.FORBIDDEN_WORDS) {
-    for (const forbiddenWord of config.FORBIDDEN_WORDS.trim().split(',')) {
-      if (comment.comment.indexOf(forbiddenWord) !== -1) {
+// 预垃圾评论检测
+function preCheckSpam (comment) {
+  if (config.AKISMET_KEY === 'MANUAL_REVIEW') {
+    // 人工审核
+    console.log('已使用人工审核模式，评论审核后才会发表~')
+    return true
+  } else if (config.FORBIDDEN_WORDS) {
+    // 违禁词检测
+    for (const forbiddenWord of config.FORBIDDEN_WORDS.split(',')) {
+      if (comment.indexOf(forbiddenWord.trim()) !== -1) {
+        console.log('包含违禁词，直接标记为垃圾评论~')
         return true
       }
     }
@@ -1115,13 +1142,14 @@ function checkSpamKeyword (comment) {
   return false
 }
 
-// 异步检测垃圾评论
-async function checkSpamAction (event, context) {
-  if (!isRecursion(context)) return { code: RES_CODE.FORBIDDEN }
+// 后垃圾评论检测
+async function postCheckSpam (comment) {
   try {
     let isSpam
-    const comment = event.comment
-    if (config.QCLOUD_SECRET_ID && config.QCLOUD_SECRET_KEY) {
+    if (comment.isSpam) {
+      // 预检测没过的，就不再检测了
+      isSpam = true
+    } else if (config.QCLOUD_SECRET_ID && config.QCLOUD_SECRET_KEY) {
       // 腾讯云内容安全
       const client = new tencentcloud.tms.v20200713.Client({
         credential: { secretId: config.QCLOUD_SECRET_ID, secretKey: config.QCLOUD_SECRET_KEY },
@@ -1158,21 +1186,18 @@ async function checkSpamAction (event, context) {
       })
     }
     console.log('垃圾评论检测结果：', isSpam)
+    comment.isSpam = isSpam
     if (isSpam) {
       await db
         .collection('comment')
-        .where({ created: comment.created })
+        .doc(comment.id)
         .update({
           isSpam,
           updated: Date.now()
         })
-    } else {
-      await sendMailAsync(comment)
     }
-    return { code: RES_CODE.SUCCESS, isSpam }
   } catch (err) {
     console.error('垃圾评论检测异常：', err)
-    return { code: RES_CODE.AKISMET_ERROR, message: err.message }
   }
 }
 

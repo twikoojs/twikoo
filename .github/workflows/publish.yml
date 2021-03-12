@@ -19,9 +19,9 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: yarn install
       - run: yarn build
-      - run: yarn publish --tag beta
+      - run: yarn publish # --tag beta
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
-      - run: cd src/function/twikoo && yarn publish --tag beta
+      - run: cd src/function/twikoo && yarn publish # --tag beta
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}

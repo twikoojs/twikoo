@@ -56,10 +56,12 @@ let transporter
 
 // 云函数入口点 / entry point
 exports.main = async (event, context) => {
+  // 本地调试传入 event 是string
+  if (typeof event === 'string') event = JSON.parse(event)
   console.log('请求方法：', event.event)
   console.log('请求参数：', event)
   let res = {}
-  await readConfig()
+  if (!config) await readConfig()
   try {
     switch (event.event) {
       case 'GET_FUNC_VERSION':
@@ -227,70 +229,61 @@ async function commentGet (event) {
     const uid = await auth.getEndUserInfo().userInfo.uid
     const isAdminUser = await isAdmin()
     const limit = parseInt(config.COMMENT_PAGE_SIZE) || 8
-    let more = false
-    let condition
-    let query
-    condition = {
-      url: _.in(getUrlQuery(event.url)),
-      rid: _.in(['', null])
-    }
-    // 查询非垃圾评论 + 自己的评论
-    query = getCommentQuery({ condition, uid, isAdminUser })
-    // 读取总条数
-    const count = await db
-      .collection('comment')
-      .where(query)
-      .count()
-    // 读取主楼
-    if (event.before) {
-      condition.created = _.lt(event.before)
-    }
-    // 不包含置顶
-    condition.top = _.neq(true)
-    query = getCommentQuery({ condition, uid, isAdminUser })
-    const main = await db
-      .collection('comment')
-      .where(query)
-      .orderBy('created', 'desc')
-      // 流式分页，通过多读 1 条的方式，确认是否还有更多评论
-      .limit(limit + 1)
-      .get()
-    if (main.data.length > limit) {
-      // 还有更多评论
-      more = true
-      // 删除多读的 1 条
-      main.data.splice(limit, 1)
-    }
-    let top = []
-    if (!config.TOP_DISABLED && !event.before) {
-      // 查询置顶评论
-      query = {
-        ...condition,
-        top: true
+    const before = event.before || 0
+
+    const [ { data: rows }, { total: count } ] = await Promise.all([
+      // 评论数
+      db.collection('comment')
+        .where(
+          getCommentQuery({
+            condition: {
+              url: _.in(getUrlQuery(event.url))
+            },
+            uid,
+            isAdminUser
+          })
+        )
+        .orderBy('created', 'desc')
+        .limit(9999)
+        .get(),
+      // 总条数
+      db.collection('comment')
+        .where(
+          getCommentQuery({
+            condition: {
+              url: _.in(getUrlQuery(event.url)),
+              rid: _.in(['', null])
+            }, 
+            uid, 
+            isAdminUser 
+          })
+        )
+        .count()
+    ])
+
+    // 拼接评论
+    let comments = parseComment(rows, uid)
+    let [ tops, mains ] = [ [], [] ]
+    for (const comment of comments) {
+      const { created, top } = comment;
+      // 置顶
+      if (created > before && top === true) {
+        tops.push(comment)
       }
-      top = await db
-        .collection('comment')
-        .where(query)
-        .orderBy('updated', 'desc')
-        .get()
-      // 合并置顶评论和非置顶评论
-      main.data = [
-        ...top.data,
-        ...main.data
-      ]
+      // 主楼
+      if (created > before) {
+        mains.push(comment)
+      }
     }
-    condition = {
-      rid: _.in(main.data.map((item) => item._id))
-    }
-    query = getCommentQuery({ condition, uid, isAdminUser })
-    // 读取回复楼
-    const reply = await db
-      .collection('comment')
-      .where(query)
-      .get()
-    res.data = parseComment([...main.data, ...reply.data], uid)
-    res.more = more
-    res.count = count.total
+
+    tops = tops.sort((a, b) => a.updated - b.updated)
+
+    comments = [ ...tops, ...mains ]
+
+    res.data = comments.slice(0, limit)
+    res.more = comments.length > limit
+    res.count = count
+
   } catch (e) {
     res.data = []
     res.message = e.message

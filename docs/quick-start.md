@@ -1,17 +1,18 @@
 # 快速上手
 
-::: warning 注意：云开发免费额度变更
-腾讯云已取消免费的云开发基础版 1 套餐（参考[产品定价](https://cloud.tencent.com/document/product/876/39095)），同时还调整了按量计费环境的免费额度（参考[免费额度](https://cloud.tencent.com/document/product/876/47816)），新的免费额度数据库读操作数由原先的 50000 次 / 天降至 500 次 / 天，**已无法支撑 Twikoo 的运行需求**。请暂时放弃免费搭建或购买 6.9 元 / 月的新特惠基础版 1，Twikoo 将会尽快寻找解决方案。
-
-**此次免费额度变更暂时不会影响已有环境**，已有环境用户请勿随意销毁现有的基础版 1 环境。
-:::
-
 Twikoo 分为云函数和前端两部分，部署时请注意保存二者版本一致。
 
-* [云函数部署](#云函数部署)有 3 种方式，[一键部署](#一键部署)、[手动部署](#手动部署)和[命令行部署](#命令行部署)。
+* [云函数部署](#云函数部署)有 4 种方式，[一键部署](#一键部署)、[手动部署](#手动部署)、[命令行部署](#命令行部署)和[Vercel 部署](#vercel-部署)。
 * [前端部署](#前端部署)有 2 种方式，如果您的网站主题支持 Twikoo，您只需在配置文件中指定 Twikoo 即可；如果您的网站主题不支持 Twikoo，您需要修改源码手动引入 Twikoo 的 js 文件并初始化之。
 
 ## 云函数部署
+
+| <div style="width: 6em">部署方式</div> | 描述 |
+| ---- | ---- |
+| [一键部署](#一键部署) | 【不再建议】虽然方便，但是仅支持按量计费环境——也就是说，**一键部署的环境，当免费资源用尽后，将会产生费用**。且按量计费环境无法切换为包年包月环境。免费额度数据库读操作数只有 500 次 / 天，**无法支撑 Twikoo 的运行需求**。 |
+| [手动部署](#手动部署) | 【不再建议】适用于已有免费基础班 1 环境，或计划付费购买腾讯云云开发包年包月环境的的用户。 |
+| [命令行部署](#命令行部署) | 【不再建议】仅针对有 Node.js 经验的开发者。 |
+| [Vercel 部署](#vercel-部署) | 【建议】适用于错过云开发免费活动，想要免费部署的用户。 |
 
 ### 一键部署
 
@@ -20,15 +21,11 @@ Twikoo 分为云函数和前端两部分，部署时请注意保存二者版本�
 2. 进入[环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)，启用“匿名登录”
 3. 进入[环境-安全配置](https://console.cloud.tencent.com/tcb/env/safety)，将网站域名添加到“WEB安全域名”
 
-::: tip 提示
-一键部署虽然方便，但是仅支持按量计费环境——也就是说，**一键部署的环境，当免费资源用尽后，将会产生费用**。且按量计费环境无法切换为包年包月环境。免费额度数据库读操作数只有 500 次 / 天，**无法支撑 Twikoo 的运行需求**。Twikoo 建议您[手动部署](#手动部署)以节约成本。
-:::
-
 ### 手动部署
 
 如果您打算部署到一个现有的云开发环境，请直接从第 3 步开始。
 
-1. 进入[云开发CloudBase](https://curl.qcloud.com/KnnJtUom)活动页面，滚动到“新用户专享”部分，选择适合的套餐（一般 0 元套餐即可），点击“立即购买”，按提示创建好环境。
+1. 进入[云开发CloudBase](https://curl.qcloud.com/KnnJtUom)活动页面，滚动到“新用户专享”部分，选择适合的套餐，点击“立即购买”，按提示创建好环境。
 ::: tip 提示
 * 推荐创建上海环境。如选择广州环境，需要在 `twikoo.init()` 时额外指定环境 `region: "ap-guangzhou"`
 * 环境名称自由填写
@@ -47,13 +44,12 @@ exports.main = require('twikoo-func').main
 8. 创建完成后，点击“twikoo"进入云函数详情页，进入“函数代码”标签，点击“文件 - 新建文件”，输入 `package.json`，回车
 9. 复制以下代码、粘贴到代码框中，点击“保存并安装依赖”
 ``` json
-{ "dependencies": { "twikoo-func": "1.3.1" } }
+{ "dependencies": { "twikoo-func": "1.4.0-alpha.1" } }
 ```
 
 ### 命令行部署
 
 ::: warning 注意
-* **推荐使用手动部署，命令行部署仅针对有 Node.js 经验的开发者。**
 * 请确保您已经安装了 [Node.js](https://nodejs.org/en/download/)
 * 请将命令、代码中“您的环境id”替换为您自己的环境id
 * 第 7 步会弹出浏览器要求授权，需在有图形界面的系统下进行
@@ -86,6 +82,23 @@ yarn run login
 ``` sh
 yarn deploy -e 您的环境id
 ```
+
+### Vercel 部署
+
+::: warning 注意
+Vercel 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
+:::
+
+[查看视频教程](https://www.bilibili.com/video/BV1Fh411e7ZH)
+
+1. 申请 [MongoDB](https://www.mongodb.com/cloud/atlas/register) 账号
+2. 创建免费 MongoDB 数据库，区域推荐选择 `AWS / N. Virginia (us-east-1)`
+3. 在 Clusters 页面点击 CONNECT，按步骤设置允许访问的 IP 地址，创建数据库用户，并记录数据库连接字符串
+4. 申请 [Vercel](https://vercel.com/signup) 账号
+5. 点击以下按钮将 Twikoo 一键部署到 Vercel<br>
+[![](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/imaegoo/twikoo/tree/dev/src/vercel-min)
+6. 添加环境变量 `MONGODB_URI` 到 Vercel，值为第 3 步的数据库连接字符串
+7. Vercel 环境地址即为您的环境 id
 
 ## 前端部署
 
@@ -125,7 +138,7 @@ twikoo:
 
 #### 在 [Hexo Icarus](https://github.com/ppoffice/hexo-theme-icarus) 主题使用
 
-请参考 [基于腾讯云，给你的 Icarus 博客配上 Twikoo 评论系统](https://anzifan.com/post/icarus_to_candy_2/) by 异次元de机智君💯
+请参考 [基于腾讯云，给你的 Icarus 博客配上 Twikoo 评论系统](https://www.anzifan.com/post/icarus_to_candy_2/) by 异次元de机智君💯
 
 #### 在 [Hexo MengD(萌典)](https://github.com/lete114/hexo-theme-MengD) 主题使用
 
@@ -151,7 +164,7 @@ twikoo:
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.3.1/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.4.0-alpha.1/dist/twikoo.all.min.js"></script>
 <script>
 twikoo.init({
   envId: '您的环境id',

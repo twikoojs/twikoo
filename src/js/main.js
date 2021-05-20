@@ -1,7 +1,7 @@
 import { version } from '../../package.json'
 import { install } from './tcb'
 import { render } from '../view'
-import { logger, getCommentsCountApi, getRecentCommentsApi } from './utils'
+import { isUrl, logger, getCommentsCountApi, getRecentCommentsApi } from './utils'
 
 async function initTcb (options) {
   if (typeof cloudbase === 'undefined') {
@@ -13,18 +13,18 @@ async function initTcb (options) {
 }
 
 async function init (options = {}) {
-  const data = await initTcb(options)
-  render(data, options)
+  const tcb = isUrl(options.envId) ? null : await initTcb(options)
+  render(tcb, options)
 }
 
 async function getCommentsCount (options = {}) {
-  const data = await initTcb(options)
-  return await getCommentsCountApi(data, options)
+  const tcb = isUrl(options.envId) ? null : await initTcb(options)
+  return await getCommentsCountApi(tcb, options)
 }
 
 async function getRecentComments (options = {}) {
-  const data = await initTcb(options)
-  return await getRecentCommentsApi(data, options)
+  const tcb = isUrl(options.envId) ? null : await initTcb(options)
+  return await getRecentCommentsApi(tcb, options)
 }
 
 export default init

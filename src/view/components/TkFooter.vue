@@ -7,7 +7,7 @@
 
 <script>
 import { version } from '../../../package.json'
-import { call } from '../../js/utils'
+import { call, getUrl } from '../../js/utils'
 
 export default {
   data () {
@@ -18,10 +18,7 @@ export default {
   },
   methods: {
     async getCounter () {
-      const url = this.$twikoo.path
-        // eslint-disable-next-line no-eval
-        ? eval(this.$twikoo.path)
-        : window.location.pathname
+      const url = getUrl(this.$twikoo.path)
       const result = await call(this.$tcb, 'COUNTER_GET', {
         url,
         href: window.location.href,

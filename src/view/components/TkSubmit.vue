@@ -51,7 +51,7 @@ import iconImage from '@fortawesome/fontawesome-free/svgs/regular/image.svg'
 import Clickoutside from 'element-ui/src/utils/clickoutside'
 import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
-import { marked, call, logger, renderLinks, renderMath, renderCode, initOwoEmotion, initMarkedOwo, t } from '../../js/utils'
+import { marked, call, logger, renderLinks, renderMath, renderCode, initOwoEmotion, initMarkedOwo, t, getUrl } from '../../js/utils'
 import OwO from '../../lib/owo'
 
 const imageTypes = [
@@ -162,10 +162,7 @@ export default {
     },
     async send () {
       this.isSending = true
-      const url = this.$twikoo.path
-        // eslint-disable-next-line no-eval
-        ? eval(this.$twikoo.path)
-        : window.location.pathname
+      const url = getUrl(this.$twikoo.path)
       const comment = {
         nick: this.nick,
         mail: this.mail,
@@ -238,7 +235,7 @@ export default {
       const fileIndex = `${Date.now()}-${userId}`
       const fileName = nameSplit.join('.')
       this.paste(this.getImagePlaceholder(fileIndex, fileType))
-      if (this.config.IMAGE_CDN === '7bu') {
+      if (this.config.IMAGE_CDN === '7bu' || !this.$tcb) {
         this.uploadPhotoTo7Bu(fileIndex, fileName, fileType, photo)
       } else {
         this.uploadPhotoToQcloud(fileIndex, fileName, fileType, photo)

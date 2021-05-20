@@ -1,7 +1,7 @@
 import { version } from '../../package.json'
 import { install } from './tcb'
 import { render } from '../view'
-import { getCommentsCountApi, getRecentCommentsApi } from './utils'
+import { isUrl, getCommentsCountApi, getRecentCommentsApi } from './utils'
 import cloudbase from '@cloudbase/js-sdk/app'
 import '@cloudbase/js-sdk/auth'
 import '@cloudbase/js-sdk/functions'
@@ -12,18 +12,18 @@ async function initTcb (options) {
 }
 
 async function init (options = {}) {
-  const data = await initTcb(options)
-  render(data, options)
+  const tcb = isUrl(options.envId) ? null : await initTcb(options)
+  render(tcb, options)
 }
 
 async function getCommentsCount (options = {}) {
-  const data = await initTcb(options)
-  return await getCommentsCountApi(data, options)
+  const tcb = isUrl(options.envId) ? null : await initTcb(options)
+  return await getCommentsCountApi(tcb, options)
 }
 
 async function getRecentComments (options = {}) {
-  const data = await initTcb(options)
-  return await getRecentCommentsApi(data, options)
+  const tcb = isUrl(options.envId) ? null : await initTcb(options)
+  return await getRecentCommentsApi(tcb, options)
 }
 
 export default init

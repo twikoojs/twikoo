@@ -74,7 +74,9 @@ export default {
   },
   methods: {
     t,
-    convertLink,
+    convertLink (link) {
+      return convertLink(link)
+    },
     async getComments () {
       this.loading = true
       const res = await call(this.$tcb, 'COMMENT_GET_FOR_ADMIN', {

@@ -121,6 +121,11 @@ export default {
         } catch (err) {
           logger.error('登录失败', err)
         }
+      } else if (res.result.code === 0) {
+        logger.log('登录成功')
+        localStorage.setItem('twikoo-access-token', passwordMd5)
+        this.password = ''
+        this.checkAuth()
       }
       this.loading = false
     },
@@ -165,13 +170,20 @@ export default {
     focusPassword () {
       // 聚焦密码输入框
       setTimeout(() => {
-        this.$refs.focusme.focus()
+        this.$refs.focusme && this.$refs.focusme.focus()
       }, 500)
     },
     async checkAuth () {
       // 检查用户身份
-      const currentUser = await this.$tcb.auth.getCurrenUser()
-      this.isLogin = currentUser.loginType === 'CUSTOM'
+      if (this.$tcb) {
+        const currentUser = await this.$tcb.auth.getCurrenUser()
+        this.isLogin = currentUser.loginType === 'CUSTOM'
+      } else {
+        const result = await call(this.$tcb, 'GET_CONFIG')
+        if (result && result.result && result.result.config) {
+          this.isLogin = result.result.config.IS_ADMIN
+        }
+      }
     },
     async checkIfPasswordSet () {
       // 检查是否设置过密码
@@ -179,6 +191,7 @@ export default {
         const res = await call(this.$tcb, 'GET_PASSWORD_STATUS')
         this.version = res.result.version
         this.isSetPassword = res.result.status
+        this.isSetCredentials = !this.$tcb
       } catch (e) {
         this.needUpdate = true
         this.loading = false

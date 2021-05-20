@@ -1,30 +1,30 @@
 {
-  "name": "twikoo-func",
+  "name": "twikoo-vercel",
   "version": "1.4.0-alpha.1",
   "description": "A simple comment system based on Tencent CloudBase (tcb).",
   "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
   "license": "MIT",
-  "main": "index.js",
+  "main": "api/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/imaegoo/twikoo.git"
   },
   "homepage": "https://twikoo.js.org",
   "dependencies": {
-    "@cloudbase/manager-node": "^3.9.0",
-    "@cloudbase/node-sdk": "^2.5.0",
     "akismet-api": "^5.1.0",
-    "axios": "^0.21.1",
+    "axios": "^0.21.0",
     "blueimp-md5": "^2.18.0",
     "bowser": "^2.11.0",
-    "cheerio": "1.0.0-rc.5",
+    "cheerio": "1.0.0-rc.3",
     "crypto-js": "^4.0.0",
-    "dompurify": "^2.2.6",
+    "dompurify": "^2.2.3",
     "jsdom": "^16.4.0",
-    "marked": "^2.0.0",
-    "nodemailer": "^6.4.17",
+    "marked": "^1.2.5",
+    "mongodb": "^3.6.3",
+    "nodemailer": "^6.4.16",
     "querystring": "^0.2.0",
-    "tencentcloud-sdk-nodejs": "^4.0.65",
+    "tencentcloud-sdk-nodejs": "^4.0.33",
+    "uuid": "^8.3.2",
     "xml2js": "^0.4.23"
   }
 }

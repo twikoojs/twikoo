@@ -100,3 +100,8 @@ Akismet (Automattic Kismet) 是应用广泛的一个垃圾留言过滤系统，�
 
 1. 注册 [akismet.com](https://akismet.com)
 2. 选择 Akismet Personal 订阅，复制得到的 Akismet API Key，到 Twikoo 管理面板“反垃圾”模块中配置
+
+## 登录管理面板遇到错误 AUTH_INVALID_CUSTOM_LOGIN_TICKET
+
+一般是配置好登录私钥之后，又重新下载了登录私钥，导致之前配置的登录私钥失效了。<br>
+解决方法：到[云开发控制台](https://console.cloud.tencent.com/tcb/database/collection/config)，数据库，删掉 config，然后重新配置私钥。

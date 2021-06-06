@@ -12,14 +12,17 @@ Vue.use(Button)
 Vue.use(Input)
 Vue.use(Loading)
 
-const render = (data = {}, options = {}) => {
-  Vue.prototype.$tcb = data
+let app = null
+
+const render = (tcb, options = {}) => {
+  Vue.prototype.$tcb = tcb
   Vue.prototype.$twikoo = options
-  return new Vue({
-    render: h => h(App)
-  }).$mount(options.el || '#twikoo')
+  app = new Vue({ render: h => h(App) })
+  app.$mount(options.el || '#twikoo')
+  return app
 }
 
 export {
+  app,
   render
 }

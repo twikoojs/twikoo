@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { call, t } from '../../js/utils'
+import { call, getUrl, t } from '../../js/utils'
 import TkSubmit from './TkSubmit.vue'
 import TkComment from './TkComment.vue'
 import iconSetting from '@fortawesome/fontawesome-free/svgs/solid/cog.svg'
@@ -64,20 +64,14 @@ export default {
     },
     async initComments () {
       this.loading = true
-      const url = this.$twikoo.path
-        // eslint-disable-next-line no-eval
-        ? eval(this.$twikoo.path)
-        : window.location.pathname
+      const url = getUrl(this.$twikoo.path)
       await this.getComments({ url })
       this.loading = false
     },
     async onExpand () {
       if (this.loadingMore) return
       this.loadingMore = true
-      const url = this.$twikoo.path
-        // eslint-disable-next-line no-eval
-        ? eval(this.$twikoo.path)
-        : window.location.pathname
+      const url = getUrl(this.$twikoo.path)
       const before = this.comments
         .filter((item) => !item.top)
         .map((item) => item.created)

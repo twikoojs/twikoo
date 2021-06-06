@@ -205,8 +205,12 @@ export default {
     },
     async checkAuth () {
       // 检查用户身份
-      const currentUser = await this.$tcb.auth.getCurrenUser()
-      this.isLogin = currentUser.loginType === 'CUSTOM'
+      if (this.$tcb) {
+        const currentUser = await this.$tcb.auth.getCurrenUser()
+        this.isLogin = currentUser.loginType === 'CUSTOM'
+      } else {
+        this.isLogin = this.$twikoo.serverConfig && this.$twikoo.serverConfig.IS_ADMIN
+      }
     },
     handleSpam (isSpam) {
       this.setComment({ isSpam })

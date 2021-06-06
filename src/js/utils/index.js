@@ -2,7 +2,7 @@ import t from './i18n'
 import timeago from './timeago'
 import marked from './marked'
 import renderCode from './highlight'
-import call from './api'
+import { isUrl, call } from './api'
 import { isQQ, getQQAvatar } from './avatar'
 import { initOwoEmotion, initMarkedOwo } from './emotion'
 
@@ -64,6 +64,53 @@ const getRecentCommentsApi = async (tcb, options) => {
   return result.result.data
 }
 
+/**
+ * 由于 Twikoo 早期版本将 path 视为表达式处理，
+ * 而其他同类评论系统都是把 path 视为字符串常量，
+ * 为同时兼顾早期版本和统一性，就有了这个方法。
+ */
+const getUrl = (path) => {
+  let url
+  if (window.TWIKOO_MAGIC_PATH) {
+    // 从全局变量获取 path
+    url = window.TWIKOO_MAGIC_PATH
+  } else if (typeof path === 'string') {
+    try {
+      // 参数视为表达式获取 path
+      // eslint-disable-next-line no-eval
+      url = eval(path)
+      if (typeof url !== 'string') {
+        // 参数视为字符串常量获取 path
+        url = path
+      }
+    } catch (e) {
+      // 参数视为字符串常量获取 path
+      url = path
+    }
+  } else {
+    // 默认 path
+    url = window.location.pathname
+  }
+  return url
+}
+
+/**
+ * 读取文本文件内容
+ */
+const readAsText = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsText(file)
+    reader.onloadend = () => {
+      if (reader.error) {
+        reject(reader.error)
+      } else {
+        resolve(reader.result)
+      }
+    }
+  })
+}
+
 const renderLinks = (el) => {
   let aEls = []
   if (el instanceof Array) {
@@ -103,6 +150,7 @@ export {
   convertLink,
   marked,
   renderCode,
+  isUrl,
   call,
   getFuncVer,
   isQQ,
@@ -111,6 +159,8 @@ export {
   initMarkedOwo,
   getCommentsCountApi,
   getRecentCommentsApi,
+  getUrl,
+  readAsText,
   renderLinks,
   renderMath
 }

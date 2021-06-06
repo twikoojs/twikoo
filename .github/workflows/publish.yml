@@ -25,6 +25,6 @@ jobs:
       - run: cd src/function/twikoo && yarn publish --tag alpha
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
-      - run: cd src/function/vercel && yarn publish --tag alpha
+      - run: cd src/vercel && yarn publish --tag alpha
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}

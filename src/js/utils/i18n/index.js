@@ -1,18 +1,21 @@
-const i18n = {
-  'zh-CN': require('./zh-CN.json'),
-  'zh-HK': require('./zh-HK.json'),
-  'zh-TW': require('./zh-TW.json'),
-  'en-US': require('./en-US.json'),
-  'en-GB': require('./en-GB.json')
+import i18n from './i18n'
+
+const langs = {
+  'zh-CN': 0,
+  'zh-HK': 1,
+  'zh-TW': 2,
+  'en-US': 3,
+  'en-GB': 3,
+  en: 3
 }
 
 const translate = (key, language) => {
   const lang = language || navigator.language
   let value
-  if (lang && i18n[lang]) {
-    value = i18n[lang][key]
+  if (lang && langs[lang]) {
+    value = i18n[key][langs[lang]]
   } else {
-    value = i18n['zh-CN'][key]
+    value = i18n[key][langs['zh-CN']]
   }
   return value || ''
 }

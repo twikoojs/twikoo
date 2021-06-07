@@ -5,7 +5,8 @@ const langs = {
   'zh-HK': 1,
   'zh-TW': 2,
   'en-US': 3,
-  'en-GB': 3
+  'en-GB': 3,
+  en: 3
 }
 
 const translate = (key, language) => {

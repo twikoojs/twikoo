@@ -1,7 +1,9 @@
 const i18n = {
   'zh-CN': require('./zh-CN.json'),
   'zh-HK': require('./zh-HK.json'),
-  'zh-TW': require('./zh-TW.json')
+  'zh-TW': require('./zh-TW.json'),
+  'en-US': require('./en-US.json'),
+  'en-GB': require('./en-GB.json')
 }
 
 const translate = (key, language) => {

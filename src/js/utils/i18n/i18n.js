@@ -189,6 +189,12 @@ export default {
     '評論框提示資訊，可用<br>換行，預設為空',
     'Comment placeholder. Use <br> to start a newline. Default: empty.'
   ],
+  [S.ACI + '_CORS_ALLOW_ORIGIN']: [
+    'Vercel 安全域名，防止环境被盗用，请注意设置后将无法在本地（localhost）加载评论，默认为空',
+    'Vercel 安全域名，防止环境被盗用，请注意设置后将无法在本地（localhost）加载评论，默认为空',
+    'Vercel 安全域名，防止环境被盗用，请注意设置后将无法在本地（localhost）加载评论，默认为空',
+    'Vercel 安全域名，防止环境被盗用，请注意设置后将无法在本地（localhost）加载评论，默认为空'
+  ],
   [S.ACI + '_DEFAULT_GRAVATAR']: [
     '默认的头像显示。默认值为 "identicon"，可选： 404、mp、identicon、monsterid、wavatar、retro、robohash、blank',
     '預設的頭像顯示。預設值為 "identicon"，可選： 404、mp、identicon、monsterid、wavatar、retro、robohash、blank',

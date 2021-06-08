@@ -44,7 +44,7 @@ exports.main = require('twikoo-func').main
 8. 创建完成后，点击“twikoo"进入云函数详情页，进入“函数代码”标签，点击“文件 - 新建文件”，输入 `package.json`，回车
 9. 复制以下代码、粘贴到代码框中，点击“保存并安装依赖”
 ``` json
-{ "dependencies": { "twikoo-func": "1.4.0-alpha.1" } }
+{ "dependencies": { "twikoo-func": "1.4.0-alpha.2" } }
 ```
 
 ### 命令行部署
@@ -93,7 +93,7 @@ Vercel 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 
 1. 申请 [MongoDB](https://www.mongodb.com/cloud/atlas/register) 账号
 2. 创建免费 MongoDB 数据库，区域推荐选择 `AWS / N. Virginia (us-east-1)`
-3. 在 Clusters 页面点击 CONNECT，按步骤设置允许访问的 IP 地址，创建数据库用户，并记录数据库连接字符串
+3. 在 Clusters 页面点击 CONNECT，按步骤设置允许所有 IP 地址的连接（[为什么？](https://vercel.com/support/articles/how-to-allowlist-deployment-ip-address)），创建数据库用户，并记录数据库连接字符串
 4. 申请 [Vercel](https://vercel.com/signup) 账号
 5. 点击以下按钮将 Twikoo 一键部署到 Vercel<br>
 [![](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/imaegoo/twikoo/tree/dev/src/vercel-min)
@@ -122,7 +122,16 @@ Vercel 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 
 #### 在 [Hexo NexT](https://github.com/next-theme/hexo-theme-next) 主题使用
 
-**暂不支持 NexT 8 以下的版本**，请先升级到 NexT 8。然后在 Hexo 项目根目录执行 `npm install hexo-next-twikoo`，然后在配置中添加
+**暂不支持 NexT 8 以下的版本**，请先升级到 NexT 8。然后在 Hexo 项目根目录执行
+
+``` sh
+# For NexT version >= 8.0.0 && < 8.4.0
+npm install hexo-next-twikoo@1.0.0
+# For NexT version >= 8.4.0
+npm install hexo-next-twikoo@1.0.1
+```
+
+然后在配置中添加
 
 ``` yml
 twikoo:
@@ -164,7 +173,7 @@ twikoo:
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.4.0-alpha.1/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.4.0-alpha.2/dist/twikoo.all.min.js"></script>
 <script>
 twikoo.init({
   envId: '您的环境id',

@@ -1,5 +1,5 @@
 /*!
- * Twikoo vercel function v1.4.0-alpha.2
+ * Twikoo vercel function v1.4.0-alpha.3
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  */
@@ -27,7 +27,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.4.0-alpha.2'
+const VERSION = '1.4.0-alpha.3'
 const RES_CODE = {
   SUCCESS: 0,
   NO_PARAM: 100,
@@ -50,6 +50,7 @@ let config
 let transporter
 let request
 let response
+let accessToken
 
 module.exports = async (requestArg, responseArg) => {
   request = requestArg
@@ -57,10 +58,9 @@ module.exports = async (requestArg, responseArg) => {
   const event = request.body || {}
   console.log('请求方法：', event.event)
   console.log('请求参数：', event)
-  let accessToken
   let res = {}
   try {
-    accessToken = anonymousSignIn()
+    anonymousSignIn()
     await connectToDatabase(process.env.MONGODB_URI)
     await readConfig()
     allowCors()
@@ -130,6 +130,7 @@ module.exports = async (requestArg, responseArg) => {
         } else {
           res.code = RES_CODE.NO_PARAM
           res.message = 'Twikoo 云函数运行正常，请参考 https://twikoo.js.org/quick-start.html#%E5%89%8D%E7%AB%AF%E9%83%A8%E7%BD%B2 完成前端的配置'
+          res.version = VERSION
         }
     }
   } catch (e) {
@@ -139,7 +140,9 @@ module.exports = async (requestArg, responseArg) => {
     res.code = RES_CODE.FAIL
     res.message = e.message
   }
-  if (!res.code) res.accessToken = accessToken
+  if (!res.code && !request.body.accessToken) {
+    res.accessToken = accessToken
+  }
   console.log('请求返回：', res)
   response.status(200).json(res)
 }
@@ -157,9 +160,12 @@ function allowCors () {
 }
 
 function anonymousSignIn () {
-  if (request.body && !request.body.accessToken) {
-    const uid = uuidv4().replace(/-/g, '')
-    return uid
+  if (request.body) {
+    if (request.body.accessToken) {
+      accessToken = request.body.accessToken
+    } else {
+      accessToken = uuidv4().replace(/-/g, '')
+    }
   }
 }
 
@@ -1475,7 +1481,7 @@ async function writeConfig (newConfig) {
 
 // 获取用户 ID
 async function getUid () {
-  return request.body.accessToken
+  return accessToken
 }
 
 // 判断用户是否管理员

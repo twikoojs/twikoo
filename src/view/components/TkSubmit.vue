@@ -231,7 +231,7 @@ export default {
       const nameSplit = photo.name.split('.')
       const fileType = nameSplit.length > 1 ? nameSplit.pop() : ''
       if (imageTypes.indexOf(fileType) === -1) return
-      const userId = this.$tcb.auth.currentUser.uid
+      const userId = this.getUserId()
       const fileIndex = `${Date.now()}-${userId}`
       const fileName = nameSplit.join('.')
       this.paste(this.getImagePlaceholder(fileIndex, fileType))
@@ -239,6 +239,13 @@ export default {
         this.uploadPhotoTo7Bu(fileIndex, fileName, fileType, photo)
       } else {
         this.uploadPhotoToQcloud(fileIndex, fileName, fileType, photo)
+      }
+    },
+    getUserId () {
+      if (this.$tcb) {
+        return this.$tcb.auth.currentUser.uid
+      } else {
+        return localStorage.getItem('twikoo-access-token')
       }
     },
     async uploadPhotoToQcloud (fileIndex, fileName, fileType, photo) {

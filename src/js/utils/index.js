@@ -74,7 +74,7 @@ const getUrl = (path) => {
   if (window.TWIKOO_MAGIC_PATH) {
     // 从全局变量获取 path
     url = window.TWIKOO_MAGIC_PATH
-  } else if (typeof path === 'string') {
+  } else if (path && typeof path === 'string') {
     try {
       // 参数视为表达式获取 path
       // eslint-disable-next-line no-eval

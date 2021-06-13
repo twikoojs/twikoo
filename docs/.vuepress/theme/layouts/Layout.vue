@@ -6,7 +6,7 @@
         <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js" integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
         <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js" integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
         <div id="twikoo"></div>
-        <script src="https://cdn.jsdelivr.net/npm/twikoo@1.4.0-alpha.3/dist/twikoo.all.min.js" ref="twikooJs"></script>
+        <script src="https://cdn.jsdelivr.net/npm/twikoo@1.4.0-alpha.4/dist/twikoo.all.min.js" ref="twikooJs"></script>
       </div>
     </template>
   </ParentLayout>

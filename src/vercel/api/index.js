@@ -1,5 +1,5 @@
 /*!
- * Twikoo vercel function v1.4.0-alpha.4
+ * Twikoo vercel function v1.4.0-alpha.5
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  */
@@ -27,7 +27,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.4.0-alpha.4'
+const VERSION = '1.4.0-alpha.5'
 const RES_CODE = {
   SUCCESS: 0,
   NO_PARAM: 100,
@@ -801,10 +801,10 @@ async function commentSubmit (event) {
   res.id = comment.id
   // 异步垃圾检测、发送评论通知
   try {
-    await axios.post(request.headers.host, {
+    await axios.post(`${request.headers['x-forwarded-proto']}://${request.headers.host}`, {
       event: 'POST_SUBMIT',
       comment
-    }, { timeout: 300 }) // 设置较短的 timeout 来实现异步
+    }, { headers: { 'x-twikoo-recursion': 'true' }, timeout: 300 }) // 设置较短的 timeout 来实现异步
   } catch (e) {
     console.log('开始异步垃圾检测、发送评论通知')
   }
@@ -822,8 +822,8 @@ async function save (event) {
 }
 
 // 异步垃圾检测、发送评论通知
-async function postSubmit (comment, context) {
-  if (!isRecursion(context)) return { code: RES_CODE.FORBIDDEN }
+async function postSubmit (comment) {
+  if (!isRecursion()) return { code: RES_CODE.FORBIDDEN }
   // 垃圾检测
   await postCheckSpam(comment)
   // 发送通知
@@ -833,7 +833,6 @@ async function postSubmit (comment, context) {
 
 // 发送通知
 async function sendNotice (comment) {
-  if (!isRecursion()) return { code: RES_CODE.FORBIDDEN }
   await Promise.all([
     noticeMaster(comment),
     noticeReply(comment),
@@ -1492,8 +1491,7 @@ async function isAdmin () {
 
 // 判断是否为递归调用（即云函数调用自身）
 function isRecursion () {
-  // TODO
-  return !!request.headers['x-vercel-id']
+  return request.headers['x-twikoo-recursion'] === 'true'
 }
 
 // 建立数据库 collections

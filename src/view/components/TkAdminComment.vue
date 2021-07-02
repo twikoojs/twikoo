@@ -79,7 +79,6 @@ export default {
       return convertLink(link)
     },
     async getComments () {
-      if (this.loading) return
       this.loading = true
       const res = await call(this.$tcb, 'COMMENT_GET_FOR_ADMIN', {
         per: this.pageSize,

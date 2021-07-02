@@ -44,7 +44,7 @@ exports.main = require('twikoo-func').main
 8. 创建完成后，点击“twikoo"进入云函数详情页，进入“函数代码”标签，点击“文件 - 新建文件”，输入 `package.json`，回车
 9. 复制以下代码、粘贴到代码框中，点击“保存并安装依赖”
 ``` json
-{ "dependencies": { "twikoo-func": "1.4.0-alpha.5" } }
+{ "dependencies": { "twikoo-func": "1.4.0" } }
 ```
 
 ### 命令行部署
@@ -93,12 +93,12 @@ Vercel 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 
 1. 申请 [MongoDB](https://www.mongodb.com/cloud/atlas/register) 账号
 2. 创建免费 MongoDB 数据库，区域推荐选择 `AWS / N. Virginia (us-east-1)`
-3. 在 Clusters 页面点击 CONNECT，按步骤设置允许所有 IP 地址的连接（[为什么？](https://vercel.com/support/articles/how-to-allowlist-deployment-ip-address)），创建数据库用户，并记录数据库连接字符串
+3. 在 Clusters 页面点击 CONNECT，按步骤设置允许所有 IP 地址的连接（[为什么？](https://vercel.com/support/articles/how-to-allowlist-deployment-ip-address)），创建数据库用户，并记录数据库连接字符串，请将连接字符串中的 `<password>` 修改为数据库密码
 4. 申请 [Vercel](https://vercel.com/signup) 账号
 5. 点击以下按钮将 Twikoo 一键部署到 Vercel<br>
 [![](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/imaegoo/twikoo/tree/dev/src/vercel-min)
 6. 添加环境变量 `MONGODB_URI` 到 Vercel，值为第 3 步的数据库连接字符串
-7. Vercel 环境地址即为您的环境 id
+7. Vercel 环境地址（包含 `https://` 前缀）即为您的环境 id
 
 ## 前端部署
 
@@ -173,7 +173,7 @@ twikoo:
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.4.0-alpha.5/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.4.0/dist/twikoo.all.min.js"></script>
 <script>
 twikoo.init({
   envId: '您的环境id',
@@ -185,30 +185,6 @@ twikoo.init({
 ```
 
 > 建议使用 CDN 引入 Twikoo 的用户在链接地址上锁定版本，以免将来 Twikoo 升级时受到非兼容性更新的影响。
-
-### 通过 NPM 引入
-
-::: tip 提示
-如果您使用的博客主题不支持 Twikoo，并且您不知道如何引入 Twikoo，您可以[在 Github 提交适配请求](https://github.com/imaegoo/twikoo/issues/new)
-:::
-
-``` sh
-npm install twikoo # 或 yarn add twikoo
-```
-
-``` html
-<div id="tcomment"></div>
-```
-
-``` js
-import twikoo from 'twikoo' // 或 const twikoo = require('twikoo')
-twikoo.init({
-  envId: '您的环境id',
-  el: '#tcomment',
-  // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，如果您的环境地域不是上海，需传此参数
-  // path: 'window.location.pathname', // 用于区分不同文章的自定义 js 路径，如果您的文章路径不是 location.pathname，需传此参数
-})
-```
 
 ## 开启管理面板
 

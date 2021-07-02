@@ -9,7 +9,7 @@
       <div class="tk-row">
         <div class="tk-meta">
           <strong class="tk-nick" v-if="!convertedLink">{{ comment.nick }}</strong>
-          <a class="tk-nick tk-nick-link" v-if="convertedLink" :href="convertedLink" target="_blank">
+          <a class="tk-nick tk-nick-link" v-if="convertedLink" :href="convertedLink" target="_blank" rel="noopener noreferrer">
             <strong>{{ comment.nick }}</strong>
           </a>
           <span class="tk-tag tk-tag-green" v-if="comment.master">{{ config.MASTER_TAG || t('COMMENT_MASTER_TAG') }}</span>

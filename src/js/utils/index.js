@@ -122,6 +122,7 @@ const renderLinks = (el) => {
   }
   for (const aEl of aEls) {
     aEl.setAttribute('target', '_blank')
+    aEl.setAttribute('rel', 'noopener noreferrer')
   }
 }
 

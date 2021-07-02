@@ -1,5 +1,5 @@
 /*!
- * Twikoo vercel function v1.4.0-alpha.5
+ * Twikoo vercel function v1.4.0
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  */
@@ -27,7 +27,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.4.0-alpha.5'
+const VERSION = '1.4.0'
 const RES_CODE = {
   SUCCESS: 0,
   NO_PARAM: 100,
@@ -175,6 +175,7 @@ async function connectToDatabase (uri) {
   // If the database connection is cached,
   // use it instead of creating a new connection
   if (db) return db
+  if (!uri) throw new Error('未设置环境变量 MONGODB_URI')
   // If no connection is cached, create a new one
   const client = await MongoClient.connect(uri, {
     useNewUrlParser: true,
@@ -392,9 +393,10 @@ async function commentGetForAdmin (event) {
     validate(event, ['per', 'page'])
     const collection = db
       .collection('comment')
+    const condition = getCommentSearchCondition(event)
     const count = await collection.countDocuments()
     const data = await collection
-      .find()
+      .find(condition)
       .sort({ created: -1 })
       .skip(event.per * (event.page - 1))
       .limit(event.per)
@@ -407,6 +409,38 @@ async function commentGetForAdmin (event) {
     res.message = '请先登录'
   }
   return res
+}
+
+function getCommentSearchCondition (event) {
+  let condition = {}
+  if (event.type) {
+    switch (event.type) {
+      case 'VISIBLE':
+        condition = { isSpam: { $ne: true } }
+        break
+      case 'HIDDEN':
+        condition = { isSpam: true }
+        break
+    }
+  }
+  if (event.keyword) {
+    const regExp = {
+      $regex: event.keyword,
+      $options: 'i'
+    }
+    condition = {
+      $or: [
+        { ...condition, nick: regExp },
+        { ...condition, mail: regExp },
+        { ...condition, link: regExp },
+        { ...condition, ip: regExp },
+        { ...condition, comment: regExp },
+        { ...condition, url: regExp },
+        { ...condition, href: regExp }
+      ]
+    }
+  }
+  return condition
 }
 
 function parseCommentForAdmin (comments) {

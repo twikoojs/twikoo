@@ -10,7 +10,8 @@
           class="tk-admin-comment-filter-keyword"
           size="small"
           v-model="filter.keyword"
-          :placeholder="t('ADMIN_COMMENT_SEARCH_PLACEHOLDER')" />
+          :placeholder="t('ADMIN_COMMENT_SEARCH_PLACEHOLDER')"
+          @keyup.enter.native="getComments" />
       <select class="tk-admin-comment-filter-type" v-model="filter.type">
         <option value="">{{ t('ADMIN_COMMENT_FILTER_ALL') }}</option>
         <option value="VISIBLE">{{ t('ADMIN_COMMENT_FILTER_VISIBLE') }}</option>
@@ -190,6 +191,9 @@ export default {
 }
 .tk-admin-comment-filter-type:focus {
   border-color: #409eff;
+}
+.tk-admin-comment-filter-type option {
+  color: initial;
 }
 .tk-admin-comment-list {
   margin-top: 1em;

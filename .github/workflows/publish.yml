@@ -19,12 +19,12 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: yarn install
       - run: yarn build
-      - run: yarn publish --tag alpha
+      - run: yarn publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
-      - run: cd src/function/twikoo && yarn publish --tag alpha
+      - run: cd src/function/twikoo && yarn publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
-      - run: cd src/vercel && yarn publish --tag alpha
+      - run: cd src/vercel && yarn publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}

@@ -55,7 +55,9 @@ export default {
   methods: {
     onClick () {
       this.$emit('click')
-      this.link && window.open(convertLink(this.link))
+      if (this.link) {
+        window.open(convertLink(this.link), '_blank').opener = null
+      }
     }
   }
 }

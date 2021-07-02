@@ -131,10 +131,14 @@ export default {
     },
     async onLogout () {
       this.loading = true
-      await this.$tcb.auth.signOut()
-      await this.$tcb.auth
-        .anonymousAuthProvider()
-        .signIn()
+      if (this.$tcb) {
+        await this.$tcb.auth.signOut()
+        await this.$tcb.auth
+          .anonymousAuthProvider()
+          .signIn()
+      } else {
+        localStorage.removeItem('twikoo-access-token')
+      }
       this.isLogin = false
       this.loading = false
     },

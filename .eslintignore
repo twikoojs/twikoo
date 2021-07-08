@@ -1,4 +1,6 @@
 *.css
-*.md
 *.json
+*.md
+LICENSE
 src/lib/marked/*
+yarn.lock

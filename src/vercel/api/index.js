@@ -1,5 +1,5 @@
 /*!
- * Twikoo vercel function v1.4.0
+ * Twikoo vercel function v1.4.1
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  */
@@ -27,7 +27,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.4.0'
+const VERSION = '1.4.1'
 const RES_CODE = {
   SUCCESS: 0,
   NO_PARAM: 100,

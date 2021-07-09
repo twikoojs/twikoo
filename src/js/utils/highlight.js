@@ -3,6 +3,8 @@ let Prism
 let cssEl
 
 const renderCode = (el, theme) => {
+  window.Prism = window.Prism || {}
+  window.Prism.manual = true
   if (!Prism) {
     Prism = require('prismjs')
     require('prismjs/plugins/autoloader/prism-autoloader')

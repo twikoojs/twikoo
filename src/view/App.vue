@@ -50,10 +50,10 @@ export default {
   transition: all 0.5s;
 }
 .tk-expand:hover {
-  background-color: #00000020;
+  background-color: rgba(0,0,0,0.13);
 }
 .tk-expand:active {
-  background-color: #00000030;
+  background-color: rgba(0,0,0,0.19);
 }
 .tk-content img {
   max-width: 300px;
@@ -71,11 +71,11 @@ export default {
 .twikoo .el-textarea__inner {
   color: currentColor;
   background-color: transparent;
-  border-color: #90939950;
+  border-color: rgba(144,147,153,0.31);
 }
 .twikoo .el-input__inner:hover,
 .twikoo .el-textarea__inner:hover {
-  border-color: #90939980;
+  border-color: rgba(144,147,153,0.50);
 }
 .twikoo .el-input__inner:focus,
 .twikoo .el-textarea__inner:focus {
@@ -85,27 +85,27 @@ export default {
 .twikoo .el-input-group__prepend {
   color: currentColor;
   background-clip: padding-box;
-  background-color: #90939920;
-  border-color: #90939950;
+  background-color: rgba(144,147,153,0.13);
+  border-color: rgba(144,147,153,0.31);
 }
 .twikoo .el-button:not(.el-button--primary):not(.el-button--text) {
   color: currentColor;
-  background-color: #90939910;
-  border-color: #90939950;
+  background-color: rgba(144,147,153,0.063);
+  border-color: rgba(144,147,153,0.31);
 }
 .twikoo .el-button:not(.el-button--primary):not(.el-button--text):active,
 .twikoo .el-button:not(.el-button--primary):not(.el-button--text):focus,
 .twikoo .el-button:not(.el-button--primary):not(.el-button--text):hover {
   color: #409eff;
-  background-color: #409eff10;
-  border-color: #409eff80;
+  background-color: rgba(64,158,255,0.063);
+  border-color: rgba(64,158,255,0.50);
 }
 .twikoo .el-button--primary.is-disabled,
 .twikoo .el-button--primary.is-disabled:active,
 .twikoo .el-button--primary.is-disabled:focus,
 .twikoo .el-button--primary.is-disabled:hover {
-  color: #ffffffa0;
-  background-color: #409eff80;
+  color: rgba(255,255,255,0.63);
+  background-color: rgba(64,158,255,0.50);
   border-color: transparent;
 }
 .twikoo .el-loading-mask {

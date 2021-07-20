@@ -321,26 +321,26 @@ export default {
   background-color: #f2f6fc;
 }
 .tk-tag-green {
-  background-color: #67c23a20;
-  border: 1px solid #67c23a80;
+  background-color: rgba(103,194,58,0.13);
+  border: 1px solid rgba(103,194,58,0.50);
   border-radius: 2px;
   color: #67c23a;
 }
 .tk-tag-yellow {
-  background-color: #e6a23c20;
-  border: 1px solid #e6a23c80;
+  background-color: rgba(230,162,60,0.13);
+  border: 1px solid rgba(230,162,60,0.50);
   border-radius: 2px;
   color: #e6a23c;
 }
 .tk-tag-blue {
-  background-color: #409eff20;
-  border: 1px solid #409eff80;
+  background-color: rgba(64,158,255,0.13);
+  border: 1px solid rgba(64,158,255,0.50);
   border-radius: 2px;
   color: #409eff;
 }
 .tk-tag-red {
-  background-color: #f56c6c20;
-  border: 1px solid #f56c6c80;
+  background-color: rgba(245,108,108,0.13);
+  border: 1px solid rgba(245,108,108,0.50);
   border-radius: 2px;
   color: #f56c6c;
 }

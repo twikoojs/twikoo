@@ -863,7 +863,8 @@ async function sendNotice (comment) {
     noticeReply(comment),
     noticeWeChat(comment),
     noticePushPlus(comment),
-    noticeQQ(comment)
+    noticeQQ(comment),
+    noticeQQAPI(comment)
   ]).catch(err => {
     console.error('邮件通知异常：', err)
   })

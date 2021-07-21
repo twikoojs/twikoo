@@ -4,7 +4,7 @@ import i18n from './i18n'
 // RSS Language Code Table https://www.rssboard.org/rss-language-codes
 
 const langs = {
-  'zh': 0,
+  zh: 0,
   'zh-cn': 0,
   'zh-CN': 0,
   'zh-HK': 1,
@@ -14,7 +14,7 @@ const langs = {
   'en-US': 3,
   'en-gb': 3,
   'en-GB': 3,
-  'en': 3
+  en: 3
 }
 
 let userLanguage = ''

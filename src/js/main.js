@@ -1,7 +1,7 @@
 import { version } from '../../package.json'
 import { install } from './tcb'
 import { render } from '../view'
-import { isUrl, logger, getCommentsCountApi, getRecentCommentsApi } from './utils'
+import { setLanguage, logger, isUrl, getCommentsCountApi, getRecentCommentsApi } from './utils'
 
 async function initTcb (options) {
   if (typeof cloudbase === 'undefined') {
@@ -14,6 +14,7 @@ async function initTcb (options) {
 
 async function init (options = {}) {
   const tcb = isUrl(options.envId) ? null : await initTcb(options)
+  setLanguage(options)
   render(tcb, options)
 }
 

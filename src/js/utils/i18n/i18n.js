@@ -309,6 +309,12 @@ export default {
     'Qmsg醬（qmsg.zendee.cn）QQ推送的 KEY',
     'Qmsg chan (qmsg.zendee.cn) KEY for QQ notification.'
   ],
+  [S.ACI + '_QQ_API']: [
+    'QQ私有化API通知',
+    'QQ私有化API通知',
+    'QQ私有化API通知',
+    'QQ私有化API通知'
+  ],
   [S.ACI + '_REQUIRED_FIELDS']: [
     '评论必填信息，设为 nick,mail,link 代表全必填，设为 none 代表全选填，默认：nick,mail',
     '評論必填信息，設為 nick,mail,link 代表全必填，設為 none 代表全選填，預設：nick,mail',

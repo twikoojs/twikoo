@@ -872,7 +872,8 @@ async function sendNotice (comment) {
     noticeReply(comment),
     noticeWeChat(comment),
     noticePushPlus(comment),
-    noticeQQ(comment)
+    noticeQQ(comment),
+    noticeQQAPI(comment)
   ]).catch(console.error)
   return { code: RES_CODE.SUCCESS }
 }
@@ -1025,7 +1026,20 @@ async function noticeQQ (comment) {
   })
   console.log('QQ通知结果：', sendResult)
 }
-
+// QQ私有化API通知
+async function noticeQQAPI (comment) {
+  if (!config.QQ_API) {
+    console.log('没有配置QQ私有化api，放弃QQ通知')
+    return
+  }
+  if (config.BLOGGER_EMAIL === comment.mail) return
+  const pushContent = getIMPushContent(comment)
+  const qqApiParam = {
+    message: pushContent.subject + '\n' + pushContent.content.replace(/<br>/g, '\n')
+  }
+  const sendResult = await axios.post(`${config.QQ_API}`, qs.stringify(qqApiParam))
+  console.log('QQ私有化api通知结果：', sendResult)
+}
 // 即时消息推送内容获取
 function getIMPushContent (comment) {
   const SITE_NAME = config.SITE_NAME

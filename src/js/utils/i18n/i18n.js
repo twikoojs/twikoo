@@ -249,6 +249,12 @@ export default {
     '每個 IP 每 10 分鐘最多發表多少條評論，預設：0（無限制）',
     'How many comments can be posted by each IP every 10 minutes, default: 0 (unlimited).'
   ],
+  [S.ACI + '_LIMIT_PER_MINUTE_ALL']: [
+    '所有 IP 每 10 分钟最多发表多少条评论，默认：0（无限制）',
+    '所有 IP 每 10 分鐘最多發表多少條評論，預設：0（無限制）',
+    '所有 IP 每 10 分鐘最多發表多少條評論，預設：0（無限制）',
+    'How many comments can be posted by all IPs every 10 minutes, default: 0 (unlimited).'
+  ],
   [S.ACI + '_MAIL_SUBJECT']: [
     '自定义通知邮件主题，留空则使用默认主题。',
     '自定義通知郵件主題，留空則使用預設主題。',

@@ -9,6 +9,7 @@
       <div v-if="!needUpdate">
         <div class="tk-login" v-if="!isLogin && isSetPassword">
           <div class="tk-login-title">{{ t('ADMIN_LOGIN_TITLE') }}</div>
+          <input type="hidden" />
           <el-input class="tk-password" :placeholder="t('ADMIN_PASSWORD_PLACEHOLDER')" v-model="password" show-password @keyup.enter.native="onLogin" ref="focusme">
             <template slot="prepend">{{ t('ADMIN_PASSWORD') }}</template>
             <el-button slot="append" @click="onLogin">{{ t('ADMIN_LOGIN') }}</el-button>

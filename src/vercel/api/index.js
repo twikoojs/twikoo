@@ -1,5 +1,5 @@
 /*!
- * Twikoo vercel function v1.4.1
+ * Twikoo vercel function v1.4.2
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  */
@@ -27,7 +27,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.4.1'
+const VERSION = '1.4.2'
 const RES_CODE = {
   SUCCESS: 0,
   NO_PARAM: 100,
@@ -1150,15 +1150,26 @@ async function limitFilter () {
   // 限制每个 IP 每 10 分钟发表的评论数量
   const limitPerMinute = parseInt(config.LIMIT_PER_MINUTE)
   if (limitPerMinute) {
-    let count = await db
+    const count = await db
       .collection('comment')
       .countDocuments({
         ip: request.headers['x-real-ip'],
         created: { $gt: Date.now() - 600000 }
       })
-    count = count.total
     if (count > limitPerMinute) {
       throw new Error('发言频率过高')
+    }
+  }
+  // 限制所有 IP 每 10 分钟发表的评论数量
+  const limitPerMinuteAll = parseInt(config.LIMIT_PER_MINUTE_ALL)
+  if (limitPerMinuteAll) {
+    const count = await db
+      .collection('comment')
+      .countDocuments({
+        created: { $gt: Date.now() - 600000 }
+      })
+    if (count > limitPerMinuteAll) {
+      throw new Error('评论太火爆啦 >_< 请稍后再试')
     }
   }
 }

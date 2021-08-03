@@ -1154,6 +1154,20 @@ async function limitFilter () {
       throw new Error('发言频率过高')
     }
   }
+  // 限制所有 IP 每 10 分钟发表的评论数量
+  const limitPerMinuteAll = parseInt(config.LIMIT_PER_MINUTE_ALL)
+  if (limitPerMinuteAll) {
+    let count = await db
+      .collection('comment')
+      .where({
+        created: _.gt(Date.now() - 600000)
+      })
+      .count()
+    count = count.total
+    if (count > limitPerMinuteAll) {
+      throw new Error('评论太火爆啦 >_< 请稍后再试')
+    }
+  }
 }
 
 // 预垃圾评论检测

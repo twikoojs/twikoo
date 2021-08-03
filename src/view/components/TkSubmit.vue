@@ -8,7 +8,7 @@
             type="textarea"
             ref="textarea"
             v-model="comment"
-            :placeholder="config.COMMENT_PLACEHOLDER ? config.COMMENT_PLACEHOLDER.replace(/<br>/g, '\n') : ''"
+            :placeholder="commentPlaceholder"
             :autosize="{ minRows: 3 }"
             @input="onCommentInput"
             @keyup.enter.native="onEnterKeyUp($event)" />
@@ -104,6 +104,11 @@ export default {
     },
     textarea () {
       return this.$refs.textarea ? this.$refs.textarea.$refs.textarea : null
+    },
+    commentPlaceholder () {
+      let ph = this.$twikoo.placeholder || this.config.COMMENT_PLACEHOLDER || ''
+      ph = ph.replace(/<br>/g, '\n')
+      return ph
     }
   },
   methods: {

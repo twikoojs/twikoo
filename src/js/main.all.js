@@ -3,11 +3,12 @@ import { install } from './tcb'
 import { render } from '../view'
 import { setLanguage, isUrl, getCommentsCountApi, getRecentCommentsApi } from './utils'
 import cloudbase from '@cloudbase/js-sdk/app'
-import '@cloudbase/js-sdk/auth'
+import { registerAuth } from '@cloudbase/js-sdk/auth'
 import '@cloudbase/js-sdk/functions'
 import '@cloudbase/js-sdk/storage'
 
 async function initTcb (options) {
+  registerAuth(cloudbase)
   return await install(cloudbase, options)
 }
 

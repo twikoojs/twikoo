@@ -1109,7 +1109,7 @@ function appendHashToUrl (url, hash) {
 async function parse (comment) {
   const timestamp = Date.now()
   const isAdminUser = await isAdmin()
-  const isBloggerMail = comment.mail === config.BLOGGER_EMAIL
+  const isBloggerMail = comment.mail && comment.mail === config.BLOGGER_EMAIL
   if (isBloggerMail && !isAdminUser) throw new Error('请先登录管理面板，再使用博主身份发送评论')
   const commentDo = {
     uid: await getUid(),

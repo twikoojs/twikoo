@@ -1047,10 +1047,9 @@ function getIMPushContent (comment) {
 async function noticeReply (currentComment) {
   if (!currentComment.pid) return
   if (!transporter) if (!await initMailer()) return
-  let parentComment = await db
+  const parentComment = await db
     .collection('comment')
     .findOne({ _id: currentComment.pid })
-  parentComment = parentComment.data[0]
   // 回复给博主，因为会发博主通知邮件，所以不再重复通知
   if (config.BLOGGER_EMAIL === parentComment.mail) return
   const PARENT_NICK = parentComment.nick
@@ -1116,7 +1115,7 @@ function appendHashToUrl (url, hash) {
 async function parse (comment) {
   const timestamp = Date.now()
   const isAdminUser = await isAdmin()
-  const isBloggerMail = comment.mail === config.BLOGGER_EMAIL
+  const isBloggerMail = comment.mail && comment.mail === config.BLOGGER_EMAIL
   if (isBloggerMail && !isAdminUser) throw new Error('请先登录管理面板，再使用博主身份发送评论')
   const commentDo = {
     _id: uuidv4().replace(/-/g, ''),

@@ -563,13 +563,19 @@ function jsonParse (content) {
 
 // Valine 导入
 async function commentImportValine (valineDb, log) {
-  if (!valineDb || !valineDb.results) {
+  let arr
+  if (valineDb instanceof Array) {
+    arr = valineDb
+  } else if (valineDb && valineDb.results) {
+    arr = valineDb.results
+  }
+  if (!arr) {
     log('Valine 评论文件格式有误')
     return
   }
   const comments = []
-  log(`共 ${valineDb.results.length} 条评论`)
-  for (const comment of valineDb.results) {
+  log(`共 ${arr.length} 条评论`)
+  for (const comment of arr) {
     try {
       const parsed = {
         _id: comment.objectId,

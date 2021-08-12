@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v1.4.3
+ * Twikoo cloudbase function v1.4.4
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  */
@@ -31,7 +31,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.4.3'
+const VERSION = '1.4.4'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -563,13 +563,19 @@ function jsonParse (content) {
 
 // Valine 导入
 async function commentImportValine (valineDb, log) {
-  if (!valineDb || !valineDb.results) {
+  let arr
+  if (valineDb instanceof Array) {
+    arr = valineDb
+  } else if (valineDb && valineDb.results) {
+    arr = valineDb.results
+  }
+  if (!arr) {
     log('Valine 评论文件格式有误')
     return
   }
   const comments = []
-  log(`共 ${valineDb.results.length} 条评论`)
-  for (const comment of valineDb.results) {
+  log(`共 ${arr.length} 条评论`)
+  for (const comment of arr) {
     try {
       const parsed = {
         _id: comment.objectId,
@@ -1109,7 +1115,7 @@ function appendHashToUrl (url, hash) {
 async function parse (comment) {
   const timestamp = Date.now()
   const isAdminUser = await isAdmin()
-  const isBloggerMail = comment.mail === config.BLOGGER_EMAIL
+  const isBloggerMail = comment.mail && comment.mail === config.BLOGGER_EMAIL
   if (isBloggerMail && !isAdminUser) throw new Error('请先登录管理面板，再使用博主身份发送评论')
   const commentDo = {
     uid: await getUid(),

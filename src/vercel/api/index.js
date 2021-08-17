@@ -1,5 +1,5 @@
 /*!
- * Twikoo vercel function v1.4.1
+ * Twikoo vercel function v1.4.4
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  */
@@ -27,7 +27,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.4.1'
+const VERSION = '1.4.4'
 const RES_CODE = {
   SUCCESS: 0,
   NO_PARAM: 100,
@@ -577,13 +577,19 @@ function jsonParse (content) {
 
 // Valine 导入
 async function commentImportValine (valineDb, log) {
-  if (!valineDb || !valineDb.results) {
+  let arr
+  if (valineDb instanceof Array) {
+    arr = valineDb
+  } else if (valineDb && valineDb.results) {
+    arr = valineDb.results
+  }
+  if (!arr) {
     log('Valine 评论文件格式有误')
     return
   }
   const comments = []
-  log(`共 ${valineDb.results.length} 条评论`)
-  for (const comment of valineDb.results) {
+  log(`共 ${arr.length} 条评论`)
+  for (const comment of arr) {
     try {
       const parsed = {
         _id: comment.objectId,
@@ -1047,10 +1053,9 @@ function getIMPushContent (comment) {
 async function noticeReply (currentComment) {
   if (!currentComment.pid) return
   if (!transporter) if (!await initMailer()) return
-  let parentComment = await db
+  const parentComment = await db
     .collection('comment')
     .findOne({ _id: currentComment.pid })
-  parentComment = parentComment.data[0]
   // 回复给博主，因为会发博主通知邮件，所以不再重复通知
   if (config.BLOGGER_EMAIL === parentComment.mail) return
   const PARENT_NICK = parentComment.nick
@@ -1116,7 +1121,7 @@ function appendHashToUrl (url, hash) {
 async function parse (comment) {
   const timestamp = Date.now()
   const isAdminUser = await isAdmin()
-  const isBloggerMail = comment.mail === config.BLOGGER_EMAIL
+  const isBloggerMail = comment.mail && comment.mail === config.BLOGGER_EMAIL
   if (isBloggerMail && !isAdminUser) throw new Error('请先登录管理面板，再使用博主身份发送评论')
   const commentDo = {
     _id: uuidv4().replace(/-/g, ''),
@@ -1150,15 +1155,26 @@ async function limitFilter () {
   // 限制每个 IP 每 10 分钟发表的评论数量
   const limitPerMinute = parseInt(config.LIMIT_PER_MINUTE)
   if (limitPerMinute) {
-    let count = await db
+    const count = await db
       .collection('comment')
       .countDocuments({
         ip: request.headers['x-real-ip'],
         created: { $gt: Date.now() - 600000 }
       })
-    count = count.total
     if (count > limitPerMinute) {
       throw new Error('发言频率过高')
+    }
+  }
+  // 限制所有 IP 每 10 分钟发表的评论数量
+  const limitPerMinuteAll = parseInt(config.LIMIT_PER_MINUTE_ALL)
+  if (limitPerMinuteAll) {
+    const count = await db
+      .collection('comment')
+      .countDocuments({
+        created: { $gt: Date.now() - 600000 }
+      })
+    if (count > limitPerMinuteAll) {
+      throw new Error('评论太火爆啦 >_< 请稍后再试')
     }
   }
 }

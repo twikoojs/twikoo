@@ -334,10 +334,10 @@ export default {
     'Server chan (sc.ftqq.com) SCKEY for WeChat notification.'
   ],
   [S.ACI + '_WECOM_API_URL']: [
-    '自定义搭建企业微信通知 API 的接口 URL，免费不限量，参考教程：https://guole.fun/posts/626/',
-    '自定義搭建企業微信通知 API 的接口 URL，免費不限量，參考教程：https://guole.fun/posts/626/',
-    '自定義搭建企業微信通知 API 的接口 URL，免費不限量，參考教程：https://guole.fun/posts/626/',
-    'Customize the interface URL of the enterprise WeChat notification API, free and unlimited, refer to the tutorial: https://guole.fun/posts/626/'
+    '自行搭建的企业微信通知 API 接口 URL，免费不限量，参考教程：https://guole.fun/posts/626/',
+    '自己搭建的企業微信通知 API 接口 URL，免費不調用，參考教程：https://guole.fun/posts/626/',
+    '自己搭建的企業微信通知 API 接口 URL，免費不調用，參考教程：https://guole.fun/posts/626/',
+    'Self-built enterprise WeChat notification API interface URL, free unlimited, refer to the tutorial: https://guole.fun/posts/626/'
   ],
   [S.ACI + '_SENDER_EMAIL']: [
     '邮件通知邮箱地址。对于大多数邮箱服务商，SENDER_EMAIL 必须和 SMTP_USER 保持一致，否则无法发送邮件。',

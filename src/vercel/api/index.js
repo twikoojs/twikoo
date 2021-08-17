@@ -878,6 +878,7 @@ async function sendNotice (comment) {
     noticeReply(comment),
     noticeWeChat(comment),
     noticePushPlus(comment),
+    noticeWeComPush(comment),
     noticeQQ(comment)
   ]).catch(console.error)
   return { code: RES_CODE.SUCCESS }
@@ -923,7 +924,8 @@ async function noticeMaster (comment) {
   const IM_PUSH_CONFIGS = [
     'SC_SENDKEY',
     'QM_SENDKEY',
-    'PUSH_PLUS_TOKEN'
+    'PUSH_PLUS_TOKEN',
+    'WECOM_API_URL'
   ]
   // 判断是否存在即时消息推送配置
   const hasIMPushConfig = IM_PUSH_CONFIGS.some(item => !!config[item])
@@ -1012,6 +1014,17 @@ async function noticePushPlus (comment) {
   }
   const sendResult = await axios.post(ppApiUrl, ppApiParam)
   console.log('pushplus 通知结果：', sendResult)
+}
+
+// 自定义WeCom企业微信api通知
+async function noticeWeComPush (comment) {
+  if (config.BLOGGER_EMAIL === comment.mail) return
+  const SITE_URL = config.SITE_URL
+  const WeComContent = config.SITE_NAME + '有新评论啦！🎉🎉' + '\n\n' + '@' + comment.nick + '说：' + $(comment.comment).text() + '\n' + 'E-mail: ' + comment.mail + '\n' + 'IP: ' + comment.ip + '\n' + '点此查看完整内容：' + appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
+  const WeComApiContent = encodeURIComponent(WeComContent)
+  const WeComApiUrl = config.WECOM_API_URL
+  const sendResult = await axios.get(WeComApiUrl + WeComApiContent)
+  console.log('WinxinPush 通知结果：', sendResult)
 }
 
 // QQ通知

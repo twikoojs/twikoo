@@ -335,8 +335,8 @@ export default {
   ],
   [S.ACI + '_WECOM_API_URL']: [
     '自行搭建的企业微信通知 API 接口 URL，免费不限量，参考教程：https://guole.fun/posts/626/',
-    '自己搭建的企業微信通知 API 接口 URL，免費不調用，參考教程：https://guole.fun/posts/626/',
-    '自己搭建的企業微信通知 API 接口 URL，免費不調用，參考教程：https://guole.fun/posts/626/',
+    '自行搭建的企業微信通知 API 接口 URL，免費不限量，參考教程：https://guole.fun/posts/626/',
+    '自行搭建的企業微信通知 API 接口 URL，免費不限量，參考教程：https://guole.fun/posts/626/',
     'Self-built enterprise WeChat notification API interface URL, free unlimited, refer to the tutorial: https://guole.fun/posts/626/'
   ],
   [S.ACI + '_SENDER_EMAIL']: [

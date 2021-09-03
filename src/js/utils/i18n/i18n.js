@@ -657,6 +657,12 @@ export default {
     '展開',
     'Read more'
   ],
+  COMMENT_COLLAPSE: [
+    '收起',
+    '收起',
+    '收起',
+    'Collapse'
+  ],
   COMMENT_MASTER_TAG: [
     '博主',
     '博主',

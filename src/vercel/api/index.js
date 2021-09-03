@@ -1,5 +1,5 @@
 /*!
- * Twikoo vercel function v1.4.4
+ * Twikoo vercel function v1.4.5
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  */
@@ -27,7 +27,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.4.4'
+const VERSION = '1.4.5'
 const RES_CODE = {
   SUCCESS: 0,
   NO_PARAM: 100,
@@ -1071,6 +1071,8 @@ async function noticeReply (currentComment) {
     .findOne({ _id: currentComment.pid })
   // 回复给博主，因为会发博主通知邮件，所以不再重复通知
   if (config.BLOGGER_EMAIL === parentComment.mail) return
+  // 回复自己的评论，不邮件通知
+  if (currentComment.mail === parentComment.mail) return
   const PARENT_NICK = parentComment.nick
   const SITE_NAME = config.SITE_NAME
   const NICK = currentComment.nick

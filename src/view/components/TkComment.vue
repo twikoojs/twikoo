@@ -63,6 +63,7 @@
           @load="onLoad"
           @cancel="onCancel" />
       <div class="tk-expand" v-if="showExpand" @click="onExpand">{{ t('COMMENT_EXPAND') }}</div>
+      <div class="tk-expand _collapse" v-if="showCollapse" @click="onCollapse">{{ t('COMMENT_COLLAPSE') }}</div>
     </div>
   </div>
 </template>
@@ -146,6 +147,9 @@ export default {
     showExpand () {
       return this.hasExpand && !this.isExpanded
     },
+    showCollapse () {
+      return this.hasExpand && this.isExpanded
+    },
     convertedLink () {
       return convertLink(this.comment.link)
     }
@@ -161,7 +165,9 @@ export default {
     },
     showExpandIfNeed () {
       if (this.comment.replies && this.comment.replies.length > 0 && this.$refs['tk-replies']) {
-        this.hasExpand = this.$refs['tk-replies'].scrollHeight > 200
+        // 200 是回复区域最大高度
+        // 36 是展开按钮高度
+        this.hasExpand = this.$refs['tk-replies'].scrollHeight > 200 + 36
       }
     },
     scrollToComment () {
@@ -202,6 +208,9 @@ export default {
     },
     onExpand () {
       this.isExpanded = true
+    },
+    onCollapse () {
+      this.isExpanded = false
     },
     async checkAuth () {
       // 检查用户身份

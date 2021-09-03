@@ -27,6 +27,7 @@
           <a v-if="comment.link" :href="convertLink(comment.link)" target="_blank">{{ comment.nick }}</a>
           <span v-if="comment.mail">&nbsp;(<a :href="`mailto:${comment.mail}`">{{ comment.mail }}</a>)</span>
           <span v-if="comment.isSpam">{{ t('ADMIN_COMMENT_IS_SPAM_SUFFIX') }}</span>
+          <span class="tk-time">&nbsp;{{ displayCreated(comment) }}</span>
         </div>
         <div class="tk-content" v-html="comment.comment" ref="comments"></div>
         <div class="tk-admin-actions">
@@ -48,7 +49,7 @@
 </template>
 
 <script>
-import { call, convertLink, renderLinks, renderMath, renderCode, t } from '../../js/utils'
+import { timeago, call, convertLink, renderLinks, renderMath, renderCode, t } from '../../js/utils'
 import { version } from '../../../package.json'
 import TkAvatar from './TkAvatar.vue'
 import TkPagination from './TkPagination.vue'
@@ -75,6 +76,9 @@ export default {
   },
   methods: {
     t,
+    displayCreated (comment) {
+      return timeago(comment.created)
+    },
     convertLink (link) {
       return convertLink(link)
     },

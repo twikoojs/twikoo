@@ -1018,6 +1018,10 @@ async function noticePushPlus (comment) {
 
 // 自定义WeCom企业微信api通知
 async function noticeWeComPush (comment) {
+  if (!config.WECOM_API_URL) {
+    console.log('未配置 WECOM_API_URL,跳过企业微信推送')
+    return
+  }
   if (config.BLOGGER_EMAIL === comment.mail) return
   const SITE_URL = config.SITE_URL
   const WeComContent = config.SITE_NAME + '有新评论啦！🎉🎉' + '\n\n' + '@' + comment.nick + '说：' + $(comment.comment).text() + '\n' + 'E-mail: ' + comment.mail + '\n' + 'IP: ' + comment.ip + '\n' + '点此查看完整内容：' + appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)

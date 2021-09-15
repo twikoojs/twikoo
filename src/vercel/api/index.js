@@ -841,12 +841,13 @@ async function commentSubmit (event) {
   res.id = comment.id
   // 异步垃圾检测、发送评论通知
   try {
+    console.log('开始异步垃圾检测、发送评论通知')
     await axios.post(`${request.headers['x-forwarded-proto']}://${request.headers.host}`, {
       event: 'POST_SUBMIT',
       comment
     }, { headers: { 'x-twikoo-recursion': 'true' }, timeout: 300 }) // 设置较短的 timeout 来实现异步
   } catch (e) {
-    console.log('开始异步垃圾检测、发送评论通知')
+    console.log('请求失败:', e.message)
   }
   return res
 }

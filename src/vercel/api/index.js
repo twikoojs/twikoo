@@ -847,14 +847,16 @@ async function commentSubmit (event) {
   // 异步垃圾检测、发送评论通知
   try {
     console.log('开始异步垃圾检测、发送评论通知')
+    console.time('POST_SUBMIT')
     await Promise.race([
       axios.post(`https://${process.env.VERCEL_URL}`, {
         event: 'POST_SUBMIT',
         comment
       }, { headers: { 'x-twikoo-recursion': 'true' } }),
-      // 如果超过 1 秒还没收到异步返回，直接继续，减少用户等待的时间
-      new Promise((resolve) => setTimeout(resolve, 1000))
+      // 如果超过 5 秒还没收到异步返回，直接继续，减少用户等待的时间
+      new Promise((resolve) => setTimeout(resolve, 5000))
     ])
+    console.timeEnd('POST_SUBMIT')
   } catch (e) {
     console.log('POST_SUBMIT 失败', e)
   }

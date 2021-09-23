@@ -1,5 +1,5 @@
 /*!
- * Twikoo vercel function v1.4.5
+ * Twikoo vercel function v1.4.6
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  */
@@ -27,7 +27,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.4.5'
+const VERSION = '1.4.6'
 const RES_CODE = {
   SUCCESS: 0,
   NO_PARAM: 100,
@@ -123,6 +123,9 @@ module.exports = async (requestArg, responseArg) => {
       case 'GET_RECENT_COMMENTS': // >= 0.2.7
         res = await getRecentComments(event)
         break
+      case 'EMAIL_TEST': // >= 1.4.6
+        res = await emailTest(event)
+        break
       default:
         if (event.event) {
           res.code = RES_CODE.EVENT_NOT_EXIST
@@ -177,6 +180,7 @@ async function connectToDatabase (uri) {
   if (db) return db
   if (!uri) throw new Error('未设置环境变量 MONGODB_URI')
   // If no connection is cached, create a new one
+  console.log('Connecting to database...')
   const client = await MongoClient.connect(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -185,6 +189,7 @@ async function connectToDatabase (uri) {
   // using the database path of the connection string
   db = await client.db((new URL(uri)).pathname.substr(1))
   // Cache the database connection and return the connection
+  console.log('Connected to database')
   return db
 }
 
@@ -842,12 +847,16 @@ async function commentSubmit (event) {
   // 异步垃圾检测、发送评论通知
   try {
     console.log('开始异步垃圾检测、发送评论通知')
-    await axios.post(`https://${process.env.VERCEL_URL}`, {
-      event: 'POST_SUBMIT',
-      comment
-    }, { headers: { 'x-twikoo-recursion': 'true' }, timeout: 300 }) // 设置较短的 timeout 来实现异步
+    await Promise.race([
+      axios.post(`https://${process.env.VERCEL_URL}`, {
+        event: 'POST_SUBMIT',
+        comment
+      }, { headers: { 'x-twikoo-recursion': 'true' } }),
+      // 如果超过 1 秒还没收到异步返回，直接继续，减少用户等待的时间
+      new Promise((resolve) => setTimeout(resolve, 1000))
+    ])
   } catch (e) {
-    console.log('已经发送POST_SUBMIT请求,等待响应')
+    console.log('POST_SUBMIT 失败', e)
   }
   return res
 }
@@ -886,7 +895,7 @@ async function sendNotice (comment) {
 }
 
 // 初始化邮件插件
-async function initMailer () {
+async function initMailer ({ throwErr = false }) {
   try {
     if (!config || !config.SMTP_USER || !config.SMTP_PASS) {
       throw new Error('数据库配置不存在')
@@ -907,13 +916,16 @@ async function initMailer () {
       throw new Error('SMTP 服务器没有配置')
     }
     transporter = nodemailer.createTransport(transportConfig)
-    transporter.verify(function (error, success) {
-      if (error) throw new Error('SMTP 邮箱配置异常：', error)
-      else if (success) console.log('SMTP 邮箱配置正常')
-    })
+    try {
+      const success = await transporter.verify()
+      if (success) console.log('SMTP 邮箱配置正常')
+    } catch (error) {
+      throw new Error('SMTP 邮箱配置异常：', error)
+    }
     return true
   } catch (e) {
     console.error('邮件初始化异常：', e.message)
+    if (throwErr) throw e
     return false
   }
 }
@@ -1020,7 +1032,7 @@ async function noticePushPlus (comment) {
 // 自定义WeCom企业微信api通知
 async function noticeWeComPush (comment) {
   if (!config.WECOM_API_URL) {
-    console.log('未配置 WECOM_API_URL,跳过企业微信推送')
+    console.log('未配置 WECOM_API_URL，跳过企业微信推送')
     return
   }
   if (config.BLOGGER_EMAIL === comment.mail) return
@@ -1411,6 +1423,25 @@ async function getRecentComments (event) {
   } catch (e) {
     res.message = e.message
     return res
+  }
+  return res
+}
+
+async function emailTest (event) {
+  const res = {}
+  try {
+    if (!transporter) {
+      await initMailer({ throwErr: true })
+    }
+    const sendResult = await transporter.sendMail({
+      from: config.SENDER_EMAIL,
+      to: event.mail || config.BLOGGER_EMAIL || config.SENDER_EMAIL,
+      subject: 'Twikoo 邮件通知测试邮件',
+      html: '如果您收到这封邮件，说明 Twikoo 邮件功能配置正确'
+    })
+    res.result = sendResult
+  } catch (e) {
+    res.message = e.message
   }
   return res
 }

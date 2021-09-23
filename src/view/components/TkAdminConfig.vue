@@ -6,8 +6,8 @@
       <span>请参考&nbsp;<a href="https://twikoo.js.org/quick-start.html#%E7%89%88%E6%9C%AC%E6%9B%B4%E6%96%B0" target="_blank">版本更新</a>&nbsp;进行升级</span>
     </div>
     <div class="tk-admin-config-groups">
-      <div class="tk-admin-config-group" v-for="settingGroup in settings" :key="settingGroup.name">
-        <div class="tk-admin-config-group-title">{{ settingGroup.name }}</div>
+      <details class="tk-admin-config-group" v-for="settingGroup in settings" :key="settingGroup.name">
+        <summary class="tk-admin-config-group-title">{{ settingGroup.name }}</summary>
         <div class="tk-admin-config-item" v-for="setting in settingGroup.items" :key="setting.key">
           <div class="tk-admin-config-title" :title="setting.key">{{ setting.key }}</div>
           <div class="tk-admin-config-input">
@@ -16,7 +16,19 @@
           <div></div>
           <div class="tk-admin-config-desc">{{ setting.desc }}</div>
         </div>
-      </div>
+      </details>
+      <details class="tk-admin-config-group">
+        <summary class="tk-admin-config-group-title">{{ t('ADMIN_CONFIG_EMAIL_TEST') }}</summary>
+        <div class="tk-admin-config-email-test">
+          <div class="tk-admin-config-email-test-desc">{{ t('ADMIN_CONFIG_EMAIL_TEST_HELP') }}</div>
+          <div class="tk-admin-config-input">
+            <el-input v-model="emailTestAddress" size="small">
+              <el-button slot="append" type="info" @click="testEmail">{{ t('ADMIN_CONFIG_EMAIL_TEST_BTN') }}</el-button>
+            </el-input>
+          </div>
+          <div class="tk-admin-config-email-test-desc">{{ t('ADMIN_CONFIG_EMAIL_TEST_RESULT') }}{{ emailTestResult }}</div>
+        </div>
+      </details>
     </div>
     <div class="tk-admin-config-actions">
       <el-button size="small" type="primary" @click="saveConfig">{{ t('ADMIN_CONFIG_SAVE') }}</el-button>
@@ -97,10 +109,8 @@ export default {
             { key: 'SMTP_USER', desc: t('ADMIN_CONFIG_ITEM_SMTP_USER'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}blog@imaegoo.com`, value: '' },
             { key: 'SMTP_PASS', desc: t('ADMIN_CONFIG_ITEM_SMTP_PASS'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}password`, value: '', secret: true },
             { key: 'MAIL_SUBJECT', desc: t('ADMIN_CONFIG_ITEM_MAIL_SUBJECT'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}您在虹墨空间站上的评论收到了回复`, value: '' },
-            // eslint-disable-next-line no-template-curly-in-string
             { key: 'MAIL_TEMPLATE', desc: t('ADMIN_CONFIG_ITEM_MAIL_TEMPLATE'), ph: '', value: '' },
             { key: 'MAIL_SUBJECT_ADMIN', desc: t('ADMIN_CONFIG_ITEM_MAIL_SUBJECT_ADMIN'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}虹墨空间站上有新评论了`, value: '' },
-            // eslint-disable-next-line no-template-curly-in-string
             { key: 'MAIL_TEMPLATE_ADMIN', desc: t('ADMIN_CONFIG_ITEM_MAIL_TEMPLATE_ADMIN'), ph: '', value: '' }
           ]
         }
@@ -108,7 +118,9 @@ export default {
       serverConfig: {},
       serverVersion: this.$twikoo.serverConfig.VERSION,
       clientVersion: version,
-      message: ''
+      message: '',
+      emailTestAddress: '',
+      emailTestResult: ''
     }
   },
   methods: {
@@ -148,6 +160,13 @@ export default {
       await call(this.$tcb, 'SET_CONFIG', { config })
       await this.readConfig()
       this.message = '保存成功'
+      this.loading = false
+    },
+    async testEmail () {
+      this.loading = true
+      const testResult = await call(this.$tcb, 'EMAIL_TEST', { mail: this.emailTestAddress })
+      logger.log('邮件测试', testResult)
+      this.emailTestResult = JSON.stringify(testResult)
       this.loading = false
     }
   },
@@ -193,5 +212,8 @@ export default {
 .tk-admin-config-message {
   margin-top: 0.5em;
   text-align: center;
+}
+.tk-admin-config-email-test-desc {
+  margin: 1em 0;
 }
 </style>

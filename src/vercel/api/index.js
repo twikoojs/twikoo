@@ -895,7 +895,7 @@ async function sendNotice (comment) {
 }
 
 // 初始化邮件插件
-async function initMailer ({ throwErr = false }) {
+async function initMailer ({ throwErr = false } = {}) {
   try {
     if (!config || !config.SMTP_USER || !config.SMTP_PASS) {
       throw new Error('数据库配置不存在')

@@ -97,8 +97,9 @@ Vercel 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 4. 申请 [Vercel](https://vercel.com/signup) 账号
 5. 点击以下按钮将 Twikoo 一键部署到 Vercel<br>
 [![](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/imaegoo/twikoo/tree/dev/src/vercel-min)
-6. 添加环境变量 `MONGODB_URI` 到 Vercel，值为第 3 步的数据库连接字符串
-7. Vercel 环境地址（包含 `https://` 前缀）即为您的环境 id
+6. 进入 Settings - Environment Variables，添加环境变量 `MONGODB_URI`，值为第 3 步的数据库连接字符串
+7. 进入 Overview，点击 Domains 下方的链接，如果环境配置正确，可以看到 “Twikoo 云函数运行正常” 的提示
+8. Vercel Domains（包含 `https://` 前缀，例如 `https://xxx.vercel.app`）即为您的环境 id
 
 ## 前端部署
 

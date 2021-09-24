@@ -9,10 +9,10 @@ Twikoo 分为云函数和前端两部分，部署时请注意保存二者版本�
 
 | <div style="width: 6em">部署方式</div> | 描述 |
 | ---- | ---- |
-| [一键部署](#一键部署) | [ 不再建议 ] 虽然方便，但是仅支持按量计费环境——也就是说，**一键部署的环境，当免费资源用尽后，将会产生费用**。且按量计费环境无法切换为包年包月环境。免费额度数据库读操作数只有 500 次 / 天，**无法支撑 Twikoo 的运行需求**。 |
-| [手动部署](#手动部署) | [ 不再建议 ] 适用于已有免费基础版 1 环境，或计划付费购买腾讯云云开发包年包月环境的的用户。 |
-| [命令行部署](#命令行部署) | [ 不再建议 ] 仅针对有 Node.js 经验的开发者。 |
-| [Vercel 部署](#vercel-部署) | [ 建议 ] 适用于错过云开发免费活动，想要免费部署的用户。 |
+| [一键部署](#一键部署) | [ 不建议 ] 虽然方便，但是仅支持按量计费环境——也就是说，**一键部署的环境，当免费资源用尽后，将会产生费用**。且按量计费环境无法切换为包年包月环境。免费额度数据库读操作数只有 500 次 / 天，**无法支撑 Twikoo 的运行需求**。 |
+| [手动部署](#手动部署) | [ 建议 ] 手动部署到腾讯云云开发环境，在中国大陆访问速度较快。由于基础版 1 已从 0 元涨价至 6.9 元 / 月，需要付费购买环境才能部署。 |
+| [命令行部署](#命令行部署) | [ 不建议 ] 仅针对有 Node.js 经验的开发者。 |
+| [Vercel 部署](#vercel-部署) | [ 建议 ] 适用于想要免费部署的用户，在中国大陆访问速度较慢。 |
 
 ### 一键部署
 
@@ -44,7 +44,7 @@ exports.main = require('twikoo-func').main
 8. 创建完成后，点击“twikoo"进入云函数详情页，进入“函数代码”标签，点击“文件 - 新建文件”，输入 `package.json`，回车
 9. 复制以下代码、粘贴到代码框中，点击“保存并安装依赖”
 ``` json
-{ "dependencies": { "twikoo-func": "1.4.5" } }
+{ "dependencies": { "twikoo-func": "1.4.6" } }
 ```
 
 ### 命令行部署
@@ -97,8 +97,9 @@ Vercel 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 4. 申请 [Vercel](https://vercel.com/signup) 账号
 5. 点击以下按钮将 Twikoo 一键部署到 Vercel<br>
 [![](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/imaegoo/twikoo/tree/dev/src/vercel-min)
-6. 添加环境变量 `MONGODB_URI` 到 Vercel，值为第 3 步的数据库连接字符串
-7. Vercel 环境地址（包含 `https://` 前缀）即为您的环境 id
+6. 进入 Settings - Environment Variables，添加环境变量 `MONGODB_URI`，值为第 3 步的数据库连接字符串
+7. 进入 Overview，点击 Domains 下方的链接，如果环境配置正确，可以看到 “Twikoo 云函数运行正常” 的提示
+8. Vercel Domains（包含 `https://` 前缀，例如 `https://xxx.vercel.app`）即为您的环境 id
 
 ## 前端部署
 
@@ -173,7 +174,7 @@ twikoo:
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.4.5/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.4.6/dist/twikoo.all.min.js"></script>
 <script>
 twikoo.init({
   envId: '您的环境id',

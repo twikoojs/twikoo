@@ -153,6 +153,30 @@ export default {
     '反垃圾',
     'Spam'
   ],
+  ADMIN_CONFIG_EMAIL_TEST: [
+    '邮件通知测试',
+    '郵件通知測試',
+    '郵件通知測試',
+    'Email notification test'
+  ],
+  ADMIN_CONFIG_EMAIL_TEST_BTN: [
+    '发送测试邮件',
+    '發送測試郵件',
+    '發送測試郵件',
+    'Send test mail'
+  ],
+  ADMIN_CONFIG_EMAIL_TEST_HELP: [
+    '输入一个邮箱地址，发送测试邮件',
+    '輸入一個郵箱位址，發送測試郵件',
+    '輸入一個郵箱位址，發送測試郵件',
+    'Input an email address & send test mail'
+  ],
+  ADMIN_CONFIG_EMAIL_TEST_RESULT: [
+    '测试结果：',
+    '測試結果：',
+    '測試結果：',
+    'Test result: '
+  ],
   ADMIN_CONFIG_EXAMPLE: [
     '示例：',
     '示例：',

@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v1.4.5
+ * Twikoo cloudbase function v1.4.6
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  */
@@ -31,7 +31,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.4.5'
+const VERSION = '1.4.6'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -115,6 +115,9 @@ exports.main = async (event, context) => {
         break
       case 'GET_RECENT_COMMENTS': // >= 0.2.7
         res = await getRecentComments(event)
+        break
+      case 'EMAIL_TEST': // >= 1.4.6
+        res = await emailTest(event)
         break
       default:
         if (event.event) {
@@ -877,7 +880,7 @@ async function sendNotice (comment) {
 }
 
 // 初始化邮件插件
-async function initMailer () {
+async function initMailer ({ throwErr = false } = {}) {
   try {
     if (!config || !config.SMTP_USER || !config.SMTP_PASS) {
       throw new Error('数据库配置不存在')
@@ -898,13 +901,16 @@ async function initMailer () {
       throw new Error('SMTP 服务器没有配置')
     }
     transporter = nodemailer.createTransport(transportConfig)
-    transporter.verify(function (error, success) {
-      if (error) throw new Error('SMTP 邮箱配置异常：', error)
-      else if (success) console.log('SMTP 邮箱配置正常')
-    })
+    try {
+      const success = await transporter.verify()
+      if (success) console.log('SMTP 邮箱配置正常')
+    } catch (error) {
+      throw new Error('SMTP 邮箱配置异常：', error)
+    }
     return true
   } catch (e) {
     console.error('邮件初始化异常：', e.message)
+    if (throwErr) throw e
     return false
   }
 }
@@ -1010,6 +1016,10 @@ async function noticePushPlus (comment) {
 
 // 自定义WeCom企业微信api通知
 async function noticeWeComPush (comment) {
+  if (!config.WECOM_API_URL) {
+    console.log('未配置 WECOM_API_URL，跳过企业微信推送')
+    return
+  }
   if (config.BLOGGER_EMAIL === comment.mail) return
   const SITE_URL = config.SITE_URL
   const WeComContent = config.SITE_NAME + '有新评论啦！🎉🎉' + '\n\n' + '@' + comment.nick + '说：' + $(comment.comment).text() + '\n' + 'E-mail: ' + comment.mail + '\n' + 'IP: ' + comment.ip + '\n' + '点此查看完整内容：' + appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
@@ -1402,6 +1412,25 @@ async function getRecentComments (event) {
   } catch (e) {
     res.message = e.message
     return res
+  }
+  return res
+}
+
+async function emailTest (event) {
+  const res = {}
+  try {
+    if (!transporter) {
+      await initMailer({ throwErr: true })
+    }
+    const sendResult = await transporter.sendMail({
+      from: config.SENDER_EMAIL,
+      to: event.mail || config.BLOGGER_EMAIL || config.SENDER_EMAIL,
+      subject: 'Twikoo 邮件通知测试邮件',
+      html: '如果您收到这封邮件，说明 Twikoo 邮件功能配置正确'
+    })
+    res.result = sendResult
+  } catch (e) {
+    res.message = e.message
   }
   return res
 }

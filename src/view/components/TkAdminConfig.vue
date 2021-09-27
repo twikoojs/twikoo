@@ -181,6 +181,10 @@ export default {
   overflow-y: auto;
   padding-right: 0.5em;
 }
+.tk-admin-config-groups .tk-admin-config-group,
+.tk-admin-config-groups .tk-admin-config-group-title {
+  background: transparent;
+}
 .tk-admin-config-group-title {
   margin-top: 1em;
   font-size: 1.25rem;

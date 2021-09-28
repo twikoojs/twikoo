@@ -5,6 +5,7 @@
 [![](https://img.shields.io/npm/v/twikoo)](https://www.npmjs.com/package/twikoo)
 [![](https://img.shields.io/bundlephobia/minzip/twikoo)](https://bundlephobia.com/result?p=twikoo)
 [![](https://img.shields.io/npm/dt/twikoo)](https://www.npmjs.com/package/twikoo)
+[![](https://data.jsdelivr.com/v1/package/npm/twikoo/badge)](https://www.jsdelivr.com/package/npm/twikoo)
 [![](https://img.shields.io/npm/l/twikoo)](https://github.com/imaegoo/twikoo/blob/dev/LICENSE)
 
 一个简洁、安全、免费的静态网站评论系统，基于[腾讯云开发](https://curl.qcloud.com/KnnJtUom)。<br>

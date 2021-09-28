@@ -1,5 +1,5 @@
 /*!
- * Twikoo vercel function v1.4.7
+ * Twikoo vercel function v1.4.8
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  */
@@ -27,7 +27,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.4.7'
+const VERSION = '1.4.8'
 const RES_CODE = {
   SUCCESS: 0,
   NO_PARAM: 100,
@@ -1478,7 +1478,7 @@ function addQQMailSuffix (mail) {
 async function getQQAvatar (qq) {
   try {
     const qqNum = qq.replace(/@qq.com/ig, '')
-    const result = await axios.get(`https://ptlogin2.qq.com/getface?imgtype=4&uin=${qqNum}`)
+    const result = await axios.get(`https://ssl.ptlogin2.qq.com/getface?imgtype=4&uin=${qqNum}`, { timeout: 5000 })
     if (result && result.data) {
       const start = result.data.indexOf('http')
       const end = result.data.indexOf('"', start)

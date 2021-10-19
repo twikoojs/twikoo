@@ -930,7 +930,8 @@ async function noticeMaster (comment) {
     'SC_SENDKEY',
     'QM_SENDKEY',
     'PUSH_PLUS_TOKEN',
-    'WECOM_API_URL'
+    'WECOM_API_URL',
+    'DingTalk_WebHook_URL'
   ]
   // 判断是否存在即时消息推送配置
   const hasIMPushConfig = IM_PUSH_CONFIGS.some(item => !!config[item])
@@ -1046,8 +1047,9 @@ async function noticeDingTalkHook (comment) {
   const SITE_URL = config.SITE_URL
   const DingTalkContent = config.SITE_NAME + '有新评论啦！🎉🎉' + '\n\n' + '@' + comment.nick + '说：' + $(comment.comment).text() + '\n' + 'E-mail: ' + comment.mail + '\n' + 'IP: ' + comment.ip + '\n' + '点此查看完整内容：' + appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
   const DingTalkApiContent = encodeURIComponent(DingTalkContent)
+  const DingTalkPostBody = '{"msgtype": "text","text": {"content":"' + DingTalkApiContent + '"}}'
   const DingTalkApiUrl = config.DingTalk_WebHook
-  const sendResult = await axios.get(DingTalkApiUrl + DingTalkApiContent)
+  const sendResult = await axios.post(DingTalkApiUrl , DingTalkPostBody)
   console.log('钉钉WebHook 通知结果：', sendResult)
 }
 

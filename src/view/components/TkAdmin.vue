@@ -10,9 +10,9 @@
         <div class="tk-login" v-if="!isLogin && isSetPassword">
           <div class="tk-login-title">{{ t('ADMIN_LOGIN_TITLE') }}</div>
           <input type="hidden" />
-          <el-input class="tk-password" tabindex="-1" :placeholder="t('ADMIN_PASSWORD_PLACEHOLDER')" v-model="password" show-password @keyup.enter.native="onLogin" ref="focusme">
+          <el-input class="tk-password" :placeholder="t('ADMIN_PASSWORD_PLACEHOLDER')" v-model="password" show-password @keyup.enter.native="onLogin" ref="focusme">
             <template slot="prepend">{{ t('ADMIN_PASSWORD') }}</template>
-            <el-button slot="append" tabindex="-1" @click="onLogin">{{ t('ADMIN_LOGIN') }}</el-button>
+            <el-button slot="append" @click="onLogin">{{ t('ADMIN_LOGIN') }}</el-button>
           </el-input>
           <div class="tk-login-msg" v-if="loginErrorMessage">
             {{ loginErrorMessage }}
@@ -283,6 +283,9 @@ export default {
   width: 80%;
   text-align: center;
   margin-top: 1rem;
+}
+.tk-password /deep/ .el-input__inner {
+  min-width: 100px;
 }
 .tk-login-msg a {
   color: #ffffff;

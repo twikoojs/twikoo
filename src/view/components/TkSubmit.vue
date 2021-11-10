@@ -191,7 +191,7 @@ export default {
         }
       } catch (e) {
         logger.error('评论失败', e)
-        this.errorMessage = `评论失败: ${e.message}`
+        this.errorMessage = `评论失败: ${e && e.message}`
       } finally {
         this.isSending = false
       }

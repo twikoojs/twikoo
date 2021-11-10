@@ -45,12 +45,16 @@ const call = async (tcb, event, data = {}) => {
         const accessToken = localStorage.getItem('twikoo-access-token')
         const xhr = new XMLHttpRequest()
         xhr.onreadystatechange = () => {
-          if (xhr.readyState === 4 && xhr.status === 200) {
-            const result = JSON.parse(xhr.responseText)
-            if (result.accessToken) {
-              localStorage.setItem('twikoo-access-token', result.accessToken)
+          if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+              const result = JSON.parse(xhr.responseText)
+              if (result.accessToken) {
+                localStorage.setItem('twikoo-access-token', result.accessToken)
+              }
+              resolve({ result })
+            } else {
+              reject(xhr.status)
             }
-            resolve({ result })
           }
         }
         xhr.open('POST', _envId)

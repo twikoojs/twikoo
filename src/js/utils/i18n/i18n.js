@@ -189,6 +189,12 @@ export default {
     'Akismet 反垃圾評論，用於垃圾評論檢測，設為 "MANUAL_REVIEW" 開啟人工審核，留空不使用反垃圾。註冊：https://akismet.com',
     'Akismet spam protection. Set to "MANUAL_REVIEW" to enable manual review. Leave it blank to not use anti-spam. Register Akismet: https://akismet.com'
   ],
+  [S.ACI + '_BLOGGER_NICK']: [
+    '博主的昵称。',
+    '博主的昵称。',
+    '博主的昵称。',
+    'Admin nick name.'
+  ],
   [S.ACI + '_BLOGGER_EMAIL']: [
     '博主的邮箱地址，用于邮件通知、博主标识。',
     '博主的郵箱地址，用於郵件通知、博主標識。',
@@ -346,9 +352,9 @@ export default {
     'Required fields for comments. Set to "nick,mail,link" means all fields are required. Set to "none" means all fields are optional. Default: nick,mail.'
   ],
   [S.ACI + '_SC_MAIL_NOTIFY']: [
-    '是否同时通过微信和邮件 2 种方式通知博主，默认只通过微信通知博主，默认：false',
-    '是否同時通過微信和郵件 2 種方式通知博主，預設只通過微信通知博主，預設：false',
-    '是否同時通過微信和郵件 2 種方式通知博主，預設只通過微信通知博主，預設：false',
+    '是否同时通过 IM 和邮件 2 种方式通知博主，默认只通过 IM 通知博主，默认：false',
+    '是否同時通過 IM 和郵件 2 種方式通知博主，預設只通過 IM 通知博主，預設：false',
+    '是否同時通過 IM 和郵件 2 種方式通知博主，預設只通過 IM 通知博主，預設：false',
     'Whether to notify admin via WeChat and email at the same time, the default is to notify admin only via WeChat. Default: false.'
   ],
   [S.ACI + '_SC_SENDKEY']: [

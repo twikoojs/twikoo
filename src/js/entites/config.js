@@ -22,6 +22,9 @@ class Config {
     this.QCLOUD_SECRET_ID = model.QCLOUD_SECRET_ID
     this.QCLOUD_SECRET_KEY = model.QCLOUD_SECRET_KEY
     this.LIMIT_PER_MINUTE = model.LIMIT_PER_MINUTE
+    this.LIMIT_PER_MINUTE_ALL = model.LIMIT_PER_MINUTE_ALL
+    this.FORBIDDEN_WORDS = model.FORBIDDEN_WORDS
+    this.NOTIFY_SPAM = model.NOTIFY_SPAM
     this.SC_MAIL_NOTIFY = model.SC_MAIL_NOTIFY
     this.SMTP_SERVICE = model.SMTP_SERVICE
     this.SMTP_HOST = model.SMTP_HOST
@@ -31,6 +34,8 @@ class Config {
     this.SMTP_PASS = model.SMTP_PASS
     this.SC_SENDKEY = model.SC_SENDKEY
     this.QM_SENDKEY = model.QM_SENDKEY
+    this.PUSH_PLUS_TOKEN = model.PUSH_PLUS_TOKEN
+    this.WECOM_API_URL = model.WECOM_API_URL
     this.SENDER_NAME = model.SENDER_NAME
     this.SENDER_EMAIL = model.SENDER_EMAIL
     this.BLOGGER_EMAIL = model.BLOGGER_EMAIL

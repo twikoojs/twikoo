@@ -237,6 +237,7 @@ export default {
   background-color: rgba(0,0,0,0.60);
   backdrop-filter: blur(5px);
   transition: all 0.5s ease;
+  visibility: hidden;
 }
 .tk-admin::-webkit-scrollbar {
   width: 5px;
@@ -250,6 +251,7 @@ export default {
 }
 .tk-admin.__show {
   left: 0;
+  visibility: visible;
 }
 .tk-admin-close {
   position: sticky;
@@ -281,6 +283,9 @@ export default {
   width: 80%;
   text-align: center;
   margin-top: 1rem;
+}
+.tk-password /deep/ .el-input__inner {
+  min-width: 100px;
 }
 .tk-login-msg a {
   color: #ffffff;

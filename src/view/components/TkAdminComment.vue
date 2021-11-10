@@ -105,8 +105,35 @@ export default {
       const res = await call(this.$tcb, 'GET_CONFIG_FOR_ADMIN')
       if (res.result && !res.result.code) {
         this.serverConfig = res.result.config
-        if (!this.serverConfig.HIGHLIGHT) this.serverConfig.HIGHLIGHT = 'true'
+        this.checkConfig()
       }
+    },
+    checkConfig () {
+      if (!this.serverConfig.HIGHLIGHT) this.serverConfig.HIGHLIGHT = 'true'
+      // 在已登錄的情況下，不用再輸入昵稱和郵箱等信息
+      let metaData = {}
+      const mStr = localStorage.getItem('twikoo')
+      if (mStr) {
+        metaData = JSON.parse(mStr)
+      }
+      ['nick', 'mail', 'avatar'].forEach(key => {
+        if (!metaData[key]) {
+          this.serverConfig[key] = ''
+        } else {
+          this.serverConfig[key] = metaData[key]
+        }
+      })
+      if (!metaData.nick && this.serverConfig.BLOGGER_NICK) {
+        metaData.nick = this.serverConfig.BLOGGER_NICK
+      }
+      if (!metaData.mail && this.serverConfig.BLOGGER_MAIL) {
+        metaData.mail = this.serverConfig.BLOGGER_MAIL
+      }
+      if (!metaData.link && this.serverConfig.SITE_URL) {
+        metaData.link = this.serverConfig.SITE_URL
+      }
+      localStorage.setItem('twikoo', JSON.stringify(metaData))
+      // TODO: 通知 TkMetaInput 执行 initMeta()
     },
     onPageSizeChange (newPageSize) {
       this.pageSize = newPageSize

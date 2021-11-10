@@ -7,7 +7,11 @@
           <span>{{ count }}</span>
           <span>{{ t('COMMENTS_COUNT_SUFFIX') }}</span>
         </span>
-        <span class="tk-icon" v-if="showAdminEntry" v-html="iconSetting" @click="openAdmin"></span>
+        <span>
+          <span class="tk-icon" v-if="!loading && !loadingMore" v-html="iconRefresh" @click="refresh"
+            ></span><span class="tk-icon" v-if="showAdminEntry" v-html="iconSetting" @click="openAdmin"
+            ></span>
+        </span>
       </div>
       <div class="tk-comments-no" v-if="!loading && !comments.length">
         <span v-if="!errorMessage">{{ t('COMMENTS_NO_COMMENTS') }}</span>
@@ -30,6 +34,7 @@ import { call, getUrl, t } from '../../js/utils'
 import TkSubmit from './TkSubmit.vue'
 import TkComment from './TkComment.vue'
 import iconSetting from '@fortawesome/fontawesome-free/svgs/solid/cog.svg'
+import iconRefresh from '@fortawesome/fontawesome-free/svgs/solid/sync.svg'
 import Vue from 'vue'
 
 export default {
@@ -50,7 +55,8 @@ export default {
       showExpand: true,
       count: 0,
       replyId: '',
-      iconSetting
+      iconSetting,
+      iconRefresh
     }
   },
   methods: {
@@ -67,6 +73,10 @@ export default {
       const url = getUrl(this.$twikoo.path)
       await this.getComments({ url })
       this.loading = false
+    },
+    refresh () {
+      this.comments = []
+      this.initComments()
     },
     async onExpand () {
       if (this.loadingMore) return
@@ -142,6 +152,7 @@ export default {
   align-items: center;
   justify-content: center;
   vertical-align: sub;
+  margin-left: 0.5em;
   height: 0.75em;
   width: 0.75em;
   line-height: 0;

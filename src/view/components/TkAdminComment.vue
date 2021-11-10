@@ -49,6 +49,7 @@
 </template>
 
 <script>
+import { app } from '../index'
 import { timeago, call, convertLink, renderLinks, renderMath, renderCode, t } from '../../js/utils'
 import { version } from '../../../package.json'
 import TkAvatar from './TkAvatar.vue'
@@ -126,14 +127,14 @@ export default {
       if (!metaData.nick && this.serverConfig.BLOGGER_NICK) {
         metaData.nick = this.serverConfig.BLOGGER_NICK
       }
-      if (!metaData.mail && this.serverConfig.BLOGGER_MAIL) {
-        metaData.mail = this.serverConfig.BLOGGER_MAIL
+      if (!metaData.mail && this.serverConfig.BLOGGER_EMAIL) {
+        metaData.mail = this.serverConfig.BLOGGER_EMAIL
       }
       if (!metaData.link && this.serverConfig.SITE_URL) {
         metaData.link = this.serverConfig.SITE_URL
       }
       localStorage.setItem('twikoo', JSON.stringify(metaData))
-      // TODO: 通知 TkMetaInput 执行 initMeta()
+      app.$emit('initMeta')
     },
     onPageSizeChange (newPageSize) {
       this.pageSize = newPageSize

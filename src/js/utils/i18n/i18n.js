@@ -191,8 +191,8 @@ export default {
   ],
   [S.ACI + '_BLOGGER_NICK']: [
     '博主的昵称。',
-    '博主的昵称。',
-    '博主的昵称。',
+    '博主的昵稱。',
+    '博主的昵稱。',
     'Admin nick name.'
   ],
   [S.ACI + '_BLOGGER_EMAIL']: [

@@ -30,7 +30,8 @@ module.exports = {
     path: BUILD_PATH,
     filename: '[name].min.js',
     library: 'twikoo',
-    libraryTarget: 'umd'
+    libraryTarget: 'umd',
+    globalObject: 'this'
   },
   target: ['web', 'es5'],
   plugins: [

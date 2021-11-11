@@ -167,29 +167,33 @@ export default {
     },
     async send () {
       this.isSending = true
-      const url = getUrl(this.$twikoo.path)
-      const comment = {
-        nick: this.nick,
-        mail: this.mail,
-        link: this.link,
-        ua: navigator.userAgent,
-        url,
-        href: window.location.href,
-        comment: marked(this.comment),
-        pid: this.pid ? this.pid : this.replyId,
-        rid: this.replyId
-      }
-      const sendResult = await call(this.$tcb, 'COMMENT_SUBMIT', comment)
-      if (sendResult && sendResult.result && sendResult.result.id) {
+      try {
+        const url = getUrl(this.$twikoo.path)
+        const comment = {
+          nick: this.nick,
+          mail: this.mail,
+          link: this.link,
+          ua: navigator.userAgent,
+          url,
+          href: window.location.href,
+          comment: marked(this.comment),
+          pid: this.pid ? this.pid : this.replyId,
+          rid: this.replyId
+        }
+        const sendResult = await call(this.$tcb, 'COMMENT_SUBMIT', comment)
+        if (sendResult && sendResult.result && sendResult.result.id) {
+          this.comment = ''
+          this.errorMessage = ''
+          this.$emit('load')
+          this.saveDraft()
+        } else {
+          throw new Error(sendResult && sendResult.result)
+        }
+      } catch (e) {
+        logger.error('评论失败', e)
+        this.errorMessage = `评论失败: ${e && e.message}`
+      } finally {
         this.isSending = false
-        this.comment = ''
-        this.errorMessage = ''
-        this.$emit('load')
-        this.saveDraft()
-      } else {
-        this.isSending = false
-        logger.error('评论失败', sendResult)
-        this.errorMessage = `评论失败: ${sendResult.result.message}`
       }
     },
     addEventListener () {

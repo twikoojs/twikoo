@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import { app } from '../index'
 import { isQQ, t } from '../../js/utils'
 
 // 邮箱正则表达式来自 https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#validation
@@ -53,8 +54,9 @@ export default {
   methods: {
     t,
     initMeta () {
-      if (localStorage.getItem('twikoo')) {
-        const metaData = JSON.parse(localStorage.getItem('twikoo'))
+      const mStr = localStorage.getItem('twikoo')
+      if (mStr) {
+        const metaData = JSON.parse(mStr)
         this.metaData.nick = metaData.nick
         this.metaData.mail = metaData.mail
         this.metaData.link = metaData.link
@@ -132,6 +134,7 @@ export default {
     }
   },
   mounted () {
+    app.$on('initMeta', this.initMeta)
     this.initMeta()
   }
 }

@@ -10,9 +10,9 @@
         <div class="tk-login" v-if="!isLogin && isSetPassword">
           <div class="tk-login-title">{{ t('ADMIN_LOGIN_TITLE') }}</div>
           <input type="hidden" />
-          <el-input class="tk-password" :placeholder="t('ADMIN_PASSWORD_PLACEHOLDER')" v-model="password" show-password @keyup.enter.native="onLogin" ref="focusme">
-            <template slot="prepend">{{ t('ADMIN_PASSWORD') }}</template>
-            <el-button slot="append" @click="onLogin">{{ t('ADMIN_LOGIN') }}</el-button>
+          <el-input class="tk-password" :placeholder="t('ADMIN_PASSWORD_PLACEHOLDER')" v-model="password" show-password @keyup.enter="onLogin" ref="focusme">
+            <template #prepend>{{ t('ADMIN_PASSWORD') }}</template>
+            <template #append><el-button @click="onLogin">{{ t('ADMIN_LOGIN') }}</el-button></template>
           </el-input>
           <div class="tk-login-msg" v-if="loginErrorMessage">
             {{ loginErrorMessage }}
@@ -22,13 +22,13 @@
         <div class="tk-regist" v-if="!isLogin && !isSetPassword">
           <div class="tk-login-title">{{ t('ADMIN_LOGIN_TITLE') }}</div>
           <el-input class="tk-password" :placeholder="t('ADMIN_CREDENTIALS_PLACEHOLDER')" v-if="!isSetCredentials" v-model="credentials" ref="focusme">
-            <template slot="prepend">{{ t('ADMIN_CREDENTIALS') }}</template>
+            <template #prepend>{{ t('ADMIN_CREDENTIALS') }}</template>
           </el-input>
           <el-input class="tk-password" :placeholder="t('ADMIN_SET_PASSWORD_PLACEHOLDER')" v-model="password" show-password>
-            <template slot="prepend">{{ t('ADMIN_SET_PASSWORD') }}</template>
+            <template #prepend>{{ t('ADMIN_SET_PASSWORD') }}</template>
           </el-input>
           <el-input class="tk-password" :placeholder="t('ADMIN_SET_PASSWORD_CONFIRM_PLACEHOLDER')" v-model="passwordConfirm" show-password>
-            <template slot="prepend">{{ t('ADMIN_SET_PASSWORD_CONFIRM') }}</template>
+            <template #prepend>{{ t('ADMIN_SET_PASSWORD_CONFIRM') }}</template>
           </el-input>
           <el-button class="tk-regist-button" :disabled="!canRegist" @click="onRegist">{{ t('ADMIN_REGIST') }}</el-button>
           <div class="tk-login-msg" v-if="loginErrorMessage">{{ loginErrorMessage }}</div>
@@ -284,7 +284,7 @@ export default {
   text-align: center;
   margin-top: 1rem;
 }
-.tk-password /deep/ .el-input__inner {
+.tk-password :deep(.el-input__inner) {
   min-width: 100px;
 }
 .tk-login-msg a {

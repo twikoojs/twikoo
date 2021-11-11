@@ -11,7 +11,7 @@
           size="small"
           v-model="filter.keyword"
           :placeholder="t('ADMIN_COMMENT_SEARCH_PLACEHOLDER')"
-          @keyup.enter.native="getComments" />
+          @keyup.enter="getComments" />
       <select class="tk-admin-comment-filter-type" v-model="filter.type">
         <option value="">{{ t('ADMIN_COMMENT_FILTER_ALL') }}</option>
         <option value="VISIBLE">{{ t('ADMIN_COMMENT_FILTER_VISIBLE') }}</option>
@@ -29,7 +29,7 @@
           <span v-if="comment.isSpam">{{ t('ADMIN_COMMENT_IS_SPAM_SUFFIX') }}</span>
           <span class="tk-time">&nbsp;{{ displayCreated(comment) }}</span>
         </div>
-        <div class="tk-content" v-html="comment.comment" ref="comments"></div>
+        <div class="tk-content tk-content-admin" v-html="comment.comment"></div>
         <div class="tk-admin-actions">
           <el-button size="mini" type="text" @click="handleView(comment)">{{ t('ADMIN_COMMENT_VIEW') }}</el-button>
           <el-button size="mini" type="text" v-if="comment.isSpam" @click="handleSpam(comment, false)">{{ t('ADMIN_COMMENT_SHOW') }}</el-button>
@@ -96,7 +96,7 @@ export default {
         this.comments = res.result.data
       }
       this.$nextTick(() => {
-        renderLinks(this.$refs.comments)
+        renderLinks(document.getElementsByClassName('tk-content-admin'))
         renderMath(this.$refs['comment-list'], this.$twikoo.katex)
         this.highlightCode()
       })

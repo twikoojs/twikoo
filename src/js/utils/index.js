@@ -1,6 +1,6 @@
 import t, { setLanguage } from './i18n'
 import timeago from './timeago'
-import { marked } from './marked'
+import marked from './marked'
 import renderCode from './highlight'
 import { isUrl, call } from './api'
 import { isQQ, getQQAvatar } from './avatar'

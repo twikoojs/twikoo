@@ -1,7 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
 const CopyPlugin = require('copy-webpack-plugin')
-const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const { VueLoaderPlugin } = require('vue-loader')
 const ROOT_PATH = path.resolve(__dirname)
 const BUILD_PATH = path.resolve(ROOT_PATH, 'dist')
 const version = require('./package.json').version
@@ -13,9 +13,24 @@ const banner =
   'Last Update: ' + (new Date()).toLocaleString()
 
 module.exports = {
+  resolve: {
+    alias: {
+      vue: '@vue/compat'
+    }
+  },
   module: {
     rules: [
-      { test: /\.vue$/, loader: 'vue-loader' },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader',
+        options: {
+          compilerOptions: {
+            compatConfig: {
+              MODE: 2
+            }
+          }
+        }
+      },
       { test: /\.css$/, use: ['vue-style-loader', 'css-loader'] },
       { test: /\.svg$/, loader: 'svg-inline-loader' },
       { test: /\.js$/, use: { loader: 'babel-loader', options: { presets: ['@babel/preset-env'], plugins: ['@babel/plugin-transform-modules-commonjs', '@babel/transform-runtime'] } } }

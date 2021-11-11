@@ -158,7 +158,7 @@ export default {
   line-height: 0;
   cursor: pointer;
 }
-.tk-icon /deep/ svg {
+.tk-icon :deep(svg) {
   width: 100%;
   height: 100%;
   fill: #409eff;

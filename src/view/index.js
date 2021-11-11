@@ -1,16 +1,14 @@
 import Vue from 'vue'
 import App from './App.vue'
-import Button from 'element-ui/lib/button'
-import Input from 'element-ui/lib/input'
-import Loading from 'element-ui/lib/loading'
-import 'element-ui/lib/theme-chalk/button.css'
-import 'element-ui/lib/theme-chalk/input.css'
-import 'element-ui/lib/theme-chalk/loading.css'
+import { ElButton, ElInput, ElLoading } from 'element-plus'
+import 'element-plus/theme-chalk/el-button.css'
+import 'element-plus/theme-chalk/el-input.css'
+import 'element-plus/theme-chalk/el-loading.css'
 import '../lib/owo.css'
 
-Vue.use(Button)
-Vue.use(Input)
-Vue.use(Loading)
+Vue.use(ElButton)
+Vue.use(ElInput)
+Vue.use(ElLoading)
 
 let app = null
 

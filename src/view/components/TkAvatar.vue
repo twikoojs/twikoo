@@ -88,7 +88,7 @@ export default {
 .tk-replies .tk-avatar .tk-avatar-img {
   height: 1.6rem;
 }
-.tk-avatar .tk-avatar-img /deep/ svg {
+.tk-avatar .tk-avatar-img :deep(svg) {
   fill: #c0c4cc;
 }
 </style>

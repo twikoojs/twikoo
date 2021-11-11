@@ -11,7 +11,7 @@
             :placeholder="commentPlaceholder"
             :autosize="{ minRows: 3 }"
             @input="onCommentInput"
-            @keyup.enter.native="onEnterKeyUp($event)" />
+            @keyup.enter="onEnterKeyUp($event)" />
       </div>
     </div>
     <div class="tk-row actions">
@@ -366,10 +366,10 @@ export default {
   cursor: pointer;
   flex-shrink: 0;
 }
-.tk-action-icon /deep/ svg:hover {
+.tk-action-icon :deep(svg:hover) {
   opacity: 0.8;
 }
-.tk-action-icon.__markdown /deep/ svg {
+.tk-action-icon.__markdown :deep(svg) {
   fill: #909399;
 }
 .tk-error-message {
@@ -387,7 +387,7 @@ export default {
 .tk-input {
   flex: 1;
 }
-.tk-input /deep/ .el-textarea__inner {
+.tk-input :deep(.el-textarea__inner) {
   background-position: right bottom;
   background-repeat: no-repeat;
 }

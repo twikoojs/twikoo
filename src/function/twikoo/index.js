@@ -1040,16 +1040,12 @@ async function noticeWeComPush (comment) {
 // 自定义钉钉WebHook通知
 async function noticeDingTalkHook (comment) {
   if (!config.DingTalk_WebHook_URL) {
-    console.log('未配置 DingTalk_WebHook，跳过钉钉WebHook推送')
+    console.log('没有配置 DingTalk_WebHook，放弃钉钉WebHook推送')
     return
   }
   if (config.BLOGGER_EMAIL === comment.mail) return
-  const SITE_URL = config.SITE_URL
-  const DingTalkContent = config.SITE_NAME + '有新评论啦！🎉🎉' + '\n\n' + '@' + comment.nick + '说：' + $(comment.comment).text() + '\n' + 'E-mail: ' + comment.mail + '\n' + 'IP: ' + comment.ip + '\n' + '点此查看完整内容：' + appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
-  const DingTalkApiContent = encodeURIComponent(DingTalkContent)
-  const DingTalkPostBody = '{"msgtype": "text","text": {"content":"' + DingTalkApiContent + '"}}'
-  const DingTalkApiUrl = config.DingTalk_WebHook_URL
-  const sendResult = await axios.post(DingTalkApiUrl, DingTalkPostBody)
+  const DingTalkContent = config.SITE_NAME + '有新评论啦！🎉🎉' + '\n\n' + '@' + comment.nick + ' 说：' + $(comment.comment).text() + '\n' + 'E-mail: ' + comment.mail + '\n' + 'IP: ' + comment.ip + '\n' + '点此查看完整内容：' + appendHashToUrl(comment.href || config.SITE_URL + comment.url, comment.id)
+  const sendResult = await axios.post(config.DingTalk_WebHook_URL, { msgtype: 'text', text: { content: DingTalkContent } })
   console.log('钉钉WebHook 通知结果：', sendResult)
 }
 

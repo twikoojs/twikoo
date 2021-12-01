@@ -1451,7 +1451,7 @@ function getAvatar (comment) {
   if (comment.avatar) {
     return comment.avatar
   } else {
-    const gravatarCdn = config.GRAVATAR_CDN || 'cn.gravatar.com'
+    const gravatarCdn = config.GRAVATAR_CDN || 'cravatar.cn'
     const defaultGravatar = config.DEFAULT_GRAVATAR || 'identicon'
     const mailMd5 = comment.mailMd5 || md5(comment.mail)
     return `https://${gravatarCdn}/avatar/${mailMd5}?d=${defaultGravatar}`

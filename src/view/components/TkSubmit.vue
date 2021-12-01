@@ -244,10 +244,14 @@ export default {
       const fileIndex = `${Date.now()}-${userId}`
       const fileName = nameSplit.join('.')
       this.paste(this.getImagePlaceholder(fileIndex, fileType))
-      if (this.config.IMAGE_CDN === '7bu' || !this.$tcb) {
-        this.uploadPhotoTo7Bu(fileIndex, fileName, fileType, photo)
-      } else {
+      if (this.config.IMAGE_CDN === 'smms' && this.config.IMAGE_CDN_TOKEN) {
+        this.uploadPhotoToThirdParty(fileIndex, fileName, fileType, photo, 'https://sm.ms/upload', 'smfile', 'Authorization')
+      } else if (this.config.IMAGE_CDN === '7bu' && this.config.IMAGE_CDN_TOKEN) {
+        this.uploadPhotoToThirdParty(fileIndex, fileName, fileType, photo, 'https://7bu.top/api/upload', 'image', 'token')
+      } else if (this.$tcb) {
         this.uploadPhotoToQcloud(fileIndex, fileName, fileType, photo)
+      } else {
+        this.uploadFailed(fileIndex, fileName, fileType, '未配置图片上传服务')
       }
     },
     getUserId () {
@@ -266,23 +270,23 @@ export default {
         if (uploadResult.fileID) {
           const tempUrlResult = await this.$tcb.app.getTempFileURL({ fileList: [uploadResult.fileID] })
           const tempFileUrl = tempUrlResult.fileList[0].tempFileURL
-          this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `![${fileName}](${tempFileUrl})`)
+          this.uploadCompleted(fileIndex, fileName, fileType, tempFileUrl)
         }
       } catch (e) {
         console.error(e)
       }
     },
-    uploadPhotoTo7Bu (fileIndex, fileName, fileType, photo) {
+    uploadPhotoToThirdParty (fileIndex, fileName, fileType, photo, url, formKey, tokenKey) {
       return new Promise((resolve) => {
         try {
-          const url = 'https://7bu.top/api/upload'
           const formData = new FormData()
           const xhr = new XMLHttpRequest()
-          formData.append('image', photo)
+          formData.append(formKey, photo)
+          xhr.setRequestHeader(tokenKey, this.config.IMAGE_CDN_TOKEN)
           xhr.onreadystatechange = () => {
             if (xhr.readyState === 4 && xhr.status === 200) {
               const uploadResult = JSON.parse(xhr.responseText)
-              this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `![${fileName}](${uploadResult.data.url})`)
+              this.uploadCompleted(fileIndex, fileName, fileType, uploadResult.data.url)
               resolve()
             }
           }
@@ -292,6 +296,12 @@ export default {
           console.error(e)
         }
       })
+    },
+    uploadCompleted (fileIndex, fileName, fileType, fileUrl) {
+      this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `![${fileName}](${fileUrl})`)
+    },
+    uploadFailed (fileIndex, fileName, fileType, reason) {
+      this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `_${reason}_`)
     },
     paste (text) {
       if (document.selection) {

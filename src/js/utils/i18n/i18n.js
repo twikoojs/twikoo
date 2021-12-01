@@ -244,10 +244,10 @@ export default {
     'Configure prohibited words. Comments containing prohibited words will be auto spammed. Separate by comma.'
   ],
   [S.ACI + '_GRAVATAR_CDN']: [
-    '自定义头像 CDN 地址。如：cn.gravatar.com, sdn.geekzu.org, gravatar.loli.net，默认：cn.gravatar.com',
-    '自定義頭像 CDN 地址。如：cn.gravatar.com, sdn.geekzu.org, gravatar.loli.net，預設：cn.gravatar.com',
-    '自定義頭像 CDN 地址。如：cn.gravatar.com, sdn.geekzu.org, gravatar.loli.net，預設：cn.gravatar.com',
-    'Custom avator CDN. (Examples: cn.gravatar.com, sdn.geekzu.org, gravatar.loli.net) Default: cn.gravatar.com.'
+    '自定义头像 CDN 地址。如：cn.gravatar.com, cravatar.cn, sdn.geekzu.org, gravatar.loli.net，默认：cravatar.cn',
+    '自定義頭像 CDN 地址。如：cn.gravatar.com, cravatar.cn, sdn.geekzu.org, gravatar.loli.net，預設：cravatar.cn',
+    '自定義頭像 CDN 地址。如：cn.gravatar.com, cravatar.cn, sdn.geekzu.org, gravatar.loli.net，預設：cravatar.cn',
+    'Custom avator CDN. (Examples: gravatar.com) Default: cravatar.cn.'
   ],
   [S.ACI + '_HIDE_ADMIN_CRYPT']: [
     '隐藏管理面板入口。可设置一个“暗号”，只有在“昵称”一栏输入相同的“暗号”时，管理面板入口才会显示，留空则不隐藏管理入口',
@@ -268,10 +268,16 @@ export default {
     'Code highlighting theme. Select from: default、coy、dark、funky、okaidia、solarizedlight、tomorrow、twilight. Visit https://prismjs.com for preview. If your theme conflicts with code highlighting, please set it to none. Default: none.'
   ],
   [S.ACI + '_IMAGE_CDN']: [
-    '插入图片所使用的图床，目前支持：7bu、qcloud，默认为：qcloud',
-    '插入圖片所使用的圖床，目前支持：7bu、qcloud，預設為：qcloud',
-    '插入圖片所使用的圖床，目前支援：7bu、qcloud，預設為：qcloud',
-    'The image bed for image uploading. Select from: 7bu、qcloud. Default: qcloud.'
+    '插入图片所使用的图床，目前支持：7bu、smms、qcloud',
+    '插入圖片所使用的圖床，目前支持：7bu、smms、qcloud',
+    '插入圖片所使用的圖床，目前支援：7bu、smms、qcloud',
+    'The image bed for image uploading. Select from: 7bu、smms、qcloud'
+  ],
+  [S.ACI + '_IMAGE_CDN_TOKEN']: [
+    '7bu 或 smms 的图床 token',
+    '7bu 或 smms 的图床 token',
+    '7bu 或 smms 的图床 token',
+    'The image bed token for 7bu or smms.'
   ],
   [S.ACI + '_LIMIT_PER_MINUTE']: [
     '每个 IP 每 10 分钟最多发表多少条评论，默认：0（无限制）',

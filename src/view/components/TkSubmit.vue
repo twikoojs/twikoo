@@ -251,7 +251,7 @@ export default {
       } else if (this.$tcb) {
         this.uploadPhotoToQcloud(fileIndex, fileName, fileType, photo)
       } else {
-        this.uploadFailed(fileIndex, fileName, fileType, '未配置图片上传服务')
+        this.uploadFailed(fileIndex, fileType, '未配置图片上传服务')
       }
     },
     getUserId () {
@@ -274,6 +274,7 @@ export default {
         }
       } catch (e) {
         console.error(e)
+        this.uploadFailed(fileIndex, fileType, e.message)
       }
     },
     uploadPhotoToThirdParty (fileIndex, fileName, fileType, photo, url, formKey, tokenKey) {
@@ -282,26 +283,29 @@ export default {
           const formData = new FormData()
           const xhr = new XMLHttpRequest()
           formData.append(formKey, photo)
-          xhr.setRequestHeader(tokenKey, this.config.IMAGE_CDN_TOKEN)
           xhr.onreadystatechange = () => {
             if (xhr.readyState === 4 && xhr.status === 200) {
               const uploadResult = JSON.parse(xhr.responseText)
               this.uploadCompleted(fileIndex, fileName, fileType, uploadResult.data.url)
               resolve()
+            } else {
+              this.uploadFailed(fileIndex, fileType, xhr.status)
             }
           }
           xhr.open('POST', url)
+          xhr.setRequestHeader(tokenKey, this.config.IMAGE_CDN_TOKEN)
           xhr.send(formData)
         } catch (e) {
           console.error(e)
+          this.uploadFailed(fileIndex, fileType, e.message)
         }
       })
     },
     uploadCompleted (fileIndex, fileName, fileType, fileUrl) {
       this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `![${fileName}](${fileUrl})`)
     },
-    uploadFailed (fileIndex, fileName, fileType, reason) {
-      this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `_${reason}_`)
+    uploadFailed (fileIndex, fileType, reason) {
+      this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `_上传失败：${reason}_`)
     },
     paste (text) {
       if (document.selection) {

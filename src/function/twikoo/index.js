@@ -879,6 +879,7 @@ async function sendNotice (comment) {
     noticeWeChat(comment),
     noticePushPlus(comment),
     noticeWeComPush(comment),
+    noticeDingTalkHook(comment),
     noticeQQ(comment)
   ]).catch(err => {
     console.error('邮件通知异常：', err)
@@ -929,7 +930,8 @@ async function noticeMaster (comment) {
     'SC_SENDKEY',
     'QM_SENDKEY',
     'PUSH_PLUS_TOKEN',
-    'WECOM_API_URL'
+    'WECOM_API_URL',
+    'DingTalk_WebHook_URL'
   ]
   // 判断是否存在即时消息推送配置
   const hasIMPushConfig = IM_PUSH_CONFIGS.some(item => !!config[item])
@@ -1033,6 +1035,18 @@ async function noticeWeComPush (comment) {
   const WeComApiUrl = config.WECOM_API_URL
   const sendResult = await axios.get(WeComApiUrl + WeComApiContent)
   console.log('WinxinPush 通知结果：', sendResult)
+}
+
+// 自定义钉钉WebHook通知
+async function noticeDingTalkHook (comment) {
+  if (!config.DingTalk_WebHook_URL) {
+    console.log('没有配置 DingTalk_WebHook，放弃钉钉WebHook推送')
+    return
+  }
+  if (config.BLOGGER_EMAIL === comment.mail) return
+  const DingTalkContent = config.SITE_NAME + '有新评论啦！🎉🎉' + '\n\n' + '@' + comment.nick + ' 说：' + $(comment.comment).text() + '\n' + 'E-mail: ' + comment.mail + '\n' + 'IP: ' + comment.ip + '\n' + '点此查看完整内容：' + appendHashToUrl(comment.href || config.SITE_URL + comment.url, comment.id)
+  const sendResult = await axios.post(config.DingTalk_WebHook_URL, { msgtype: 'text', text: { content: DingTalkContent } })
+  console.log('钉钉WebHook 通知结果：', sendResult)
 }
 
 // QQ通知

@@ -369,6 +369,12 @@ export default {
     '自行搭建的企業微信通知 API 接口 URL，免費不限量，參考教程：https://guole.fun/posts/626/',
     'Self-built enterprise WeChat notification API interface URL, free unlimited, refer to the tutorial: https://guole.fun/posts/626/'
   ],
+  [S.ACI + '_DingTalk_WebHook_URL']: [
+    '钉钉 WebHook API 接口 URL，参考教程：https://blog.ljcbaby.top/article/Twikoo-DingTalk/',
+    '钉钉 WebHooK API 接口 URL，參考教程：https://blog.ljcbaby.top/article/Twikoo-DingTalk/',
+    '钉钉 WebHooK API 接口 URL，參考教程：https://blog.ljcbaby.top/article/Twikoo-DingTalk/',
+    'DingTalk Webhook API interface URL, refer to the tutorial (Chiinese Only): https://blog.ljcbaby.top/article/Twikoo-DingTalk/ '
+  ],
   [S.ACI + '_SENDER_EMAIL']: [
     '邮件通知邮箱地址。对于大多数邮箱服务商，SENDER_EMAIL 必须和 SMTP_USER 保持一致，否则无法发送邮件。',
     '郵件通知郵箱地址。對於大多數郵箱服務商，SENDER_EMAIL 必須和 SMTP_USER 保持一致，否則無法發送郵件。',

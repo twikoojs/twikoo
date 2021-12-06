@@ -1182,7 +1182,6 @@ async function parse (comment) {
     ip: auth.getClientIP(),
     master: isBloggerMail,
     url: comment.url,
-    avatar: getAvatar(comment),
     href: comment.href,
     comment: DOMPurify.sanitize(comment.comment, { FORBID_TAGS: ['style'], FORBID_ATTR: ['style'] }),
     pid: comment.pid ? comment.pid : comment.rid,

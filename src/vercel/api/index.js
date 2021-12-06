@@ -942,7 +942,7 @@ async function noticeMaster (comment) {
     'QM_SENDKEY',
     'PUSH_PLUS_TOKEN',
     'WECOM_API_URL',
-    'DingTalk_WebHook_URL'
+    'DINGTALK_WEBHOOK_URL'
   ]
   // 判断是否存在即时消息推送配置
   const hasIMPushConfig = IM_PUSH_CONFIGS.some(item => !!config[item])
@@ -1056,13 +1056,13 @@ async function noticeWeComPush (comment) {
 
 // 自定义钉钉WebHook通知
 async function noticeDingTalkHook (comment) {
-  if (!config.DingTalk_WebHook_URL) {
+  if (!config.DINGTALK_WEBHOOK_URL) {
     console.log('没有配置 DingTalk_WebHook，放弃钉钉WebHook推送')
     return
   }
   if (config.BLOGGER_EMAIL === comment.mail) return
   const DingTalkContent = config.SITE_NAME + '有新评论啦！🎉🎉' + '\n\n' + '@' + comment.nick + ' 说：' + $(comment.comment).text() + '\n' + 'E-mail: ' + comment.mail + '\n' + 'IP: ' + comment.ip + '\n' + '点此查看完整内容：' + appendHashToUrl(comment.href || config.SITE_URL + comment.url, comment.id)
-  const sendResult = await axios.post(config.DingTalk_WebHook_URL, { msgtype: 'text', text: { content: DingTalkContent } })
+  const sendResult = await axios.post(config.DINGTALK_WEBHOOK_URL, { msgtype: 'text', text: { content: DingTalkContent } })
   console.log('钉钉WebHook 通知结果：', sendResult)
 }
 

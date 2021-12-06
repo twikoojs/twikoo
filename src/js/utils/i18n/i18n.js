@@ -375,7 +375,7 @@ export default {
     '自行搭建的企業微信通知 API 接口 URL，免費不限量，參考教程：https://guole.fun/posts/626/',
     'Self-built enterprise WeChat notification API interface URL, free unlimited, refer to the tutorial: https://guole.fun/posts/626/'
   ],
-  [S.ACI + '_DingTalk_WebHook_URL']: [
+  [S.ACI + '_DINGTALK_WEBHOOK_URL']: [
     '钉钉 WebHook API 接口 URL，参考教程：https://blog.ljcbaby.top/article/Twikoo-DingTalk/',
     '钉钉 WebHooK API 接口 URL，參考教程：https://blog.ljcbaby.top/article/Twikoo-DingTalk/',
     '钉钉 WebHooK API 接口 URL，參考教程：https://blog.ljcbaby.top/article/Twikoo-DingTalk/',

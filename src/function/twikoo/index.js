@@ -937,6 +937,9 @@ async function noticeMaster (comment) {
   if (hasIMPushConfig && config.SC_MAIL_NOTIFY !== 'true') return
   const SITE_NAME = config.SITE_NAME
   const NICK = comment.nick
+  const IMG = comment.avatar
+  const IP = comment.ip
+  const MAIL = comment.mail
   const COMMENT = comment.comment
   const SITE_URL = config.SITE_URL
   const POST_URL = appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
@@ -947,6 +950,9 @@ async function noticeMaster (comment) {
       .replace(/\${SITE_URL}/g, SITE_URL)
       .replace(/\${SITE_NAME}/g, SITE_NAME)
       .replace(/\${NICK}/g, NICK)
+      .replace(/\${IMG}/g, IMG)
+      .replace(/\${IP}/g, IP)
+      .replace(/\${MAIL}/g, MAIL)
       .replace(/\${COMMENT}/g, COMMENT)
       .replace(/\${POST_URL}/g, POST_URL)
   } else {
@@ -1084,6 +1090,8 @@ async function noticeReply (currentComment) {
   // 回复自己的评论，不邮件通知
   if (currentComment.mail === parentComment.mail) return
   const PARENT_NICK = parentComment.nick
+  const IMG = currentComment.avatar
+  const PARENT_IMG = parentComment.avatar
   const SITE_NAME = config.SITE_NAME
   const NICK = currentComment.nick
   const COMMENT = currentComment.comment
@@ -1094,6 +1102,8 @@ async function noticeReply (currentComment) {
   let emailContent
   if (config.MAIL_TEMPLATE) {
     emailContent = config.MAIL_TEMPLATE
+      .replace(/\${IMG}/g, IMG)
+      .replace(/\${PARENT_IMG}/g, PARENT_IMG)
       .replace(/\${SITE_URL}/g, SITE_URL)
       .replace(/\${SITE_NAME}/g, SITE_NAME)
       .replace(/\${PARENT_NICK}/g, PARENT_NICK)
@@ -1158,6 +1168,7 @@ async function parse (comment) {
     ip: auth.getClientIP(),
     master: isBloggerMail,
     url: comment.url,
+    avatar: getAvatar(comment),
     href: comment.href,
     comment: DOMPurify.sanitize(comment.comment, { FORBID_TAGS: ['style'], FORBID_ATTR: ['style'] }),
     pid: comment.pid ? comment.pid : comment.rid,

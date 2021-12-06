@@ -244,10 +244,12 @@ export default {
       const fileIndex = `${Date.now()}-${userId}`
       const fileName = nameSplit.join('.')
       this.paste(this.getImagePlaceholder(fileIndex, fileType))
-      if (this.config.IMAGE_CDN === '7bu' || !this.$tcb) {
-        this.uploadPhotoTo7Bu(fileIndex, fileName, fileType, photo)
-      } else {
+      if (this.config.IMAGE_CDN === '7bu' && this.config.IMAGE_CDN_TOKEN) {
+        this.uploadPhotoToThirdParty(fileIndex, fileName, fileType, photo, 'https://7bu.top/api/upload')
+      } else if (this.$tcb) {
         this.uploadPhotoToQcloud(fileIndex, fileName, fileType, photo)
+      } else {
+        this.uploadFailed(fileIndex, fileType, '未配置图片上传服务')
       }
     },
     getUserId () {
@@ -266,32 +268,44 @@ export default {
         if (uploadResult.fileID) {
           const tempUrlResult = await this.$tcb.app.getTempFileURL({ fileList: [uploadResult.fileID] })
           const tempFileUrl = tempUrlResult.fileList[0].tempFileURL
-          this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `![${fileName}](${tempFileUrl})`)
+          this.uploadCompleted(fileIndex, fileName, fileType, tempFileUrl)
         }
       } catch (e) {
         console.error(e)
+        this.uploadFailed(fileIndex, fileType, e.message)
       }
     },
-    uploadPhotoTo7Bu (fileIndex, fileName, fileType, photo) {
+    uploadPhotoToThirdParty (fileIndex, fileName, fileType, photo, url) {
       return new Promise((resolve) => {
         try {
-          const url = 'https://7bu.top/api/upload'
           const formData = new FormData()
           const xhr = new XMLHttpRequest()
           formData.append('image', photo)
           xhr.onreadystatechange = () => {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-              const uploadResult = JSON.parse(xhr.responseText)
-              this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `![${fileName}](${uploadResult.data.url})`)
-              resolve()
+            if (xhr.readyState === 4) {
+              if (xhr.status === 200) {
+                const uploadResult = JSON.parse(xhr.responseText)
+                this.uploadCompleted(fileIndex, fileName, fileType, uploadResult.data.url)
+                resolve()
+              } else {
+                this.uploadFailed(fileIndex, fileType, xhr.status)
+              }
             }
           }
           xhr.open('POST', url)
+          xhr.setRequestHeader('token', this.config.IMAGE_CDN_TOKEN)
           xhr.send(formData)
         } catch (e) {
           console.error(e)
+          this.uploadFailed(fileIndex, fileType, e.message)
         }
       })
+    },
+    uploadCompleted (fileIndex, fileName, fileType, fileUrl) {
+      this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `![${fileName}](${fileUrl})`)
+    },
+    uploadFailed (fileIndex, fileType, reason) {
+      this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `_上传失败：${reason}_`)
     },
     paste (text) {
       if (document.selection) {

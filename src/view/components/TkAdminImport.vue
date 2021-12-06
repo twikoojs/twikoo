@@ -66,6 +66,7 @@ export default {
           await this.importFileToVercel(filePath)
         }
       } catch (e) {
+        console.error(e)
         this.log(e.message)
       }
       this.loading = false

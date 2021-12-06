@@ -12,6 +12,7 @@ class Config {
     this.DEFAULT_GRAVATAR = model.DEFAULT_GRAVATAR
     this.SHOW_IMAGE = model.SHOW_IMAGE
     this.IMAGE_CDN = model.IMAGE_CDN
+    this.IMAGE_CDN_TOKEN = model.IMAGE_CDN_TOKEN
     this.SHOW_EMOTION = model.SHOW_EMOTION
     this.EMOTION_CDN = model.EMOTION_CDN
     this.COMMENT_PLACEHOLDER = model.COMMENT_PLACEHOLDER

@@ -1,5 +1,5 @@
 /*!
- * Twikoo vercel function v1.4.11
+ * Twikoo vercel function v1.4.12
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  */
@@ -27,7 +27,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.4.11'
+const VERSION = '1.4.12'
 const RES_CODE = {
   SUCCESS: 0,
   NO_PARAM: 100,
@@ -950,6 +950,9 @@ async function noticeMaster (comment) {
   if (hasIMPushConfig && config.SC_MAIL_NOTIFY !== 'true') return
   const SITE_NAME = config.SITE_NAME
   const NICK = comment.nick
+  const IMG = comment.avatar
+  const IP = comment.ip
+  const MAIL = comment.mail
   const COMMENT = comment.comment
   const SITE_URL = config.SITE_URL
   const POST_URL = appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
@@ -960,6 +963,9 @@ async function noticeMaster (comment) {
       .replace(/\${SITE_URL}/g, SITE_URL)
       .replace(/\${SITE_NAME}/g, SITE_NAME)
       .replace(/\${NICK}/g, NICK)
+      .replace(/\${IMG}/g, IMG)
+      .replace(/\${IP}/g, IP)
+      .replace(/\${MAIL}/g, MAIL)
       .replace(/\${COMMENT}/g, COMMENT)
       .replace(/\${POST_URL}/g, POST_URL)
   } else {
@@ -1107,6 +1113,8 @@ async function noticeReply (currentComment) {
   // 回复自己的评论，不邮件通知
   if (currentComment.mail === parentComment.mail) return
   const PARENT_NICK = parentComment.nick
+  const IMG = currentComment.avatar
+  const PARENT_IMG = parentComment.avatar
   const SITE_NAME = config.SITE_NAME
   const NICK = currentComment.nick
   const COMMENT = currentComment.comment
@@ -1117,6 +1125,8 @@ async function noticeReply (currentComment) {
   let emailContent
   if (config.MAIL_TEMPLATE) {
     emailContent = config.MAIL_TEMPLATE
+      .replace(/\${IMG}/g, IMG)
+      .replace(/\${PARENT_IMG}/g, PARENT_IMG)
       .replace(/\${SITE_URL}/g, SITE_URL)
       .replace(/\${SITE_NAME}/g, SITE_NAME)
       .replace(/\${PARENT_NICK}/g, PARENT_NICK)
@@ -1182,6 +1192,7 @@ async function parse (comment) {
     ip: request.headers['x-real-ip'],
     master: isBloggerMail,
     url: comment.url,
+    avatar: getAvatar(comment),
     href: comment.href,
     comment: DOMPurify.sanitize(comment.comment, { FORBID_TAGS: ['style'], FORBID_ATTR: ['style'] }),
     pid: comment.pid ? comment.pid : comment.rid,
@@ -1472,7 +1483,7 @@ function getAvatar (comment) {
   if (comment.avatar) {
     return comment.avatar
   } else {
-    const gravatarCdn = config.GRAVATAR_CDN || 'cn.gravatar.com'
+    const gravatarCdn = config.GRAVATAR_CDN || 'cravatar.cn'
     const defaultGravatar = config.DEFAULT_GRAVATAR || 'identicon'
     const mailMd5 = comment.mailMd5 || md5(comment.mail)
     return `https://${gravatarCdn}/avatar/${mailMd5}?d=${defaultGravatar}`
@@ -1518,6 +1529,7 @@ async function getConfig () {
       DEFAULT_GRAVATAR: config.DEFAULT_GRAVATAR,
       SHOW_IMAGE: config.SHOW_IMAGE || 'true',
       IMAGE_CDN: config.IMAGE_CDN,
+      IMAGE_CDN_TOKEN: config.IMAGE_CDN_TOKEN,
       SHOW_EMOTION: config.SHOW_EMOTION || 'true',
       EMOTION_CDN: config.EMOTION_CDN,
       COMMENT_PLACEHOLDER: config.COMMENT_PLACEHOLDER,

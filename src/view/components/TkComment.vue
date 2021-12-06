@@ -1,5 +1,5 @@
 <template>
-  <div class="tk-comment" :id="comment.id" ref="tk-comment">
+  <div class="tk-comment" :id="comment.id" :class="{ 'tk-master': comment.master }" ref="tk-comment">
     <tk-avatar :config="config"
         :nick="comment.nick"
         :avatar="comment.avatar"

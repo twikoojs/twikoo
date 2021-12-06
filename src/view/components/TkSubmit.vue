@@ -244,9 +244,7 @@ export default {
       const fileIndex = `${Date.now()}-${userId}`
       const fileName = nameSplit.join('.')
       this.paste(this.getImagePlaceholder(fileIndex, fileType))
-      if (this.config.IMAGE_CDN === 'smms' && this.config.IMAGE_CDN_TOKEN) {
-        this.uploadPhotoToThirdParty(fileIndex, fileName, fileType, photo, 'https://sm.ms/upload', 'smfile', 'Authorization')
-      } else if (this.config.IMAGE_CDN === '7bu' && this.config.IMAGE_CDN_TOKEN) {
+      if (this.config.IMAGE_CDN === '7bu' && this.config.IMAGE_CDN_TOKEN) {
         this.uploadPhotoToThirdParty(fileIndex, fileName, fileType, photo, 'https://7bu.top/api/upload', 'image', 'token')
       } else if (this.$tcb) {
         this.uploadPhotoToQcloud(fileIndex, fileName, fileType, photo)
@@ -277,23 +275,25 @@ export default {
         this.uploadFailed(fileIndex, fileType, e.message)
       }
     },
-    uploadPhotoToThirdParty (fileIndex, fileName, fileType, photo, url, formKey, tokenKey) {
+    uploadPhotoToThirdParty (fileIndex, fileName, fileType, photo, url, formKey) {
       return new Promise((resolve) => {
         try {
           const formData = new FormData()
           const xhr = new XMLHttpRequest()
-          formData.append(formKey, photo)
+          formData.append('image', photo)
           xhr.onreadystatechange = () => {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-              const uploadResult = JSON.parse(xhr.responseText)
-              this.uploadCompleted(fileIndex, fileName, fileType, uploadResult.data.url)
-              resolve()
-            } else {
-              this.uploadFailed(fileIndex, fileType, xhr.status)
+            if (xhr.readyState === 4) {
+              if (xhr.status === 200) {
+                const uploadResult = JSON.parse(xhr.responseText)
+                this.uploadCompleted(fileIndex, fileName, fileType, uploadResult.data.url)
+                resolve()
+              } else {
+                this.uploadFailed(fileIndex, fileType, xhr.status)
+              }
             }
           }
           xhr.open('POST', url)
-          xhr.setRequestHeader(tokenKey, this.config.IMAGE_CDN_TOKEN)
+          xhr.setRequestHeader('token', this.config.IMAGE_CDN_TOKEN)
           xhr.send(formData)
         } catch (e) {
           console.error(e)

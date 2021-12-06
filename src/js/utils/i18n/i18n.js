@@ -268,16 +268,16 @@ export default {
     'Code highlighting theme. Select from: default、coy、dark、funky、okaidia、solarizedlight、tomorrow、twilight. Visit https://prismjs.com for preview. If your theme conflicts with code highlighting, please set it to none. Default: none.'
   ],
   [S.ACI + '_IMAGE_CDN']: [
-    '插入图片所使用的图床，目前支持：7bu、smms、qcloud',
-    '插入圖片所使用的圖床，目前支持：7bu、smms、qcloud',
-    '插入圖片所使用的圖床，目前支援：7bu、smms、qcloud',
-    'The image bed for image uploading. Select from: 7bu、smms、qcloud'
+    '插入图片所使用的图床，目前支持：7bu、qcloud',
+    '插入圖片所使用的圖床，目前支持：7bu、qcloud',
+    '插入圖片所使用的圖床，目前支援：7bu、qcloud',
+    'The image bed for image uploading. Select from: 7bu、qcloud'
   ],
   [S.ACI + '_IMAGE_CDN_TOKEN']: [
-    '7bu 或 smms 的图床 token',
-    '7bu 或 smms 的图床 token',
-    '7bu 或 smms 的图床 token',
-    'The image bed token for 7bu or smms.'
+    '7bu 的图床 token',
+    '7bu 的图床 token',
+    '7bu 的图床 token',
+    'The image bed token for 7bu.'
   ],
   [S.ACI + '_LIMIT_PER_MINUTE']: [
     '每个 IP 每 10 分钟最多发表多少条评论，默认：0（无限制）',

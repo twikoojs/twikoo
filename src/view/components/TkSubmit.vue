@@ -245,7 +245,7 @@ export default {
       const fileName = nameSplit.join('.')
       this.paste(this.getImagePlaceholder(fileIndex, fileType))
       if (this.config.IMAGE_CDN === '7bu' && this.config.IMAGE_CDN_TOKEN) {
-        this.uploadPhotoToThirdParty(fileIndex, fileName, fileType, photo, 'https://7bu.top/api/upload', 'image', 'token')
+        this.uploadPhotoToThirdParty(fileIndex, fileName, fileType, photo, 'https://7bu.top/api/upload')
       } else if (this.$tcb) {
         this.uploadPhotoToQcloud(fileIndex, fileName, fileType, photo)
       } else {
@@ -275,7 +275,7 @@ export default {
         this.uploadFailed(fileIndex, fileType, e.message)
       }
     },
-    uploadPhotoToThirdParty (fileIndex, fileName, fileType, photo, url, formKey) {
+    uploadPhotoToThirdParty (fileIndex, fileName, fileType, photo, url) {
       return new Promise((resolve) => {
         try {
           const formData = new FormData()

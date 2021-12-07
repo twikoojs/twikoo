@@ -939,7 +939,7 @@ async function noticeMaster (comment) {
   if (hasIMPushConfig && config.SC_MAIL_NOTIFY !== 'true') return
   const SITE_NAME = config.SITE_NAME
   const NICK = comment.nick
-  const IMG = comment.avatar
+  const IMG = getAvatar(comment)
   const IP = comment.ip
   const MAIL = comment.mail
   const COMMENT = comment.comment
@@ -1104,8 +1104,8 @@ async function noticeReply (currentComment) {
   // 回复自己的评论，不邮件通知
   if (currentComment.mail === parentComment.mail) return
   const PARENT_NICK = parentComment.nick
-  const IMG = currentComment.avatar
-  const PARENT_IMG = parentComment.avatar
+  const IMG = getAvatar(currentComment)
+  const PARENT_IMG = getAvatar(parentComment)
   const SITE_NAME = config.SITE_NAME
   const NICK = currentComment.nick
   const COMMENT = currentComment.comment

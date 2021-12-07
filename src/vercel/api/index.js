@@ -1,5 +1,5 @@
 /*!
- * Twikoo vercel function v1.4.12
+ * Twikoo vercel function v1.4.13
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  */
@@ -27,7 +27,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.4.12'
+const VERSION = '1.4.13'
 const RES_CODE = {
   SUCCESS: 0,
   NO_PARAM: 100,
@@ -852,7 +852,7 @@ async function commentSubmit (event) {
       axios.post(`https://${process.env.VERCEL_URL}`, {
         event: 'POST_SUBMIT',
         comment
-      }, { headers: { 'x-twikoo-recursion': 'true' } }),
+      }, { headers: { 'x-twikoo-recursion': config.ADMIN_PASS || 'true' } }),
       // 如果超过 5 秒还没收到异步返回，直接继续，减少用户等待的时间
       new Promise((resolve) => setTimeout(resolve, 5000))
     ])
@@ -950,7 +950,7 @@ async function noticeMaster (comment) {
   if (hasIMPushConfig && config.SC_MAIL_NOTIFY !== 'true') return
   const SITE_NAME = config.SITE_NAME
   const NICK = comment.nick
-  const IMG = comment.avatar
+  const IMG = getAvatar(comment)
   const IP = comment.ip
   const MAIL = comment.mail
   const COMMENT = comment.comment
@@ -1113,8 +1113,8 @@ async function noticeReply (currentComment) {
   // 回复自己的评论，不邮件通知
   if (currentComment.mail === parentComment.mail) return
   const PARENT_NICK = parentComment.nick
-  const IMG = currentComment.avatar
-  const PARENT_IMG = parentComment.avatar
+  const IMG = getAvatar(currentComment)
+  const PARENT_IMG = getAvatar(parentComment)
   const SITE_NAME = config.SITE_NAME
   const NICK = currentComment.nick
   const COMMENT = currentComment.comment
@@ -1192,7 +1192,6 @@ async function parse (comment) {
     ip: request.headers['x-real-ip'],
     master: isBloggerMail,
     url: comment.url,
-    avatar: getAvatar(comment),
     href: comment.href,
     comment: DOMPurify.sanitize(comment.comment, { FORBID_TAGS: ['style'], FORBID_ATTR: ['style'] }),
     pid: comment.pid ? comment.pid : comment.rid,
@@ -1626,7 +1625,7 @@ async function isAdmin () {
 
 // 判断是否为递归调用（即云函数调用自身）
 function isRecursion () {
-  return request.headers['x-twikoo-recursion'] === 'true'
+  return request.headers['x-twikoo-recursion'] === (config.ADMIN_PASS || 'true')
 }
 
 // 建立数据库 collections

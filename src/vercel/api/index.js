@@ -1590,6 +1590,7 @@ async function readConfig () {
 
 // 写入配置
 async function writeConfig (newConfig) {
+  if (!Object.keys(newConfig).length) return 0
   console.log('写入配置：', newConfig)
   try {
     let updated

@@ -187,7 +187,7 @@ export default {
           this.$emit('load')
           this.saveDraft()
         } else {
-          throw new Error(sendResult && sendResult.result)
+          throw new Error(sendResult.result.message)
         }
       } catch (e) {
         logger.error('评论失败', e)

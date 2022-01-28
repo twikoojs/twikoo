@@ -21,7 +21,7 @@
     "crypto-js": "^4.0.0",
     "dompurify": "^2.2.6",
     "jsdom": "^16.4.0",
-    "marked": "^2.0.0",
+    "marked": "^4.0.12",
     "nodemailer": "^6.4.17",
     "querystring": "^0.2.0",
     "tencentcloud-sdk-nodejs": "^4.0.65",

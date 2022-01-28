@@ -1073,7 +1073,7 @@ async function noticeQQ (comment) {
     return
   }
   if (config.BLOGGER_EMAIL === comment.mail) return
-  const pushContent = getIMPushContent(comment)
+  const pushContent = getIMPushContent(comment, false)
   const qmApiUrl = 'https://qmsg.zendee.cn'
   const qmApiParam = {
     msg: pushContent.subject + '\n' + pushContent.content.replace(/<br>/g, '\n')
@@ -1085,7 +1085,7 @@ async function noticeQQ (comment) {
 }
 
 // 即时消息推送内容获取
-function getIMPushContent (comment) {
+function getIMPushContent (comment, withUrl = true) {
   const SITE_NAME = config.SITE_NAME
   const NICK = comment.nick
   const MAIL = comment.mail
@@ -1094,7 +1094,11 @@ function getIMPushContent (comment) {
   const SITE_URL = config.SITE_URL
   const POST_URL = appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
   const subject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}有新评论了`
-  const content = `评论人：${NICK}(${MAIL})<br>评论人IP：${IP}<br>评论内容：${COMMENT}<br>您可以点击 ${POST_URL} 查看回复的完整內容`
+  let content = `评论人：${NICK}(${MAIL})<br>评论人IP：${IP}<br>评论内容：${COMMENT}`
+  // Qmsg 会过滤带网址的推送消息，所以不能带网址
+  if (withUrl) {
+    content += `<br>您可以点击 ${POST_URL} 查看回复的完整內容`
+  }
   return {
     subject,
     content

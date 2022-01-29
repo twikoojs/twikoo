@@ -880,6 +880,7 @@ async function sendNotice (comment) {
     noticePushPlus(comment),
     noticeWeComPush(comment),
     noticeDingTalkHook(comment),
+    noticePushdeer(comment),
     noticeQQ(comment)
   ]).catch(err => {
     console.error('邮件通知异常：', err)
@@ -931,7 +932,8 @@ async function noticeMaster (comment) {
     'QM_SENDKEY',
     'PUSH_PLUS_TOKEN',
     'WECOM_API_URL',
-    'DINGTALK_WEBHOOK_URL'
+    'DINGTALK_WEBHOOK_URL',
+    'PUSHDEER_KEY'
   ]
   // 判断是否存在即时消息推送配置
   const hasIMPushConfig = IM_PUSH_CONFIGS.some(item => !!config[item])
@@ -1062,7 +1064,7 @@ async function noticeQQ (comment) {
     return
   }
   if (config.BLOGGER_EMAIL === comment.mail) return
-  const pushContent = getIMPushContent(comment, false)
+  const pushContent = getIMPushContent(comment, { withUrl: false })
   const qmApiUrl = 'https://qmsg.zendee.cn'
   const qmApiParam = {
     msg: pushContent.subject + '\n' + pushContent.content.replace(/<br>/g, '\n')
@@ -1073,8 +1075,20 @@ async function noticeQQ (comment) {
   console.log('QQ通知结果：', sendResult)
 }
 
+async function noticePushdeer (comment) {
+  if (!config.PUSHDEER_KEY) return
+  if (config.BLOGGER_EMAIL === comment.mail) return
+  const pushContent = getIMPushContent(comment, { markdown: true })
+  const sendResult = await axios.post('https://api2.pushdeer.com/message/push', {
+    pushkey: config.PUSHDEER_KEY,
+    text: pushContent.subject,
+    desp: pushContent.content
+  })
+  console.log('Pushdeer 通知结果：', sendResult)
+}
+
 // 即时消息推送内容获取
-function getIMPushContent (comment, withUrl = true) {
+function getIMPushContent (comment, { withUrl = true, markdown = false }) {
   const SITE_NAME = config.SITE_NAME
   const NICK = comment.nick
   const MAIL = comment.mail
@@ -1086,7 +1100,10 @@ function getIMPushContent (comment, withUrl = true) {
   let content = `评论人：${NICK}(${MAIL})<br>评论人IP：${IP}<br>评论内容：${COMMENT}`
   // Qmsg 会过滤带网址的推送消息，所以不能带网址
   if (withUrl) {
-    content += `<br>您可以点击 ${POST_URL} 查看回复的完整內容`
+    content += `<br>您可以点击 ${markdown ? `[${POST_URL}](${POST_URL})` : POST_URL} 查看回复的完整內容`
+  }
+  if (markdown) {
+    content = content.replace(/<br>/g, '\n\n')
   }
   return {
     subject,

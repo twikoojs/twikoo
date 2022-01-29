@@ -3,17 +3,17 @@
     <template #page-bottom>
       <div class="page-edit">
         <!-- KaTeX -->
-        <link rel="stylesheet" href="https://unpkg.zhimg.com/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
-        <script defer src="https://unpkg.zhimg.com/katex@0.12.0/dist/katex.min.js" integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
-        <script defer src="https://unpkg.zhimg.com/katex@0.12.0/dist/contrib/auto-render.min.js" integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js" integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js" integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
 
         <!-- lightGallery -->
-        <link rel="stylesheet" href="https://unpkg.zhimg.com/lightgallery@2.1.8/css/lightgallery.css">
-        <script src="https://unpkg.zhimg.com/lightgallery@2.1.8/lightgallery.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.1.8/css/lightgallery.css">
+        <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.1.8/lightgallery.min.js"></script>
 
         <!-- Twikoo -->
         <div id="twikoo"></div>
-        <script src="https://unpkg.zhimg.com/twikoo@1.4.16/dist/twikoo.all.min.js" ref="twikooJs"></script>
+        <script src="https://cdn.jsdelivr.net/npm/twikoo@1.4.16/dist/twikoo.all.min.js" ref="twikooJs"></script>
       </div>
     </template>
   </ParentLayout>

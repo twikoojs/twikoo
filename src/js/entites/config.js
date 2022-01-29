@@ -38,6 +38,7 @@ class Config {
     this.PUSH_PLUS_TOKEN = model.PUSH_PLUS_TOKEN
     this.WECOM_API_URL = model.WECOM_API_URL
     this.DINGTALK_WEBHOOK_URL = model.DINGTALK_WEBHOOK_URL
+    this.PUSHDEER_KEY = model.PUSHDEER_KEY
     this.SENDER_NAME = model.SENDER_NAME
     this.SENDER_EMAIL = model.SENDER_EMAIL
     this.BLOGGER_EMAIL = model.BLOGGER_EMAIL

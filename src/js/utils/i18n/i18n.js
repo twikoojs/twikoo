@@ -333,6 +333,12 @@ export default {
     '推送加（pushplus.hxtrip.com）推送的 Token',
     'Push+ (pushplus.hxtrip.com) Token.'
   ],
+  [S.ACI + '_PUSHDEER_KEY']: [
+    'PushDeer 推送 key',
+    'PushDeer 推送 key',
+    'PushDeer 推送 key',
+    'PushDeer push key.'
+  ],
   [S.ACI + '_QCLOUD_SECRET_ID']: [
     '腾讯云 secret id，用于垃圾评论检测。同时设置腾讯云和 Akismet 时，只有腾讯云会生效。注册：https://twikoo.js.org/cms.html',
     '騰訊雲 secret id，用於垃圾評論檢測。同時設定騰訊雲和 Akismet 時，只有騰訊雲會生效。註冊：https://twikoo.js.org/cms.html',
@@ -361,7 +367,7 @@ export default {
     '是否同时通过 IM 和邮件 2 种方式通知博主，默认只通过 IM 通知博主，默认：false',
     '是否同時通過 IM 和郵件 2 種方式通知博主，預設只通過 IM 通知博主，預設：false',
     '是否同時通過 IM 和郵件 2 種方式通知博主，預設只通過 IM 通知博主，預設：false',
-    'Whether to notify admin via WeChat and email at the same time, the default is to notify admin only via WeChat. Default: false.'
+    'Whether to notify admin via IM and email at the same time, the default is to notify admin only via IM. Default: false.'
   ],
   [S.ACI + '_SC_SENDKEY']: [
     'Server酱（sc.ftqq.com）微信推送的 SCKEY',

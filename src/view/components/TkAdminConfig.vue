@@ -97,6 +97,7 @@ export default {
             { key: 'PUSH_PLUS_TOKEN', desc: t('ADMIN_CONFIG_ITEM_PUSH_PLUS_TOKEN'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}f8ae2b8a107a408b803896a0ec012345`, value: '' },
             { key: 'WECOM_API_URL', desc: t('ADMIN_CONFIG_ITEM_WECOM_API_URL'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}https://xxx.ap-shanghai.app.tcloudbase.com/自定义api云函数?id=ww***&secert=Ne***&agentId=10***03&msg=`, value: '' },
             { key: 'DINGTALK_WEBHOOK_URL', desc: t('ADMIN_CONFIG_ITEM_DINGTALK_WEBHOOK_URL'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}https://oapi.dingtalk.com/robot/send?access_token=***`, value: '' },
+            { key: 'PUSHDEER_KEY', desc: t('ADMIN_CONFIG_ITEM_PUSHDEER_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}PDU431TfFHZICvR6lJrFBswSRN1cJB6G5X12345`, value: '' },
             { key: 'SC_MAIL_NOTIFY', desc: t('ADMIN_CONFIG_ITEM_SC_MAIL_NOTIFY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}true`, value: '' }
           ]
         },

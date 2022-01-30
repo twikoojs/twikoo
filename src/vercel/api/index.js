@@ -894,7 +894,7 @@ async function sendNotice (comment) {
     noticeDingTalkHook(comment),
     noticePushdeer(comment),
     noticeQQ(comment),
-    noticeQQAPI(comment) 
+    noticeQQAPI(comment)
   ]).catch(console.error)
   return { code: RES_CODE.SUCCESS }
 }
@@ -1098,6 +1098,7 @@ async function noticePushdeer (comment) {
   })
   console.log('Pushdeer 通知结果：', sendResult)
 }
+
 // QQ私有化API通知
 async function noticeQQAPI (comment) {
   if (!config.QQ_API) {
@@ -1112,7 +1113,6 @@ async function noticeQQAPI (comment) {
   const sendResult = await axios.post(`${config.QQ_API}`, qs.stringify(qqApiParam))
   console.log('QQ私有化api通知结果：', sendResult)
 }
-
 
 // 即时消息推送内容获取
 function getIMPushContent (comment, { withUrl = true, markdown = false } = {}) {

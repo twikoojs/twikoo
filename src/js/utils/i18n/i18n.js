@@ -357,7 +357,7 @@ export default {
     'Qmsg醬（qmsg.zendee.cn）QQ推送的 KEY',
     'Qmsg chan (qmsg.zendee.cn) KEY for QQ notification.'
   ],
-    [S.ACI + '_QQ_API']: [
+  [S.ACI + '_QQ_API']: [
     '私有化QQ推送API部署',
     '私有化QQ推送API部署',
     '私有化QQ推送API部署',

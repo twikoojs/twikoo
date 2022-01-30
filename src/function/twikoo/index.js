@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v1.4.16
+ * Twikoo cloudbase function v1.4.17
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  */
@@ -31,7 +31,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.4.16'
+const VERSION = '1.4.17'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -1104,7 +1104,7 @@ async function noticeQQAPI (comment) {
 
 
 // 即时消息推送内容获取
-function getIMPushContent (comment, { withUrl = true, markdown = false }) {
+function getIMPushContent (comment, { withUrl = true, markdown = false } = {}) {
   const SITE_NAME = config.SITE_NAME
   const NICK = comment.nick
   const MAIL = comment.mail

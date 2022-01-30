@@ -48,6 +48,8 @@ A simple, safe, free comment system based on Tencent CloudBase (tcb).
 * 支持邮件提醒（访客和博主）
 * 支持微信提醒（仅针对博主，基于 [Server酱](https://sc.ftqq.com/3.version)，需自行注册）
 * 支持 QQ 提醒（仅针对博主，基于 [Qmsg酱](https://qmsg.zendee.cn/)，需自行注册）
+* 支持 QQ 提醒（针对博主QQ或者群，基于 [go-cqhttp](https://docs.go-cqhttp.org/)，需自己有服务器）
+
 
 ### 个性
 

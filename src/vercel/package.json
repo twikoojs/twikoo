@@ -1,6 +1,6 @@
 {
   "name": "twikoo-vercel",
-  "version": "1.4.13",
+  "version": "1.4.17",
   "description": "A simple comment system based on Tencent CloudBase (tcb).",
   "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
   "license": "MIT",
@@ -19,7 +19,7 @@
     "crypto-js": "^4.0.0",
     "dompurify": "^2.2.6",
     "jsdom": "^16.4.0",
-    "marked": "^2.0.0",
+    "marked": "^4.0.12",
     "mongodb": "^3.6.3",
     "nodemailer": "^6.4.17",
     "querystring": "^0.2.0",

@@ -1,6 +1,6 @@
 {
   "name": "twikoo",
-  "version": "1.4.13",
+  "version": "1.4.17",
   "description": "A simple comment system based on Tencent CloudBase (tcb).",
   "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
   "license": "MIT",
@@ -48,7 +48,7 @@
     "eslint-plugin-promise": "^5.1.1",
     "eslint-plugin-standard": "^4.1.0",
     "eslint-plugin-vue": "^8.0.3",
-    "marked": "^4.0.1",
+    "marked": "^4.0.12",
     "owo": "^1.0.2",
     "prismjs": "^1.25.0",
     "svg-inline-loader": "^0.8.2",

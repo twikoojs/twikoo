@@ -1,5 +1,5 @@
 /*!
- * Twikoo vercel function v1.4.17
+ * Twikoo vercel function v1.4.18
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  */
@@ -27,7 +27,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.4.17'
+const VERSION = '1.4.18'
 const RES_CODE = {
   SUCCESS: 0,
   NO_PARAM: 100,
@@ -1115,7 +1115,7 @@ async function noticeQQAPI (comment) {
 }
 
 // 即时消息推送内容获取
-function getIMPushContent (comment, { withUrl = true, markdown = false } = {}) {
+function getIMPushContent (comment, { withUrl = true, markdown = false, html = false } = {}) {
   const SITE_NAME = config.SITE_NAME
   const NICK = comment.nick
   const MAIL = comment.mail
@@ -1124,10 +1124,13 @@ function getIMPushContent (comment, { withUrl = true, markdown = false } = {}) {
   const SITE_URL = config.SITE_URL
   const POST_URL = appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
   const subject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}有新评论了`
-  let content = `评论人：${NICK}(${MAIL})<br>评论人IP：${IP}<br>评论内容：${COMMENT}`
+  let content = `评论人：${NICK}(${MAIL})<br>评论人IP：${IP}<br>评论内容：${COMMENT}<br>`
   // Qmsg 会过滤带网址的推送消息，所以不能带网址
   if (withUrl) {
-    content += `<br>您可以点击 ${markdown ? `[${POST_URL}](${POST_URL})` : POST_URL} 查看回复的完整內容`
+    content += `原文链接：${markdown ? `[${POST_URL}](${POST_URL})` : POST_URL}`
+  }
+  if (html) {
+    content += `原文链接：<a href="${POST_URL}" rel="nofollow">${POST_URL}</a>`
   }
   if (markdown) {
     content = content.replace(/<br>/g, '\n\n')

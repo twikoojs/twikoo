@@ -188,6 +188,17 @@ twikoo.init({
 
 > 建议使用 CDN 引入 Twikoo 的用户在链接地址上锁定版本，以免将来 Twikoo 升级时受到非兼容性更新的影响。
 
+#### [爆米兔](https://cdn.baomitu.com/) CDN 镜像
+
+请参考爆米兔前端静态资源库 [https://cdn.baomitu.com/twikoo](https://cdn.baomitu.com/twikoo)
+
+引入的 CDN 链接替换为如下即可：
+
+```diff
+- <script src="https://cdn.jsdelivr.net/npm/twikoo@1.4.18/dist/twikoo.all.min.js"></script>
++ <script src="https://lib.baomitu.com/twikoo/1.4.18/twikoo.all.min.js" crossorigin="anonymous" integrity="sha512-czTF7AsBQKM8Udh7f2kYxoEVO6MRUGoBACWgrnURTySkkV+wBwzOiFncA2fjR2JSOJ6vaTGILYIE1laKPH8fKA=="></script>
+```
+
 ## 开启管理面板
 
 1. 进入[环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)，点击“自定义登录”右边的“私钥下载”，下载私钥文件

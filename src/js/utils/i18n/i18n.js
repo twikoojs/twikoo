@@ -328,10 +328,10 @@ export default {
     'Notifications for spam comments. Default: true.'
   ],
   [S.ACI + '_PUSH_PLUS_TOKEN']: [
-    '推送加（pushplus.hxtrip.com）推送的 Token',
-    '推送加（pushplus.hxtrip.com）推送的 Token',
-    '推送加（pushplus.hxtrip.com）推送的 Token',
-    'Push+ (pushplus.hxtrip.com) Token.'
+    '推送加（www.pushplus.plus）推送的 Token',
+    '推送加（www.pushplus.plus）推送的 Token',
+    '推送加（www.pushplus.plus）推送的 Token',
+    'Push+ (www.pushplus.plus) Token.'
   ],
   [S.ACI + '_PUSHDEER_KEY']: [
     'PushDeer 推送 key',

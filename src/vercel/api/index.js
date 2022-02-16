@@ -1032,7 +1032,7 @@ async function noticePushPlus (comment) {
   }
   if (config.BLOGGER_EMAIL === comment.mail) return
   const pushContent = getIMPushContent(comment)
-  const ppApiUrl = 'http://pushplus.hxtrip.com/send'
+  const ppApiUrl = 'http://www.pushplus.plus/send'
   const ppApiParam = {
     token: config.PUSH_PLUS_TOKEN,
     title: pushContent.subject,

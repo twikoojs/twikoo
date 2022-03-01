@@ -142,6 +142,17 @@ const renderMath = (el, options) => {
   }
 }
 
+const blobToDataURL = (blob) => {
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.onload = (evt) => {
+      const base64 = evt.target.result
+      resolve(base64)
+    }
+    reader.readAsDataURL(blob)
+  })
+}
+
 export {
   t,
   setLanguage,
@@ -164,5 +175,6 @@ export {
   getUrl,
   readAsText,
   renderLinks,
-  renderMath
+  renderMath,
+  blobToDataURL
 }

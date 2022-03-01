@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v1.4.18
+ * Twikoo cloudbase function v1.5.0
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  */
@@ -19,6 +19,7 @@ const xml2js = require('xml2js') // XML 解析
 const marked = require('marked') // Markdown 解析
 const CryptoJS = require('crypto-js') // 编解码
 const tencentcloud = require('tencentcloud-sdk-nodejs') // 腾讯云 API NODEJS SDK
+const FormData = require('form-data') // 图片上传
 
 // 云函数 SDK / tencent cloudbase sdk
 const app = tcb.init({ env: tcb.SYMBOL_CURRENT_ENV })
@@ -31,7 +32,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.4.18'
+const VERSION = '1.5.0'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -44,7 +45,8 @@ const RES_CODE = {
   PASS_NOT_MATCH: 1023,
   NEED_LOGIN: 1024,
   FORBIDDEN: 1403,
-  AKISMET_ERROR: 1030
+  AKISMET_ERROR: 1030,
+  UPLOAD_FAILED: 1040
 }
 const ADMIN_USER_ID = 'admin'
 
@@ -118,6 +120,9 @@ exports.main = async (event, context) => {
         break
       case 'EMAIL_TEST': // >= 1.4.6
         res = await emailTest(event)
+        break
+      case 'UPLOAD_IMAGE': // >= 1.5.0
+        res = await uploadImage(event)
         break
       default:
         if (event.event) {
@@ -1241,7 +1246,8 @@ async function parse (comment) {
 // 限流
 async function limitFilter () {
   // 限制每个 IP 每 10 分钟发表的评论数量
-  const limitPerMinute = parseInt(config.LIMIT_PER_MINUTE)
+  let limitPerMinute = parseInt(config.LIMIT_PER_MINUTE)
+  if (Number.isNaN(limitPerMinute)) limitPerMinute = 10
   if (limitPerMinute) {
     let count = await db
       .collection('comment')
@@ -1256,7 +1262,8 @@ async function limitFilter () {
     }
   }
   // 限制所有 IP 每 10 分钟发表的评论数量
-  const limitPerMinuteAll = parseInt(config.LIMIT_PER_MINUTE_ALL)
+  let limitPerMinuteAll = parseInt(config.LIMIT_PER_MINUTE_ALL)
+  if (Number.isNaN(limitPerMinuteAll)) limitPerMinuteAll = 10
   if (limitPerMinuteAll) {
     let count = await db
       .collection('comment')
@@ -1507,6 +1514,30 @@ async function emailTest (event) {
   } else {
     res.code = RES_CODE.NEED_LOGIN
     res.message = '请先登录'
+  }
+  return res
+}
+
+async function uploadImage (event) {
+  const { photo } = event
+  const res = {}
+  try {
+    if (!config.IMAGE_CDN_TOKEN) {
+      throw new Error('未配置图片上传服务')
+    }
+    const formData = new FormData()
+    formData.append('image', Buffer.from(photo, 'base64url'))
+    const uploadResult = await axios.post('https://7bu.top/api/upload', formData, {
+      headers: {
+        ...formData.getHeaders(),
+        token: config.IMAGE_CDN_TOKEN
+      }
+    })
+    res.data = uploadResult.data
+  } catch (e) {
+    console.error(e)
+    res.code = RES_CODE.UPLOAD_FAILED
+    res.err = e.message
   }
   return res
 }

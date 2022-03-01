@@ -1124,8 +1124,8 @@ async function noticeTelegram (comment) {
   if (config.BLOGGER_EMAIL === comment.mail) return
   const pushContent = getIMPushContent(comment, { markdown: true })
   const sendResult = await axios.post(`https://api.telegram.org/bot${config.TG_BOT_TOKEN}/sendMessage`, {
-    text: pushContent.subject + '\n' + pushContent.content.replace(/<br>/g, '\n'),
-    chat_id: config.TG_CHAT_ID,
+    text: pushContent.subject + '\n' + pushContent.content,
+    chat_id: config.TG_CHAT_ID
   })
   console.log('Telegram 通知结果：', sendResult)
 }

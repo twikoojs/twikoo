@@ -1114,8 +1114,7 @@ async function noticeTelegram (comment) {
   const pushContent = getIMPushContent(comment, { markdown: true })
   const sendResult = await axios.post(`https://api.telegram.org/bot${config.TG_BOT_TOKEN}/sendMessage`, {
     text: pushContent.subject + '\n' + pushContent.content.replace(/<br>/g, '\n'),
-    chat_id: config.TG_CHAT_ID,
-    parse_mode: 'MarkdownV2'
+    chat_id: config.TG_CHAT_ID
   })
   console.log('Telegram 通知结果：', sendResult)
 }

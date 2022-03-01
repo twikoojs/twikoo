@@ -363,6 +363,18 @@ export default {
     '私有化QQ推送API部署',
     'Private QQ push API deployment.'
   ],
+  [S.ACI + '_TG_BOT_TOKEN']: [
+    'Telegram Bot token',
+    'Telegram Bot token',
+    'Telegram Bot token',
+    'Telegram Bot token'
+  ],
+  [S.ACI + '_TG_CHAT_ID']: [
+    'Telegram Chat ID',
+    'Telegram Chat ID',
+    'Telegram Chat ID',
+    'Telegram Chat ID'
+  ],
   [S.ACI + '_REQUIRED_FIELDS']: [
     '评论必填信息，设为 nick,mail,link 代表全必填，设为 none 代表全选填，默认：nick,mail',
     '評論必填信息，設為 nick,mail,link 代表全必填，設為 none 代表全選填，預設：nick,mail',

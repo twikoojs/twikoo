@@ -882,7 +882,8 @@ async function sendNotice (comment) {
     noticeDingTalkHook(comment),
     noticePushdeer(comment),
     noticeQQ(comment),
-    noticeQQAPI(comment)
+    noticeQQAPI(comment),
+    noticeTelegram(comment)
   ]).catch(err => {
     console.error('邮件通知异常：', err)
   })
@@ -1101,6 +1102,22 @@ async function noticeQQAPI (comment) {
   }
   const sendResult = await axios.post(`${config.QQ_API}`, qs.stringify(qqApiParam))
   console.log('QQ私有化api通知结果：', sendResult)
+}
+
+// Telegram 通知
+async function noticeTelegram (comment) {
+  if (!config.TG_BOT_TOKEN || !config.TG_CHAT_ID) {
+    console.log('没有配置 Telegram，放弃 Telegram 通知')
+    return
+  }
+  if (config.BLOGGER_EMAIL === comment.mail) return
+  const pushContent = getIMPushContent(comment, { markdown: true })
+  const sendResult = await axios.post(`https://api.telegram.org/bot${config.TG_BOT_TOKEN}/sendMessage`, {
+    text: pushContent.subject + '\n' + pushContent.content.replace(/<br>/g, '\n'),
+    chat_id: config.TG_CHAT_ID,
+    parse_mode: 'MarkdownV2'
+  })
+  console.log('Telegram 通知结果：', sendResult)
 }
 
 // 即时消息推送内容获取

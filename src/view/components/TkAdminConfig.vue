@@ -92,13 +92,8 @@ export default {
         {
           name: t('ADMIN_CONFIG_CATEGORY_IM'),
           items: [
-            { key: 'SC_SENDKEY', desc: t('ADMIN_CONFIG_ITEM_SC_SENDKEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}SCT1364TKdsiGjGvyAZNYDVnuHW12345`, value: '' },
-            { key: 'QM_SENDKEY', desc: t('ADMIN_CONFIG_ITEM_QM_SENDKEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}k2ni28jkmn72tqdvqryt9827u0o9nbpok`, value: '' },
-            { key: 'QQ_API', desc: t('ADMIN_CONFIG_ITEM_QQ_API'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}http://example.com/send_private_msg?user_id=XXXXX?token=token`, value: '' },
-            { key: 'PUSH_PLUS_TOKEN', desc: t('ADMIN_CONFIG_ITEM_PUSH_PLUS_TOKEN'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}f8ae2b8a107a408b803896a0ec012345`, value: '' },
-            { key: 'WECOM_API_URL', desc: t('ADMIN_CONFIG_ITEM_WECOM_API_URL'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}https://xxx.ap-shanghai.app.tcloudbase.com/自定义api云函数?id=ww***&secert=Ne***&agentId=10***03&msg=`, value: '' },
-            { key: 'DINGTALK_WEBHOOK_URL', desc: t('ADMIN_CONFIG_ITEM_DINGTALK_WEBHOOK_URL'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}https://oapi.dingtalk.com/robot/send?access_token=***`, value: '' },
-            { key: 'PUSHDEER_KEY', desc: t('ADMIN_CONFIG_ITEM_PUSHDEER_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}PDU431TfFHZICvR6lJrFBswSRN1cJB6G5X12345`, value: '' },
+            { key: 'PUSHOO_CHANNEL', desc: t('ADMIN_CONFIG_ITEM_PUSHOO_CHANNEL'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}pushdeer`, value: '' },
+            { key: 'PUSHOO_TOKEN', desc: t('ADMIN_CONFIG_ITEM_PUSHOO_TOKEN'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}PDU431TfFHZICvR6lJrFBswSRN1cJ*****zzFvR`, value: '' },
             { key: 'SC_MAIL_NOTIFY', desc: t('ADMIN_CONFIG_ITEM_SC_MAIL_NOTIFY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}true`, value: '' }
           ]
         },

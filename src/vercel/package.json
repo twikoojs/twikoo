@@ -23,7 +23,7 @@
     "marked": "^4.0.12",
     "mongodb": "^3.6.3",
     "nodemailer": "^6.4.17",
-    "querystring": "^0.2.0",
+    "pushoo": "latest",
     "tencentcloud-sdk-nodejs": "^4.0.65",
     "uuid": "^8.3.2",
     "xml2js": "^0.4.23"

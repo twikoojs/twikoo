@@ -24,7 +24,7 @@
     "jsdom": "^16.4.0",
     "marked": "^4.0.12",
     "nodemailer": "^6.4.17",
-    "querystring": "^0.2.0",
+    "pushoo": "latest",
     "tencentcloud-sdk-nodejs": "^4.0.65",
     "xml2js": "^0.4.23"
   }

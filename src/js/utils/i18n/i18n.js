@@ -341,15 +341,15 @@ export default {
   ],
   [S.ACI + '_PUSHOO_CHANNEL']: [
     '即时消息推送渠道（缩写）。参考：https://pushoo.js.org',
-    '即时消息推送渠道（缩写）。参考：https://pushoo.js.org',
-    '即时消息推送渠道（缩写）。参考：https://pushoo.js.org',
-    'Push channel. doc: https://pushoo.js.org'
+    '即時消息推送管道（縮寫）。參考：https://pushoo.js.org',
+    '即時消息推送管道（縮寫）。參考：https://pushoo.js.org',
+    'IM notification push channel. doc: https://pushoo.js.org'
   ],
   [S.ACI + '_PUSHOO_TOKEN']: [
     '即时消息推送 token',
-    '即时消息推送 token',
-    '即时消息推送 token',
-    'Push token'
+    '即時消息推送 token',
+    '即時消息推送 token',
+    'IM notification push token'
   ],
   [S.ACI + '_REQUIRED_FIELDS']: [
     '评论必填信息，设为 nick,mail,link 代表全必填，设为 none 代表全选填，默认：nick,mail',

@@ -18,6 +18,7 @@ const xml2js = require('xml2js') // XML 解析
 const marked = require('marked') // Markdown 解析
 const CryptoJS = require('crypto-js') // 编解码
 const tencentcloud = require('tencentcloud-sdk-nodejs') // 腾讯云 API NODEJS SDK
+const fs = require('fs')
 const FormData = require('form-data') // 图片上传
 const pushoo = require('pushoo').default
 
@@ -1404,27 +1405,38 @@ async function emailTest (event) {
 }
 
 async function uploadImage (event) {
-  const { photo } = event
+  const { photo, fileName } = event
   const res = {}
   try {
     if (!config.IMAGE_CDN_TOKEN) {
       throw new Error('未配置图片上传服务')
     }
     const formData = new FormData()
-    formData.append('image', Buffer.from(photo, 'base64url'))
+    formData.append('image', base64UrlToReadStream(photo, fileName))
     const uploadResult = await axios.post('https://7bu.top/api/upload', formData, {
       headers: {
         ...formData.getHeaders(),
         token: config.IMAGE_CDN_TOKEN
       }
     })
-    res.data = uploadResult.data
+    fs.rmSync(fileName, { force: true })
+    if (uploadResult.data.code === 200) {
+      res.data = uploadResult.data.data
+    } else {
+      throw new Error(uploadResult.data.msg)
+    }
   } catch (e) {
     console.error(e)
     res.code = RES_CODE.UPLOAD_FAILED
     res.err = e.message
   }
   return res
+}
+
+function base64UrlToReadStream (base64Url, fileName) {
+  const base64 = base64Url.split(';base64,').pop()
+  fs.writeFileSync(fileName, base64, { encoding: 'base64' })
+  return fs.createReadStream(fileName)
 }
 
 function getAvatar (comment) {

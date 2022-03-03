@@ -278,6 +278,7 @@ export default {
     async uploadPhotoToThirdParty (fileIndex, fileName, fileType, photo) {
       try {
         const uploadResult = await call(this.$tcb, 'UPLOAD_IMAGE', {
+          fileName,
           photo: await blobToDataURL(photo)
         })
         if (uploadResult.data) {

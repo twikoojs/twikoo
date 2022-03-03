@@ -1006,7 +1006,7 @@ async function noticePushoo (comment) {
 }
 
 // 即时消息推送内容获取
-function getIMPushContent (comment, { withUrl = true, markdown = false, html = false } = {}) {
+function getIMPushContent (comment) {
   const SITE_NAME = config.SITE_NAME
   const NICK = comment.nick
   const MAIL = comment.mail
@@ -1015,17 +1015,13 @@ function getIMPushContent (comment, { withUrl = true, markdown = false, html = f
   const SITE_URL = config.SITE_URL
   const POST_URL = appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
   const subject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}有新评论了`
-  let content = `评论人：${NICK}(${MAIL})<br>评论人IP：${IP}<br>评论内容：${COMMENT}<br>`
-  // Qmsg 会过滤带网址的推送消息，所以不能带网址
-  if (withUrl) {
-    content += `原文链接：${markdown ? `[${POST_URL}](${POST_URL})` : POST_URL}`
-  }
-  if (html) {
-    content += `原文链接：<a href="${POST_URL}" rel="nofollow">${POST_URL}</a>`
-  }
-  if (markdown) {
-    content = content.replace(/<br>/g, '\n\n')
-  }
+  const content = `评论人：${NICK} ([${MAIL}](mailto:${MAIL}))
+
+评论人IP：${IP}
+
+评论内容：${COMMENT}
+
+原文链接：[${POST_URL}](${POST_URL})`
   return {
     subject,
     content
@@ -1426,7 +1422,6 @@ async function uploadImage (event) {
         token: config.IMAGE_CDN_TOKEN
       }
     })
-    fs.rmSync(fileName, { force: true })
     if (uploadResult.data.code === 200) {
       res.data = uploadResult.data.data
     } else {
@@ -1442,8 +1437,9 @@ async function uploadImage (event) {
 
 function base64UrlToReadStream (base64Url, fileName) {
   const base64 = base64Url.split(';base64,').pop()
-  fs.writeFileSync(fileName, base64, { encoding: 'base64' })
-  return fs.createReadStream(fileName)
+  const path = `/tmp/${fileName}`
+  fs.writeFileSync(path, base64, { encoding: 'base64' })
+  return fs.createReadStream(path)
 }
 
 function getAvatar (comment) {

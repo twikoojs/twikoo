@@ -206,6 +206,7 @@ export default {
 .tk-admin-config-desc {
   margin-top: 0.5em;
   font-size: 0.75em;
+  overflow-wrap: break-word;
 }
 .tk-admin-config-actions {
   display: flex;

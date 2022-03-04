@@ -1,10 +1,11 @@
 /*!
- * Twikoo vercel function v1.5.0
+ * Twikoo vercel function
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  */
 
 // 三方依赖 / 3rd party dependencies
+const { version: VERSION } = require('../package.json')
 const { URL } = require('url')
 const MongoClient = require('mongodb').MongoClient
 const md5 = require('blueimp-md5') // MD5 加解密
@@ -29,7 +30,6 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.5.0'
 const RES_CODE = {
   SUCCESS: 0,
   NO_PARAM: 100,

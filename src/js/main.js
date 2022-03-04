@@ -1,4 +1,4 @@
-import { version } from '../../package.json'
+import { version } from '../version'
 import { install } from './tcb'
 import { render } from '../view'
 import { setLanguage, logger, isUrl, getCommentsCountApi, getRecentCommentsApi } from './utils'

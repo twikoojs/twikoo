@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { version } from '../../../package.json'
+import { version } from '../../version'
 import { call, getUrl } from '../../js/utils'
 
 export default {

@@ -40,7 +40,7 @@
 
 <script>
 import { call, logger, t } from '../../js/utils'
-import { version } from '../../../package.json'
+import { version } from '../../version'
 
 export default {
   data () {

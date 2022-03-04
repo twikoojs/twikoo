@@ -44,7 +44,7 @@ exports.main = require('twikoo-func').main
 8. 创建完成后，点击“twikoo"进入云函数详情页，进入“函数代码”标签，点击“文件 - 新建文件”，输入 `package.json`，回车
 9. 复制以下代码、粘贴到代码框中，点击“保存并安装依赖”
 ``` json
-{ "dependencies": { "twikoo-func": "1.4.18" } }
+{ "dependencies": { "twikoo-func": "1.5.0" } }
 ```
 
 ### 命令行部署
@@ -174,7 +174,7 @@ twikoo:
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.4.18/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.5.0/dist/twikoo.all.min.js"></script>
 <script>
 twikoo.init({
   envId: '您的环境id',
@@ -195,8 +195,8 @@ twikoo.init({
 引入的 CDN 链接替换为如下即可：
 
 ```diff
-- <script src="https://cdn.jsdelivr.net/npm/twikoo@1.4.18/dist/twikoo.all.min.js"></script>
-+ <script src="https://lib.baomitu.com/twikoo/1.4.18/twikoo.all.min.js" crossorigin="anonymous" integrity="sha512-czTF7AsBQKM8Udh7f2kYxoEVO6MRUGoBACWgrnURTySkkV+wBwzOiFncA2fjR2JSOJ6vaTGILYIE1laKPH8fKA=="></script>
+- <script src="https://cdn.jsdelivr.net/npm/twikoo@1.5.0/dist/twikoo.all.min.js"></script>
++ <script src="https://lib.baomitu.com/twikoo/1.5.0/twikoo.all.min.js" crossorigin="anonymous" integrity="sha512-czTF7AsBQKM8Udh7f2kYxoEVO6MRUGoBACWgrnURTySkkV+wBwzOiFncA2fjR2JSOJ6vaTGILYIE1laKPH8fKA=="></script>
 ```
 
 ## 开启管理面板

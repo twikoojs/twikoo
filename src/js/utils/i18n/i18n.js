@@ -10,6 +10,64 @@ const S = {
   AI: 'ADMIN_IMPORT'
 }
 
+const pushooChannels = [
+  'qmsg',
+  'serverchain',
+  'pushplus',
+  'pushplushxtrip',
+  'dingtalk',
+  'wecom',
+  'bark',
+  'gocqhttp',
+  'pushdeer',
+  'igot',
+  'telegram'
+].map(s => `"${s}"`)
+
+const smtpServices = [
+  '126',
+  '163',
+  '1und1',
+  'AOL',
+  'DebugMail',
+  'DynectEmail',
+  'FastMail',
+  'GandiMail',
+  'Gmail',
+  'Godaddy',
+  'GodaddyAsia',
+  'GodaddyEurope',
+  'Hotmail',
+  'Mail.ru',
+  'Maildev',
+  'Mailgun',
+  'Mailjet',
+  'Mailosaur',
+  'Mandrill',
+  'Naver',
+  'OpenMailBox',
+  'Outlook365',
+  'Postmark',
+  'QQ',
+  'QQex',
+  'SES',
+  'SES-EU-WEST-1',
+  'SES-US-EAST-1',
+  'SES-US-WEST-2',
+  'SendCloud',
+  'SendGrid',
+  'SendPulse',
+  'SendinBlue',
+  'Sparkpost',
+  'Yahoo',
+  'Yandex',
+  'Zoho',
+  'hot.ee',
+  'iCloud',
+  'mail.ee',
+  'qiye.aliyun'
+].map(s => `"${s}"`)
+
 /**
  * 把所有语言翻译放在同一对象下可以减小打包 js 的体积 (~17kb)
  *
@@ -280,15 +338,15 @@ export default {
     'The image bed token for 7bu.'
   ],
   [S.ACI + '_LIMIT_PER_MINUTE']: [
-    '每个 IP 每 10 分钟最多发表多少条评论，默认：0（无限制）',
-    '每個 IP 每 10 分鐘最多發表多少條評論，預設：0（無限制）',
-    '每個 IP 每 10 分鐘最多發表多少條評論，預設：0（無限制）',
+    '每个 IP 每 10 分钟最多发表多少条评论，0 为无限制，默认：10',
+    '每個 IP 每 10 分鐘最多發表多少條評論，0 為無限制，預設：10',
+    '每個 IP 每 10 分鐘最多發表多少條評論，0 為無限制，預設：10',
     'How many comments can be posted by each IP every 10 minutes, default: 0 (unlimited).'
   ],
   [S.ACI + '_LIMIT_PER_MINUTE_ALL']: [
-    '所有 IP 每 10 分钟最多发表多少条评论，默认：0（无限制）',
-    '所有 IP 每 10 分鐘最多發表多少條評論，預設：0（無限制）',
-    '所有 IP 每 10 分鐘最多發表多少條評論，預設：0（無限制）',
+    '所有 IP 每 10 分钟最多发表多少条评论，0 为无限制，默认：10',
+    '所有 IP 每 10 分鐘最多發表多少條評論，0 為無限制，預設：10',
+    '所有 IP 每 10 分鐘最多發表多少條評論，0 為無限制，預設：10',
     'How many comments can be posted by all IPs every 10 minutes, default: 0 (unlimited).'
   ],
   [S.ACI + '_MAIL_SUBJECT']: [
@@ -327,18 +385,6 @@ export default {
     '垃圾評論是否發送通知，默認：true',
     'Notifications for spam comments. Default: true.'
   ],
-  [S.ACI + '_PUSH_PLUS_TOKEN']: [
-    '推送加（pushplus.hxtrip.com）推送的 Token',
-    '推送加（pushplus.hxtrip.com）推送的 Token',
-    '推送加（pushplus.hxtrip.com）推送的 Token',
-    'Push+ (pushplus.hxtrip.com) Token.'
-  ],
-  [S.ACI + '_PUSHDEER_KEY']: [
-    'PushDeer 推送 key',
-    'PushDeer 推送 key',
-    'PushDeer 推送 key',
-    'PushDeer push key.'
-  ],
   [S.ACI + '_QCLOUD_SECRET_ID']: [
     '腾讯云 secret id，用于垃圾评论检测。同时设置腾讯云和 Akismet 时，只有腾讯云会生效。注册：https://twikoo.js.org/cms.html',
     '騰訊雲 secret id，用於垃圾評論檢測。同時設定騰訊雲和 Akismet 時，只有騰訊雲會生效。註冊：https://twikoo.js.org/cms.html',
@@ -351,17 +397,17 @@ export default {
     '騰訊雲 secret key',
     'Tencent Cloud secret key.'
   ],
-  [S.ACI + '_QM_SENDKEY']: [
-    'Qmsg酱（qmsg.zendee.cn）QQ推送的 KEY',
-    'Qmsg醬（qmsg.zendee.cn）QQ推送的 KEY',
-    'Qmsg醬（qmsg.zendee.cn）QQ推送的 KEY',
-    'Qmsg chan (qmsg.zendee.cn) KEY for QQ notification.'
+  [S.ACI + '_PUSHOO_CHANNEL']: [
+    `即时消息推送平台名称，支持：${pushooChannels.join('、')} 等`,
+    `即時消息推送平台名称，支持：${pushooChannels.join('、')} 等`,
+    `即時消息推送平台名称，支援：${pushooChannels.join('、')} 等`,
+    `IM notification push channel. Support: ${pushooChannels.join(', ')}`
   ],
-  [S.ACI + '_QQ_API']: [
-    '私有化QQ推送API部署',
-    '私有化QQ推送API部署',
-    '私有化QQ推送API部署',
-    'Private QQ push API deployment.'
+  [S.ACI + '_PUSHOO_TOKEN']: [
+    '即时消息推送 token。请参考 https://pushoo.js.org 里的详细说明配置',
+    '即時消息推送 token。请参考 https://pushoo.js.org 里的详细说明配置',
+    '即時消息推送 token。请参考 https://pushoo.js.org 里的详细说明配置',
+    'IM notification push token. See https://pushoo.js.org for details'
   ],
   [S.ACI + '_REQUIRED_FIELDS']: [
     '评论必填信息，设为 nick,mail,link 代表全必填，设为 none 代表全选填，默认：nick,mail',
@@ -374,24 +420,6 @@ export default {
     '是否同時通過 IM 和郵件 2 種方式通知博主，預設只通過 IM 通知博主，預設：false',
     '是否同時通過 IM 和郵件 2 種方式通知博主，預設只通過 IM 通知博主，預設：false',
     'Whether to notify admin via IM and email at the same time, the default is to notify admin only via IM. Default: false.'
-  ],
-  [S.ACI + '_SC_SENDKEY']: [
-    'Server酱（sc.ftqq.com）微信推送的 SCKEY',
-    'Server醬（sc.ftqq.com）微信推送的 SCKEY',
-    'Server醬（sc.ftqq.com）微信推送的 SCKEY',
-    'Server chan (sc.ftqq.com) SCKEY for WeChat notification.'
-  ],
-  [S.ACI + '_WECOM_API_URL']: [
-    '自行搭建的企业微信通知 API 接口 URL，免费不限量，参考教程：https://guole.fun/posts/626/',
-    '自行搭建的企業微信通知 API 接口 URL，免費不限量，參考教程：https://guole.fun/posts/626/',
-    '自行搭建的企業微信通知 API 接口 URL，免費不限量，參考教程：https://guole.fun/posts/626/',
-    'Self-built enterprise WeChat notification API interface URL, free unlimited, refer to the tutorial: https://guole.fun/posts/626/'
-  ],
-  [S.ACI + '_DINGTALK_WEBHOOK_URL']: [
-    '钉钉 WebHook API 接口 URL，参考教程：https://blog.ljcbaby.top/article/Twikoo-DingTalk/',
-    '钉钉 WebHooK API 接口 URL，參考教程：https://blog.ljcbaby.top/article/Twikoo-DingTalk/',
-    '钉钉 WebHooK API 接口 URL，參考教程：https://blog.ljcbaby.top/article/Twikoo-DingTalk/',
-    'DingTalk Webhook API interface URL, refer to the tutorial (Chiinese Only): https://blog.ljcbaby.top/article/Twikoo-DingTalk/ '
   ],
   [S.ACI + '_SENDER_EMAIL']: [
     '邮件通知邮箱地址。对于大多数邮箱服务商，SENDER_EMAIL 必须和 SMTP_USER 保持一致，否则无法发送邮件。',
@@ -454,10 +482,10 @@ export default {
     'Custom TLS for SMTP. Enter "true" or "false". If you have configured SMTP_SERVICE, please leave it empty.'
   ],
   [S.ACI + '_SMTP_SERVICE']: [
-    '邮件通知邮箱服务商。支持："126", "163", "1und1", "AOL", "DebugMail", "DynectEmail", "FastMail", "GandiMail", "Gmail", "Godaddy", "GodaddyAsia", "GodaddyEurope", "Hotmail", "Mail.ru", "Maildev", "Mailgun", "Mailjet", "Mailosaur", "Mandrill", "Naver", "OpenMailBox", "Outlook365", "Postmark", "QQ", "QQex", "SES", "SES-EU-WEST-1", "SES-US-EAST-1", "SES-US-WEST-2", "SendCloud", "SendGrid", "SendPulse", "SendinBlue", "Sparkpost", "Yahoo", "Yandex", "Zoho", "hot.ee", "iCloud", "mail.ee", "qiye.aliyun"',
-    '郵件通知郵箱服務商。支持："126", "163", "1und1", "AOL", "DebugMail", "DynectEmail", "FastMail", "GandiMail", "Gmail", "Godaddy", "GodaddyAsia", "GodaddyEurope", "Hotmail", "Mail.ru", "Maildev", "Mailgun", "Mailjet", "Mailosaur", "Mandrill", "Naver", "OpenMailBox", "Outlook365", "Postmark", "QQ", "QQex", "SES", "SES-EU-WEST-1", "SES-US-EAST-1", "SES-US-WEST-2", "SendCloud", "SendGrid", "SendPulse", "SendinBlue", "Sparkpost", "Yahoo", "Yandex", "Zoho", "hot.ee", "iCloud", "mail.ee", "qiye.aliyun"',
-    '郵件通知郵箱服務商。支援："126", "163", "1und1", "AOL", "DebugMail", "DynectEmail", "FastMail", "GandiMail", "Gmail", "Godaddy", "GodaddyAsia", "GodaddyEurope", "Hotmail", "Mail.ru", "Maildev", "Mailgun", "Mailjet", "Mailosaur", "Mandrill", "Naver", "OpenMailBox", "Outlook365", "Postmark", "QQ", "QQex", "SES", "SES-EU-WEST-1", "SES-US-EAST-1", "SES-US-WEST-2", "SendCloud", "SendGrid", "SendPulse", "SendinBlue", "Sparkpost", "Yahoo", "Yandex", "Zoho", "hot.ee", "iCloud", "mail.ee", "qiye.aliyun"',
-    'Email service provider for Email notification. Support: "126", "163", "1und1", "AOL", "DebugMail", "DynectEmail", "FastMail", "GandiMail", "Gmail", "Godaddy", "GodaddyAsia", "GodaddyEurope", "Hotmail", "Mail.ru", "Maildev", "Mailgun", "Mailjet", "Mailosaur", "Mandrill", "Naver", "OpenMailBox", "Outlook365", "Postmark", "QQ", "QQex", "SES", "SES-EU-WEST-1", "SES-US-EAST-1", "SES-US-WEST-2", "SendCloud", "SendGrid", "SendPulse", "SendinBlue", "Sparkpost", "Yahoo", "Yandex", "Zoho", "hot.ee", "iCloud", "mail.ee", "qiye.aliyun"'
+    `邮件通知邮箱服务商。支持：${smtpServices.join('、')}`,
+    `郵件通知郵箱服務商。支持：${smtpServices.join('、')}`,
+    `郵件通知郵箱服務商。支援：${smtpServices.join('、')}`,
+    `Email service provider for Email notification. Support: ${smtpServices.join(', ')}`
   ],
   [S.ACI + '_SMTP_USER']: [
     '邮件通知邮箱用户名。',

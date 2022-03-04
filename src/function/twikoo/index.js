@@ -1,5 +1,5 @@
 /*!
- * Twikoo cloudbase function v1.4.18
+ * Twikoo cloudbase function v1.5.0
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  */
@@ -10,7 +10,6 @@ const md5 = require('blueimp-md5') // MD5 加解密
 const bowser = require('bowser') // UserAgent 格式化
 const nodemailer = require('nodemailer') // 发送邮件
 const axios = require('axios') // 发送 REST 请求
-const qs = require('querystring') // URL 参数格式化
 const $ = require('cheerio') // jQuery 服务器版
 const { AkismetClient } = require('akismet-api') // 反垃圾 API
 const createDOMPurify = require('dompurify') // 反 XSS
@@ -19,6 +18,9 @@ const xml2js = require('xml2js') // XML 解析
 const marked = require('marked') // Markdown 解析
 const CryptoJS = require('crypto-js') // 编解码
 const tencentcloud = require('tencentcloud-sdk-nodejs') // 腾讯云 API NODEJS SDK
+const fs = require('fs')
+const FormData = require('form-data') // 图片上传
+const pushoo = require('pushoo').default
 
 // 云函数 SDK / tencent cloudbase sdk
 const app = tcb.init({ env: tcb.SYMBOL_CURRENT_ENV })
@@ -31,7 +33,7 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.4.18'
+const VERSION = '1.5.0'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,
@@ -44,7 +46,8 @@ const RES_CODE = {
   PASS_NOT_MATCH: 1023,
   NEED_LOGIN: 1024,
   FORBIDDEN: 1403,
-  AKISMET_ERROR: 1030
+  AKISMET_ERROR: 1030,
+  UPLOAD_FAILED: 1040
 }
 const ADMIN_USER_ID = 'admin'
 
@@ -118,6 +121,9 @@ exports.main = async (event, context) => {
         break
       case 'EMAIL_TEST': // >= 1.4.6
         res = await emailTest(event)
+        break
+      case 'UPLOAD_IMAGE': // >= 1.5.0
+        res = await uploadImage(event)
         break
       default:
         if (event.event) {
@@ -876,15 +882,9 @@ async function sendNotice (comment) {
   await Promise.all([
     noticeMaster(comment),
     noticeReply(comment),
-    noticeWeChat(comment),
-    noticePushPlus(comment),
-    noticeWeComPush(comment),
-    noticeDingTalkHook(comment),
-    noticePushdeer(comment),
-    noticeQQ(comment),
-    noticeQQAPI(comment)
+    noticePushoo(comment)
   ]).catch(err => {
-    console.error('邮件通知异常：', err)
+    console.error('通知异常：', err)
   })
 }
 
@@ -928,16 +928,8 @@ async function initMailer ({ throwErr = false } = {}) {
 async function noticeMaster (comment) {
   if (!transporter) if (!await initMailer()) return
   if (config.BLOGGER_EMAIL === comment.mail) return
-  const IM_PUSH_CONFIGS = [
-    'SC_SENDKEY',
-    'QM_SENDKEY',
-    'PUSH_PLUS_TOKEN',
-    'WECOM_API_URL',
-    'DINGTALK_WEBHOOK_URL',
-    'PUSHDEER_KEY'
-  ]
   // 判断是否存在即时消息推送配置
-  const hasIMPushConfig = IM_PUSH_CONFIGS.some(item => !!config[item])
+  const hasIMPushConfig = config.PUSHOO_CHANNEL && config.PUSHOO_TOKEN
   // 存在即时消息推送配置，则默认不发送邮件给博主
   if (hasIMPushConfig && config.SC_MAIL_NOTIFY !== 'true') return
   const SITE_NAME = config.SITE_NAME
@@ -986,125 +978,24 @@ async function noticeMaster (comment) {
   return sendResult
 }
 
-// 微信通知
-async function noticeWeChat (comment) {
-  if (!config.SC_SENDKEY) {
-    console.log('没有配置 server 酱，放弃微信通知')
+// 即时消息通知
+async function noticePushoo (comment) {
+  if (!config.PUSHOO_CHANNEL || !config.PUSHOO_TOKEN) {
+    console.log('没有配置 pushoo，放弃即时消息通知')
     return
   }
   if (config.BLOGGER_EMAIL === comment.mail) return
   const pushContent = getIMPushContent(comment)
-  let scApiUrl = 'https://sc.ftqq.com'
-  let scApiParam = {
-    text: pushContent.subject,
-    desp: pushContent.content
-  }
-  if (config.SC_SENDKEY.substring(0, 3).toLowerCase() === 'sct') {
-    // 兼容 server 酱测试专版
-    scApiUrl = 'https://sctapi.ftqq.com'
-    scApiParam = {
-      title: pushContent.subject,
-      desp: pushContent.content
-    }
-  }
-  const sendResult = await axios.post(`${scApiUrl}/${config.SC_SENDKEY}.send`, qs.stringify(scApiParam), {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-  })
-  console.log('微信通知结果：', sendResult)
-}
-
-// pushplus 通知
-async function noticePushPlus (comment) {
-  if (!config.PUSH_PLUS_TOKEN) {
-    console.log('没有配置 pushplus，放弃通知')
-    return
-  }
-  if (config.BLOGGER_EMAIL === comment.mail) return
-  const pushContent = getIMPushContent(comment, { withUrl: false, html: true })
-  const ppApiUrl = 'http://pushplus.hxtrip.com/send'
-  const ppApiParam = {
-    token: config.PUSH_PLUS_TOKEN,
+  const sendResult = await pushoo(config.PUSHOO_CHANNEL, {
+    token: config.PUSHOO_TOKEN,
     title: pushContent.subject,
     content: pushContent.content
-  }
-  const sendResult = await axios.post(ppApiUrl, ppApiParam)
-  console.log('pushplus 通知结果：', sendResult)
-}
-
-// 自定义WeCom企业微信api通知
-async function noticeWeComPush (comment) {
-  if (!config.WECOM_API_URL) {
-    console.log('未配置 WECOM_API_URL，跳过企业微信推送')
-    return
-  }
-  if (config.BLOGGER_EMAIL === comment.mail) return
-  const SITE_URL = config.SITE_URL
-  const WeComContent = config.SITE_NAME + '有新评论啦！🎉🎉' + '\n\n' + '@' + comment.nick + '说：' + $(comment.comment).text() + '\n' + 'E-mail: ' + comment.mail + '\n' + 'IP: ' + comment.ip + '\n' + '点此查看完整内容：' + appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
-  const WeComApiContent = encodeURIComponent(WeComContent)
-  const WeComApiUrl = config.WECOM_API_URL
-  const sendResult = await axios.get(WeComApiUrl + WeComApiContent)
-  console.log('WinxinPush 通知结果：', sendResult)
-}
-
-// 自定义钉钉WebHook通知
-async function noticeDingTalkHook (comment) {
-  if (!config.DINGTALK_WEBHOOK_URL) {
-    console.log('没有配置 DingTalk_WebHook，放弃钉钉WebHook推送')
-    return
-  }
-  if (config.BLOGGER_EMAIL === comment.mail) return
-  const DingTalkContent = config.SITE_NAME + '有新评论啦！🎉🎉' + '\n\n' + '@' + comment.nick + ' 说：' + $(comment.comment).text() + '\n' + 'E-mail: ' + comment.mail + '\n' + 'IP: ' + comment.ip + '\n' + '点此查看完整内容：' + appendHashToUrl(comment.href || config.SITE_URL + comment.url, comment.id)
-  const sendResult = await axios.post(config.DINGTALK_WEBHOOK_URL, { msgtype: 'text', text: { content: DingTalkContent } })
-  console.log('钉钉WebHook 通知结果：', sendResult)
-}
-
-// QQ通知
-async function noticeQQ (comment) {
-  if (!config.QM_SENDKEY) {
-    console.log('没有配置 qmsg 酱，放弃QQ通知')
-    return
-  }
-  if (config.BLOGGER_EMAIL === comment.mail) return
-  const pushContent = getIMPushContent(comment, { withUrl: false })
-  const qmApiUrl = 'https://qmsg.zendee.cn'
-  const qmApiParam = {
-    msg: pushContent.subject + '\n' + pushContent.content.replace(/<br>/g, '\n')
-  }
-  const sendResult = await axios.post(`${qmApiUrl}/send/${config.QM_SENDKEY}`, qs.stringify(qmApiParam), {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
   })
-  console.log('QQ通知结果：', sendResult)
-}
-
-async function noticePushdeer (comment) {
-  if (!config.PUSHDEER_KEY) return
-  if (config.BLOGGER_EMAIL === comment.mail) return
-  const pushContent = getIMPushContent(comment, { markdown: true })
-  const sendResult = await axios.post('https://api2.pushdeer.com/message/push', {
-    pushkey: config.PUSHDEER_KEY,
-    text: pushContent.subject,
-    desp: pushContent.content
-  })
-  console.log('Pushdeer 通知结果：', sendResult)
-}
-
-// QQ私有化API通知
-async function noticeQQAPI (comment) {
-  if (!config.QQ_API) {
-    console.log('没有配置QQ私有化api，放弃QQ通知')
-    return
-  }
-  if (config.BLOGGER_EMAIL === comment.mail) return
-  const pushContent = getIMPushContent(comment)
-  const qqApiParam = {
-    message: pushContent.subject + '\n' + pushContent.content.replace(/<br>/g, '\n')
-  }
-  const sendResult = await axios.post(`${config.QQ_API}`, qs.stringify(qqApiParam))
-  console.log('QQ私有化api通知结果：', sendResult)
+  console.log('即时消息通知结果：', sendResult)
 }
 
 // 即时消息推送内容获取
-function getIMPushContent (comment, { withUrl = true, markdown = false, html = false } = {}) {
+function getIMPushContent (comment) {
   const SITE_NAME = config.SITE_NAME
   const NICK = comment.nick
   const MAIL = comment.mail
@@ -1113,17 +1004,13 @@ function getIMPushContent (comment, { withUrl = true, markdown = false, html = f
   const SITE_URL = config.SITE_URL
   const POST_URL = appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
   const subject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}有新评论了`
-  let content = `评论人：${NICK}(${MAIL})<br>评论人IP：${IP}<br>评论内容：${COMMENT}<br>`
-  // Qmsg 会过滤带网址的推送消息，所以不能带网址
-  if (withUrl) {
-    content += `原文链接：${markdown ? `[${POST_URL}](${POST_URL})` : POST_URL}`
-  }
-  if (html) {
-    content += `原文链接：<a href="${POST_URL}" rel="nofollow">${POST_URL}</a>`
-  }
-  if (markdown) {
-    content = content.replace(/<br>/g, '\n\n')
-  }
+  const content = `评论人：${NICK} ([${MAIL}](mailto:${MAIL}))
+
+评论人IP：${IP}
+
+评论内容：${COMMENT}
+
+原文链接：[${POST_URL}](${POST_URL})`
   return {
     subject,
     content
@@ -1241,7 +1128,8 @@ async function parse (comment) {
 // 限流
 async function limitFilter () {
   // 限制每个 IP 每 10 分钟发表的评论数量
-  const limitPerMinute = parseInt(config.LIMIT_PER_MINUTE)
+  let limitPerMinute = parseInt(config.LIMIT_PER_MINUTE)
+  if (Number.isNaN(limitPerMinute)) limitPerMinute = 10
   if (limitPerMinute) {
     let count = await db
       .collection('comment')
@@ -1256,7 +1144,8 @@ async function limitFilter () {
     }
   }
   // 限制所有 IP 每 10 分钟发表的评论数量
-  const limitPerMinuteAll = parseInt(config.LIMIT_PER_MINUTE_ALL)
+  let limitPerMinuteAll = parseInt(config.LIMIT_PER_MINUTE_ALL)
+  if (Number.isNaN(limitPerMinuteAll)) limitPerMinuteAll = 10
   if (limitPerMinuteAll) {
     let count = await db
       .collection('comment')
@@ -1509,6 +1398,41 @@ async function emailTest (event) {
     res.message = '请先登录'
   }
   return res
+}
+
+async function uploadImage (event) {
+  const { photo, fileName } = event
+  const res = {}
+  try {
+    if (!config.IMAGE_CDN_TOKEN) {
+      throw new Error('未配置图片上传服务')
+    }
+    const formData = new FormData()
+    formData.append('image', base64UrlToReadStream(photo, fileName))
+    const uploadResult = await axios.post('https://7bu.top/api/upload', formData, {
+      headers: {
+        ...formData.getHeaders(),
+        token: config.IMAGE_CDN_TOKEN
+      }
+    })
+    if (uploadResult.data.code === 200) {
+      res.data = uploadResult.data.data
+    } else {
+      throw new Error(uploadResult.data.msg)
+    }
+  } catch (e) {
+    console.error(e)
+    res.code = RES_CODE.UPLOAD_FAILED
+    res.err = e.message
+  }
+  return res
+}
+
+function base64UrlToReadStream (base64Url, fileName) {
+  const base64 = base64Url.split(';base64,').pop()
+  const path = `/tmp/${fileName}`
+  fs.writeFileSync(path, base64, { encoding: 'base64' })
+  return fs.createReadStream(path)
 }
 
 function getAvatar (comment) {

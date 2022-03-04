@@ -1,10 +1,11 @@
 /*!
- * Twikoo cloudbase function v1.5.0
+ * Twikoo cloudbase function
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  */
 
 // 三方依赖 / 3rd party dependencies
+const { version: VERSION } = require('./package.json')
 const tcb = require('@cloudbase/node-sdk') // 云开发 SDK
 const md5 = require('blueimp-md5') // MD5 加解密
 const bowser = require('bowser') // UserAgent 格式化
@@ -33,7 +34,6 @@ const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
-const VERSION = '1.5.0'
 const RES_CODE = {
   SUCCESS: 0,
   FAIL: 1000,

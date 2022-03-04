@@ -29,7 +29,7 @@ Twikoo 分为云函数和前端两部分，部署时请注意保持二者版本�
 ::: tip 提示
 * 推荐创建上海环境。如选择广州环境，需要在 `twikoo.init()` 时额外指定环境 `region: "ap-guangzhou"`
 * 环境名称自由填写
-* 推荐选择计费方式`包年包月`，套餐版本`基础班 1`，超出免费额度不会收费
+* 推荐选择计费方式`包年包月`，套餐版本`基础版 1`，超出免费额度不会收费
 * 如果提示选择“应用模板”，请选择“空模板”
 :::
 2. 进入[云开发控制台](https://console.cloud.tencent.com/tcb/)<br>
@@ -129,7 +129,7 @@ Vercel 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 # For NexT version >= 8.0.0 && < 8.4.0
 npm install hexo-next-twikoo@1.0.0
 # For NexT version >= 8.4.0
-npm install hexo-next-twikoo@1.0.1
+npm install hexo-next-twikoo@1.0.3
 ```
 
 然后在配置中添加
@@ -138,8 +138,8 @@ npm install hexo-next-twikoo@1.0.1
 twikoo:
   enable: true
   visitor: true
-  envId: xxxxxxxxxxxxxxx # 腾讯云环境id
-  # region: ap-guangzhou # 环境地域，默认为 ap-shanghai
+  envId: xxxxxxxxxxxxxxx # 腾讯云环境填 envId；Vercel 环境填地址（https://xxx.vercel.app）
+  # region: ap-guangzhou # 环境地域，默认为 ap-shanghai，腾讯云环境填 ap-shanghai 或 ap-guangzhou；Vercel 环境不填
 ```
 
 #### 在 [Hexo Matery](https://github.com/blinkfox/hexo-theme-matery) 主题使用
@@ -177,9 +177,9 @@ twikoo:
 <script src="https://cdn.jsdelivr.net/npm/twikoo@1.5.0/dist/twikoo.all.min.js"></script>
 <script>
 twikoo.init({
-  envId: '您的环境id',
-  el: '#tcomment',
-  // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，如果您的环境地域不是上海，需传此参数
+  envId: '您的环境id', // 腾讯云环境填 envId；Vercel 环境填地址（https://xxx.vercel.app）
+  el: '#tcomment', // 容器元素
+  // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，腾讯云环境填 ap-shanghai 或 ap-guangzhou；Vercel 环境不填
   // path: 'window.location.pathname', // 用于区分不同文章的自定义 js 路径，如果您的文章路径不是 location.pathname，需传此参数
   // lang: 'zh-CN', // 用于手动设定评论区语言，支持的语言列表 https://github.com/imaegoo/twikoo/blob/dev/src/js/utils/i18n/index.js
 })
@@ -192,12 +192,7 @@ twikoo.init({
 
 请参考爆米兔前端静态资源库 [https://cdn.baomitu.com/twikoo](https://cdn.baomitu.com/twikoo)
 
-引入的 CDN 链接替换为如下即可：
-
-```diff
-- <script src="https://cdn.jsdelivr.net/npm/twikoo@1.5.0/dist/twikoo.all.min.js"></script>
-+ <script src="https://lib.baomitu.com/twikoo/1.5.0/twikoo.all.min.js" crossorigin="anonymous" integrity="sha512-czTF7AsBQKM8Udh7f2kYxoEVO6MRUGoBACWgrnURTySkkV+wBwzOiFncA2fjR2JSOJ6vaTGILYIE1laKPH8fKA=="></script>
-```
+引入的 CDN 链接替换为如下即可：`https://lib.baomitu.com/twikoo/1.5.0/twikoo.all.min.js`
 
 ## 开启管理面板
 

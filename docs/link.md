@@ -6,3 +6,4 @@
 * [基于腾讯云，给你的 Icarus 博客配上 Twikoo 评论系统](https://www.anzifan.com/post/icarus_to_candy_2/) by 异次元de机智君💯
 * [Twikoo 多个页面共用一个评论区](https://www.imaegoo.com/2021/twikoo-path/) by iMaeGoo
 * [集成 Twikoo 与 lightGallery 插件，实现评论图片的点击放大](https://www.imaegoo.com/2021/twikoo-lightgallery/) by iMaeGoo
+* [Twikoo 评论数据导出教程](https://www.imaegoo.com/2022/twikoo-data-export/) by iMaeGoo

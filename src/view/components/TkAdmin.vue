@@ -9,6 +9,7 @@
       <div v-if="!needUpdate">
         <div class="tk-login" v-if="!isLogin && isSetPassword">
           <div class="tk-login-title">{{ t('ADMIN_LOGIN_TITLE') }}</div>
+          <input type="hidden" />
           <el-input class="tk-password" :placeholder="t('ADMIN_PASSWORD_PLACEHOLDER')" v-model="password" show-password @keyup.enter.native="onLogin" ref="focusme">
             <template slot="prepend">{{ t('ADMIN_PASSWORD') }}</template>
             <el-button slot="append" @click="onLogin">{{ t('ADMIN_LOGIN') }}</el-button>
@@ -233,9 +234,10 @@ export default {
   height: 100%;
   overflow-y: auto;
   pointer-events: all;
-  background-color: #00000099;
+  background-color: rgba(0,0,0,0.60);
   backdrop-filter: blur(5px);
   transition: all 0.5s ease;
+  visibility: hidden;
 }
 .tk-admin::-webkit-scrollbar {
   width: 5px;
@@ -245,10 +247,11 @@ export default {
   background-color: transparent;
 }
 .tk-admin::-webkit-scrollbar-thumb {
-  background-color: #ffffff50;
+  background-color: rgba(255,255,255,0.31);
 }
 .tk-admin.__show {
   left: 0;
+  visibility: visible;
 }
 .tk-admin-close {
   position: sticky;
@@ -280,6 +283,9 @@ export default {
   width: 80%;
   text-align: center;
   margin-top: 1rem;
+}
+.tk-password /deep/ .el-input__inner {
+  min-width: 100px;
 }
 .tk-login-msg a {
   color: #ffffff;

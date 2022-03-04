@@ -8,7 +8,7 @@
             type="textarea"
             ref="textarea"
             v-model="comment"
-            :placeholder="config.COMMENT_PLACEHOLDER ? config.COMMENT_PLACEHOLDER.replace(/<br>/g, '\n') : ''"
+            :placeholder="commentPlaceholder"
             :autosize="{ minRows: 3 }"
             @input="onCommentInput"
             @keyup.enter.native="onEnterKeyUp($event)" />
@@ -51,7 +51,7 @@ import iconImage from '@fortawesome/fontawesome-free/svgs/regular/image.svg'
 import Clickoutside from 'element-ui/src/utils/clickoutside'
 import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
-import { marked, call, logger, renderLinks, renderMath, renderCode, initOwoEmotion, initMarkedOwo, t, getUrl } from '../../js/utils'
+import { marked, call, logger, renderLinks, renderMath, renderCode, initOwoEmotion, initMarkedOwo, t, getUrl, blobToDataURL } from '../../js/utils'
 import OwO from '../../lib/owo'
 
 const imageTypes = [
@@ -104,6 +104,11 @@ export default {
     },
     textarea () {
       return this.$refs.textarea ? this.$refs.textarea.$refs.textarea : null
+    },
+    commentPlaceholder () {
+      let ph = this.$twikoo.placeholder || this.config.COMMENT_PLACEHOLDER || ''
+      ph = ph.replace(/<br>/g, '\n')
+      return ph
     }
   },
   methods: {
@@ -162,29 +167,33 @@ export default {
     },
     async send () {
       this.isSending = true
-      const url = getUrl(this.$twikoo.path)
-      const comment = {
-        nick: this.nick,
-        mail: this.mail,
-        link: this.link,
-        ua: navigator.userAgent,
-        url,
-        href: window.location.href,
-        comment: marked(this.comment),
-        pid: this.pid ? this.pid : this.replyId,
-        rid: this.replyId
-      }
-      const sendResult = await call(this.$tcb, 'COMMENT_SUBMIT', comment)
-      if (sendResult && sendResult.result && sendResult.result.id) {
+      try {
+        const url = getUrl(this.$twikoo.path)
+        const comment = {
+          nick: this.nick,
+          mail: this.mail,
+          link: this.link,
+          ua: navigator.userAgent,
+          url,
+          href: window.location.href,
+          comment: marked(this.comment),
+          pid: this.pid ? this.pid : this.replyId,
+          rid: this.replyId
+        }
+        const sendResult = await call(this.$tcb, 'COMMENT_SUBMIT', comment)
+        if (sendResult && sendResult.result && sendResult.result.id) {
+          this.comment = ''
+          this.errorMessage = ''
+          this.$emit('load')
+          this.saveDraft()
+        } else {
+          throw new Error(sendResult.result.message)
+        }
+      } catch (e) {
+        logger.error('评论失败', e)
+        this.errorMessage = `评论失败: ${e && e.message}`
+      } finally {
         this.isSending = false
-        this.comment = ''
-        this.errorMessage = ''
-        this.$emit('load')
-        this.saveDraft()
-      } else {
-        this.isSending = false
-        logger.error('评论失败', sendResult)
-        this.errorMessage = `评论失败: ${sendResult.result.message}`
       }
     },
     addEventListener () {
@@ -235,10 +244,12 @@ export default {
       const fileIndex = `${Date.now()}-${userId}`
       const fileName = nameSplit.join('.')
       this.paste(this.getImagePlaceholder(fileIndex, fileType))
-      if (this.config.IMAGE_CDN === '7bu' || !this.$tcb) {
-        this.uploadPhotoTo7Bu(fileIndex, fileName, fileType, photo)
-      } else {
+      if (this.config.IMAGE_CDN === '7bu') {
+        this.uploadPhotoToThirdParty(fileIndex, fileName, fileType, photo)
+      } else if (this.$tcb) {
         this.uploadPhotoToQcloud(fileIndex, fileName, fileType, photo)
+      } else {
+        this.uploadFailed(fileIndex, fileType, '未配置图片上传服务')
       }
     },
     getUserId () {
@@ -257,32 +268,34 @@ export default {
         if (uploadResult.fileID) {
           const tempUrlResult = await this.$tcb.app.getTempFileURL({ fileList: [uploadResult.fileID] })
           const tempFileUrl = tempUrlResult.fileList[0].tempFileURL
-          this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `![${fileName}](${tempFileUrl})`)
+          this.uploadCompleted(fileIndex, fileName, fileType, tempFileUrl)
         }
       } catch (e) {
         console.error(e)
+        this.uploadFailed(fileIndex, fileType, e.message)
       }
     },
-    uploadPhotoTo7Bu (fileIndex, fileName, fileType, photo) {
-      return new Promise((resolve) => {
-        try {
-          const url = 'https://7bu.top/api/upload'
-          const formData = new FormData()
-          const xhr = new XMLHttpRequest()
-          formData.append('image', photo)
-          xhr.onreadystatechange = () => {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-              const uploadResult = JSON.parse(xhr.responseText)
-              this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `![${fileName}](${uploadResult.data.url})`)
-              resolve()
-            }
-          }
-          xhr.open('POST', url)
-          xhr.send(formData)
-        } catch (e) {
-          console.error(e)
+    async uploadPhotoToThirdParty (fileIndex, fileName, fileType, photo) {
+      try {
+        const { result: uploadResult } = await call(this.$tcb, 'UPLOAD_IMAGE', {
+          fileName: `${fileIndex}.${fileType}`,
+          photo: await blobToDataURL(photo)
+        })
+        if (uploadResult.data) {
+          this.uploadCompleted(fileIndex, fileName, fileType, uploadResult.data.url)
+        } else {
+          this.uploadFailed(fileIndex, fileType, uploadResult.err)
         }
-      })
+      } catch (e) {
+        console.error(e)
+        this.uploadFailed(fileIndex, fileType, e.message)
+      }
+    },
+    uploadCompleted (fileIndex, fileName, fileType, fileUrl) {
+      this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `![${fileName}](${fileUrl})`)
+    },
+    uploadFailed (fileIndex, fileType, reason) {
+      this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `_上传失败：${reason}_`)
     },
     paste (text) {
       if (document.selection) {
@@ -386,7 +399,8 @@ export default {
   margin-left: 3rem;
   margin-bottom: 1rem;
   padding: 5px 15px;
-  border: 1px solid #80808050;
+  border: 1px solid rgba(128,128,128,0.31);
   border-radius: 4px;
+  word-break: break-word;
 }
 </style>

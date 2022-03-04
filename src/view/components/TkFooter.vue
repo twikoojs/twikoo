@@ -18,6 +18,8 @@ export default {
   },
   methods: {
     async getCounter () {
+      const counterEl = document.getElementById('twikoo_visitors')
+      if (!counterEl) return
       const url = getUrl(this.$twikoo.path)
       const result = await call(this.$tcb, 'COUNTER_GET', {
         url,
@@ -26,10 +28,7 @@ export default {
       })
       this.counter = result.result
       if (this.counter.time || this.counter.time === 0) {
-        const counterEl = document.getElementById('twikoo_visitors')
-        if (counterEl) {
-          counterEl.innerHTML = this.counter.time
-        }
+        counterEl.innerHTML = this.counter.time
       }
     }
   },

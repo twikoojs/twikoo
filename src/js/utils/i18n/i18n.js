@@ -10,6 +10,64 @@ const S = {
   AI: 'ADMIN_IMPORT'
 }
 
+const pushooChannels = [
+  'qmsg',
+  'serverchain',
+  'pushplus',
+  'pushplushxtrip',
+  'dingtalk',
+  'wecom',
+  'bark',
+  'gocqhttp',
+  'pushdeer',
+  'igot',
+  'telegram'
+].map(s => `"${s}"`)
+
+const smtpServices = [
+  '126',
+  '163',
+  '1und1',
+  'AOL',
+  'DebugMail',
+  'DynectEmail',
+  'FastMail',
+  'GandiMail',
+  'Gmail',
+  'Godaddy',
+  'GodaddyAsia',
+  'GodaddyEurope',
+  'Hotmail',
+  'Mail.ru',
+  'Maildev',
+  'Mailgun',
+  'Mailjet',
+  'Mailosaur',
+  'Mandrill',
+  'Naver',
+  'OpenMailBox',
+  'Outlook365',
+  'Postmark',
+  'QQ',
+  'QQex',
+  'SES',
+  'SES-EU-WEST-1',
+  'SES-US-EAST-1',
+  'SES-US-WEST-2',
+  'SendCloud',
+  'SendGrid',
+  'SendPulse',
+  'SendinBlue',
+  'Sparkpost',
+  'Yahoo',
+  'Yandex',
+  'Zoho',
+  'hot.ee',
+  'iCloud',
+  'mail.ee',
+  'qiye.aliyun'
+].map(s => `"${s}"`)
+
 /**
  * 把所有语言翻译放在同一对象下可以减小打包 js 的体积 (~17kb)
  *
@@ -29,8 +87,8 @@ export default {
   ],
   ADMIN_SERVER_VERSION: [
     '云函数版本：',
-    '云函数版本：',
-    '云函数版本：',
+    '云函數版本：',
+    '云函數版本：',
     'Server version: '
   ],
   [S.AC]: [
@@ -59,8 +117,8 @@ export default {
   ],
   [S.AC + '_FILTER_VISIBLE']: [
     '只看可见',
-    '只看可见',
-    '只看可见',
+    '只看可見',
+    '只看可見',
     'Visible'
   ],
   [S.AC + '_FILTER_HIDDEN']: [
@@ -89,8 +147,8 @@ export default {
   ],
   [S.AC + '_SEARCH_PLACEHOLDER']: [
     '搜索昵称、邮箱、网址、IP、评论正文、文章地址',
-    '搜索昵称、邮箱、网址、IP、评论正文、文章地址',
-    '搜索昵称、邮箱、网址、IP、评论正文、文章地址',
+    '搜索暱稱、郵箱、網址、IP、評論正文、文章地址',
+    '搜索暱稱、郵箱、網址、IP、評論正文、文章地址',
     'Search by nick, mail, website, IP, comment, or article path'
   ],
   [S.AC + '_SHOW']: [
@@ -101,14 +159,14 @@ export default {
   ],
   [S.AC + '_TOP']: [
     '置顶',
-    '置顶',
-    '置顶',
+    '置頂',
+    '置頂',
     'Pin'
   ],
   [S.AC + '_UNTOP']: [
     '取消置顶',
-    '取消置顶',
-    '取消置顶',
+    '取消置頂',
+    '取消置頂',
     'Unpin'
   ],
   [S.AC + '_VIEW']: [
@@ -153,6 +211,30 @@ export default {
     '反垃圾',
     'Spam'
   ],
+  ADMIN_CONFIG_EMAIL_TEST: [
+    '邮件通知测试',
+    '郵件通知測試',
+    '郵件通知測試',
+    'Email notification test'
+  ],
+  ADMIN_CONFIG_EMAIL_TEST_BTN: [
+    '发送测试邮件',
+    '發送測試郵件',
+    '發送測試郵件',
+    'Send test mail'
+  ],
+  ADMIN_CONFIG_EMAIL_TEST_HELP: [
+    '输入一个邮箱地址，发送测试邮件',
+    '輸入一個郵箱位址，發送測試郵件',
+    '輸入一個郵箱位址，發送測試郵件',
+    'Input an email address & send test mail'
+  ],
+  ADMIN_CONFIG_EMAIL_TEST_RESULT: [
+    '测试结果：',
+    '測試結果：',
+    '測試結果：',
+    'Test result: '
+  ],
   ADMIN_CONFIG_EXAMPLE: [
     '示例：',
     '示例：',
@@ -164,6 +246,12 @@ export default {
     'Akismet 反垃圾評論，用於垃圾評論檢測，設為 "MANUAL_REVIEW" 開啟人工審核，留空不使用反垃圾。註冊：https://akismet.com',
     'Akismet 反垃圾評論，用於垃圾評論檢測，設為 "MANUAL_REVIEW" 開啟人工審核，留空不使用反垃圾。註冊：https://akismet.com',
     'Akismet spam protection. Set to "MANUAL_REVIEW" to enable manual review. Leave it blank to not use anti-spam. Register Akismet: https://akismet.com'
+  ],
+  [S.ACI + '_BLOGGER_NICK']: [
+    '博主的昵称。',
+    '博主的昵稱。',
+    '博主的昵稱。',
+    'Admin nick name.'
   ],
   [S.ACI + '_BLOGGER_EMAIL']: [
     '博主的邮箱地址，用于邮件通知、博主标识。',
@@ -191,8 +279,8 @@ export default {
   ],
   [S.ACI + '_CORS_ALLOW_ORIGIN']: [
     'Vercel 安全域名，防止环境被盗用，请注意设置后将无法在本地（localhost）加载评论，默认为空',
-    'Vercel 安全域名，防止环境被盗用，请注意设置后将无法在本地（localhost）加载评论，默认为空',
-    'Vercel 安全域名，防止环境被盗用，请注意设置后将无法在本地（localhost）加载评论，默认为空',
+    'Vercel 安全域名，防止環境被盜用，請注意設置後將無法在本地（localhost）加載評論，默認為空',
+    'Vercel 安全域名，防止環境被盜用，請注意設置後將無法在本地（localhost）加載評論，默認為空',
     'Vercel 安全域名，防止环境被盗用，请注意设置后将无法在本地（localhost）加载评论，默认为空'
   ],
   [S.ACI + '_DEFAULT_GRAVATAR']: [
@@ -209,15 +297,15 @@ export default {
   ],
   [S.ACI + '_FORBIDDEN_WORDS']: [
     '违禁词配置，包含违禁词的内容会直接标记为垃圾评论。英文逗号分隔。',
-    '違禁詞配置，包含違禁詞嘅內容會直接標記為垃圾評論。英文逗號分隔。',
+    '違禁詞配置，包含違禁詞的內容會直接標記為垃圾評論。英文逗號分隔。',
     '違禁詞配置，包含違禁詞嘅內容會直接標記為垃圾評論。英文逗號分隔。',
     'Configure prohibited words. Comments containing prohibited words will be auto spammed. Separate by comma.'
   ],
   [S.ACI + '_GRAVATAR_CDN']: [
-    '自定义头像 CDN 地址。如：cn.gravatar.com, sdn.geekzu.org, gravatar.loli.net，默认：cn.gravatar.com',
-    '自定義頭像 CDN 地址。如：cn.gravatar.com, sdn.geekzu.org, gravatar.loli.net，預設：cn.gravatar.com',
-    '自定義頭像 CDN 地址。如：cn.gravatar.com, sdn.geekzu.org, gravatar.loli.net，預設：cn.gravatar.com',
-    'Custom avator CDN. (Examples: cn.gravatar.com, sdn.geekzu.org, gravatar.loli.net) Default: cn.gravatar.com.'
+    '自定义头像 CDN 地址。如：cn.gravatar.com, cravatar.cn, sdn.geekzu.org, gravatar.loli.net，默认：cravatar.cn',
+    '自定義頭像 CDN 地址。如：cn.gravatar.com, cravatar.cn, sdn.geekzu.org, gravatar.loli.net，預設：cravatar.cn',
+    '自定義頭像 CDN 地址。如：cn.gravatar.com, cravatar.cn, sdn.geekzu.org, gravatar.loli.net，預設：cravatar.cn',
+    'Custom avator CDN. (Examples: gravatar.com) Default: cravatar.cn.'
   ],
   [S.ACI + '_HIDE_ADMIN_CRYPT']: [
     '隐藏管理面板入口。可设置一个“暗号”，只有在“昵称”一栏输入相同的“暗号”时，管理面板入口才会显示，留空则不隐藏管理入口',
@@ -238,16 +326,28 @@ export default {
     'Code highlighting theme. Select from: default、coy、dark、funky、okaidia、solarizedlight、tomorrow、twilight. Visit https://prismjs.com for preview. If your theme conflicts with code highlighting, please set it to none. Default: none.'
   ],
   [S.ACI + '_IMAGE_CDN']: [
-    '插入图片所使用的图床，目前支持：7bu、qcloud，默认为：qcloud',
-    '插入圖片所使用的圖床，目前支持：7bu、qcloud，預設為：qcloud',
-    '插入圖片所使用的圖床，目前支援：7bu、qcloud，預設為：qcloud',
-    'The image bed for image uploading. Select from: 7bu、qcloud. Default: qcloud.'
+    '插入图片所使用的图床，目前支持：7bu、qcloud',
+    '插入圖片所使用的圖床，目前支持：7bu、qcloud',
+    '插入圖片所使用的圖床，目前支援：7bu、qcloud',
+    'The image bed for image uploading. Select from: 7bu、qcloud'
+  ],
+  [S.ACI + '_IMAGE_CDN_TOKEN']: [
+    '7bu 的图床 token',
+    '7bu 的图床 token',
+    '7bu 的图床 token',
+    'The image bed token for 7bu.'
   ],
   [S.ACI + '_LIMIT_PER_MINUTE']: [
-    '每个 IP 每 10 分钟最多发表多少条评论，默认：0（无限制）',
-    '每個 IP 每 10 分鐘最多發表多少條評論，預設：0（無限制）',
-    '每個 IP 每 10 分鐘最多發表多少條評論，預設：0（無限制）',
+    '每个 IP 每 10 分钟最多发表多少条评论，0 为无限制，默认：10',
+    '每個 IP 每 10 分鐘最多發表多少條評論，0 為無限制，預設：10',
+    '每個 IP 每 10 分鐘最多發表多少條評論，0 為無限制，預設：10',
     'How many comments can be posted by each IP every 10 minutes, default: 0 (unlimited).'
+  ],
+  [S.ACI + '_LIMIT_PER_MINUTE_ALL']: [
+    '所有 IP 每 10 分钟最多发表多少条评论，0 为无限制，默认：10',
+    '所有 IP 每 10 分鐘最多發表多少條評論，0 為無限制，預設：10',
+    '所有 IP 每 10 分鐘最多發表多少條評論，0 為無限制，預設：10',
+    'How many comments can be posted by all IPs every 10 minutes, default: 0 (unlimited).'
   ],
   [S.ACI + '_MAIL_SUBJECT']: [
     '自定义通知邮件主题，留空则使用默认主题。',
@@ -262,16 +362,16 @@ export default {
     'Custom admin Email notification subject. Leave it blank to use the default subject.'
   ],
   [S.ACI + '_MAIL_TEMPLATE']: [
-    '自定义通知邮件模板，留空则使用默认模板。可包含的字段：${SITE_URL}, ${SITE_NAME}, ${PARENT_NICK}, ${PARENT_COMMENT}, ${NICK}, ${COMMENT}, ${POST_URL}',
-    '自定義通知郵件模板，留空則使用預設模板。可包含的字段：${SITE_URL}, ${SITE_NAME}, ${PARENT_NICK}, ${PARENT_COMMENT}, ${NICK}, ${COMMENT}, ${POST_URL}',
-    '自定義通知郵件模板，留空則使用預設模板。可包含的欄位：${SITE_URL}, ${SITE_NAME}, ${PARENT_NICK}, ${PARENT_COMMENT}, ${NICK}, ${COMMENT}, ${POST_URL}',
-    'Custom Email notification template. Leave it blank to use the default template. Fields that can be included: ${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}'
+    '自定义通知邮件模板，留空则使用默认模板。可包含的字段：${SITE_URL}, ${SITE_NAME}, ${PARENT_NICK}, ${PARENT_COMMENT}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IMG}, ${PARENT_IMG}',
+    '自定義通知郵件模板，留空則使用預設模板。可包含的字段：${SITE_URL}, ${SITE_NAME}, ${PARENT_NICK}, ${PARENT_COMMENT}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IMG}, ${PARENT_IMG}',
+    '自定義通知郵件模板，留空則使用預設模板。可包含的欄位：${SITE_URL}, ${SITE_NAME}, ${PARENT_NICK}, ${PARENT_COMMENT}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IMG}, ${PARENT_IMG}',
+    'Custom Email notification template. Leave it blank to use the default template. Fields that can be included: ${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IMG}, ${PARENT_IMG}'
   ],
   [S.ACI + '_MAIL_TEMPLATE_ADMIN']: [
-    '自定义博主通知邮件模板，留空则使用默认模板。可包含的字段：${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}',
-    '自定義博主通知郵件模板，留空則使用預設模板。可包含的字段：${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}',
-    '自定義博主通知郵件模板，留空則使用預設模板。可包含的欄位：${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}',
-    'Custom admin Email notification template. Leave it blank to use the default template. Fields that can be included: ${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}'
+    '自定义博主通知邮件模板，留空则使用默认模板。可包含的字段：${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IP}, ${MAIL}, ${IMG}',
+    '自定義博主通知郵件模板，留空則使用預設模板。可包含的字段：${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IP}, ${MAIL}, ${IMG}',
+    '自定義博主通知郵件模板，留空則使用預設模板。可包含的欄位：${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IP}, ${MAIL}, ${IMG}',
+    'Custom admin Email notification template. Leave it blank to use the default template. Fields that can be included: ${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IP}, ${MAIL}, ${IMG}'
   ],
   [S.ACI + '_MASTER_TAG']: [
     '博主标识自定义文字，默认为 “博主”。',
@@ -285,12 +385,6 @@ export default {
     '垃圾評論是否發送通知，默認：true',
     'Notifications for spam comments. Default: true.'
   ],
-  [S.ACI + '_PUSH_PLUS_TOKEN']: [
-    '推送加（pushplus.hxtrip.com）推送的 Token',
-    '推送加（pushplus.hxtrip.com）推送的 Token',
-    '推送加（pushplus.hxtrip.com）推送的 Token',
-    'Push+ (pushplus.hxtrip.com) Token.'
-  ],
   [S.ACI + '_QCLOUD_SECRET_ID']: [
     '腾讯云 secret id，用于垃圾评论检测。同时设置腾讯云和 Akismet 时，只有腾讯云会生效。注册：https://twikoo.js.org/cms.html',
     '騰訊雲 secret id，用於垃圾評論檢測。同時設定騰訊雲和 Akismet 時，只有騰訊雲會生效。註冊：https://twikoo.js.org/cms.html',
@@ -303,11 +397,17 @@ export default {
     '騰訊雲 secret key',
     'Tencent Cloud secret key.'
   ],
-  [S.ACI + '_QM_SENDKEY']: [
-    'Qmsg酱（qmsg.zendee.cn）QQ推送的 KEY',
-    'Qmsg醬（qmsg.zendee.cn）QQ推送的 KEY',
-    'Qmsg醬（qmsg.zendee.cn）QQ推送的 KEY',
-    'Qmsg chan (qmsg.zendee.cn) KEY for QQ notification.'
+  [S.ACI + '_PUSHOO_CHANNEL']: [
+    `即时消息推送平台名称，支持：${pushooChannels.join('、')} 等`,
+    `即時消息推送平台名称，支持：${pushooChannels.join('、')} 等`,
+    `即時消息推送平台名称，支援：${pushooChannels.join('、')} 等`,
+    `IM notification push channel. Support: ${pushooChannels.join(', ')}`
+  ],
+  [S.ACI + '_PUSHOO_TOKEN']: [
+    '即时消息推送 token。请参考 https://pushoo.js.org 里的详细说明配置',
+    '即時消息推送 token。请参考 https://pushoo.js.org 里的详细说明配置',
+    '即時消息推送 token。请参考 https://pushoo.js.org 里的详细说明配置',
+    'IM notification push token. See https://pushoo.js.org for details'
   ],
   [S.ACI + '_REQUIRED_FIELDS']: [
     '评论必填信息，设为 nick,mail,link 代表全必填，设为 none 代表全选填，默认：nick,mail',
@@ -316,16 +416,10 @@ export default {
     'Required fields for comments. Set to "nick,mail,link" means all fields are required. Set to "none" means all fields are optional. Default: nick,mail.'
   ],
   [S.ACI + '_SC_MAIL_NOTIFY']: [
-    '是否同时通过微信和邮件 2 种方式通知博主，默认只通过微信通知博主，默认：false',
-    '是否同時通過微信和郵件 2 種方式通知博主，預設只通過微信通知博主，預設：false',
-    '是否同時通過微信和郵件 2 種方式通知博主，預設只通過微信通知博主，預設：false',
-    'Whether to notify admin via WeChat and email at the same time, the default is to notify admin only via WeChat. Default: false.'
-  ],
-  [S.ACI + '_SC_SENDKEY']: [
-    'Server酱（sc.ftqq.com）微信推送的 SCKEY',
-    'Server醬（sc.ftqq.com）微信推送的 SCKEY',
-    'Server醬（sc.ftqq.com）微信推送的 SCKEY',
-    'Server chan (sc.ftqq.com) SCKEY for WeChat notification.'
+    '是否同时通过 IM 和邮件 2 种方式通知博主，默认只通过 IM 通知博主，默认：false',
+    '是否同時通過 IM 和郵件 2 種方式通知博主，預設只通過 IM 通知博主，預設：false',
+    '是否同時通過 IM 和郵件 2 種方式通知博主，預設只通過 IM 通知博主，預設：false',
+    'Whether to notify admin via IM and email at the same time, the default is to notify admin only via IM. Default: false.'
   ],
   [S.ACI + '_SENDER_EMAIL']: [
     '邮件通知邮箱地址。对于大多数邮箱服务商，SENDER_EMAIL 必须和 SMTP_USER 保持一致，否则无法发送邮件。',
@@ -388,10 +482,10 @@ export default {
     'Custom TLS for SMTP. Enter "true" or "false". If you have configured SMTP_SERVICE, please leave it empty.'
   ],
   [S.ACI + '_SMTP_SERVICE']: [
-    '邮件通知邮箱服务商。支持："126", "163", "1und1", "AOL", "DebugMail", "DynectEmail", "FastMail", "GandiMail", "Gmail", "Godaddy", "GodaddyAsia", "GodaddyEurope", "Hotmail", "Mail.ru", "Maildev", "Mailgun", "Mailjet", "Mailosaur", "Mandrill", "Naver", "OpenMailBox", "Outlook365", "Postmark", "QQ", "QQex", "SES", "SES-EU-WEST-1", "SES-US-EAST-1", "SES-US-WEST-2", "SendCloud", "SendGrid", "SendPulse", "SendinBlue", "Sparkpost", "Yahoo", "Yandex", "Zoho", "hot.ee", "iCloud", "mail.ee", "qiye.aliyun"',
-    '郵件通知郵箱服務商。支持："126", "163", "1und1", "AOL", "DebugMail", "DynectEmail", "FastMail", "GandiMail", "Gmail", "Godaddy", "GodaddyAsia", "GodaddyEurope", "Hotmail", "Mail.ru", "Maildev", "Mailgun", "Mailjet", "Mailosaur", "Mandrill", "Naver", "OpenMailBox", "Outlook365", "Postmark", "QQ", "QQex", "SES", "SES-EU-WEST-1", "SES-US-EAST-1", "SES-US-WEST-2", "SendCloud", "SendGrid", "SendPulse", "SendinBlue", "Sparkpost", "Yahoo", "Yandex", "Zoho", "hot.ee", "iCloud", "mail.ee", "qiye.aliyun"',
-    '郵件通知郵箱服務商。支援："126", "163", "1und1", "AOL", "DebugMail", "DynectEmail", "FastMail", "GandiMail", "Gmail", "Godaddy", "GodaddyAsia", "GodaddyEurope", "Hotmail", "Mail.ru", "Maildev", "Mailgun", "Mailjet", "Mailosaur", "Mandrill", "Naver", "OpenMailBox", "Outlook365", "Postmark", "QQ", "QQex", "SES", "SES-EU-WEST-1", "SES-US-EAST-1", "SES-US-WEST-2", "SendCloud", "SendGrid", "SendPulse", "SendinBlue", "Sparkpost", "Yahoo", "Yandex", "Zoho", "hot.ee", "iCloud", "mail.ee", "qiye.aliyun"',
-    'Email service provider for Email notification. Support: "126", "163", "1und1", "AOL", "DebugMail", "DynectEmail", "FastMail", "GandiMail", "Gmail", "Godaddy", "GodaddyAsia", "GodaddyEurope", "Hotmail", "Mail.ru", "Maildev", "Mailgun", "Mailjet", "Mailosaur", "Mandrill", "Naver", "OpenMailBox", "Outlook365", "Postmark", "QQ", "QQex", "SES", "SES-EU-WEST-1", "SES-US-EAST-1", "SES-US-WEST-2", "SendCloud", "SendGrid", "SendPulse", "SendinBlue", "Sparkpost", "Yahoo", "Yandex", "Zoho", "hot.ee", "iCloud", "mail.ee", "qiye.aliyun"'
+    `邮件通知邮箱服务商。支持：${smtpServices.join('、')}`,
+    `郵件通知郵箱服務商。支持：${smtpServices.join('、')}`,
+    `郵件通知郵箱服務商。支援：${smtpServices.join('、')}`,
+    `Email service provider for Email notification. Support: ${smtpServices.join(', ')}`
   ],
   [S.ACI + '_SMTP_USER']: [
     '邮件通知邮箱用户名。',
@@ -645,6 +739,12 @@ export default {
     '展開',
     'Read more'
   ],
+  COMMENT_COLLAPSE: [
+    '收起',
+    '收起',
+    '收起',
+    'Collapse'
+  ],
   COMMENT_MASTER_TAG: [
     '博主',
     '博主',
@@ -659,14 +759,14 @@ export default {
   ],
   COMMENT_REVIEWING_TAG: [
     '审核中',
-    '审核中',
-    '审核中',
+    '審核中',
+    '審核中',
     'Reviewing'
   ],
   COMMENT_TOP_TAG: [
     '置顶',
-    '置顶',
-    '置顶',
+    '置頂',
+    '置頂',
     'Pinned'
   ],
   META_INPUT_LINK: [

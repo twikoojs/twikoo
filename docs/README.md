@@ -5,6 +5,7 @@
 [![](https://img.shields.io/npm/v/twikoo)](https://www.npmjs.com/package/twikoo)
 [![](https://img.shields.io/bundlephobia/minzip/twikoo)](https://bundlephobia.com/result?p=twikoo)
 [![](https://img.shields.io/npm/dt/twikoo)](https://www.npmjs.com/package/twikoo)
+[![](https://data.jsdelivr.com/v1/package/npm/twikoo/badge)](https://www.jsdelivr.com/package/npm/twikoo)
 [![](https://img.shields.io/npm/l/twikoo)](https://github.com/imaegoo/twikoo/blob/dev/LICENSE)
 
 一个简洁、安全、免费的静态网站评论系统，基于[腾讯云开发](https://curl.qcloud.com/KnnJtUom)。<br>
@@ -47,6 +48,8 @@ A simple, safe, free comment system based on Tencent CloudBase (tcb).
 * 支持邮件提醒（访客和博主）
 * 支持微信提醒（仅针对博主，基于 [Server酱](https://sc.ftqq.com/3.version)，需自行注册）
 * 支持 QQ 提醒（仅针对博主，基于 [Qmsg酱](https://qmsg.zendee.cn/)，需自行注册）
+* 支持 QQ 提醒（针对博主QQ或者群，基于 [go-cqhttp](https://docs.go-cqhttp.org/)，需自己有服务器）
+
 
 ### 个性
 

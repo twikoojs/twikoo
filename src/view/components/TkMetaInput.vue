@@ -14,13 +14,8 @@
 </template>
 
 <script>
+import { app } from '../index'
 import { isQQ, t } from '../../js/utils'
-
-const metaInputs = [
-  { key: 'nick', locale: t('META_INPUT_NICK'), name: 'nick', type: 'text' },
-  { key: 'mail', locale: t('META_INPUT_MAIL'), name: 'mail', type: 'email' },
-  { key: 'link', locale: t('META_INPUT_LINK'), name: 'link', type: 'text' }
-]
 
 // 邮箱正则表达式来自 https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#validation
 const mailRegExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
@@ -34,7 +29,11 @@ export default {
   },
   data () {
     return {
-      metaInputs,
+      metaInputs: [
+        { key: 'nick', locale: t('META_INPUT_NICK'), name: 'nick', type: 'text' },
+        { key: 'mail', locale: t('META_INPUT_MAIL'), name: 'mail', type: 'email' },
+        { key: 'link', locale: t('META_INPUT_LINK'), name: 'link', type: 'text' }
+      ],
       metaData: {
         nick: '',
         mail: '',
@@ -55,8 +54,9 @@ export default {
   methods: {
     t,
     initMeta () {
-      if (localStorage.getItem('twikoo')) {
-        const metaData = JSON.parse(localStorage.getItem('twikoo'))
+      const mStr = localStorage.getItem('twikoo')
+      if (mStr) {
+        const metaData = JSON.parse(mStr)
         this.metaData.nick = metaData.nick
         this.metaData.mail = metaData.mail
         this.metaData.link = metaData.link
@@ -134,6 +134,7 @@ export default {
     }
   },
   mounted () {
+    app.$on('initMeta', this.initMeta)
     this.initMeta()
   }
 }

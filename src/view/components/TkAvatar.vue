@@ -28,7 +28,7 @@ export default {
       if (this.config && this.config.GRAVATAR_CDN) {
         return this.config.GRAVATAR_CDN
       } else {
-        return 'cn.gravatar.com'
+        return 'cravatar.cn'
       }
     },
     defaultGravatar () {
@@ -77,7 +77,7 @@ export default {
   width: 1.6rem;
 }
 .tk-avatar.tk-has-avatar {
-  background-color: #90939920;
+  background-color: rgba(144,147,153,0.13);
 }
 .tk-avatar.tk-clickable {
   cursor: pointer;

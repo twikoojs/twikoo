@@ -1,5 +1,5 @@
 <template>
-  <div class="tk-comment" :id="comment.id" ref="tk-comment">
+  <div class="tk-comment" :id="comment.id" :class="{ 'tk-master': comment.master }" ref="tk-comment">
     <tk-avatar :config="config"
         :nick="comment.nick"
         :avatar="comment.avatar"
@@ -63,6 +63,7 @@
           @load="onLoad"
           @cancel="onCancel" />
       <div class="tk-expand" v-if="showExpand" @click="onExpand">{{ t('COMMENT_EXPAND') }}</div>
+      <div class="tk-expand _collapse" v-if="showCollapse" @click="onCollapse">{{ t('COMMENT_COLLAPSE') }}</div>
     </div>
   </div>
 </template>
@@ -146,6 +147,9 @@ export default {
     showExpand () {
       return this.hasExpand && !this.isExpanded
     },
+    showCollapse () {
+      return this.hasExpand && this.isExpanded
+    },
     convertedLink () {
       return convertLink(this.comment.link)
     }
@@ -161,7 +165,9 @@ export default {
     },
     showExpandIfNeed () {
       if (this.comment.replies && this.comment.replies.length > 0 && this.$refs['tk-replies']) {
-        this.hasExpand = this.$refs['tk-replies'].scrollHeight > 200
+        // 200 是回复区域最大高度
+        // 36 是展开按钮高度
+        this.hasExpand = this.$refs['tk-replies'].scrollHeight > 200 + 36
       }
     },
     scrollToComment () {
@@ -202,6 +208,9 @@ export default {
     },
     onExpand () {
       this.isExpanded = true
+    },
+    onCollapse () {
+      this.isExpanded = false
     },
     async checkAuth () {
       // 检查用户身份
@@ -321,26 +330,26 @@ export default {
   background-color: #f2f6fc;
 }
 .tk-tag-green {
-  background-color: #67c23a20;
-  border: 1px solid #67c23a80;
+  background-color: rgba(103,194,58,0.13);
+  border: 1px solid rgba(103,194,58,0.50);
   border-radius: 2px;
   color: #67c23a;
 }
 .tk-tag-yellow {
-  background-color: #e6a23c20;
-  border: 1px solid #e6a23c80;
+  background-color: rgba(230,162,60,0.13);
+  border: 1px solid rgba(230,162,60,0.50);
   border-radius: 2px;
   color: #e6a23c;
 }
 .tk-tag-blue {
-  background-color: #409eff20;
-  border: 1px solid #409eff80;
+  background-color: rgba(64,158,255,0.13);
+  border: 1px solid rgba(64,158,255,0.50);
   border-radius: 2px;
   color: #409eff;
 }
 .tk-tag-red {
-  background-color: #f56c6c20;
-  border: 1px solid #f56c6c80;
+  background-color: rgba(245,108,108,0.13);
+  border: 1px solid rgba(245,108,108,0.50);
   border-radius: 2px;
   color: #f56c6c;
 }

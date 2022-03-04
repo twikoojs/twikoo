@@ -10,6 +10,64 @@ const S = {
   AI: 'ADMIN_IMPORT'
 }
 
+const pushooChannels = [
+  'qmsg',
+  'serverchain',
+  'pushplus',
+  'pushplushxtrip',
+  'dingtalk',
+  'wecom',
+  'bark',
+  'gocqhttp',
+  'pushdeer',
+  'igot',
+  'telegram'
+].map(s => `"${s}"`)
+
+const smtpServices = [
+  '126',
+  '163',
+  '1und1',
+  'AOL',
+  'DebugMail',
+  'DynectEmail',
+  'FastMail',
+  'GandiMail',
+  'Gmail',
+  'Godaddy',
+  'GodaddyAsia',
+  'GodaddyEurope',
+  'Hotmail',
+  'Mail.ru',
+  'Maildev',
+  'Mailgun',
+  'Mailjet',
+  'Mailosaur',
+  'Mandrill',
+  'Naver',
+  'OpenMailBox',
+  'Outlook365',
+  'Postmark',
+  'QQ',
+  'QQex',
+  'SES',
+  'SES-EU-WEST-1',
+  'SES-US-EAST-1',
+  'SES-US-WEST-2',
+  'SendCloud',
+  'SendGrid',
+  'SendPulse',
+  'SendinBlue',
+  'Sparkpost',
+  'Yahoo',
+  'Yandex',
+  'Zoho',
+  'hot.ee',
+  'iCloud',
+  'mail.ee',
+  'qiye.aliyun'
+].map(s => `"${s}"`)
+
 /**
  * 把所有语言翻译放在同一对象下可以减小打包 js 的体积 (~17kb)
  *
@@ -340,16 +398,16 @@ export default {
     'Tencent Cloud secret key.'
   ],
   [S.ACI + '_PUSHOO_CHANNEL']: [
-    '即时消息推送渠道（缩写）。参考：https://pushoo.js.org',
-    '即時消息推送管道（縮寫）。參考：https://pushoo.js.org',
-    '即時消息推送管道（縮寫）。參考：https://pushoo.js.org',
-    'IM notification push channel. doc: https://pushoo.js.org'
+    `即时消息推送平台名称，支持：${pushooChannels.join('、')} 等`,
+    `即時消息推送平台名称，支持：${pushooChannels.join('、')} 等`,
+    `即時消息推送平台名称，支援：${pushooChannels.join('、')} 等`,
+    `IM notification push channel. Support: ${pushooChannels.join(', ')}`
   ],
   [S.ACI + '_PUSHOO_TOKEN']: [
-    '即时消息推送 token',
-    '即時消息推送 token',
-    '即時消息推送 token',
-    'IM notification push token'
+    '即时消息推送 token。请参考 https://pushoo.js.org 里的详细说明配置',
+    '即時消息推送 token。请参考 https://pushoo.js.org 里的详细说明配置',
+    '即時消息推送 token。请参考 https://pushoo.js.org 里的详细说明配置',
+    'IM notification push token. See https://pushoo.js.org for details'
   ],
   [S.ACI + '_REQUIRED_FIELDS']: [
     '评论必填信息，设为 nick,mail,link 代表全必填，设为 none 代表全选填，默认：nick,mail',
@@ -424,10 +482,10 @@ export default {
     'Custom TLS for SMTP. Enter "true" or "false". If you have configured SMTP_SERVICE, please leave it empty.'
   ],
   [S.ACI + '_SMTP_SERVICE']: [
-    '邮件通知邮箱服务商。支持："126", "163", "1und1", "AOL", "DebugMail", "DynectEmail", "FastMail", "GandiMail", "Gmail", "Godaddy", "GodaddyAsia", "GodaddyEurope", "Hotmail", "Mail.ru", "Maildev", "Mailgun", "Mailjet", "Mailosaur", "Mandrill", "Naver", "OpenMailBox", "Outlook365", "Postmark", "QQ", "QQex", "SES", "SES-EU-WEST-1", "SES-US-EAST-1", "SES-US-WEST-2", "SendCloud", "SendGrid", "SendPulse", "SendinBlue", "Sparkpost", "Yahoo", "Yandex", "Zoho", "hot.ee", "iCloud", "mail.ee", "qiye.aliyun"',
-    '郵件通知郵箱服務商。支持："126", "163", "1und1", "AOL", "DebugMail", "DynectEmail", "FastMail", "GandiMail", "Gmail", "Godaddy", "GodaddyAsia", "GodaddyEurope", "Hotmail", "Mail.ru", "Maildev", "Mailgun", "Mailjet", "Mailosaur", "Mandrill", "Naver", "OpenMailBox", "Outlook365", "Postmark", "QQ", "QQex", "SES", "SES-EU-WEST-1", "SES-US-EAST-1", "SES-US-WEST-2", "SendCloud", "SendGrid", "SendPulse", "SendinBlue", "Sparkpost", "Yahoo", "Yandex", "Zoho", "hot.ee", "iCloud", "mail.ee", "qiye.aliyun"',
-    '郵件通知郵箱服務商。支援："126", "163", "1und1", "AOL", "DebugMail", "DynectEmail", "FastMail", "GandiMail", "Gmail", "Godaddy", "GodaddyAsia", "GodaddyEurope", "Hotmail", "Mail.ru", "Maildev", "Mailgun", "Mailjet", "Mailosaur", "Mandrill", "Naver", "OpenMailBox", "Outlook365", "Postmark", "QQ", "QQex", "SES", "SES-EU-WEST-1", "SES-US-EAST-1", "SES-US-WEST-2", "SendCloud", "SendGrid", "SendPulse", "SendinBlue", "Sparkpost", "Yahoo", "Yandex", "Zoho", "hot.ee", "iCloud", "mail.ee", "qiye.aliyun"',
-    'Email service provider for Email notification. Support: "126", "163", "1und1", "AOL", "DebugMail", "DynectEmail", "FastMail", "GandiMail", "Gmail", "Godaddy", "GodaddyAsia", "GodaddyEurope", "Hotmail", "Mail.ru", "Maildev", "Mailgun", "Mailjet", "Mailosaur", "Mandrill", "Naver", "OpenMailBox", "Outlook365", "Postmark", "QQ", "QQex", "SES", "SES-EU-WEST-1", "SES-US-EAST-1", "SES-US-WEST-2", "SendCloud", "SendGrid", "SendPulse", "SendinBlue", "Sparkpost", "Yahoo", "Yandex", "Zoho", "hot.ee", "iCloud", "mail.ee", "qiye.aliyun"'
+    `邮件通知邮箱服务商。支持：${smtpServices.join('、')}`,
+    `郵件通知郵箱服務商。支持：${smtpServices.join('、')}`,
+    `郵件通知郵箱服務商。支援：${smtpServices.join('、')}`,
+    `Email service provider for Email notification. Support: ${smtpServices.join(', ')}`
   ],
   [S.ACI + '_SMTP_USER']: [
     '邮件通知邮箱用户名。',

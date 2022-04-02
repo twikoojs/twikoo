@@ -1000,7 +1000,12 @@ async function noticePushoo (comment) {
   const sendResult = await pushoo(config.PUSHOO_CHANNEL, {
     token: config.PUSHOO_TOKEN,
     title: pushContent.subject,
-    content: pushContent.content
+    content: pushContent.content,
+    options: {
+      bark: {
+        url: pushContent.url
+      }
+    }
   })
   console.log('即时消息通知结果：', sendResult)
 }
@@ -1024,7 +1029,8 @@ function getIMPushContent (comment) {
 原文链接：[${POST_URL}](${POST_URL})`
   return {
     subject,
-    content
+    content,
+    url: POST_URL
   }
 }
 

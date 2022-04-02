@@ -338,15 +338,15 @@ export default {
     'The image bed token for 7bu.'
   ],
   [S.ACI + '_LIMIT_PER_MINUTE']: [
-    '每个 IP 每 10 分钟最多发表多少条评论，0 为无限制，默认：10',
-    '每個 IP 每 10 分鐘最多發表多少條評論，0 為無限制，預設：10',
-    '每個 IP 每 10 分鐘最多發表多少條評論，0 為無限制，預設：10',
+    '单个 IP 发言频率限制（条/10分钟），0 为无限制，默认：10',
+    '單個 IP 發言頻率限制（條/10分鐘），0 為無限制，預設：10',
+    '單個 IP 發言頻率限制（條/10分鐘），0 為無限制，預設：10',
     'How many comments can be posted by each IP every 10 minutes, default: 0 (unlimited).'
   ],
   [S.ACI + '_LIMIT_PER_MINUTE_ALL']: [
-    '所有 IP 每 10 分钟最多发表多少条评论，0 为无限制，默认：10',
-    '所有 IP 每 10 分鐘最多發表多少條評論，0 為無限制，預設：10',
-    '所有 IP 每 10 分鐘最多發表多少條評論，0 為無限制，預設：10',
+    '全站发言频率限制（条/10分钟），0 为无限制，默认：10',
+    '全站發言頻率限制（條/10分鐘），0 為無限制，預設：10',
+    '全站發言頻率限制（條/10分鐘），0 為無限制，預設：10',
     'How many comments can be posted by all IPs every 10 minutes, default: 0 (unlimited).'
   ],
   [S.ACI + '_MAIL_SUBJECT']: [

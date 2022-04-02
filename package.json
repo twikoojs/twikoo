@@ -1,6 +1,6 @@
 {
   "name": "twikoo",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "A simple comment system based on Tencent CloudBase (tcb).",
   "keywords": ["twikoojs", "comment", "comment-system", "cloudbase", "vercel"],
   "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",

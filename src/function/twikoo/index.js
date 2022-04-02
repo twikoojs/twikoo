@@ -992,7 +992,7 @@ async function noticePushoo (comment) {
     content: pushContent.content,
     options: {
       bark: {
-        url: pushContent.POST_URL
+        url: pushContent.url
       }
     }
   })
@@ -1019,7 +1019,7 @@ function getIMPushContent (comment) {
   return {
     subject,
     content,
-    POST_URL
+    url: POST_URL
   }
 }
 

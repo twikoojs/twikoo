@@ -10,6 +10,7 @@
             v-model="comment"
             :placeholder="commentPlaceholder"
             :autosize="{ minRows: 3 }"
+            :maxlength="maxLength"
             @input="onCommentInput"
             @keyup.enter.native="onEnterKeyUp($event)" />
       </div>
@@ -109,6 +110,11 @@ export default {
       let ph = this.$twikoo.placeholder || this.config.COMMENT_PLACEHOLDER || ''
       ph = ph.replace(/<br>/g, '\n')
       return ph
+    },
+    maxLength () {
+      let limitLength = parseInt(this.config.LIMIT_LENGTH)
+      if (Number.isNaN(limitLength)) limitLength = 10000
+      return limitLength
     }
   },
   methods: {

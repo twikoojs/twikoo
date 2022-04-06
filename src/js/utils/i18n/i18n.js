@@ -341,13 +341,19 @@ export default {
     '单个 IP 发言频率限制（条/10分钟），0 为无限制，默认：10',
     '單個 IP 發言頻率限制（條/10分鐘），0 為無限制，預設：10',
     '單個 IP 發言頻率限制（條/10分鐘），0 為無限制，預設：10',
-    'How many comments can be posted by each IP every 10 minutes, default: 0 (unlimited).'
+    'How many comments can be posted by each IP every 10 minutes, 0 is unlimited, default: 10.'
   ],
   [S.ACI + '_LIMIT_PER_MINUTE_ALL']: [
     '全站发言频率限制（条/10分钟），0 为无限制，默认：10',
     '全站發言頻率限制（條/10分鐘），0 為無限制，預設：10',
     '全站發言頻率限制（條/10分鐘），0 為無限制，預設：10',
-    'How many comments can be posted by all IPs every 10 minutes, default: 0 (unlimited).'
+    'How many comments can be posted by all IPs every 10 minutes, 0 is unlimited, default: 10.'
+  ],
+  [S.ACI + '_LIMIT_LENGTH']: [
+    '评论长度限制，0 为无限制，默认：10000',
+    '评论长度限制，0 為無限制，預設：10000',
+    '评论长度限制，0 為無限制，預設：10000',
+    'Comment length limitation, 0 is unlimited, default: 10000.'
   ],
   [S.ACI + '_MAIL_SUBJECT']: [
     '自定义通知邮件主题，留空则使用默认主题。',

@@ -1174,6 +1174,12 @@ async function limitFilter () {
 
 // 预垃圾评论检测
 function preCheckSpam (comment) {
+  // 长度限制
+  let limitLength = parseInt(config.LIMIT_LENGTH)
+  if (Number.isNaN(limitLength)) limitLength = 10000
+  if (limitLength && comment.length > limitLength) {
+    throw new Error('评论内容过长')
+  }
   if (config.AKISMET_KEY === 'MANUAL_REVIEW') {
     // 人工审核
     console.log('已使用人工审核模式，评论审核后才会发表~')
@@ -1504,7 +1510,8 @@ async function getConfig () {
       REQUIRED_FIELDS: config.REQUIRED_FIELDS,
       HIDE_ADMIN_CRYPT: config.HIDE_ADMIN_CRYPT,
       HIGHLIGHT: config.HIGHLIGHT || 'true',
-      HIGHLIGHT_THEME: config.HIGHLIGHT_THEME
+      HIGHLIGHT_THEME: config.HIGHLIGHT_THEME,
+      LIMIT_LENGTH: config.LIMIT_LENGTH
     }
   }
 }

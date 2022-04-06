@@ -351,8 +351,8 @@ export default {
   ],
   [S.ACI + '_LIMIT_LENGTH']: [
     '评论长度限制，0 为无限制，默认：10000',
-    '评论长度限制，0 為無限制，預設：10000',
-    '评论长度限制，0 為無限制，預設：10000',
+    '評論長度限制，0 為無限制，預設：10000',
+    '評論長度限制，0 為無限制，預設：10000',
     'Comment length limitation, 0 is unlimited, default: 10000.'
   ],
   [S.ACI + '_MAIL_SUBJECT']: [

@@ -22,7 +22,7 @@
 <script>
 import ParentLayout from '@parent-theme/layouts/Layout.vue'
 
-const envId = 'https://twikoo-js-org.vercel.app'
+const envId = 'https://twikoo.vercel.app'
 
 export default {
   name: 'Layout',

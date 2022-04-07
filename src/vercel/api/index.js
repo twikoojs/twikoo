@@ -46,7 +46,7 @@ const RES_CODE = {
   AKISMET_ERROR: 1030,
   UPLOAD_FAILED: 1040
 }
-const MAX_REQUEST_TIMES = 250
+const MAX_REQUEST_TIMES = parseInt(process.env.TWIKOO_THROTTLE) || 250
 
 // 全局变量 / variables
 let db = null
@@ -65,8 +65,8 @@ module.exports = async (requestArg, responseArg) => {
   console.log('请求方法：', event.event)
   console.log('请求参数：', event)
   let res = {}
-  protect()
   try {
+    protect()
     anonymousSignIn()
     await connectToDatabase(process.env.MONGODB_URI)
     await readConfig()

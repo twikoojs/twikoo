@@ -50,7 +50,7 @@ const RES_CODE = {
   UPLOAD_FAILED: 1040
 }
 const ADMIN_USER_ID = 'admin'
-const MAX_REQUEST_TIMES = 250
+const MAX_REQUEST_TIMES = parseInt(process.env.TWIKOO_THROTTLE) || 250
 
 // 全局变量 / variables
 // 警告：全局定义的变量，会被云函数缓存，请慎重定义全局变量
@@ -65,9 +65,9 @@ exports.main = async (event, context) => {
   console.log('请求方法：', event.event)
   console.log('请求参数：', event)
   let res = {}
-  protect()
-  await readConfig()
   try {
+    protect()
+    await readConfig()
     switch (event.event) {
       case 'GET_FUNC_VERSION':
         res = getFuncVersion()

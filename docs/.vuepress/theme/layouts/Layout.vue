@@ -13,7 +13,7 @@
 
         <!-- Twikoo -->
         <div id="twikoo"></div>
-        <script src="https://cdn.jsdelivr.net/npm/twikoo@1.5.2/dist/twikoo.all.min.js" ref="twikooJs"></script>
+        <script src="https://cdn.jsdelivr.net/npm/twikoo@1.5.3/dist/twikoo.all.min.js" ref="twikooJs"></script>
       </div>
     </template>
   </ParentLayout>

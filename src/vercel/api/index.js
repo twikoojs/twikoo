@@ -46,6 +46,7 @@ const RES_CODE = {
   AKISMET_ERROR: 1030,
   UPLOAD_FAILED: 1040
 }
+const MAX_REQUEST_TIMES = 250
 
 // 全局变量 / variables
 let db = null
@@ -54,14 +55,17 @@ let transporter
 let request
 let response
 let accessToken
+const requestTimes = {}
 
 module.exports = async (requestArg, responseArg) => {
   request = requestArg
   response = responseArg
   const event = request.body || {}
+  console.log('请求ＩＰ：', request.headers['x-real-ip'])
   console.log('请求方法：', event.event)
   console.log('请求参数：', event)
   let res = {}
+  protect()
   try {
     anonymousSignIn()
     await connectToDatabase(process.env.MONGODB_URI)
@@ -1545,6 +1549,15 @@ async function setConfig (event) {
       code: RES_CODE.NEED_LOGIN,
       message: '请先登录'
     }
+  }
+}
+
+function protect () {
+  // 防御
+  const ip = request.headers['x-real-ip']
+  requestTimes[ip] = (requestTimes[ip] || 0) + 1
+  if (requestTimes[ip] > MAX_REQUEST_TIMES) {
+    throw new Error('Too Many Requests')
   }
 }
 

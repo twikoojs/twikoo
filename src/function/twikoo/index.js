@@ -50,18 +50,22 @@ const RES_CODE = {
   UPLOAD_FAILED: 1040
 }
 const ADMIN_USER_ID = 'admin'
+const MAX_REQUEST_TIMES = 250
 
 // 全局变量 / variables
 // 警告：全局定义的变量，会被云函数缓存，请慎重定义全局变量
 // 参考 https://docs.cloudbase.net/cloud-function/deep-principle.html 中的 “实例复用”
 let config
 let transporter
+const requestTimes = {}
 
 // 云函数入口点 / entry point
 exports.main = async (event, context) => {
+  console.log('请求ＩＰ：', auth.getClientIP())
   console.log('请求方法：', event.event)
   console.log('请求参数：', event)
   let res = {}
+  protect()
   await readConfig()
   try {
     switch (event.event) {
@@ -1538,6 +1542,15 @@ async function setConfig (event) {
       code: RES_CODE.NEED_LOGIN,
       message: '请先登录'
     }
+  }
+}
+
+function protect () {
+  // 防御
+  const ip = auth.getClientIP()
+  requestTimes[ip] = (requestTimes[ip] || 0) + 1
+  if (requestTimes[ip] > MAX_REQUEST_TIMES) {
+    throw new Error('Too Many Requests')
   }
 }
 

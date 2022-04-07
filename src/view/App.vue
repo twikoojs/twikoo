@@ -112,6 +112,10 @@ export default {
   background-color: transparent;
   backdrop-filter: opacity(20%);
 }
+.twikoo .el-textarea .el-input__count {
+  color: currentColor;
+  background: transparent;
+}
 .tk-admin-warn {
   padding: 1rem 1.5rem;
   background-color: #fff7d0;

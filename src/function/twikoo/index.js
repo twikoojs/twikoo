@@ -1550,8 +1550,10 @@ function protect () {
   const ip = auth.getClientIP()
   requestTimes[ip] = (requestTimes[ip] || 0) + 1
   if (requestTimes[ip] > MAX_REQUEST_TIMES) {
-    console.log(`${ip} 已超过最大请求次数，当前请求次数为 ${requestTimes[ip]}`)
+    console.log(`${ip} 当前请求次数为 ${requestTimes[ip]}，已超过最大请求次数`)
     throw new Error('Too Many Requests')
+  } else {
+    console.log(`${ip} 当前请求次数为 ${requestTimes[ip]}`)
   }
 }
 

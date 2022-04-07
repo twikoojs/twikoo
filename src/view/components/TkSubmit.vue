@@ -8,6 +8,7 @@
             type="textarea"
             ref="textarea"
             v-model="comment"
+            show-word-limit
             :placeholder="commentPlaceholder"
             :autosize="{ minRows: 3 }"
             :maxlength="maxLength"
@@ -113,7 +114,7 @@ export default {
     },
     maxLength () {
       let limitLength = parseInt(this.config.LIMIT_LENGTH)
-      if (Number.isNaN(limitLength)) limitLength = 10000
+      if (Number.isNaN(limitLength)) limitLength = 500
       return limitLength
     }
   },

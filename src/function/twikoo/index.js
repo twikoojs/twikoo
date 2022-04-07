@@ -1174,7 +1174,7 @@ async function limitFilter () {
 function preCheckSpam (comment) {
   // 长度限制
   let limitLength = parseInt(config.LIMIT_LENGTH)
-  if (Number.isNaN(limitLength)) limitLength = 10000
+  if (Number.isNaN(limitLength)) limitLength = 500
   if (limitLength && comment.length > limitLength) {
     throw new Error('评论内容过长')
   }

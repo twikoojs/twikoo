@@ -350,10 +350,10 @@ export default {
     'How many comments can be posted by all IPs every 10 minutes, 0 is unlimited, default: 10.'
   ],
   [S.ACI + '_LIMIT_LENGTH']: [
-    '评论长度限制，0 为无限制，默认：10000',
-    '評論長度限制，0 為無限制，預設：10000',
-    '評論長度限制，0 為無限制，預設：10000',
-    'Comment length limitation, 0 is unlimited, default: 10000.'
+    '评论长度限制，0 为无限制，默认：500',
+    '評論長度限制，0 為無限制，預設：500',
+    '評論長度限制，0 為無限制，預設：500',
+    'Comment length limitation, 0 is unlimited, default: 500.'
   ],
   [S.ACI + '_MAIL_SUBJECT']: [
     '自定义通知邮件主题，留空则使用默认主题。',

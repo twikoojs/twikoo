@@ -50,20 +50,24 @@ const RES_CODE = {
   UPLOAD_FAILED: 1040
 }
 const ADMIN_USER_ID = 'admin'
+const MAX_REQUEST_TIMES = parseInt(process.env.TWIKOO_THROTTLE) || 250
 
 // 全局变量 / variables
 // 警告：全局定义的变量，会被云函数缓存，请慎重定义全局变量
 // 参考 https://docs.cloudbase.net/cloud-function/deep-principle.html 中的 “实例复用”
 let config
 let transporter
+const requestTimes = {}
 
 // 云函数入口点 / entry point
 exports.main = async (event, context) => {
+  console.log('请求ＩＰ：', auth.getClientIP())
   console.log('请求方法：', event.event)
   console.log('请求参数：', event)
   let res = {}
-  await readConfig()
   try {
+    protect()
+    await readConfig()
     switch (event.event) {
       case 'GET_FUNC_VERSION':
         res = getFuncVersion()
@@ -1168,6 +1172,12 @@ async function limitFilter () {
 
 // 预垃圾评论检测
 function preCheckSpam (comment) {
+  // 长度限制
+  let limitLength = parseInt(config.LIMIT_LENGTH)
+  if (Number.isNaN(limitLength)) limitLength = 500
+  if (limitLength && comment.length > limitLength) {
+    throw new Error('评论内容过长')
+  }
   if (config.AKISMET_KEY === 'MANUAL_REVIEW') {
     // 人工审核
     console.log('已使用人工审核模式，评论审核后才会发表~')
@@ -1497,7 +1507,8 @@ function getConfig () {
       REQUIRED_FIELDS: config.REQUIRED_FIELDS,
       HIDE_ADMIN_CRYPT: config.HIDE_ADMIN_CRYPT,
       HIGHLIGHT: config.HIGHLIGHT || 'true',
-      HIGHLIGHT_THEME: config.HIGHLIGHT_THEME
+      HIGHLIGHT_THEME: config.HIGHLIGHT_THEME,
+      LIMIT_LENGTH: config.LIMIT_LENGTH
     }
   }
 }
@@ -1531,6 +1542,18 @@ async function setConfig (event) {
       code: RES_CODE.NEED_LOGIN,
       message: '请先登录'
     }
+  }
+}
+
+function protect () {
+  // 防御
+  const ip = auth.getClientIP()
+  requestTimes[ip] = (requestTimes[ip] || 0) + 1
+  if (requestTimes[ip] > MAX_REQUEST_TIMES) {
+    console.log(`${ip} 当前请求次数为 ${requestTimes[ip]}，已超过最大请求次数`)
+    throw new Error('Too Many Requests')
+  } else {
+    console.log(`${ip} 当前请求次数为 ${requestTimes[ip]}`)
   }
 }
 

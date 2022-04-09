@@ -91,7 +91,7 @@ exports.main = async (event, context) => {
         res = await commentLike(event)
         break
       case 'COMMENT_SUBMIT':
-        res = await commentSubmit(event)
+        res = await commentSubmit(event, context)
         break
       case 'POST_SUBMIT':
         res = await postSubmit(event.comment, context)
@@ -838,7 +838,7 @@ async function like (id, uid) {
  * @param {String} event.pid 回复的 ID
  * @param {String} event.rid 评论楼 ID
  */
-async function commentSubmit (event) {
+async function commentSubmit (event, context) {
   const res = {}
   // 参数校验
   validate(event, ['url', 'ua', 'comment'])
@@ -852,7 +852,7 @@ async function commentSubmit (event) {
   // 异步垃圾检测、发送评论通知
   try {
     await app.callFunction({
-      name: 'twikoo',
+      name: context.function_name,
       data: { event: 'POST_SUBMIT', comment }
     }, { timeout: 300 }) // 设置较短的 timeout 来实现异步
   } catch (e) {

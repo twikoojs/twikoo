@@ -12,16 +12,18 @@ const S = {
 
 const pushooChannels = [
   'qmsg',
-  'serverchain',
+  'serverchan',
   'pushplus',
   'pushplushxtrip',
   'dingtalk',
   'wecom',
   'bark',
   'gocqhttp',
+  'atri',
   'pushdeer',
   'igot',
-  'telegram'
+  'telegram',
+  'feishu'
 ].map(s => `"${s}"`)
 
 const smtpServices = [

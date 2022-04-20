@@ -1403,9 +1403,9 @@ async function emailTest (event) {
   const isAdminUser = await isAdmin()
   if (isAdminUser) {
     try {
-      if (!transporter) {
-        await initMailer({ throwErr: true })
-      }
+      // 邮件测试前清除 transporter，保证读取的是最新的配置
+      transporter = null
+      await initMailer({ throwErr: true })
       const sendResult = await transporter.sendMail({
         from: config.SENDER_EMAIL,
         to: event.mail || config.BLOGGER_EMAIL || config.SENDER_EMAIL,
@@ -1427,21 +1427,16 @@ async function uploadImage (event) {
   const { photo, fileName } = event
   const res = {}
   try {
-    if (!config.IMAGE_CDN_TOKEN) {
+    if (!config.IMAGE_CDN || !config.IMAGE_CDN_TOKEN) {
       throw new Error('未配置图片上传服务')
     }
-    const formData = new FormData()
-    formData.append('image', base64UrlToReadStream(photo, fileName))
-    const uploadResult = await axios.post('https://7bu.top/api/upload', formData, {
-      headers: {
-        ...formData.getHeaders(),
-        token: config.IMAGE_CDN_TOKEN
-      }
-    })
-    if (uploadResult.data.code === 200) {
-      res.data = uploadResult.data.data
-    } else {
-      throw new Error(uploadResult.data.msg)
+    // tip: qcloud 图床走前端上传，其他图床走后端上传
+    if (config.IMAGE_CDN === '7bu') {
+      uploadImageTo7Bu({ photo, fileName, config, res })
+    } else if (config.IMAGE_CDN === 'smms') {
+      uploadImageToSmms({ photo, fileName, config, res })
+    } else if (isUrl(config.IMAGE_CDN)) {
+      uploadImageToLsky({ photo, fileName, config, res })
     }
   } catch (e) {
     console.error(e)
@@ -1451,11 +1446,67 @@ async function uploadImage (event) {
   return res
 }
 
+function uploadImageTo7Bu ({ photo, fileName, config, res }) {
+  // 去不图床旧版本 https://7bu.top
+  // TODO: 2022 年 4 月 30 日后去不图床将会升级新版本，此处逻辑要同步更新
+  const formData = new FormData()
+  formData.append('image', base64UrlToReadStream(photo, fileName))
+  const uploadResult = await axios.post('https://7bu.top/api/upload', formData, {
+    headers: {
+      ...formData.getHeaders(),
+      token: config.IMAGE_CDN_TOKEN
+    }
+  })
+  if (uploadResult.data.code === 200) {
+    res.data = uploadResult.data.data
+  } else {
+    throw new Error(uploadResult.data.msg)
+  }
+}
+
+function uploadImageToSmms ({ photo, fileName, config, res }) {
+  // SM.MS 图床 https://sm.ms
+  const formData = new FormData()
+  formData.append('smfile', base64UrlToReadStream(photo, fileName))
+  const uploadResult = await axios.post('https://sm.ms/api/v2/upload', formData, {
+    headers: {
+      ...formData.getHeaders(),
+      Authorization: config.IMAGE_CDN_TOKEN
+    }
+  })
+  if (uploadResult.data.code === 200) {
+    res.data = uploadResult.data.data
+  } else {
+    throw new Error(uploadResult.data.message)
+  }
+}
+
+function uploadImageToLsky ({ photo, fileName, config, res }) {
+  // 自定义兰空图床（v2）URL
+  const formData = new FormData()
+  formData.append('image', base64UrlToReadStream(photo, fileName)) // TODO
+  const uploadResult = await axios.post(config.IMAGE_CDN, formData, {
+    headers: {
+      ...formData.getHeaders(),
+      token: config.IMAGE_CDN_TOKEN // TODO
+    }
+  })
+  if (uploadResult.data.code === 200) {
+    res.data = uploadResult.data.data // TODO
+  } else {
+    throw new Error(uploadResult.data.msg) // TODO
+  }
+}
+
 function base64UrlToReadStream (base64Url, fileName) {
   const base64 = base64Url.split(';base64,').pop()
   const path = `/tmp/${fileName}`
   fs.writeFileSync(path, base64, { encoding: 'base64' })
   return fs.createReadStream(path)
+}
+
+function isUrl (s) {
+  return /^http(s)?:\/\//.test(s)
 }
 
 function getAvatar (comment) {

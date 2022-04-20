@@ -1484,17 +1484,23 @@ async function uploadImageToSmms ({ photo, fileName, config, res }) {
 async function uploadImageToLsky ({ photo, fileName, config, res }) {
   // 自定义兰空图床（v2）URL
   const formData = new FormData()
-  formData.append('image', base64UrlToReadStream(photo, fileName)) // TODO
-  const uploadResult = await axios.post(config.IMAGE_CDN, formData, {
+  formData.append('file', base64UrlToReadStream(photo, fileName))
+  const url = `${config.IMAGE_CDN}/api/v1/upload`
+  let token = config.IMAGE_CDN_TOKEN
+  if (!token.startsWith('Bearer')) {
+    token = `Bearer ${token}`
+  }
+  const uploadResult = await axios.post(url, formData, {
     headers: {
       ...formData.getHeaders(),
-      token: config.IMAGE_CDN_TOKEN // TODO
+      Authorization: token
     }
   })
-  if (uploadResult.data.code === 200) {
-    res.data = uploadResult.data.data // TODO
+  if (uploadResult.data.status) {
+    res.data = uploadResult.data.data
+    res.data.url = res.data.links.url
   } else {
-    throw new Error(uploadResult.data.msg) // TODO
+    throw new Error(uploadResult.data.message)
   }
 }
 

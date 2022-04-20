@@ -114,6 +114,11 @@ Akismet (Automattic Kismet) 是应用广泛的一个垃圾留言过滤系统，�
 
 ## Vercel 无法上传图片？
 
-腾讯云环境自带云存储，所以腾讯云环境下可以直接上传图片，图片保存在云存储中。然而 Vercel 环境没有，上传图片功能依赖[去不图床](https://7bu.top/)，请前往 https://7bu.top/ 支持杜老师（图床作者），获得图床账号后，到管理面板中配置图床 token。
+腾讯云环境自带云存储，所以腾讯云环境下可以直接上传图片，图片保存在云存储中。然而 Vercel 环境没有，上传图片功能依赖第三方图床，请在管理面板中配置图床，Twikoo 支持以下图床：
 
-如果您不愿意付费，您仍可以使用杜老师提供的 [去不图床 Twikoo 专享 api token](https://github.com/imaegoo/twikoo/discussions/318)，到管理面板中配置该 token、
+| 图床 | 地址 | 特点 |
+| ---- | ---- | ---- |
+| qcloud | 无 | 腾讯云环境自带，可在云开发 - 云存储中查看 |
+| 7bu | https://7bu.top | 去不图床，由杜老师提供支持，无免费套餐 |
+| smms | https://sm.ms | SMMS 图床，有免费套餐，请自行注册账号，`IMAGE_CDN_TOKEN` 可在 [Dashboard](https://sm.ms/home/apitoken) 中获取 |
+| [lsky-pro](https://www.lsky.pro) | 私有部署 | 兰空图床 2.0 版本，`IMAGE_CDN` 请配置图床首页 URL 地址（如 `https://test.7bu.top`），`IMAGE_CDN_TOKEN` 获取方式请参考教程 [杜老师说图床：新版本去不图床 Token 的获取与清空](https://dusays.com/454/)，获取到的 token 格式应为 `1\|1bJbwlqBfnggmOMEZqXT5XusaIwqiZjCDs7r1Ob5`） |

@@ -12,16 +12,18 @@ const S = {
 
 const pushooChannels = [
   'qmsg',
-  'serverchain',
+  'serverchan',
   'pushplus',
   'pushplushxtrip',
   'dingtalk',
   'wecom',
   'bark',
   'gocqhttp',
+  'atri',
   'pushdeer',
   'igot',
-  'telegram'
+  'telegram',
+  'feishu'
 ].map(s => `"${s}"`)
 
 const smtpServices = [
@@ -66,6 +68,24 @@ const smtpServices = [
   'iCloud',
   'mail.ee',
   'qiye.aliyun'
+].map(s => `"${s}"`)
+
+const highlightThemes = [
+  'default',
+  'coy',
+  'dark',
+  'funky',
+  'okaidia',
+  'solarizedlight',
+  'tomorrow',
+  'twilight'
+].map(s => `"${s}"`)
+
+const imageBedServices = [
+  'qcloud',
+  '7bu',
+  'https://test.7bu.top',
+  'smms'
 ].map(s => `"${s}"`)
 
 /**
@@ -320,22 +340,22 @@ export default {
     'Enable code highlighting. If your theme conflicts with code highlighting, please set it to false. Default: true.'
   ],
   [S.ACI + '_HIGHLIGHT_THEME']: [
-    '代码高亮主题，可选：default、coy、dark、funky、okaidia、solarizedlight、tomorrow、twilight，访问 https://prismjs.com 可预览主题效果。如果您的主题和代码高亮有冲突，请设为 none。默认：none',
-    '代碼高亮主題，可選：default、coy、dark、funky、okaidia、solarizedlight、tomorrow、twilight，訪問 https://prismjs.com 可預覽主題效果。如果您的主題和代碼高亮有衝突，請設為 none。預設：none',
-    '程式碼高亮主題，可選：default、coy、dark、funky、okaidia、solarizedlight、tomorrow、twilight，訪問 https://prismjs.com 可預覽主題效果。如果您的主題和程式碼高亮有衝突，請設為 none。預設：none',
-    'Code highlighting theme. Select from: default、coy、dark、funky、okaidia、solarizedlight、tomorrow、twilight. Visit https://prismjs.com for preview. If your theme conflicts with code highlighting, please set it to none. Default: none.'
+    `代码高亮主题，可选：${highlightThemes.join('、')}，访问 https://prismjs.com 可预览主题效果。如果您的主题和代码高亮有冲突，请设为 none。默认：none`,
+    `代碼高亮主題，可選：${highlightThemes.join('、')}，訪問 https://prismjs.com 可預覽主題效果。如果您的主題和代碼高亮有衝突，請設為 none。預設：none`,
+    `程式碼高亮主題，可選：${highlightThemes.join('、')}，訪問 https://prismjs.com 可預覽主題效果。如果您的主題和程式碼高亮有衝突，請設為 none。預設：none`,
+    `Code highlighting theme. Select from: ${highlightThemes.join(', ')}. Visit https://prismjs.com for preview. If your theme conflicts with code highlighting, please set it to none. Default: none.`
   ],
   [S.ACI + '_IMAGE_CDN']: [
-    '插入图片所使用的图床，目前支持：7bu、qcloud',
-    '插入圖片所使用的圖床，目前支持：7bu、qcloud',
-    '插入圖片所使用的圖床，目前支援：7bu、qcloud',
-    'The image bed for image uploading. Select from: 7bu、qcloud'
+    `插入图片所使用的图床，目前支持：${imageBedServices.join('、')}`,
+    `插入圖片所使用的圖床，目前支持：${imageBedServices.join('、')}`,
+    `插入圖片所使用的圖床，目前支援：${imageBedServices.join('、')}`,
+    `The image bed for image uploading. Select from: ${imageBedServices.join(', ')}`
   ],
   [S.ACI + '_IMAGE_CDN_TOKEN']: [
-    '7bu 的图床 token',
-    '7bu 的图床 token',
-    '7bu 的图床 token',
-    'The image bed token for 7bu.'
+    '图床 token。qcloud 图床无需设置',
+    '图床 token。qcloud 图床无需设置',
+    '图床 token。qcloud 图床无需设置',
+    'The image bed token. Unnessessary for qcloud'
   ],
   [S.ACI + '_LIMIT_PER_MINUTE']: [
     '单个 IP 发言频率限制（条/10分钟），0 为无限制，默认：10',

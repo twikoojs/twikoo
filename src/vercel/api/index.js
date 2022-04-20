@@ -1432,11 +1432,11 @@ async function uploadImage (event) {
     }
     // tip: qcloud 图床走前端上传，其他图床走后端上传
     if (config.IMAGE_CDN === '7bu') {
-      uploadImageTo7Bu({ photo, fileName, config, res })
+      await uploadImageTo7Bu({ photo, fileName, config, res })
     } else if (config.IMAGE_CDN === 'smms') {
-      uploadImageToSmms({ photo, fileName, config, res })
+      await uploadImageToSmms({ photo, fileName, config, res })
     } else if (isUrl(config.IMAGE_CDN)) {
-      uploadImageToLsky({ photo, fileName, config, res })
+      await uploadImageToLsky({ photo, fileName, config, res })
     }
   } catch (e) {
     console.error(e)
@@ -1446,7 +1446,7 @@ async function uploadImage (event) {
   return res
 }
 
-function uploadImageTo7Bu ({ photo, fileName, config, res }) {
+async function uploadImageTo7Bu ({ photo, fileName, config, res }) {
   // 去不图床旧版本 https://7bu.top
   // TODO: 2022 年 4 月 30 日后去不图床将会升级新版本，此处逻辑要同步更新
   const formData = new FormData()
@@ -1464,7 +1464,7 @@ function uploadImageTo7Bu ({ photo, fileName, config, res }) {
   }
 }
 
-function uploadImageToSmms ({ photo, fileName, config, res }) {
+async function uploadImageToSmms ({ photo, fileName, config, res }) {
   // SM.MS 图床 https://sm.ms
   const formData = new FormData()
   formData.append('smfile', base64UrlToReadStream(photo, fileName))
@@ -1474,14 +1474,14 @@ function uploadImageToSmms ({ photo, fileName, config, res }) {
       Authorization: config.IMAGE_CDN_TOKEN
     }
   })
-  if (uploadResult.data.code === 200) {
+  if (uploadResult.data.success) {
     res.data = uploadResult.data.data
   } else {
     throw new Error(uploadResult.data.message)
   }
 }
 
-function uploadImageToLsky ({ photo, fileName, config, res }) {
+async function uploadImageToLsky ({ photo, fileName, config, res }) {
   // 自定义兰空图床（v2）URL
   const formData = new FormData()
   formData.append('image', base64UrlToReadStream(photo, fileName)) // TODO

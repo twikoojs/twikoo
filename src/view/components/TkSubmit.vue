@@ -251,10 +251,11 @@ export default {
       const fileIndex = `${Date.now()}-${userId}`
       const fileName = nameSplit.join('.')
       this.paste(this.getImagePlaceholder(fileIndex, fileType))
-      if (this.config.IMAGE_CDN === '7bu') {
-        this.uploadPhotoToThirdParty(fileIndex, fileName, fileType, photo)
-      } else if (this.$tcb) {
+      const imageCdn = this.config.IMAGE_CDN
+      if (this.$tcb && (!imageCdn || imageCdn === 'qcloud')) {
         this.uploadPhotoToQcloud(fileIndex, fileName, fileType, photo)
+      } else if (imageCdn) {
+        this.uploadPhotoToThirdParty(fileIndex, fileName, fileType, photo)
       } else {
         this.uploadFailed(fileIndex, fileType, '未配置图片上传服务')
       }

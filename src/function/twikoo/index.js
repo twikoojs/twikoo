@@ -1474,7 +1474,7 @@ async function uploadImageToSmms ({ photo, fileName, config, res }) {
   }
 }
 
-async function uploadImageToLsky ({ photo, fileName, config, res }) {
+async function uploadImageToLskyPro ({ photo, fileName, config, res }) {
   // 自定义兰空图床（v2）URL
   const formData = new FormData()
   formData.append('file', base64UrlToReadStream(photo, fileName))

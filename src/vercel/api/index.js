@@ -1436,7 +1436,7 @@ async function uploadImage (event) {
     } else if (config.IMAGE_CDN === 'smms') {
       await uploadImageToSmms({ photo, fileName, config, res })
     } else if (isUrl(config.IMAGE_CDN)) {
-      await uploadImageToLsky({ photo, fileName, config, res })
+      await uploadImageToLskyPro({ photo, fileName, config, res })
     }
   } catch (e) {
     console.error(e)
@@ -1481,7 +1481,7 @@ async function uploadImageToSmms ({ photo, fileName, config, res }) {
   }
 }
 
-async function uploadImageToLsky ({ photo, fileName, config, res }) {
+async function uploadImageToLskyPro ({ photo, fileName, config, res }) {
   // 自定义兰空图床（v2）URL
   const formData = new FormData()
   formData.append('file', base64UrlToReadStream(photo, fileName))

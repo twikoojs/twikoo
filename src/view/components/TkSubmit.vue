@@ -301,9 +301,11 @@ export default {
     },
     uploadCompleted (fileIndex, fileName, fileType, fileUrl) {
       this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `![${fileName}](${fileUrl})`)
+      this.$refs.inputFile.value = ''
     },
     uploadFailed (fileIndex, fileType, reason) {
       this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `_上传失败：${reason}_`)
+      this.$refs.inputFile.value = ''
     },
     paste (text) {
       if (document.selection) {

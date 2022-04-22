@@ -6,7 +6,7 @@
 [![](https://img.shields.io/bundlephobia/minzip/twikoo)](https://bundlephobia.com/result?p=twikoo)
 [![](https://img.shields.io/npm/dt/twikoo)](https://www.npmjs.com/package/twikoo)
 [![](https://data.jsdelivr.com/v1/package/npm/twikoo/badge)](https://www.jsdelivr.com/package/npm/twikoo)
-[![](https://img.shields.io/npm/l/twikoo)](https://github.com/imaegoo/twikoo/blob/dev/LICENSE)
+[![](https://img.shields.io/npm/l/twikoo)](https://github.com/imaegoo/twikoo/blob/main/LICENSE)
 
 一个简洁、安全、免费的静态网站评论系统，基于[腾讯云开发](https://curl.qcloud.com/KnnJtUom)。<br>
 A simple, safe, free comment system based on Tencent CloudBase (tcb).
@@ -130,7 +130,7 @@ yarn build # 编译 (dist/twikoo.all.min.js)
 
 ## 国际化
 
-支持简体中文、繁体中文、English。欢迎[提交翻译 PR](https://github.com/imaegoo/twikoo/tree/dev/src/js/utils/i18n)。
+支持简体中文、繁体中文、English。欢迎[提交翻译 PR](https://github.com/imaegoo/twikoo/tree/main/src/js/utils/i18n)。
 
 ## 许可
 

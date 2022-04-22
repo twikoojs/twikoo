@@ -97,7 +97,7 @@ A simple, safe, free comment system based on Tencent CloudBase (tcb).
 
 ## 快速上手 | Quick Start
 
-[![部署到云开发](https://main.qcloudimg.com/raw/67f5a389f1ac6f3b4d04c7256438e44f.svg)](https://console.cloud.tencent.com/tcb/env/index?action=CreateAndDeployCloudBaseProject&appUrl=https%3A%2F%2Fgithub.com%2Fimaegoo%2Ftwikoo&branch=dev)
+[![部署到云开发](https://main.qcloudimg.com/raw/67f5a389f1ac6f3b4d04c7256438e44f.svg)](https://console.cloud.tencent.com/tcb/env/index?action=CreateAndDeployCloudBaseProject&appUrl=https%3A%2F%2Fgithub.com%2Fimaegoo%2Ftwikoo&branch=main)
 
 有关详细教程，请查看[快速上手](https://twikoo.js.org/quick-start.html)
 
@@ -132,7 +132,7 @@ yarn build # 编译 (dist/twikoo.all.min.js)
 
 ## 国际化 | I18N
 
-支持简体中文、繁体中文、English。欢迎[提交翻译 PR](https://github.com/imaegoo/twikoo/tree/dev/src/js/utils/i18n)。
+支持简体中文、繁体中文、English。欢迎[提交翻译 PR](https://github.com/imaegoo/twikoo/tree/main/src/js/utils/i18n)。
 
 ## 许可 | License
 

@@ -8,8 +8,10 @@
             type="textarea"
             ref="textarea"
             v-model="comment"
+            show-word-limit
             :placeholder="commentPlaceholder"
             :autosize="{ minRows: 3 }"
+            :maxlength="maxLength"
             @input="onCommentInput"
             @keyup.enter.native="onEnterKeyUp($event)" />
       </div>
@@ -109,6 +111,11 @@ export default {
       let ph = this.$twikoo.placeholder || this.config.COMMENT_PLACEHOLDER || ''
       ph = ph.replace(/<br>/g, '\n')
       return ph
+    },
+    maxLength () {
+      let limitLength = parseInt(this.config.LIMIT_LENGTH)
+      if (Number.isNaN(limitLength)) limitLength = 500
+      return limitLength
     }
   },
   methods: {
@@ -244,10 +251,11 @@ export default {
       const fileIndex = `${Date.now()}-${userId}`
       const fileName = nameSplit.join('.')
       this.paste(this.getImagePlaceholder(fileIndex, fileType))
-      if (this.config.IMAGE_CDN === '7bu') {
-        this.uploadPhotoToThirdParty(fileIndex, fileName, fileType, photo)
-      } else if (this.$tcb) {
+      const imageCdn = this.config.IMAGE_CDN
+      if (this.$tcb && (!imageCdn || imageCdn === 'qcloud')) {
         this.uploadPhotoToQcloud(fileIndex, fileName, fileType, photo)
+      } else if (imageCdn) {
+        this.uploadPhotoToThirdParty(fileIndex, fileName, fileType, photo)
       } else {
         this.uploadFailed(fileIndex, fileType, '未配置图片上传服务')
       }
@@ -293,9 +301,11 @@ export default {
     },
     uploadCompleted (fileIndex, fileName, fileType, fileUrl) {
       this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `![${fileName}](${fileUrl})`)
+      this.$refs.inputFile.value = ''
     },
     uploadFailed (fileIndex, fileType, reason) {
       this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `_上传失败：${reason}_`)
+      this.$refs.inputFile.value = ''
     },
     paste (text) {
       if (document.selection) {

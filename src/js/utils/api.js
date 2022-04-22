@@ -10,7 +10,7 @@ const call = async (tcb, event, data = {}) => {
   if (_tcb) {
     try {
       return await _tcb.app.callFunction({
-        name: 'twikoo',
+        name: app.$twikoo.funcName || 'twikoo',
         data: { event, ...data }
       })
     } catch (e) {

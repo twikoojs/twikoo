@@ -4,8 +4,7 @@ import {
 } from '../utils'
 
 const builtInOptions = [
-  { key: 'envId', required: true },
-  { key: 'collection', default: 'comment' }
+  { key: 'envId', required: true }
 ]
 
 const tcb = {

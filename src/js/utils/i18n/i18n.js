@@ -301,7 +301,7 @@ export default {
     'Vercel 安全域名，防止环境被盗用，请注意设置后将无法在本地（localhost）加载评论，默认为空',
     'Vercel 安全域名，防止環境被盜用，請注意設置後將無法在本地（localhost）加載評論，默認為空',
     'Vercel 安全域名，防止環境被盜用，請注意設置後將無法在本地（localhost）加載評論，默認為空',
-    'Vercel 安全域名，防止环境被盗用，请注意设置后将无法在本地（localhost）加载评论，默认为空'
+    'Vercel security domain name to prevent the environment from being stolen, please note that after setting, you will not be able to load comments locally (localhost), the default is empty'
   ],
   [S.ACI + '_DEFAULT_GRAVATAR']: [
     '默认的头像显示。默认值为 "identicon"，可选： 404、mp、identicon、monsterid、wavatar、retro、robohash、blank',

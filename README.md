@@ -1,4 +1,4 @@
-<img src="./docs/static/logo.png" width="300" alt="Twikoo">
+<a href="https://twikoo.js.org/"><img src="./docs/static/logo.png" width="300" alt="Twikoo"></a>
 
 ----
 

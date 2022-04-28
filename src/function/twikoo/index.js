@@ -1439,24 +1439,6 @@ async function uploadImage (event) {
   return res
 }
 
-async function uploadImageTo7Bu ({ photo, fileName, config, res }) {
-  // 去不图床旧版本 https://7bu.top
-  // TODO: 2022 年 4 月 30 日后去不图床将会升级新版本，此处逻辑要同步更新
-  const formData = new FormData()
-  formData.append('image', base64UrlToReadStream(photo, fileName))
-  const uploadResult = await axios.post('https://7bu.top/api/upload', formData, {
-    headers: {
-      ...formData.getHeaders(),
-      token: config.IMAGE_CDN_TOKEN
-    }
-  })
-  if (uploadResult.data.code === 200) {
-    res.data = uploadResult.data.data
-  } else {
-    throw new Error(uploadResult.data.msg)
-  }
-}
-
 async function uploadImageToSmms ({ photo, fileName, config, res }) {
   // SM.MS 图床 https://sm.ms
   const formData = new FormData()

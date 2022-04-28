@@ -88,6 +88,17 @@ const imageBedServices = [
   'smms'
 ].map(s => `"${s}"`)
 
+const defaultGravatar = [
+  '404',
+  'mp',
+  'identicon',
+  'monsterid',
+  'wavatar',
+  'retro',
+  'robohash',
+  'blank'
+].map(s => `"${s}"`)
+
 /**
  * 把所有语言翻译放在同一对象下可以减小打包 js 的体积 (~17kb)
  *
@@ -298,16 +309,16 @@ export default {
     'Comment placeholder. Use <br> to start a newline. Default: empty.'
   ],
   [S.ACI + '_CORS_ALLOW_ORIGIN']: [
-    'Vercel 安全域名，防止环境被盗用，请注意设置后将无法在本地（localhost）加载评论，默认为空',
-    'Vercel 安全域名，防止環境被盜用，請注意設置後將無法在本地（localhost）加載評論，默認為空',
-    'Vercel 安全域名，防止環境被盜用，請注意設置後將無法在本地（localhost）加載評論，默認為空',
-    'Vercel security domain name to prevent the environment from being stolen, please note that after setting, you will not be able to load comments locally (localhost), the default is empty'
+    'Vercel CORS 安全域名，注意：错误设置会导致无法加载，默认为空，格式为 https://blog.example.com',
+    'Vercel CORS 安全域名，注意：错误设置会导致无法加載，默認為空，格式为 https://blog.example.com',
+    'Vercel CORS 安全域名，注意：错误设置会导致无法加載，默認為空，格式为 https://blog.example.com',
+    'Vercel CORS allow origin, note: incorrect settings can cause loading failure. Default: blank, format: https://blog.example.com'
   ],
   [S.ACI + '_DEFAULT_GRAVATAR']: [
-    '默认的头像显示。默认值为 "identicon"，可选： 404、mp、identicon、monsterid、wavatar、retro、robohash、blank',
-    '預設的頭像顯示。預設值為 "identicon"，可選： 404、mp、identicon、monsterid、wavatar、retro、robohash、blank',
-    '預設的頭像顯示。預設值為 "identicon"，可選： 404、mp、identicon、monsterid、wavatar、retro、robohash、blank',
-    'Avatar placeholder. Default:  "identicon". Choose from: 404, mp, identicon, monsterid, wavatar, retro, robohash, blank.'
+    `默认的头像显示。默认值为 "identicon"，可选：${defaultGravatar.join('、')}`,
+    `預設的頭像顯示。預設值為 "identicon"，可選：${defaultGravatar.join('、')}`,
+    `預設的頭像顯示。預設值為 "identicon"，可選：${defaultGravatar.join('、')}`,
+    `Avatar placeholder. Default:  "identicon". Choose from: ${defaultGravatar.join(', ')}`
   ],
   [S.ACI + '_EMOTION_CDN']: [
     '表情 CDN，默认为：https://cdn.jsdelivr.net/gh/imaegoo/emotion/owo.json',

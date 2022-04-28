@@ -84,7 +84,7 @@ const highlightThemes = [
 const imageBedServices = [
   'qcloud',
   '7bu',
-  'https://test.7bu.top',
+  'https://7bu.top',
   'smms'
 ].map(s => `"${s}"`)
 

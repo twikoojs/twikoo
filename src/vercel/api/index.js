@@ -163,12 +163,24 @@ module.exports = async (requestArg, responseArg) => {
 function allowCors () {
   if (request.headers.origin) {
     response.setHeader('Access-Control-Allow-Credentials', true)
-    response.setHeader('Access-Control-Allow-Origin', config.CORS_ALLOW_ORIGIN || request.headers.origin)
+    response.setHeader('Access-Control-Allow-Origin', getAllowedOrigin())
     response.setHeader('Access-Control-Allow-Methods', 'POST')
     response.setHeader(
       'Access-Control-Allow-Headers',
       'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
     )
+  }
+}
+
+function getAllowedOrigin () {
+  const localhostRegex = /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d{1,5})?$/
+  if (localhostRegex.test(request.headers.origin)) {
+    return request.headers.origin
+  } else if (config.CORS_ALLOW_ORIGIN) {
+    // 许多用户设置安全域名时，喜欢带结尾的 "/"，必须处理掉
+    return config.CORS_ALLOW_ORIGIN.replace(/\/$/, '')
+  } else {
+    return request.headers.origin
   }
 }
 

@@ -1425,11 +1425,11 @@ async function uploadImage (event) {
     }
     // tip: qcloud 图床走前端上传，其他图床走后端上传
     if (config.IMAGE_CDN === '7bu') {
-      await uploadImageTo7Bu({ photo, fileName, config, res })
+      await uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: 'https://7bu.top' })
     } else if (config.IMAGE_CDN === 'smms') {
       await uploadImageToSmms({ photo, fileName, config, res })
     } else if (isUrl(config.IMAGE_CDN)) {
-      await uploadImageToLskyPro({ photo, fileName, config, res })
+      await uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN })
     }
   } catch (e) {
     console.error(e)
@@ -1474,11 +1474,11 @@ async function uploadImageToSmms ({ photo, fileName, config, res }) {
   }
 }
 
-async function uploadImageToLskyPro ({ photo, fileName, config, res }) {
+async function uploadImageToLskyPro ({ photo, fileName, config, res, imageCdn }) {
   // 自定义兰空图床（v2）URL
   const formData = new FormData()
   formData.append('file', base64UrlToReadStream(photo, fileName))
-  const url = `${config.IMAGE_CDN}/api/v1/upload`
+  const url = `${imageCdn}/api/v1/upload`
   let token = config.IMAGE_CDN_TOKEN
   if (!token.startsWith('Bearer')) {
     token = `Bearer ${token}`

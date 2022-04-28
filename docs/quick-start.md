@@ -44,7 +44,7 @@ exports.main = require('twikoo-func').main
 8. 创建完成后，点击“twikoo"进入云函数详情页，进入“函数代码”标签，点击“文件 - 新建文件”，输入 `package.json`，回车
 9. 复制以下代码、粘贴到代码框中，点击“保存并安装依赖”
 ``` json
-{ "dependencies": { "twikoo-func": "1.5.4" } }
+{ "dependencies": { "twikoo-func": "1.5.5" } }
 ```
 
 ### 命令行部署
@@ -175,7 +175,7 @@ twikoo:
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.5.4/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.5.5/dist/twikoo.all.min.js"></script>
 <script>
 twikoo.init({
   envId: '您的环境id', // 腾讯云环境填 envId；Vercel 环境填地址（https://xxx.vercel.app）
@@ -193,7 +193,7 @@ twikoo.init({
 
 请参考爆米兔前端静态资源库 [https://cdn.baomitu.com/twikoo](https://cdn.baomitu.com/twikoo)
 
-引入的 CDN 链接替换为如下即可：`https://lib.baomitu.com/twikoo/1.5.4/twikoo.all.min.js`
+引入的 CDN 链接替换为如下即可：`https://lib.baomitu.com/twikoo/1.5.5/twikoo.all.min.js`
 
 ## 开启管理面板
 

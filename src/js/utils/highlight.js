@@ -1,27 +1,30 @@
+import { app } from '../../view'
+
 const PRISM_CDN = 'https://cdn.jsdelivr.net/npm/prismjs@1.23.0'
 let Prism
 let cssEl
 
 const renderCode = (el, theme) => {
+  const prismCdn = (app && app.$twikoo.prismCdn) ? app.$twikoo.prismCdn : PRISM_CDN
   window.Prism = window.Prism || {}
   window.Prism.manual = true
   if (!Prism) {
     Prism = require('prismjs')
     require('prismjs/plugins/autoloader/prism-autoloader')
-    Prism.plugins.autoloader.languages_path = `${PRISM_CDN}/components/`
+    Prism.plugins.autoloader.languages_path = `${prismCdn}/components/`
   }
-  loadCss(theme)
+  loadCss(theme, prismCdn)
   Prism.highlightAllUnder(el)
 }
 
-const loadCss = (theme) => {
+const loadCss = (theme, prismCdn) => {
   const twikooEl = document.getElementById('twikoo')
   if ((cssEl && twikooEl.contains(cssEl)) || !theme || theme === 'none') return
   cssEl = document.createElement('link')
   if (theme === 'default') {
-    cssEl.href = `${PRISM_CDN}/themes/prism.css`
+    cssEl.href = `${prismCdn}/themes/prism.css`
   } else {
-    cssEl.href = `${PRISM_CDN}/themes/prism-${theme}.css`
+    cssEl.href = `${prismCdn}/themes/prism-${theme}.css`
   }
   cssEl.rel = 'stylesheet'
   cssEl.type = 'text/css'

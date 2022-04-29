@@ -7,10 +7,11 @@ const isUrl = (s) => {
 const call = async (tcb, event, data = {}) => {
   const _tcb = tcb || (app ? app.$tcb : null)
   const _envId = data.envId || app.$twikoo.envId
+  const _funcName = data.funcName || app?.$twikoo.funcName || 'twikoo'
   if (_tcb) {
     try {
       return await _tcb.app.callFunction({
-        name: app.$twikoo.funcName || 'twikoo',
+        name: _funcName,
         data: { event, ...data }
       })
     } catch (e) {

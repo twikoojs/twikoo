@@ -1,6 +1,6 @@
 import { app } from '../../view'
 
-const PRISM_CDN = 'https://cdn.jsdelivr.net/npm/prismjs@1.23.0'
+const PRISM_CDN = 'https://cdn.jsdelivr.net/npm/prismjs@1.28.0'
 let Prism
 let cssEl
 
@@ -22,9 +22,9 @@ const loadCss = (theme, prismCdn) => {
   if ((cssEl && twikooEl.contains(cssEl)) || !theme || theme === 'none') return
   cssEl = document.createElement('link')
   if (theme === 'default') {
-    cssEl.href = `${prismCdn}/themes/prism.css`
+    cssEl.href = `${prismCdn}/themes/prism.min.css`
   } else {
-    cssEl.href = `${prismCdn}/themes/prism-${theme}.css`
+    cssEl.href = `${prismCdn}/themes/prism-${theme}.min.css`
   }
   cssEl.rel = 'stylesheet'
   cssEl.type = 'text/css'

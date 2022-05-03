@@ -78,6 +78,13 @@ export default {
           ]
         },
         {
+          name: t('ADMIN_CONFIG_CATEGORY_PRIVACY'),
+          items: [
+            { key: 'SHOW_UA', desc: t('ADMIN_CONFIG_ITEM_SHOW_UA'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}false`, value: '' },
+            { key: 'SHOW_REGION', desc: t('ADMIN_CONFIG_ITEM_SHOW_REGION'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}true`, value: '' }
+          ]
+        },
+        {
           name: t('ADMIN_CONFIG_CATEGORY_SPAM'),
           items: [
             { key: 'AKISMET_KEY', desc: t('ADMIN_CONFIG_ITEM_AKISMET_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}8651783edxxx`, value: '' },

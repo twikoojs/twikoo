@@ -35,12 +35,16 @@
         <span v-if="comment.pid">{{ t('COMMENT_REPLIED') }} <a :href="`#${comment.pid}`">@{{ comment.ruser }}</a> :</span>
         <span v-html="comment.comment" ref="comment"></span>
       </div>
-      <div class="tk-extras" v-if="comment.os || comment.browser">
-        <div class="tk-extra">
+      <div class="tk-extras" v-if="comment.ipRegion || comment.os || comment.browser">
+        <div class="tk-extra" v-if="comment.ipRegion">
+          <span class="tk-icon" v-html="iconLocation"></span>
+          <span class="tk-extra-text">&nbsp;{{ comment.ipRegion }}</span>
+        </div>
+        <div class="tk-extra" v-if="comment.os">
           <span class="tk-icon" v-html="iconOs"></span>
           <span class="tk-extra-text">&nbsp;{{ comment.os }}</span>
         </div>
-        <div class="tk-extra">
+        <div class="tk-extra" v-if="comment.browser">
           <span class="tk-icon" v-html="iconBrowser"></span>
           <span class="tk-extra-text">&nbsp;{{ comment.browser }}</span>
         </div>
@@ -84,6 +88,7 @@ import iconSafari from '@fortawesome/fontawesome-free/svgs/brands/safari.svg'
 import iconIe from '@fortawesome/fontawesome-free/svgs/brands/internet-explorer.svg'
 import iconEdge from '@fortawesome/fontawesome-free/svgs/brands/edge.svg'
 import iconOther from '@fortawesome/fontawesome-free/svgs/regular/window-maximize.svg'
+import iconLocation from '@fortawesome/fontawesome-free/svgs/solid/location-arrow.svg'
 
 const osList = {
   win: iconWindows,
@@ -144,6 +149,7 @@ export default {
     iconBrowser () {
       return this.getIconBy(this.comment.browser, browserList)
     },
+    iconLocation: () => iconLocation,
     showExpand () {
       return this.hasExpand && !this.isExpanded
     },

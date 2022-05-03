@@ -44,6 +44,8 @@ class Config {
     this.MAIL_TEMPLATE = model.MAIL_TEMPLATE
     this.MAIL_SUBJECT_ADMIN = model.MAIL_SUBJECT_ADMIN
     this.MAIL_TEMPLATE_ADMIN = model.MAIL_TEMPLATE_ADMIN
+    this.SHOW_UA = model.SHOW_UA
+    this.SHOW_REGION = model.SHOW_REGION
   }
 }
 

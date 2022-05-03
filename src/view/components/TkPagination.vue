@@ -121,6 +121,7 @@ export default {
   width: 100%;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
 }
 .tk-pagination-options {
   display: flex;

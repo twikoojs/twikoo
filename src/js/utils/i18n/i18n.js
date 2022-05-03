@@ -236,6 +236,12 @@ export default {
     '外掛',
     'Plugin'
   ],
+  [S.ACC + '_PRIVACY']: [
+    '隐私',
+    '隱私',
+    '隱私',
+    'Privacy'
+  ],
   [S.ACC + '_SPAM']: [
     '反垃圾',
     '反垃圾',
@@ -481,6 +487,18 @@ export default {
     '啟用插入圖片功能，預設為：true',
     '啟用插入圖片功能，預設為：true',
     'Enable picture uploading. Default: true.'
+  ],
+  [S.ACI + '_SHOW_UA']: [
+    '是否显示用户系统和浏览器，默认为：true',
+    '是否顯示使用者系統和瀏覽器，預設為：true',
+    '是否顯示使用者系統和瀏覽器，預設為：true',
+    'Show users\' OS and browser. Default: true.'
+  ],
+  [S.ACI + '_SHOW_REGION']: [
+    '是否显示用户 IP 属地到省，默认为：false',
+    '是否顯示使用者 IP 屬地到省，預設為：false',
+    '是否顯示使用者 IP 屬地到省，預設為：false',
+    'Show users\' IP region (province). Default: false.'
   ],
   [S.ACI + '_SITE_NAME']: [
     '网站名称',

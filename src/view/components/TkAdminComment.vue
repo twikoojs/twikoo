@@ -23,11 +23,12 @@
       <div class="tk-admin-comment-item" v-for="comment in comments" :key="comment._id">
         <div class="tk-admin-comment-meta">
           <tk-avatar :config="serverConfig" :avatar="comment.avatar" :mail="comment.mail" :link="comment.link" />
-          <span v-if="!comment.link">{{ comment.nick }}</span>
-          <a v-if="comment.link" :href="convertLink(comment.link)" target="_blank">{{ comment.nick }}</a>
-          <span v-if="comment.mail">&nbsp;(<a :href="`mailto:${comment.mail}`">{{ comment.mail }}</a>)</span>
-          <span v-if="comment.isSpam">{{ t('ADMIN_COMMENT_IS_SPAM_SUFFIX') }}</span>
-          <span class="tk-time">&nbsp;{{ displayCreated(comment) }}</span>
+          <span v-if="!comment.link">{{ comment.nick }}&nbsp;</span>
+          <a v-if="comment.link" :href="convertLink(comment.link)" target="_blank">{{ comment.nick }}&nbsp;</a>
+          <span v-if="comment.mail">(<a :href="`mailto:${comment.mail}`">{{ comment.mail }}</a>)&nbsp;</span>
+          <span v-if="comment.isSpam">{{ t('ADMIN_COMMENT_IS_SPAM_SUFFIX') }}&nbsp;</span>
+          <span class="tk-time">{{ displayCreated(comment) }}&nbsp;</span>
+          <span>{{ comment.ipRegion }}</span>
         </div>
         <div class="tk-content" v-html="comment.comment" ref="comments"></div>
         <div class="tk-admin-actions">
@@ -240,6 +241,7 @@ export default {
 .tk-admin-comment-meta {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   margin-bottom: 0.5em;
 }
 .tk-avatar {

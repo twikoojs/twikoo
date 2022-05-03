@@ -21,7 +21,8 @@ const CryptoJS = require('crypto-js') // 编解码
 const tencentcloud = require('tencentcloud-sdk-nodejs') // 腾讯云 API NODEJS SDK
 const fs = require('fs')
 const FormData = require('form-data') // 图片上传
-const pushoo = require('pushoo').default
+const pushoo = require('pushoo').default // 即时消息通知
+const ipToRegion = require('dy-node-ip2region') // IP 属地查询
 
 // 云函数 SDK / tencent cloudbase sdk
 const app = tcb.init({ env: tcb.SYMBOL_CURRENT_ENV })
@@ -32,6 +33,9 @@ const _ = db.command
 // 初始化反 XSS
 const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
+
+// 初始化 IP 属地
+const ipRegionSearcher = ipToRegion.create()
 
 // 常量 / constants
 const RES_CODE = {
@@ -343,13 +347,15 @@ function parseComment (comments, uid) {
 function toCommentDto (comment, uid, replies = [], comments = []) {
   let displayOs = ''
   let displayBrowser = ''
-  try {
-    const ua = bowser.getParser(comment.ua)
-    const os = ua.getOS()
-    displayOs = [os.name, os.versionName ? os.versionName : os.version].join(' ')
-    displayBrowser = [ua.getBrowserName(), ua.getBrowserVersion()].join(' ')
-  } catch (e) {
-    console.log('bowser 错误：', e)
+  if (config.SHOW_UA !== 'false') {
+    try {
+      const ua = bowser.getParser(comment.ua)
+      const os = ua.getOS()
+      displayOs = [os.name, os.versionName ? os.versionName : os.version].join(' ')
+      displayBrowser = [ua.getBrowserName(), ua.getBrowserVersion()].join(' ')
+    } catch (e) {
+      console.log('bowser 错误：', e)
+    }
   }
   return {
     id: comment._id,
@@ -360,6 +366,7 @@ function toCommentDto (comment, uid, replies = [], comments = []) {
     comment: comment.comment,
     os: displayOs,
     browser: displayBrowser,
+    ipRegion: config.SHOW_REGION ? getIpRegion({ ip: comment.ip }) : '',
     master: comment.master,
     like: comment.like ? comment.like.length : 0,
     liked: comment.like ? comment.like.findIndex((item) => item === uid) > -1 : false,
@@ -440,7 +447,7 @@ function getCommentSearchCondition (event) {
 
 function parseCommentForAdmin (comments) {
   for (const comment of comments) {
-    comment.commentText = $(comment.comment).text()
+    comment.ipRegion = getIpRegion({ ip: comment.ip, detail: true })
   }
   return comments
 }
@@ -1650,6 +1657,27 @@ async function getUid () {
 async function isAdmin () {
   const userInfo = await auth.getEndUserInfo()
   return ADMIN_USER_ID === userInfo.userInfo.customUserId
+}
+
+/**
+ * 获取 IP 属地
+ * @param detail true 返回省市运营商，false 只返回省
+ * @returns {String}
+ */
+function getIpRegion ({ ip, detail = false }) {
+  if (!ip) return ''
+  try {
+    const { region } = ipRegionSearcher.btreeSearchSync(ip)
+    const [,, province, city, isp] = region.split('|')
+    if (detail) {
+      return province === city ? [city, isp].join(' ') : [province, city, isp].join(' ')
+    } else {
+      return province
+    }
+  } catch (e) {
+    console.error('IP 属地查询失败：', e)
+    return ''
+  }
 }
 
 // 判断是否为递归调用（即云函数调用自身）

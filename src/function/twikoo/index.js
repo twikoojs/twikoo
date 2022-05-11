@@ -1668,11 +1668,13 @@ function getIpRegion ({ ip, detail = false }) {
   if (!ip) return ''
   try {
     const { region } = ipRegionSearcher.btreeSearchSync(ip)
-    const [,, province, city, isp] = region.split('|')
+    const [country,, province, city, isp] = region.split('|')
+    // 有省显示省，没有省显示国家
+    let area = province.trim() ? province : country
     if (detail) {
-      return province === city ? [city, isp].join(' ') : [province, city, isp].join(' ')
+      return area === city ? [city, isp].join(' ') : [area, city, isp].join(' ')
     } else {
-      return province
+      return area
     }
   } catch (e) {
     console.error('IP 属地查询失败：', e)

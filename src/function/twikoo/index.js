@@ -1668,7 +1668,7 @@ async function isAdmin () {
 function getIpRegion ({ ip, detail = false }) {
   if (!ip) return ''
   try {
-    const { region } = ipRegionSearcher.btreeSearchSync(ip)
+    const { region } = ipRegionSearcher.binarySearchSync(ip)
     const [country,, province, city, isp] = region.split('|')
     // 有省显示省，没有省显示国家
     const area = province.trim() ? province : country

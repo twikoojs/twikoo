@@ -115,7 +115,7 @@ export default {
     maxLength () {
       let limitLength = parseInt(this.config.LIMIT_LENGTH)
       if (Number.isNaN(limitLength)) limitLength = 500
-      return limitLength
+      return limitLength > 0 ? limitLength : null
     }
   },
   methods: {

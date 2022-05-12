@@ -389,6 +389,7 @@ function toCommentDto (comment, uid, replies = [], comments = []) {
       console.log('bowser 错误：', e)
     }
   }
+  const showRegion = !!config.SHOW_REGION && config.SHOW_REGION !== 'false'
   return {
     id: comment._id.toString(),
     nick: comment.nick,
@@ -398,7 +399,7 @@ function toCommentDto (comment, uid, replies = [], comments = []) {
     comment: comment.comment,
     os: displayOs,
     browser: displayBrowser,
-    ipRegion: config.SHOW_REGION ? getIpRegion({ ip: comment.ip }) : '',
+    ipRegion: showRegion ? getIpRegion({ ip: comment.ip }) : '',
     master: comment.master,
     like: comment.like ? comment.like.length : 0,
     liked: comment.like ? comment.like.findIndex((item) => item === uid) > -1 : false,
@@ -1683,11 +1684,13 @@ function getIpRegion ({ ip, detail = false }) {
   if (!ip) return ''
   try {
     const { region } = ipRegionSearcher.btreeSearchSync(ip)
-    const [,, province, city, isp] = region.split('|')
+    const [country,, province, city, isp] = region.split('|')
+    // 有省显示省，没有省显示国家
+    const area = province.trim() ? province : country
     if (detail) {
-      return province === city ? [city, isp].join(' ') : [province, city, isp].join(' ')
+      return area === city ? [city, isp].join(' ') : [area, city, isp].join(' ')
     } else {
-      return province
+      return area
     }
   } catch (e) {
     console.error('IP 属地查询失败：', e)

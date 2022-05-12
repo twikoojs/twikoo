@@ -44,7 +44,7 @@ exports.main = require('twikoo-func').main
 8. 创建完成后，点击“twikoo"进入云函数详情页，进入“函数代码”标签，点击“文件 - 新建文件”，输入 `package.json`，回车
 9. 复制以下代码、粘贴到代码框中，点击“保存并安装依赖”
 ``` json
-{ "dependencies": { "twikoo-func": "1.5.9" } }
+{ "dependencies": { "twikoo-func": "1.5.10" } }
 ```
 
 ### 命令行部署
@@ -175,7 +175,7 @@ twikoo:
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.5.9/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.5.10/dist/twikoo.all.min.js"></script>
 <script>
 twikoo.init({
   envId: '您的环境id', // 腾讯云环境填 envId；Vercel 环境填地址（https://xxx.vercel.app）
@@ -189,17 +189,17 @@ twikoo.init({
 
 > 建议使用 CDN 引入 Twikoo 的用户在链接地址上锁定版本，以免将来 Twikoo 升级时受到非兼容性更新的影响。
 
-#### [爆米兔](https://cdn.baomitu.com/) CDN 镜像
+#### [Staticfile](https://www.staticfile.org/) CDN 镜像
 
-请参考爆米兔前端静态资源库 [https://cdn.baomitu.com/twikoo](https://cdn.baomitu.com/twikoo)
+如果遇到 cdn.jsdelivr.net 加载速度缓慢，可更换七牛云 CDN 镜像。引入的 CDN 链接替换为如下即可：`https://cdn.staticfile.org/twikoo/1.5.10/twikoo.all.min.js`
 
-引入的 CDN 链接替换为如下即可：`https://lib.baomitu.com/twikoo/1.5.9/twikoo.all.min.js`
-
-## 开启管理面板
+## 开启管理面板（腾讯云环境）
 
 1. 进入[环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)，点击“自定义登录”右边的“私钥下载”，下载私钥文件
 2. 用文本编辑器打开私钥文件，复制全部内容
 3. 点击评论窗口的“小齿轮”图标，粘贴私钥文件内容，并设置管理员密码
+
+配置好登录私钥之后无需留存私钥文件，请勿再次下载登录私钥，否则会导致之前配置的登录私钥失效。
 
 ## 版本更新
 

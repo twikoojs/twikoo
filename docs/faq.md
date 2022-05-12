@@ -122,3 +122,9 @@ Akismet (Automattic Kismet) 是应用广泛的一个垃圾留言过滤系统，�
 | 7bu | https://7bu.top | 去不图床，由杜老师提供支持，无免费套餐 |
 | smms | https://sm.ms | SMMS 图床，有免费套餐，请自行注册账号，`IMAGE_CDN_TOKEN` 可在 [Dashboard](https://sm.ms/home/apitoken) 中获取 |
 | [lsky-pro](https://www.lsky.pro) | 私有部署 | 兰空图床 2.0 版本，`IMAGE_CDN` 请配置图床首页 URL 地址（如 `https://7bu.top`），`IMAGE_CDN_TOKEN` 获取方式请参考教程 [杜老师说图床：新版本去不图床 Token 的获取与清空](https://dusays.com/454/)，获取到的 token 格式应为 `1\|1bJbwlqBfnggmOMEZqXT5XusaIwqiZjCDs7r1Ob5`） |
+
+## 能私有部署吗？
+
+不能。如果您确实需要支持私有部署评论系统，请优先考虑其他评论系统。
+
+您可以在这个项目 [twikoo-docker](https://github.com/twikoojs/twikoo-docker) 中看到私有部署的实现进度。私有部署存在一系列问题，现阶段作者仍没有时间和精力解决。欢迎贡献。

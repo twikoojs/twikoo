@@ -1,6 +1,7 @@
 const twikooTheme = require('./theme')
 
 module.exports = {
+  lang: 'zh-CN',
   title: 'Twikoo 中文文档',
   description: 'Twikoo 中文文档',
   theme: twikooTheme({

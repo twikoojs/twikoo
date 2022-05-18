@@ -1,26 +1,26 @@
 <template>
   <ParentLayout>
     <template #page-bottom>
-      <div class="page-edit">
+      <div class="page-nav">
         <!-- KaTeX -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
-        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js" integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
-        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js" integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+        <component :is="'script'" defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js" integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></component>
+        <component :is="'script'" defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js" integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></component>
 
         <!-- lightGallery -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.1.8/css/lightgallery.css">
-        <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.1.8/lightgallery.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.staticfile.org/lightgallery/2.1.8/css/lightgallery.css">
+        <component :is="'script'" src="https://cdn.staticfile.org/lightgallery/2.1.8/lightgallery.min.js"></component>
 
         <!-- Twikoo -->
         <div id="twikoo"></div>
-        <script src="https://cdn.jsdelivr.net/npm/twikoo@1.5.10/dist/twikoo.all.min.js" ref="twikooJs"></script>
+        <component :is="'script'" src="https://cdn.staticfile.org/twikoo/1.5.10/twikoo.all.min.js" ref="twikooJs"></component>
       </div>
     </template>
   </ParentLayout>
 </template>
 
 <script>
-import ParentLayout from '@parent-theme/layouts/Layout.vue'
+import ParentLayout from '@vuepress/theme-default/lib/client/layouts/Layout.vue'
 
 const envId = 'https://twikoo.vercel.app'
 

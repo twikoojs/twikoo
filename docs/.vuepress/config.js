@@ -1,9 +1,11 @@
+const twikooTheme = require('./theme')
+
 module.exports = {
   title: 'Twikoo 中文文档',
   description: 'Twikoo 中文文档',
-  themeConfig: {
+  theme: twikooTheme({
     sidebar: [
-      ['/', '简介'],
+      { text: '简介', link: '/' },
       '/quick-start',
       '/faq',
       '/api',
@@ -16,7 +18,5 @@ module.exports = {
     docsDir: 'docs',
     // 假如文档放在一个特定的分支下：
     docsBranch: 'main',
-    // 默认是 false, 设置为 true 来启用
-    editLinks: true
-  }
+  })
 }

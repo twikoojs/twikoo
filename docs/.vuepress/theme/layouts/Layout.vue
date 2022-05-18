@@ -74,7 +74,7 @@ export default {
       }
     },
     onRoute (to, from) {
-      if (to.path !== from.path) this.initTwikoo()
+      if (to.path !== from.path) setTimeout(this.initTwikoo, 1000)
     }
   }
 }

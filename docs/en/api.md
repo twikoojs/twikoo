@@ -1,4 +1,4 @@
-# API docs
+# API reference
 
 Through Twikoo API, theme developers can implement some special features, such as displaying the number of article comments in the article list, displaying the latest comments on the home page, etc.
 

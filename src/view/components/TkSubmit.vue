@@ -246,7 +246,7 @@ export default {
       if (!photo || this.config.SHOW_IMAGE !== 'true') return
       const nameSplit = photo.name.split('.')
       const fileType = nameSplit.length > 1 ? nameSplit.pop() : ''
-      if (imageTypes.indexOf(fileType) === -1) return
+      if (imageTypes.indexOf(fileType.toLowerCase()) === -1) return
       const userId = this.getUserId()
       const fileIndex = `${Date.now()}-${userId}`
       const fileName = nameSplit.join('.')

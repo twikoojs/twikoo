@@ -62,7 +62,7 @@ export default {
           lightGallery(commentItem, {
             selector: '.tk-lg-link',
             share: false
-          });
+          })
         }
       }
     },

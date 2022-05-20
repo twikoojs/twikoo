@@ -1,3 +1,4 @@
+const { searchPlugin } = require('@vuepress/plugin-search')
 const twikooTheme = require('./theme')
 
 module.exports = {
@@ -19,5 +20,8 @@ module.exports = {
     docsDir: 'docs',
     // 假如文档放在一个特定的分支下：
     docsBranch: 'main',
-  })
+  }),
+  plugins: [
+    searchPlugin({})
+  ]
 }

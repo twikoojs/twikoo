@@ -293,6 +293,7 @@ export default {
   text-decoration: underline;
 }
 .tk-regist-button {
+  color: #ffffff;
   margin-top: 1rem;
 }
 .tk-panel {

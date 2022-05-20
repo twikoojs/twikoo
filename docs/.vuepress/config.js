@@ -28,7 +28,7 @@ module.exports = {
         ]
       },
       '/en/': {
-        selectLanguageName: 'English',
+        selectLanguageName: 'English (US)',
         sidebar: [
           { text: 'Introduction', link: '/en/' },
           '/en/quick-start',

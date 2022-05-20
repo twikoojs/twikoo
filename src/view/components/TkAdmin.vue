@@ -234,6 +234,7 @@ export default {
   height: 100%;
   overflow-y: auto;
   pointer-events: all;
+  color: #ffffff;
   background-color: rgba(0,0,0,0.60);
   backdrop-filter: blur(5px);
   transition: all 0.5s ease;

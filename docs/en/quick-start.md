@@ -48,7 +48,7 @@ exports.main = require('twikoo-func').main
 8. 创建完成后，点击“twikoo"进入云函数详情页，进入“函数代码”标签，点击“文件 - 新建文件”，输入 `package.json`，回车
 9. 复制以下代码、粘贴到代码框中，点击“保存并安装依赖”
 ``` json
-{ "dependencies": { "twikoo-func": "1.5.10" } }
+{ "dependencies": { "twikoo-func": "1.5.11" } }
 ```
 
 ### 命令行部署
@@ -193,9 +193,14 @@ twikoo.init({
 
 > 建议使用 CDN 引入 Twikoo 的用户在链接地址上锁定版本，以免将来 Twikoo 升级时受到非兼容性更新的影响。
 
-#### [Staticfile](https://www.staticfile.org/) CDN 镜像
+#### 更换 CDN 镜像
 
-如果遇到 cdn.jsdelivr.net 加载速度缓慢，可更换七牛云 CDN 镜像。引入的 CDN 链接替换为如下即可：`https://cdn.staticfile.org/twikoo/1.5.10/twikoo.all.min.js`
+如果遇到默认 CDN 加载速度缓慢，可更换其他 CDN 镜像。以下为可供选择的公共 CDN，其中一些 CDN 可能需要数天时间同步最新版本：
+
+* `https://cdn.staticfile.org/twikoo/1.5.10/twikoo.all.min.js`
+* `https://lib.baomitu.com/twikoo/1.5.10/twikoo.all.min.js`
+* `https://cdn.bootcdn.net/ajax/libs/twikoo/1.5.10/twikoo.all.min.js`
+* `https://cdn.jsdelivr.net/npm/twikoo@1.5.10/dist/twikoo.all.min.js`
 
 ## 开启管理面板（腾讯云环境）
 
@@ -205,9 +210,13 @@ twikoo.init({
 
 配置好登录私钥之后无需留存私钥文件，请勿再次下载登录私钥，否则会导致之前配置的登录私钥失效。
 
+## 开启管理面板（Vercel 环境）
+
+点击评论窗口的“小齿轮”图标，设置管理员密码
+
 ## 版本更新
 
-不同部署方式的更新方式也不同，请对号入座。更新部署成功后，请不要忘记同时更新前端的 Twikoo CDN 地址 `https://cdn.jsdelivr.net/npm/twikoo@x.x.x/dist/twikoo.all.min.js` 中的 `x.x.x`，使之与云函数版本号相同，然后部署网站。
+不同部署方式的更新方式也不同，请对号入座。更新部署成功后，请不要忘记同时更新前端的 Twikoo CDN 地址中的 `x.x.x` 数字版本号，使之与云函数版本号相同，然后部署网站。
 
 ### 针对一键部署的更新方式
 

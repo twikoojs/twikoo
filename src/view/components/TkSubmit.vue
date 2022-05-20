@@ -18,7 +18,7 @@
     </div>
     <div class="tk-row actions">
       <div class="tk-row-actions-start">
-        <div class="tk-action-icon OwO" v-show="config.SHOW_EMOTION === 'true'" v-clickoutside="closeOwo" ref="owo"></div>
+        <div class="tk-action-icon OwO" v-show="config.SHOW_EMOTION === 'true'" v-html="iconEmotion" v-clickoutside="closeOwo" ref="owo"></div>
         <div class="tk-action-icon" v-show="config.SHOW_IMAGE === 'true'" v-html="iconImage" @click="openSelectImage"></div>
         <input class="tk-input-image" type="file" accept="image/*" value="" ref="inputFile" @change="onSelectImage" />
         <div class="tk-error-message">{{ errorMessage }}</div>
@@ -95,6 +95,7 @@ export default {
       mail: '',
       link: '',
       iconMarkdown,
+      iconEmotion,
       iconImage
     }
   },
@@ -131,7 +132,7 @@ export default {
     },
     async initOwo () {
       if (this.config.SHOW_EMOTION === 'true') {
-        const odata = await initOwoEmotion(this.config.EMOTION_CDN || 'https://cdn.jsdelivr.net/gh/imaegoo/emotion/owo.json')
+        const odata = await initOwoEmotion(this.config.EMOTION_CDN || 'https://owo.imaegoo.com/owo.json')
         this.owo = new OwO({
           logo: iconEmotion, // OwO button text, default: `OωO表情`
           container: this.$refs.owo, // OwO container, default: `document.getElementsByClassName('OwO')[0]`
@@ -246,7 +247,7 @@ export default {
       if (!photo || this.config.SHOW_IMAGE !== 'true') return
       const nameSplit = photo.name.split('.')
       const fileType = nameSplit.length > 1 ? nameSplit.pop() : ''
-      if (imageTypes.indexOf(fileType) === -1) return
+      if (imageTypes.indexOf(fileType.toLowerCase()) === -1) return
       const userId = this.getUserId()
       const fileIndex = `${Date.now()}-${userId}`
       const fileName = nameSplit.join('.')

@@ -11,7 +11,7 @@
 一个简洁、安全、免费的静态网站评论系统，基于[腾讯云开发](https://curl.qcloud.com/KnnJtUom)。<br>
 A simple, safe, free comment system based on Tencent CloudBase (tcb).
 
-**简体中文** | [English](/READMEen.html)
+**简体中文** | [English](/en/)
 
 ## 特色
 

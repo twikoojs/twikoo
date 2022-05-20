@@ -44,7 +44,7 @@ module.exports = {
     // 假如文档不是放在仓库的根目录下：
     docsDir: 'docs',
     // 假如文档放在一个特定的分支下：
-    docsBranch: 'main',
+    docsBranch: 'main'
   }),
   plugins: [
     searchPlugin({})

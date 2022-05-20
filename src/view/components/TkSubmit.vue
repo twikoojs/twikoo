@@ -131,7 +131,7 @@ export default {
     },
     async initOwo () {
       if (this.config.SHOW_EMOTION === 'true') {
-        const odata = await initOwoEmotion(this.config.EMOTION_CDN || 'https://cdn.jsdelivr.net/gh/imaegoo/emotion/owo.json')
+        const odata = await initOwoEmotion(this.config.EMOTION_CDN || 'https://owo.imaegoo.com/owo.json')
         this.owo = new OwO({
           logo: iconEmotion, // OwO button text, default: `OωO表情`
           container: this.$refs.owo, // OwO container, default: `document.getElementsByClassName('OwO')[0]`

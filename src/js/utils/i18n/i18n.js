@@ -327,10 +327,10 @@ export default {
     `Avatar placeholder. Default:  "identicon". Choose from: ${defaultGravatar.join(', ')}`
   ],
   [S.ACI + '_EMOTION_CDN']: [
-    '表情 CDN，默认为：https://cdn.jsdelivr.net/gh/imaegoo/emotion/owo.json',
-    '表情 CDN，預設為：https://cdn.jsdelivr.net/gh/imaegoo/emotion/owo.json',
-    '表情 CDN，預設為：https://cdn.jsdelivr.net/gh/imaegoo/emotion/owo.json',
-    'Emotion CDN. Default: https://cdn.jsdelivr.net/gh/imaegoo/emotion/owo.json'
+    '表情 CDN，默认为：https://owo.imaegoo.com/owo.json',
+    '表情 CDN，預設為：https://owo.imaegoo.com/owo.json',
+    '表情 CDN，預設為：https://owo.imaegoo.com/owo.json',
+    'Emotion CDN. Default: https://owo.imaegoo.com/owo.json'
   ],
   [S.ACI + '_FORBIDDEN_WORDS']: [
     '违禁词配置，包含违禁词的内容会直接标记为垃圾评论。英文逗号分隔。',

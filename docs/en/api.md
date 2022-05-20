@@ -1,5 +1,9 @@
 # API reference
 
+::: tip Tip
+The English document is being built. Please refer to the Chinese document.
+:::
+
 通过 Twikoo API，主题开发者可以实现一些特殊的功能，例如：在文章列表显示文章评论数，在首页显示最新评论，等。
 
 调用 Twikoo API 前，**不需要** 执行 `twikoo.init()`。

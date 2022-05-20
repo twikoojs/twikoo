@@ -1,5 +1,9 @@
 # Quick start
 
+::: tip Tip
+The English document is being built. Please refer to the Chinese document.
+:::
+
 Twikoo 分为云函数和前端两部分，部署时请注意保持二者版本一致。
 
 * [云函数部署](#云函数部署)有 4 种方式，[一键部署](#一键部署)、[手动部署](#手动部署)、[命令行部署](#命令行部署)和[Vercel 部署](#vercel-部署)。

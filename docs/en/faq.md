@@ -1,5 +1,9 @@
 # FAQ
 
+::: tip Tip
+The English document is being built. Please refer to the Chinese document.
+:::
+
 ## 如何修改头像？
 
 请前往 [https://cn.gravatar.com](https://cn.gravatar.com) 通过邮箱注册并设定头像，评论时，请留下相同的邮箱。

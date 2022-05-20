@@ -59,7 +59,7 @@ Twikoo 支持 Katex 公式，但为了限制 Twikoo 的包大小，Twikoo 没有
 
 载入后，您可以发送 `$$c = \pm\sqrt{a^2 + b^2}$$` 测试效果。
 
-![katex](./static/katex.png)
+![katex](../static/katex.png)
 
 您还可以在 `twikoo.init` 时传入自定义 katex 配置，详细配置请查看 [Katex Auto-render Extension](https://katex.org/docs/autorender.html)。
 

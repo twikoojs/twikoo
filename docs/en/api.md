@@ -1,16 +1,12 @@
-# API reference
+# API docs
 
-::: tip Tip
-The English document is being built. Please refer to the Chinese document.
-:::
+Through Twikoo API, theme developers can implement some special features, such as displaying the number of article comments in the article list, displaying the latest comments on the home page, etc.
 
-通过 Twikoo API，主题开发者可以实现一些特殊的功能，例如：在文章列表显示文章评论数，在首页显示最新评论，等。
-
-调用 Twikoo API 前，**不需要** 执行 `twikoo.init()`。
+It is **not necessary** to execute `twikoo.init()` before calling the Twikoo API.
 
 ## Get comments count
 
-批量获取文章评论数。
+Get the number of article comments in batch.
 
 ### Version
 
@@ -20,30 +16,30 @@ The English document is being built. Please refer to the Chinese document.
 
 ``` js
 twikoo.getCommentsCount({
-  envId: '您的环境id', // 环境 ID
-  // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，如果您的环境地域不是上海，需传此参数
-  urls: [ // 不包含协议、域名、参数的文章路径列表，必传参数
+  envId: 'Environment ID', // Tencent CloudBase Environment ID
+  // region: 'ap-guangzhou', // Environment locale, default is ap-shanghai, if your environment locale is not Shanghai, you need to pass this parameter
+  urls: [ // List of article paths without protocols, domains and parameters. It is a mandatory parameter
     '/2020/10/post-1.html',
     '/2020/11/post-2.html',
     '/2020/12/post-3.html'
   ],
-  includeReply: false // 评论数是否包括回复，默认：false
+  includeReply: false // Whether the number of comments includes replies, the default parameter is false
 }).then(function (res) {
   console.log(res);
-  // 返回示例: [
+  // example: [
   //   { url: '/2020/10/post-1.html', count: 10 },
   //   { url: '/2020/11/post-2.html', count: 0 },
   //   { url: '/2020/12/post-3.html', count: 20 }
   // ]
 }).catch(function (err) {
-  // 发生错误
+  // If an error occurs
   console.error(err);
 });
 ```
 
 ## Get recent comments
 
-获取最新评论。
+Get the latest comments.
 
 ### Version
 
@@ -53,38 +49,37 @@ twikoo.getCommentsCount({
 
 ``` js
 twikoo.getRecentComments({
-  envId: '您的环境id', // 环境 ID
-  // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，如果您的环境地域不是上海，需传此参数
-  pageSize: 10, // 获取多少条，默认：10，最大：100
-  includeReply: false // 是否包括最新回复，默认：false
+  envId: '您的环境id', // Tencent CloudBase Environment ID
+  // region: 'ap-guangzhou', // Environment locale, default is ap-shanghai, if your environment locale is not Shanghai, you need to pass this parameter
+  pageSize: 10, // Get how many bars, the default parameter is 10, the maximum parameter is 100
+  includeReply: false // Whether to include the latest reply, the default parameter is false
 }).then(function (res) {
   console.log(res);
-  // 返回 Array，包含最新评论的
-  //   * id:           评论 ID
-  //   * url:          评论地址
-  //   * nick:         昵称
-  //   * mailMd5:      邮箱的 MD5 值，可用于展示头像
-  //   * link:         网址
-  //   * comment:      HTML 格式的评论内容
-  //   * commentText:  纯文本格式的评论内容
-  //   * created:      评论时间，格式为毫秒级时间戳
-  //   * avatar:       头像地址（0.2.9 新增）
-  //   * relativeTime: 相对评论时间，如 “1 小时前”（0.2.9 新增）
-  // 返回示例: [ // 从新到旧顺序
-  //   { id: '', url: '', nick: '', mailMd5: '', link: '', comment: '', commentText: '', created: 0 },
-  //   { id: '', url: '', nick: '', mailMd5: '', link: '', comment: '', commentText: '', created: 0 },
-  //   { id: '', url: '', nick: '', mailMd5: '', link: '', comment: '', commentText: '', created: 0 }
+  // Returns Array with the latest comments
+  // * id: comment ID
+  // * url: address of the comment
+  // * nick: nickname
+  // * mailMd5: The MD5 value of the mailbox, which can be used to display the avatar
+  // * link: URL
+  // * comment: the content of the comment in HTML format
+  // * commentText: comment content in plain text format
+  // * created: comment time, in millisecond timestamp format
+  // * avatar: the address of the avatar (new in 0.2.9)
+  // * relativeTime: relative comment time, e.g. "1 hour ago" (new in 0.2.9)
+  // Return example: [ // order from new to old
+  // { id: '', url: '', nick: '', mailMd5: '', link: '', comment: '', commentText: '', created: 0 }
+  // { id: '', url: '', nick: '', mailMd5: '', link: '', comment: '', commentText: '', created: 0 },
+  // { id: '', url: '', nick: '', mailMd5: '', link: '', comment: '', commentText: '', created: 0 }
   // ]
 }).catch(function (err) {
-  // 发生错误
+  // If an error occurs
   console.error(err);
 });
 ```
 
 ## On Twikoo loaded
 
-Twikoo 成功挂载后的回调函数。<br>
-环境 ID 错误、网络异常、挂载失败等情况时不会触发。
+Callback function after Twikoo is successfully mounted. <br> It will not be triggered in case of environment ID error, network exception, mount failure, etc.
 
 ### Version
 
@@ -96,15 +91,15 @@ Twikoo 成功挂载后的回调函数。<br>
 twikoo.init({
   ......
 }).then(function () {
-  console.log('Twikoo 加载完成');
+  console.log('Twikoo is ready to go!');
 });
 ```
 
 ## On comment loaded
 
-评论加载成功后的回调函数。<br>
-发表评论后自动刷新评论时、加载下一页评论时，也会触发。<br>
-评论加载失败时不会触发。
+Callback function after comments are loaded successfully.<br>
+It will also be triggered when the comment is automatically refreshed after posting and when the next page of comments is loaded.<br>
+It will not be triggered when the comment fails to load.
 
 ### Version
 
@@ -116,7 +111,7 @@ twikoo.init({
 twikoo.init({
   ......,
   onCommentLoaded: function () {
-    console.log('评论加载完成');
+    console.log('Comment loading complete');
   }
 });
 ```

@@ -1,53 +1,51 @@
 # FAQ
 
-::: tip Tip
-The English document is being built. Please refer to the Chinese document.
-:::
+## How do I change my avatar?
 
-## 如何修改头像？
+[https://cn.gravatar.com](https://cn.gravatar.com) Register and set your avatar by email and leave the same email when commenting.
 
-请前往 [https://cn.gravatar.com](https://cn.gravatar.com) 通过邮箱注册并设定头像，评论时，请留下相同的邮箱。
+Visitors can also comment by entering their digital QQ email address and using their QQ avatar.
 
-访客还可以通过输入数字 QQ 邮箱地址，使用 QQ 头像发表评论。
+## How do I change or reset the administrator password?
 
-## 如何修改、重置管理员密码？
+[云开发控制台](https://console.cloud.tencent.com/tcb/database/collection/config)Edit the configuration, delete the `config.ADMIN_PASS `configuration item, and then go to the Twikoo administration panel to reset the password.
 
-请前往[云开发控制台](https://console.cloud.tencent.com/tcb/database/collection/config)编辑配置，删除 config.ADMIN_PASS 配置项，然后前往 Twikoo 管理面板重新设置密码。
+## How to get the private key file of the admin panel?
 
-## 如何获得管理面板的私钥文件？
+1. [环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)Click "Private Key Download" on the right of "Custom Login" to download the private key file
+2. Open the private key file with a text editor and copy all the contents
+3. Click the "pinion" (settings) icon in the comment window, paste the contents of the private key file, and set the administrator password
 
-1. 进入[环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)，点击“自定义登录”右边的“私钥下载”，下载私钥文件
-2. 用文本编辑器打开私钥文件，复制全部内容
-3. 点击评论窗口的“小齿轮”图标，粘贴私钥文件内容，并设置管理员密码
+## How to turn on article visit statistics?
 
-## 如何开启文章访问量统计？
-
-您可以在需要展示文章访问量的地方添加：
+You can add where you need to show the number of article visits：
 
 ``` html
 <span id="twikoo_visitors">0</span>
 ```
 
-来展示访问量。暂不支持全站访问量统计。
+to display the number of visits. We do not support site-wide visit statistics at the moment.
 
-## 如何测试 Akismet 反垃圾配置是否生效？
+## How can I test if the Akismet anti-spam configuration is in effect?
 
-请填写 `viagra-test-123` 作为昵称，或填写 `akismet-guaranteed-spam@example.com` 作为邮箱，发表评论，这条评论将一定会被视为垃圾评论。
+Please fill in `viagra-test-123` as a nickname, or `akismet-guaranteed-spam@example.com` as an email address to post a comment, which will definitely be considered as a spam comment.
 
-需要注意的是，由于 Akismet 服务响应速度较慢（大约 6 秒），影响用户体验，Twikoo 采取 “先放行，后检测” 的策略，垃圾评论会在发表后短暂可见。
+Note that due to the slow response time of the Akismet service (about 6 seconds), which affects the user experience, Twikoo adopts a "release first, detect later" policy, and spam comments will be visible for a short time after they are posted.
 
-## 免费资源如何计算？
+## How are free resources calculated?
 
-您可以在云开发[环境总览](https://console.cloud.tencent.com/tcb/env/overview)看到资源使用情况。Twikoo 会消耗**数据库**和**云函数**两种资源，两种资源的免费用量为——
+[环境总览](https://console.cloud.tencent.com/tcb/env/overview)See resource usage. twikoo consumes **database** and **cloud functions**, both with a free usage of -
 
-* 数据库：读 50,000 次/日，写 50,000 次/日
-* 云函数：40,000 GBs/月
+* Database: 50,000 reads/day, 50,000 writes/day
+* Cloud functions: 40,000 GBs/month
 
-Twikoo 云函数的内存消耗恒定为 0.1GB，由此可计算出 Twikoo 云函数每月有长达 400,000 秒的运行时长，而免费资源的瓶颈主要在数据库日读取次数限制。建议站长关注免费资源的使用情况。
+The memory consumption of Twikoo cloud functions is constant at 0.1GB, which means that Twikoo cloud functions have a running time of up to 400,000 seconds per month, and the bottleneck of free resources is mainly in the daily read limit of the database. It is recommended that webmasters pay attention to the usage of free resources.
 
-## 如何启用 Katex 支持？
+## How do I enable Katex support?
 
-Twikoo 支持 Katex 公式，但为了限制 Twikoo 的包大小，Twikoo 没有内置完整的 Katex，您需要[在页面中额外加载 katex.js](https://katex.org/docs/browser.html)。
+Twikoo supports Katex formulas, but to limit the package size of Twikoo, Twikoo does not have the full Katex built-in, you need to [load katex.js additionally in the page](https://katex.org/docs/browser.html).
+
+example
 
 ``` html
 <head>
@@ -57,15 +55,15 @@ Twikoo 支持 Katex 公式，但为了限制 Twikoo 的包大小，Twikoo 没有
 </head>
 ```
 
-载入后，您可以发送 `$$c = \pm\sqrt{a^2 + b^2}$$` 测试效果。
+After loading, you can send `$$c = \pm\sqrt{a^2 + b^2}$$` to test the effect.
 
 ![katex](../static/katex.png)
 
-您还可以在 `twikoo.init` 时传入自定义 katex 配置，详细配置请查看 [Katex Auto-render Extension](https://katex.org/docs/autorender.html)。
+You can also pass in a custom katex configuration during `twikoo.init`, see [Katex Auto-render Extension](https://katex.org/docs/autorender.html) for details.
 
 ``` js
 twikoo.init({
-  envId: '您的环境id',
+  envId: 'Environment id',
   el: '#tcomment',
   katex: {
     delimiters: [
@@ -79,56 +77,56 @@ twikoo.init({
 });
 ```
 
-## 如何配置反垃圾？
+## How to configure anti-spam?
 
-### 使用腾讯云内容安全服务
+### Using Tencent Cloud Content Security Service
 
-Twikoo 支持接入腾讯云文本内容检测，使用深度学习技术，识别涉黄、涉政、涉恐等有害内容，同时支持用户配置词库，打击自定义的违规文本。
+Twikoo supports access to Tencent Cloud Text Content Detection, which uses deep learning technology to identify harmful content involving pornography, politics, terrorism, etc. It also supports user-configurable thesaurus to combat customized offending text.
 
-腾讯云文本内容检测是付费服务，提供 1 个月的免费试用，之后价格为 25 元/万条。如果您对反垃圾评论要求不高，也可以使用免费的 Akismet。
+Tencent Cloud text content detection is a paid service, offering a 1-month free trial, after which the price is 25 RMB per 10,000 entries. If you don't have high requirements for anti-spam comments, you can also use the free Akismet.
 
-如何申请腾讯云文本内容检测
+How to apply for Tencent Cloud Text Content Inspection?
 
-1. 访问[腾讯云控制台-文本内容安全](https://console.cloud.tencent.com/cms/text/overview)，开通文本内容安全服务
-2. 访问[腾讯云控制台-用户列表](https://console.cloud.tencent.com/cam)，点击新建用户，点击快速创建
-3. 输入用户名，访问方式选择“编程访问”，用户权限取消“AdministratorAccess”，只勾选“QcloudCMSFullAccess”
-4. 点击“创建用户”
-5. 复制“成功新建用户”页面的“SecretId”和“SecretKey”，到 Twikoo 管理面板“反垃圾”模块中配置
-6. 测试反垃圾效果
+1. Visit [Tencent Cloud Console - Text Content Security](https://console.cloud.tencent.com/cms/text/overview) to open the text content security service
+2. Visit [Tencent Cloud Console - User List](https://console.cloud.tencent.com/cam), click New User, and click Quick Create.
+3. Enter the user name, select "Programmatic Access" as the access method, cancel "AdministratorAccess" as the user privilege, and only check the box "QcloudCMSFullAccess". QcloudCMSFullAccess".
+4. Click "Create User". 5.
+5. Copy the "SecretId" and "SecretKey" from the "Successful New User" page to the Twikoo administration panel Configure them in the "Anti-Spam" module
+6. Test the anti-spam effect
 
-成功后，站长可以在[腾讯云控制台-自定义库管理](https://console.cloud.tencent.com/cms/text/lib)配置自定义文本内容过滤。
+After success, webmasters can configure custom text content filtering in [Tencent Cloud Console - Custom Library Management](https://console.cloud.tencent.com/cms/text/lib).
 
-### 使用 Akismet 反垃圾服务
+### Using Akismet Anti-Spam Service
 
-Akismet (Automattic Kismet) 是应用广泛的一个垃圾留言过滤系统，其作者是大名鼎鼎的 WordPress 创始人 Matt Mullenweg，Akismet 也是 WordPress 默认安装的插件，其使用非常广泛，设计目标便是帮助博客网站来过滤垃圾留言。
+Akismet (Automattic Kismet) is a widely used spam filtering system by Matt Mullenweg, the founder of WordPress, Akismet is also the default plugin installed in WordPress and is very widely used. The goal of the design is to help blog sites to filter spam messages.
 
-1. 注册 [akismet.com](https://akismet.com)
-2. 选择 Akismet Personal 订阅，复制得到的 Akismet API Key，到 Twikoo 管理面板“反垃圾”模块中配置
+1. Register [akismet.com](https://akismet.com)
+2. Select Akismet Personal subscription, copy the Akismet API Key and configure it in the Twikoo admin panel "Anti-Spam" module
 
-## 登录管理面板遇到错误 AUTH_INVALID_CUSTOM_LOGIN_TICKET
+## Error encountered in login administration panel AUTH_INVALID_CUSTOM_LOGIN_TICKET
 
-一般是配置好登录私钥之后，又重新下载了登录私钥，导致之前配置的登录私钥失效了。<br>
-解决方法：到[云开发控制台](https://console.cloud.tencent.com/tcb/database/collection/config)，数据库，删掉 config，然后重新配置私钥。
+Generally, after configuring the login private key, the login private key is downloaded again, which causes the previously configured login private key to be invalid.<br>
+Solution: Go to [Cloud Development Console](https://console.cloud.tencent.com/tcb/database/collection/config), database, delete the config, and then reconfigure the private key.
 
-## 收不到提醒邮件？
+## Can't receive emails?
 
-如果是 Vercel 部署的云函数，请配置国外邮件服务商，避免被邮件服务商判定为垃圾邮件行为。如果是其他原因，请前往 Twikoo 管理面板，找到邮件测试功能，输入个人邮箱，根据测试结果排查原因。
+If it is a cloud function deployed by Vercel, please configure foreign mail service providers to avoid being judged as spam behavior by mail service providers. If it is other reasons, please go to Twikoo management panel, find mail test function, enter your personal mailbox and troubleshoot the reasons according to the test results.
 
-为了避免频繁检查邮箱带来的性能问题，邮件配置有 10 分钟左右的缓存，如果确定配置没有问题，但测试失败，可以等待 10 分钟后再测试。
+In order to avoid performance problems caused by frequent mailbox checking, the mail configuration has a cache of about 10 minutes, if you are sure the configuration is fine but the test fails, you can wait for 10 minutes and then test again.
 
-## Vercel 无法上传图片？
+## Vercel can't upload images?
 
-腾讯云环境自带云存储，所以腾讯云环境下可以直接上传图片，图片保存在云存储中。然而 Vercel 环境没有，上传图片功能依赖第三方图床，请在管理面板中配置图床，Twikoo 支持以下图床：
+The Tencent Cloud environment comes with cloud storage, so you can upload images directly in the Tencent Cloud environment, and the images are saved in the cloud storage. However, Vercel environment does not, the upload image function relies on third party image bed, please configure the image bed in the admin panel, Twikoo supports the following image bed:
 
-| 图床 | 地址 | 特点 |
+| Bed | Address | Features |
 | ---- | ---- | ---- |
-| qcloud | 无 | 腾讯云环境自带，可在云开发 - 云存储中查看 |
-| 7bu | https://7bu.top | 去不图床，由杜老师提供支持，无免费套餐 |
-| smms | https://sm.ms | SMMS 图床，有免费套餐，请自行注册账号，`IMAGE_CDN_TOKEN` 可在 [Dashboard](https://sm.ms/home/apitoken) 中获取 |
-| [lsky-pro](https://www.lsky.pro) | 私有部署 | 兰空图床 2.0 版本，`IMAGE_CDN` 请配置图床首页 URL 地址（如 `https://7bu.top`），`IMAGE_CDN_TOKEN` 获取方式请参考教程 [杜老师说图床：新版本去不图床 Token 的获取与清空](https://dusays.com/454/)，获取到的 token 格式应为 `1\|1bJbwlqBfnggmOMEZqXT5XusaIwqiZjCDs7r1Ob5`） |
+| qcloud | None | Tencent Cloud environment comes with it, can be viewed in Cloud Development - Cloud Storage |
+| 7bu | https://7bu.top | Go to No Bed, powered by 杜老师, no free packages |
+| smms | https://sm.ms | SMMS image bed, there is a free package, please register your account, `IMAGE_CDN_TOKEN` can be obtained in [Dashboard](https://sm.ms/home/apitoken) |
+| [lsky-pro](https://www.lsky.pro) | Private Deployment | LankenGraphics 2.0 version, `IMAGE_CDN` please configure the URL address of the home page of the graph bed (such as `https://7bu.top`), `IMAGE_CDN_TOKEN` get way please refer to the tutorial [杜老师 said the graph bed: new version Go not to the bed Token acquisition and emptying](https://dusays.com/454/), the format of the obtained token should be `1\|1bJbwlqBfnggmOMEZqXT5XusaIwqiZjCDs7r1Ob5`) |
 
-## 能私有部署吗？
+## Can it be deployed privately?
 
-不能。如果您确实需要支持私有部署评论系统，请优先考虑其他评论系统。
+No. If you do need to support private deployment of the comment system, please prioritize other comment systems.
 
-您可以在这个项目 [twikoo-docker](https://github.com/twikoojs/twikoo-docker) 中看到私有部署的实现进度。私有部署存在一系列问题，现阶段作者仍没有时间和精力解决。欢迎贡献。
+You can see the progress of private deployment in this project [twikoo-docker](https://github.com/twikoojs/twikoo-docker). There are a number of issues with private deployments that the authors do not have the time and energy to address at this stage. Feel free to contribute.

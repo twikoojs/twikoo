@@ -2,7 +2,7 @@
 
 ## How do I change my avatar?
 
-[https://cn.gravatar.com](https://cn.gravatar.com) Register and set your avatar by email and leave the same email when commenting.
+[https://gravatar.com](https://gravatar.com) Register and set your avatar by email and leave the same email when commenting.
 
 Visitors can also comment by entering their digital QQ email address and using their QQ avatar.
 

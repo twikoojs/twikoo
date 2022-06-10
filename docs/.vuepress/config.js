@@ -1,4 +1,4 @@
-const { searchPlugin } = require('@vuepress/plugin-search')
+const { docsearchPlugin } = require('@vuepress/plugin-docsearch')
 const twikooTheme = require('./theme')
 
 module.exports = {
@@ -47,6 +47,10 @@ module.exports = {
     docsBranch: 'main'
   }),
   plugins: [
-    searchPlugin({})
+    docsearchPlugin({
+      appId: 'TM627WNO90',
+      apiKey: 'f81194a47bc4be7984df25fc480c60a7',
+      indexName: 'twikoo'
+    })
   ]
 }

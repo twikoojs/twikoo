@@ -13,7 +13,7 @@
     "docs:build": "vuepress build ."
   },
   "devDependencies": {
-    "@vuepress/plugin-docsearch": "^2.0.0-alpha.1",
-    "vuepress": "^2.0.0-beta.45"
+    "@vuepress/plugin-docsearch": "^2.0.0-beta.46",
+    "vuepress": "^2.0.0-beta.46"
   }
 }

@@ -15,7 +15,7 @@
 
 <script>
 import { app } from '../index'
-import { isQQ, t } from '../../js/utils'
+import { isQQ, t } from '../../utils'
 
 // 邮箱正则表达式来自 https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#validation
 const mailRegExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
@@ -152,10 +152,10 @@ export default {
 .tk-meta-input .el-input + .el-input {
   margin-left: 0.5rem;
 }
-.tk-meta-input .el-input /deep/ .el-input-group__prepend {
+.tk-meta-input .el-input :deep(.el-input-group__prepend) {
   padding: 0 1rem;
 }
-.tk-meta-input .el-input /deep/ input:invalid {
+.tk-meta-input .el-input :deep(input:invalid) {
   border: 1px solid #f56c6c;
   box-shadow: none;
 }

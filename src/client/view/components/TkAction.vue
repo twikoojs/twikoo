@@ -87,7 +87,7 @@ export default {
   width: 1em;
   line-height: 0;
 }
-.tk-action-icon /deep/ svg {
+.tk-action-icon :deep(svg) {
   fill: #409eff;
 }
 </style>

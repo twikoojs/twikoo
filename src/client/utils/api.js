@@ -1,4 +1,4 @@
-import { app } from '../../view'
+import { app } from '../view'
 
 const isUrl = (s) => {
   return /^http(s)?:\/\//.test(s)

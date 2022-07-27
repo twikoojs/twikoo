@@ -53,7 +53,7 @@ import iconImage from '@fortawesome/fontawesome-free/svgs/regular/image.svg'
 import Clickoutside from 'element-ui/src/utils/clickoutside'
 import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
-import { marked, call, logger, renderLinks, renderMath, renderCode, initOwoEmotion, initMarkedOwo, t, getUrl, blobToDataURL } from '../../js/utils'
+import { marked, call, logger, renderLinks, renderMath, renderCode, initOwoEmotion, initMarkedOwo, t, getUrl, blobToDataURL } from '../../utils'
 import OwO from '../../lib/owo'
 
 const imageTypes = [
@@ -381,10 +381,10 @@ export default {
   cursor: pointer;
   flex-shrink: 0;
 }
-.tk-action-icon /deep/ svg:hover {
+.tk-action-icon :deep(svg:hover) {
   opacity: 0.8;
 }
-.tk-action-icon.__markdown /deep/ svg {
+.tk-action-icon.__markdown :deep(svg) {
   fill: #909399;
 }
 .tk-error-message {
@@ -402,7 +402,7 @@ export default {
 .tk-input {
   flex: 1;
 }
-.tk-input /deep/ .el-textarea__inner {
+.tk-input :deep(.el-textarea__inner) {
   background-position: right bottom;
   background-repeat: no-repeat;
 }

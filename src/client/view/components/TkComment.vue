@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { timeago, convertLink, call, renderLinks, renderMath, renderCode, t } from '../../js/utils'
+import { timeago, convertLink, call, renderLinks, renderMath, renderCode, t } from '../../utils'
 import TkAction from './TkAction.vue'
 import TkAvatar from './TkAvatar.vue'
 import TkSubmit from './TkSubmit.vue'
@@ -325,7 +325,7 @@ export default {
 .tk-extra-text {
   line-height: 1;
 }
-.tk-icon /deep/ svg {
+.tk-icon :deep(svg) {
   width: 100%;
   fill: currentColor;
 }
@@ -373,7 +373,7 @@ export default {
 .tk-replies .tk-content {
   font-size: .9em;
 }
-.tk-comment /deep/ .vemoji {
+.tk-comment :deep(.vemoji) {
   max-height: 2em;
   vertical-align: middle;
 }

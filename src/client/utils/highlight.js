@@ -1,4 +1,4 @@
-import { app } from '../../view'
+import { app } from '../view'
 
 const PRISM_CDN = 'https://cdn.staticfile.org/prism/1.28.0'
 let Prism

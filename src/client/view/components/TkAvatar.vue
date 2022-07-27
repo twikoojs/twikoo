@@ -7,7 +7,7 @@
 
 <script>
 import md5 from 'blueimp-md5'
-import { convertLink, isQQ, getQQAvatar } from '../../js/utils'
+import { convertLink, isQQ, getQQAvatar } from '../../utils'
 import iconUser from '@fortawesome/fontawesome-free/svgs/solid/user-circle.svg'
 
 export default {
@@ -88,7 +88,7 @@ export default {
 .tk-replies .tk-avatar .tk-avatar-img {
   height: 1.6rem;
 }
-.tk-avatar .tk-avatar-img /deep/ svg {
+.tk-avatar .tk-avatar-img :deep(svg) {
   fill: #c0c4cc;
 }
 </style>

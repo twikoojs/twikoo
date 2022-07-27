@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { call, readAsText, t } from '../../js/utils'
+import { call, readAsText, t } from '../../utils'
 
 export default {
   data () {

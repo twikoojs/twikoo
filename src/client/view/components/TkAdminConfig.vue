@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { call, logger, t } from '../../js/utils'
+import { call, logger, t } from '../../utils'
 import { version } from '../../version'
 
 export default {

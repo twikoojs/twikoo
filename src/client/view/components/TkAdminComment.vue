@@ -51,7 +51,7 @@
 
 <script>
 import { app } from '../index'
-import { timeago, call, convertLink, renderLinks, renderMath, renderCode, t } from '../../js/utils'
+import { timeago, call, convertLink, renderLinks, renderMath, renderCode, t } from '../../utils'
 import { version } from '../../version'
 import TkAvatar from './TkAvatar.vue'
 import TkPagination from './TkPagination.vue'

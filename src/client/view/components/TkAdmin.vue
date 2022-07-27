@@ -60,7 +60,7 @@ import md5 from 'blueimp-md5'
 import TkAdminComment from './TkAdminComment.vue'
 import TkAdminConfig from './TkAdminConfig.vue'
 import TkAdminImport from './TkAdminImport.vue'
-import { logger, call, t } from '../../js/utils'
+import { logger, call, t } from '../../utils'
 import iconClose from '@fortawesome/fontawesome-free/svgs/solid/times.svg'
 
 export default {
@@ -285,7 +285,7 @@ export default {
   text-align: center;
   margin-top: 1rem;
 }
-.tk-password /deep/ .el-input__inner {
+.tk-password :deep(.el-input__inner) {
   min-width: 100px;
 }
 .tk-login-msg a {

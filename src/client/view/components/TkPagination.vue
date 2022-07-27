@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { t } from '../../js/utils'
+import { t } from '../../utils'
 
 export default {
   props: {
@@ -142,15 +142,15 @@ export default {
 .tk-pagination .el-input {
   width: 50px;
 }
-.tk-pagination .el-input /deep/ .el-input__inner {
+.tk-pagination .el-input :deep(.el-input__inner) {
   padding: 0;
   height: 28px;
   text-align: center;
   -moz-appearance: textfield;
   appearance: textfield;
 }
-.tk-pagination .el-input /deep/ .el-input__inner::-webkit-inner-spin-button,
-.tk-pagination .el-input /deep/ .el-input__inner::-webkit-outer-spin-button {
+.tk-pagination .el-input :deep(.el-input__inner::-webkit-inner-spin-button),
+.tk-pagination .el-input :deep(.el-input__inner::-webkit-outer-spin-button) {
   -webkit-appearance: none;
   appearance: none;
   margin: 0;

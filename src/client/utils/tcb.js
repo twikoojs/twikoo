@@ -1,7 +1,7 @@
 import {
   isNotSet,
   logger
-} from '../utils'
+} from '.'
 
 const builtInOptions = [
   { key: 'envId', required: true }

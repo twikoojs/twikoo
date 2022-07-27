@@ -1,6 +1,6 @@
-import { version } from '../version'
-import { install } from './tcb'
-import { render } from '../view'
+import { version } from './version'
+import { install } from './utils/tcb'
+import { render } from './view'
 import { setLanguage, logger, isUrl, getCommentsCountApi, getRecentCommentsApi } from './utils'
 
 async function initTcb (options) {

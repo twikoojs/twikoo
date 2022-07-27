@@ -7,7 +7,7 @@
 
 <script>
 import { version } from '../../version'
-import { call, getUrl } from '../../js/utils'
+import { call, getUrl } from '../../utils'
 
 export default {
   data () {

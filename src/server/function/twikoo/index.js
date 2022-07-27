@@ -23,6 +23,7 @@ const fs = require('fs')
 const FormData = require('form-data') // 图片上传
 const pushoo = require('pushoo').default // 即时消息通知
 const ipToRegion = require('dy-node-ip2region') // IP 属地查询
+const constants = require('./utils/constants')
 
 // 云函数 SDK / tencent cloudbase sdk
 const app = tcb.init({ env: tcb.SYMBOL_CURRENT_ENV })
@@ -38,23 +39,7 @@ const DOMPurify = createDOMPurify(window)
 const ipRegionSearcher = ipToRegion.create()
 
 // 常量 / constants
-const RES_CODE = {
-  SUCCESS: 0,
-  FAIL: 1000,
-  EVENT_NOT_EXIST: 1001,
-  PASS_EXIST: 1010,
-  CONFIG_NOT_EXIST: 1020,
-  CREDENTIALS_NOT_EXIST: 1021,
-  CREDENTIALS_INVALID: 1025,
-  PASS_NOT_EXIST: 1022,
-  PASS_NOT_MATCH: 1023,
-  NEED_LOGIN: 1024,
-  FORBIDDEN: 1403,
-  AKISMET_ERROR: 1030,
-  UPLOAD_FAILED: 1040
-}
 const ADMIN_USER_ID = 'admin'
-const MAX_REQUEST_TIMES = parseInt(process.env.TWIKOO_THROTTLE) || 250
 
 // 全局变量 / variables
 // 警告：全局定义的变量，会被云函数缓存，请慎重定义全局变量
@@ -135,10 +120,10 @@ exports.main = async (event, context) => {
         break
       default:
         if (event.event) {
-          res.code = RES_CODE.EVENT_NOT_EXIST
+          res.code = constants.RES_CODE.EVENT_NOT_EXIST
           res.message = '请更新 Twikoo 云函数至最新版本'
         } else {
-          res.code = RES_CODE.SUCCESS
+          res.code = constants.RES_CODE.SUCCESS
           res.message = 'Twikoo 云函数运行正常，请参考 https://twikoo.js.org/quick-start.html#%E5%89%8D%E7%AB%AF%E9%83%A8%E7%BD%B2 完成前端的配置'
         }
     }
@@ -146,7 +131,7 @@ exports.main = async (event, context) => {
     console.error('Twikoo 遇到错误，请参考以下错误信息。如有疑问，请反馈至 https://github.com/imaegoo/twikoo/issues')
     console.error('请求参数：', event)
     console.error('错误信息：', e)
-    res.code = RES_CODE.FAIL
+    res.code = constants.RES_CODE.FAIL
     res.message = e.message
   }
   console.log('请求返回：', res)
@@ -156,7 +141,7 @@ exports.main = async (event, context) => {
 // 获取 Twikoo 云函数版本
 function getFuncVersion () {
   return {
-    code: RES_CODE.SUCCESS,
+    code: constants.RES_CODE.SUCCESS,
     version: VERSION
   }
 }
@@ -164,7 +149,7 @@ function getFuncVersion () {
 // 判断是否存在管理员密码
 async function getPasswordStatus () {
   return {
-    code: RES_CODE.SUCCESS,
+    code: constants.RES_CODE.SUCCESS,
     status: !!config.ADMIN_PASS,
     credentials: !!config.CREDENTIALS,
     version: VERSION
@@ -177,21 +162,21 @@ async function setPassword (event) {
   // 如果数据库里没有密码，则写入密码
   // 如果数据库里有密码，则只有管理员可以写入密码
   if (config.ADMIN_PASS && !isAdminUser) {
-    return { code: RES_CODE.PASS_EXIST, message: '请先登录再修改密码' }
+    return { code: constants.RES_CODE.PASS_EXIST, message: '请先登录再修改密码' }
   }
   if (!config.CREDENTIALS && !event.credentials) {
-    return { code: RES_CODE.CREDENTIALS_NOT_EXIST, message: '未配置登录私钥' }
+    return { code: constants.RES_CODE.CREDENTIALS_NOT_EXIST, message: '未配置登录私钥' }
   }
   if (!config.CREDENTIALS && event.credentials) {
     const checkResult = await checkAndSaveCredentials(event.credentials)
     if (!checkResult) {
-      return { code: RES_CODE.CREDENTIALS_INVALID, message: '无效的私钥文件' }
+      return { code: constants.RES_CODE.CREDENTIALS_INVALID, message: '无效的私钥文件' }
     }
   }
   const ADMIN_PASS = md5(event.password)
   await writeConfig({ ADMIN_PASS })
   return {
-    code: RES_CODE.SUCCESS
+    code: constants.RES_CODE.SUCCESS
   }
 }
 
@@ -210,19 +195,19 @@ async function checkAndSaveCredentials (credentials) {
 // 管理员登录
 async function login (password) {
   if (!config) {
-    return { code: RES_CODE.CONFIG_NOT_EXIST, message: '数据库无配置' }
+    return { code: constants.RES_CODE.CONFIG_NOT_EXIST, message: '数据库无配置' }
   }
   if (!config.CREDENTIALS) {
-    return { code: RES_CODE.CREDENTIALS_NOT_EXIST, message: '未配置登录私钥' }
+    return { code: constants.RES_CODE.CREDENTIALS_NOT_EXIST, message: '未配置登录私钥' }
   }
   if (!config.ADMIN_PASS) {
-    return { code: RES_CODE.PASS_NOT_EXIST, message: '未配置管理密码' }
+    return { code: constants.RES_CODE.PASS_NOT_EXIST, message: '未配置管理密码' }
   }
   if (config.ADMIN_PASS !== md5(password)) {
-    return { code: RES_CODE.PASS_NOT_MATCH, message: '密码错误' }
+    return { code: constants.RES_CODE.PASS_NOT_MATCH, message: '密码错误' }
   }
   return {
-    code: RES_CODE.SUCCESS,
+    code: constants.RES_CODE.SUCCESS,
     ticket: getAdminTicket(JSON.parse(config.CREDENTIALS))
   }
 }
@@ -406,11 +391,11 @@ async function commentGetForAdmin (event) {
       .skip(event.per * (event.page - 1))
       .limit(event.per)
       .get()
-    res.code = RES_CODE.SUCCESS
+    res.code = constants.RES_CODE.SUCCESS
     res.count = count.total
     res.data = parseCommentForAdmin(data.data)
   } else {
-    res.code = RES_CODE.NEED_LOGIN
+    res.code = constants.RES_CODE.NEED_LOGIN
     res.message = '请先登录'
   }
   return res
@@ -466,10 +451,10 @@ async function commentSetForAdmin (event) {
         ...event.set,
         updated: Date.now()
       })
-    res.code = RES_CODE.SUCCESS
+    res.code = constants.RES_CODE.SUCCESS
     res.updated = data.updated
   } else {
-    res.code = RES_CODE.NEED_LOGIN
+    res.code = constants.RES_CODE.NEED_LOGIN
     res.message = '请先登录'
   }
   return res
@@ -485,10 +470,10 @@ async function commentDeleteForAdmin (event) {
       .collection('comment')
       .doc(event.id)
       .delete()
-    res.code = RES_CODE.SUCCESS
+    res.code = constants.RES_CODE.SUCCESS
     res.deleted = data.deleted
   } else {
-    res.code = RES_CODE.NEED_LOGIN
+    res.code = constants.RES_CODE.NEED_LOGIN
     res.message = '请先登录'
   }
   return res
@@ -535,11 +520,11 @@ async function commentImportForAdmin (event) {
     } catch (e) {
       log(e.message)
     }
-    res.code = RES_CODE.SUCCESS
+    res.code = constants.RES_CODE.SUCCESS
     res.log = logText
     console.log(logText)
   } else {
-    res.code = RES_CODE.NEED_LOGIN
+    res.code = constants.RES_CODE.NEED_LOGIN
     res.message = '请先登录'
   }
   return res
@@ -880,12 +865,12 @@ async function save (data) {
 
 // 异步垃圾检测、发送评论通知
 async function postSubmit (comment, context) {
-  if (!isRecursion(context)) return { code: RES_CODE.FORBIDDEN }
+  if (!isRecursion(context)) return { code: constants.RES_CODE.FORBIDDEN }
   // 垃圾检测
   await postCheckSpam(comment)
   // 发送通知
   await sendNotice(comment)
-  return { code: RES_CODE.SUCCESS }
+  return { code: constants.RES_CODE.SUCCESS }
 }
 
 // 发送通知
@@ -1418,7 +1403,7 @@ async function emailTest (event) {
       res.message = e.message
     }
   } else {
-    res.code = RES_CODE.NEED_LOGIN
+    res.code = constants.RES_CODE.NEED_LOGIN
     res.message = '请先登录'
   }
   return res
@@ -1441,7 +1426,7 @@ async function uploadImage (event) {
     }
   } catch (e) {
     console.error(e)
-    res.code = RES_CODE.UPLOAD_FAILED
+    res.code = constants.RES_CODE.UPLOAD_FAILED
     res.err = e.message
   }
   return res
@@ -1536,7 +1521,7 @@ async function getQQAvatar (qq) {
 
 function getConfig () {
   return {
-    code: RES_CODE.SUCCESS,
+    code: constants.RES_CODE.SUCCESS,
     config: {
       VERSION,
       SITE_NAME: config.SITE_NAME,
@@ -1565,12 +1550,12 @@ async function getConfigForAdmin () {
   if (isAdminUser) {
     delete config.CREDENTIALS
     return {
-      code: RES_CODE.SUCCESS,
+      code: constants.RES_CODE.SUCCESS,
       config
     }
   } else {
     return {
-      code: RES_CODE.NEED_LOGIN,
+      code: constants.RES_CODE.NEED_LOGIN,
       message: '请先登录'
     }
   }
@@ -1582,11 +1567,11 @@ async function setConfig (event) {
   if (isAdminUser) {
     writeConfig(event.config)
     return {
-      code: RES_CODE.SUCCESS
+      code: constants.RES_CODE.SUCCESS
     }
   } else {
     return {
-      code: RES_CODE.NEED_LOGIN,
+      code: constants.RES_CODE.NEED_LOGIN,
       message: '请先登录'
     }
   }
@@ -1596,7 +1581,7 @@ function protect () {
   // 防御
   const ip = auth.getClientIP()
   requestTimes[ip] = (requestTimes[ip] || 0) + 1
-  if (requestTimes[ip] > MAX_REQUEST_TIMES) {
+  if (requestTimes[ip] > constants.MAX_REQUEST_TIMES) {
     console.log(`${ip} 当前请求次数为 ${requestTimes[ip]}，已超过最大请求次数`)
     throw new Error('Too Many Requests')
   } else {

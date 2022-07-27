@@ -8,8 +8,8 @@
 [![](https://data.jsdelivr.com/v1/package/npm/twikoo/badge)](https://www.jsdelivr.com/package/npm/twikoo)
 [![](https://img.shields.io/npm/l/twikoo)](./LICENSE)
 
-一个**简洁**、**安全**、**免费**的静态网站评论系统，基于[腾讯云开发](https://curl.qcloud.com/KnnJtUom)。<br>
-A **simple**, **safe**, **free** comment system based on Tencent CloudBase (tcb).  
+一个**简洁**、**安全**、**免费**的静态网站评论系统。<br>
+A **simple**, **safe**, **free** comment system.  
 **简体中文** | [English](./README.en.md)
 
 ## 特色 | Features

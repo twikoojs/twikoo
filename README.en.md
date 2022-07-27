@@ -9,7 +9,7 @@
 [![](https://img.shields.io/npm/l/twikoo)](./LICENSE)
 
 
-A **simple**, **safe**, **free** comment system based on Tencent CloudBase (tcb).  
+A **simple**, **safe**, **free** comment system.  
 [简体中文](./README.md) | **English**  
 
 **This document is for American English.**

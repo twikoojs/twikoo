@@ -22,7 +22,7 @@ jobs:
       - run: yarn publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
-      - run: cd src/server/cloudbase/twikoo && yarn publish
+      - run: cd src/server/function/twikoo && yarn publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
       - run: cd src/server/vercel && yarn publish

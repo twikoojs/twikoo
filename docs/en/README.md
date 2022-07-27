@@ -8,7 +8,7 @@
 [![](https://data.jsdelivr.com/v1/package/npm/twikoo/badge)](https://www.jsdelivr.com/package/npm/twikoo)
 [![](https://img.shields.io/npm/l/twikoo)](https://github.com/imaegoo/twikoo/blob/main/LICENSE)
 
-A **simple**, **safe**, **free** comment system based on Tencent CloudBase (tcb).  
+A **simple**, **safe**, **free** comment system.  
 [简体中文](/) | **English**  
 
 **This document is for American English. This document has many bugs.**

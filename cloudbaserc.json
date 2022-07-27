@@ -1,7 +1,7 @@
 {
   "version": "2.0",
   "envId": "{{envId}}",
-  "functionRoot": "./src/server/cloudbase",
+  "functionRoot": "./src/server/function",
   "functions": [
     {
       "name": "twikoo",
@@ -17,7 +17,7 @@
       "function": {
         "use": "@cloudbase/framework-plugin-function",
         "inputs": {
-          "functionRootPath": "./src/server/cloudbase",
+          "functionRootPath": "./src/server/function",
           "functions": [
             {
               "name": "twikoo",

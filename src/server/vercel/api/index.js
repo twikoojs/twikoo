@@ -4,58 +4,55 @@
  * Released under the MIT License.
  */
 
-// 三方依赖 / 3rd party dependencies
 const { version: VERSION } = require('../package.json')
-const { URL } = require('url')
 const MongoClient = require('mongodb').MongoClient
-const md5 = require('blueimp-md5') // MD5 加解密
-const bowser = require('bowser') // UserAgent 格式化
-const nodemailer = require('nodemailer') // 发送邮件
-const axios = require('axios') // 发送 REST 请求
-const $ = require('cheerio') // jQuery 服务器版
-const { AkismetClient } = require('akismet-api') // 反垃圾 API
-const createDOMPurify = require('dompurify') // 反 XSS
-const { JSDOM } = require('jsdom') // document.window 服务器版
-const xml2js = require('xml2js') // XML 解析
-const marked = require('marked') // Markdown 解析
-const CryptoJS = require('crypto-js') // 编解码
-const tencentcloud = require('tencentcloud-sdk-nodejs') // 腾讯云 API NODEJS SDK
+const { URL } = require('url')
 const { v4: uuidv4 } = require('uuid') // 用户 id 生成
-const fs = require('fs')
-const FormData = require('form-data') // 图片上传
-const pushoo = require('pushoo').default // 即时消息通知
-const ipToRegion = require('dy-node-ip2region') // IP 属地查询
+const {
+  $,
+  JSDOM,
+  axios,
+  createDOMPurify,
+  md5,
+  xml2js
+} = require('twikoo-func/utils/lib')
+const {
+  getFuncVersion,
+  getUrlQuery,
+  getUrlsQuery,
+  parseComment,
+  parseCommentForAdmin,
+  getAvatar,
+  isQQ,
+  addQQMailSuffix,
+  getQQAvatar,
+  getPasswordStatus,
+  preCheckSpam,
+  getConfig,
+  getConfigForAdmin,
+  validate
+} = require('twikoo-func/utils')
+const {
+  jsonParse,
+  commentImportValine,
+  commentImportDisqus,
+  commentImportArtalk,
+  commentImportTwikoo
+} = require('twikoo-func/utils/import')
+const { postCheckSpam } = require('twikoo-func/utils/spam')
+const { sendNotice, emailTest } = require('twikoo-func/utils/notify')
+const { uploadImage } = require('./utils/image')
 
 // 初始化反 XSS
 const window = new JSDOM('').window
 const DOMPurify = createDOMPurify(window)
 
-// 初始化 IP 属地
-const ipRegionSearcher = ipToRegion.create()
-
 // 常量 / constants
-const RES_CODE = {
-  SUCCESS: 0,
-  NO_PARAM: 100,
-  FAIL: 1000,
-  EVENT_NOT_EXIST: 1001,
-  PASS_EXIST: 1010,
-  CONFIG_NOT_EXIST: 1020,
-  CREDENTIALS_NOT_EXIST: 1021,
-  CREDENTIALS_INVALID: 1025,
-  PASS_NOT_EXIST: 1022,
-  PASS_NOT_MATCH: 1023,
-  NEED_LOGIN: 1024,
-  FORBIDDEN: 1403,
-  AKISMET_ERROR: 1030,
-  UPLOAD_FAILED: 1040
-}
-const MAX_REQUEST_TIMES = parseInt(process.env.TWIKOO_THROTTLE) || 250
+const { RES_CODE, MAX_REQUEST_TIMES } = require('twikoo-func/utils/constants')
 
 // 全局变量 / variables
 let db = null
 let config
-let transporter
 let request
 let response
 let accessToken
@@ -81,7 +78,7 @@ module.exports = async (requestArg, responseArg) => {
     }
     switch (event.event) {
       case 'GET_FUNC_VERSION':
-        res = getFuncVersion()
+        res = getFuncVersion({ VERSION })
         break
       case 'COMMENT_GET':
         res = await commentGet(event)
@@ -111,16 +108,16 @@ module.exports = async (requestArg, responseArg) => {
         res = await counterGet(event)
         break
       case 'GET_PASSWORD_STATUS':
-        res = await getPasswordStatus()
+        res = await getPasswordStatus(config, VERSION)
         break
       case 'SET_PASSWORD':
         res = await setPassword(event)
         break
       case 'GET_CONFIG':
-        res = await getConfig()
+        res = await getConfig({ config, VERSION, isAdmin })
         break
       case 'GET_CONFIG_FOR_ADMIN':
-        res = await getConfigForAdmin()
+        res = await getConfigForAdmin({ config, isAdmin })
         break
       case 'SET_CONFIG':
         res = await setConfig(event)
@@ -135,10 +132,10 @@ module.exports = async (requestArg, responseArg) => {
         res = await getRecentComments(event)
         break
       case 'EMAIL_TEST': // >= 1.4.6
-        res = await emailTest(event)
+        res = await emailTest(event, config, isAdmin)
         break
       case 'UPLOAD_IMAGE': // >= 1.5.0
-        res = await uploadImage(event)
+        res = await uploadImage(event, config)
         break
       default:
         if (event.event) {
@@ -217,23 +214,6 @@ async function connectToDatabase (uri) {
   // Cache the database connection and return the connection
   console.log('Connected to database')
   return db
-}
-
-// 获取 Twikoo 云函数版本
-function getFuncVersion () {
-  return {
-    code: RES_CODE.SUCCESS,
-    version: VERSION
-  }
-}
-
-// 判断是否存在管理员密码
-async function getPasswordStatus () {
-  return {
-    code: RES_CODE.SUCCESS,
-    status: !!config.ADMIN_PASS,
-    version: VERSION
-  }
 }
 
 // 写入管理密码
@@ -354,72 +334,6 @@ function getCommentQuery ({ condition, uid, isAdminUser }) {
   }
 }
 
-// 同时查询 /path 和 /path/ 的评论
-function getUrlQuery (url) {
-  const variantUrl = url[url.length - 1] === '/' ? url.substring(0, url.length - 1) : `${url}/`
-  return [url, variantUrl]
-}
-
-// 筛除隐私字段，拼接回复列表
-function parseComment (comments, uid) {
-  const result = []
-  for (const comment of comments) {
-    if (!comment.rid) {
-      const replies = comments
-        .filter((item) => item.rid === comment._id.toString())
-        .map((item) => toCommentDto(item, uid, [], comments))
-        .sort((a, b) => a.created - b.created)
-      result.push(toCommentDto(comment, uid, replies))
-    }
-  }
-  return result
-}
-
-// 将评论记录转换为前端需要的格式
-function toCommentDto (comment, uid, replies = [], comments = []) {
-  let displayOs = ''
-  let displayBrowser = ''
-  if (config.SHOW_UA !== 'false') {
-    try {
-      const ua = bowser.getParser(comment.ua)
-      const os = ua.getOS()
-      displayOs = [os.name, os.versionName ? os.versionName : os.version].join(' ')
-      displayBrowser = [ua.getBrowserName(), ua.getBrowserVersion()].join(' ')
-    } catch (e) {
-      console.log('bowser 错误：', e)
-    }
-  }
-  const showRegion = !!config.SHOW_REGION && config.SHOW_REGION !== 'false'
-  return {
-    id: comment._id.toString(),
-    nick: comment.nick,
-    avatar: comment.avatar,
-    mailMd5: comment.mailMd5 || md5(comment.mail),
-    link: comment.link,
-    comment: comment.comment,
-    os: displayOs,
-    browser: displayBrowser,
-    ipRegion: showRegion ? getIpRegion({ ip: comment.ip }) : '',
-    master: comment.master,
-    like: comment.like ? comment.like.length : 0,
-    liked: comment.like ? comment.like.findIndex((item) => item === uid) > -1 : false,
-    replies: replies,
-    rid: comment.rid,
-    pid: comment.pid,
-    ruser: ruser(comment.pid, comments),
-    top: comment.top,
-    isSpam: comment.isSpam,
-    created: comment.created,
-    updated: comment.updated
-  }
-}
-
-// 获取回复人昵称 / Get replied user nick name
-function ruser (pid, comments = []) {
-  const comment = comments.find((item) => item._id.toString() === pid)
-  return comment ? comment.nick : null
-}
-
 // 管理员读取评论
 async function commentGetForAdmin (event) {
   const res = {}
@@ -478,13 +392,6 @@ function getCommentSearchCondition (event) {
   return condition
 }
 
-function parseCommentForAdmin (comments) {
-  for (const comment of comments) {
-    comment.ipRegion = getIpRegion({ ip: comment.ip, detail: true })
-  }
-  return comments
-}
-
 // 管理员修改评论
 async function commentSetForAdmin (event) {
   const res = {}
@@ -538,30 +445,33 @@ async function commentImportForAdmin (event) {
     try {
       validate(event, ['source', 'file'])
       log(`开始导入 ${event.source}`)
+      let comments
       switch (event.source) {
         case 'valine': {
           const valineDb = await readFile(event.file, 'json', log)
-          await commentImportValine(valineDb, log)
+          comments = await commentImportValine(valineDb, log)
           break
         }
         case 'disqus': {
           const disqusDb = await readFile(event.file, 'xml', log)
-          await commentImportDisqus(disqusDb, log)
+          comments = await commentImportDisqus(disqusDb, log)
           break
         }
         case 'artalk': {
           const artalkDb = await readFile(event.file, 'json', log)
-          await commentImportArtalk(artalkDb, log)
+          comments = await commentImportArtalk(artalkDb, log)
           break
         }
         case 'twikoo': {
           const twikooDb = await readFile(event.file, 'json', log)
-          await commentImportTwikoo(twikooDb, log)
+          comments = await commentImportTwikoo(twikooDb, log)
           break
         }
         default:
           throw new Error(`不支持 ${event.source} 的导入，请更新 Twikoo 云函数至最新版本`)
       }
+      const insertedCount = await bulkSaveComments(comments)
+      log(`导入成功 ${insertedCount} 条评论`)
     } catch (e) {
       log(e.message)
     }
@@ -591,224 +501,6 @@ async function readFile (file, type, log) {
   } catch (e) {
     log(`评论文件读取失败：${e.message}`)
   }
-}
-
-// 兼容 Leancloud 两种 JSON 导出格式
-function jsonParse (content) {
-  try {
-    return JSON.parse(content)
-  } catch (e1) {
-    const results = []
-    const lines = content.split('\n')
-    for (const line of lines) {
-      // 逐行 JSON.parse
-      try {
-        results.push(JSON.parse(line))
-      } catch (e2) {}
-    }
-    return { results }
-  }
-}
-
-// Valine 导入
-async function commentImportValine (valineDb, log) {
-  let arr
-  if (valineDb instanceof Array) {
-    arr = valineDb
-  } else if (valineDb && valineDb.results) {
-    arr = valineDb.results
-  }
-  if (!arr) {
-    log('Valine 评论文件格式有误')
-    return
-  }
-  const comments = []
-  log(`共 ${arr.length} 条评论`)
-  for (const comment of arr) {
-    try {
-      const parsed = {
-        _id: comment.objectId,
-        nick: comment.nick,
-        ip: comment.ip,
-        mail: comment.mail,
-        mailMd5: comment.mailMd5,
-        isSpam: comment.isSpam,
-        ua: comment.ua || '',
-        link: comment.link,
-        pid: comment.pid,
-        rid: comment.rid,
-        master: false,
-        comment: comment.comment,
-        url: comment.url,
-        created: new Date(comment.createdAt).getTime(),
-        updated: new Date(comment.updatedAt).getTime()
-      }
-      comments.push(parsed)
-      log(`${comment.objectId} 解析成功`)
-    } catch (e) {
-      log(`${comment.objectId} 解析失败：${e.message}`)
-    }
-  }
-  log(`解析成功 ${comments.length} 条评论`)
-  const insertedCount = await bulkSaveComments(comments)
-  log(`导入成功 ${insertedCount} 条评论`)
-  return comments
-}
-
-// Disqus 导入
-async function commentImportDisqus (disqusDb, log) {
-  if (!disqusDb || !disqusDb.disqus || !disqusDb.disqus.thread || !disqusDb.disqus.post) {
-    log('Disqus 评论文件格式有误')
-    return
-  }
-  const comments = []
-  const getParent = (post) => {
-    return post.parent ? disqusDb.disqus.post.find((item) => item.$['dsq:id'] === post.parent[0].$['dsq:id']) : null
-  }
-  let threads = []
-  try {
-    threads = disqusDb.disqus.thread.map((thread) => {
-      return {
-        id: thread.$['dsq:id'],
-        title: thread.title[0],
-        url: thread.id[0],
-        href: thread.link[0]
-      }
-    })
-  } catch (e) {
-    log(`无法读取 thread：${e.message}`)
-    return
-  }
-  log(`共 ${disqusDb.disqus.post.length} 条评论`)
-  for (const post of disqusDb.disqus.post) {
-    try {
-      const threadId = post.thread[0].$['dsq:id']
-      const thread = threads.find((item) => item.id === threadId)
-      const parent = getParent(post)
-      let root
-      if (parent) {
-        let grandParent = parent
-        while (true) {
-          if (grandParent) root = grandParent
-          else break
-          grandParent = getParent(grandParent)
-        }
-      }
-      comments.push({
-        _id: post.$['dsq:id'],
-        nick: post.author[0].name[0],
-        mail: '',
-        link: '',
-        url: thread.url
-          ? thread.url.indexOf('http') === 0
-            ? getRelativeUrl(thread.url)
-            : thread.url
-          : getRelativeUrl(thread.href),
-        href: thread.href,
-        comment: post.message[0],
-        ua: '',
-        ip: '',
-        isSpam: post.isSpam[0] === 'true' || post.isDeleted[0] === 'true',
-        master: false,
-        pid: parent ? parent.$['dsq:id'] : null,
-        rid: root ? root.$['dsq:id'] : null,
-        created: new Date(post.createdAt[0]).getTime(),
-        updated: Date.now()
-      })
-      log(`${post.$['dsq:id']} 解析成功`)
-    } catch (e) {
-      log(`${post.$['dsq:id']} 解析失败：${e.message}`)
-    }
-  }
-  log(`解析成功 ${comments.length} 条评论`)
-  const insertedCount = await bulkSaveComments(comments)
-  log(`导入成功 ${insertedCount} 条评论`)
-  return comments
-}
-
-function getRelativeUrl (url) {
-  let x = url.indexOf('/')
-  for (let i = 0; i < 2; i++) {
-    x = url.indexOf('/', x + 1)
-  }
-  return url.substring(x)
-}
-
-// Artalk 导入
-async function commentImportArtalk (artalkDb, log) {
-  const comments = []
-  if (!artalkDb || !artalkDb.length) {
-    log('Artalk 评论文件格式有误')
-    return
-  }
-  marked.setOptions({
-    renderer: new marked.Renderer(),
-    gfm: true,
-    tables: true,
-    breaks: true,
-    pedantic: false,
-    sanitize: true,
-    smartLists: true,
-    smartypants: true
-  })
-  log(`共 ${artalkDb.length} 条评论`)
-  for (const comment of artalkDb) {
-    try {
-      const parsed = {
-        _id: `artalk${comment.id}`,
-        nick: comment.nick,
-        ip: comment.ip,
-        mail: comment.email,
-        mailMd5: md5(comment.email),
-        isSpam: false,
-        ua: comment.ua || '',
-        link: comment.link,
-        pid: comment.rid ? `artalk${comment.rid}` : '',
-        rid: comment.rid ? `artalk${comment.rid}` : '',
-        master: false,
-        comment: DOMPurify.sanitize(marked(comment.content)),
-        url: getRelativeUrl(comment.page_key),
-        href: comment.page_key,
-        created: new Date(comment.date).getTime(),
-        updated: Date.now()
-      }
-      comments.push(parsed)
-      log(`${comment.id} 解析成功`)
-    } catch (e) {
-      log(`${comment.id} 解析失败：${e.message}`)
-    }
-  }
-  log(`解析成功 ${comments.length} 条评论`)
-  const insertedCount = await bulkSaveComments(comments)
-  log(`导入成功 ${insertedCount} 条评论`)
-  return comments
-}
-
-// Twikoo 导入
-async function commentImportTwikoo (twikooDb, log) {
-  const comments = []
-  if (!twikooDb || !twikooDb.results) {
-    log('Twikoo 评论文件格式有误')
-    return
-  }
-  log(`共 ${twikooDb.results.length} 条评论`)
-  for (const comment of twikooDb.results) {
-    try {
-      const parsed = comment
-      if (comment._id.$oid) {
-        // 解决 id 历史数据问题
-        parsed._id = comment._id.$oid
-      }
-      comments.push(parsed)
-      log(`${comment._id} 解析成功`)
-    } catch (e) {
-      log(`${comment._id} 解析失败：${e.message}`)
-    }
-  }
-  log(`解析成功 ${comments.length} 条评论`)
-  const insertedCount = await bulkSaveComments(comments)
-  log(`导入成功 ${insertedCount} 条评论`)
-  return comments
 }
 
 // 批量导入评论
@@ -903,233 +595,22 @@ async function save (event) {
   return data
 }
 
+async function getParentComment (currentComment) {
+  const parentComment = await db
+    .collection('comment')
+    .findOne({ _id: currentComment.pid })
+  return parentComment.data[0]
+}
+
 // 异步垃圾检测、发送评论通知
 async function postSubmit (comment) {
   if (!isRecursion()) return { code: RES_CODE.FORBIDDEN }
   // 垃圾检测
-  await postCheckSpam(comment)
+  const isSpam = await postCheckSpam(comment)
+  await saveSpamCheckResult(comment, isSpam)
   // 发送通知
-  await sendNotice(comment)
+  await sendNotice(comment, config, getParentComment)
   return { code: RES_CODE.SUCCESS }
-}
-
-// 发送通知
-async function sendNotice (comment) {
-  await Promise.all([
-    noticeMaster(comment),
-    noticeReply(comment),
-    noticePushoo(comment)
-  ]).catch(console.error)
-  return { code: RES_CODE.SUCCESS }
-}
-
-// 初始化邮件插件
-async function initMailer ({ throwErr = false } = {}) {
-  try {
-    if (!config || !config.SMTP_USER || !config.SMTP_PASS) {
-      throw new Error('数据库配置不存在')
-    }
-    const transportConfig = {
-      auth: {
-        user: config.SMTP_USER,
-        pass: config.SMTP_PASS
-      }
-    }
-    if (config.SMTP_SERVICE) {
-      transportConfig.service = config.SMTP_SERVICE
-    } else if (config.SMTP_HOST) {
-      transportConfig.host = config.SMTP_HOST
-      transportConfig.port = parseInt(config.SMTP_PORT)
-      transportConfig.secure = config.SMTP_SECURE === 'true'
-    } else {
-      throw new Error('SMTP 服务器没有配置')
-    }
-    transporter = nodemailer.createTransport(transportConfig)
-    try {
-      const success = await transporter.verify()
-      if (success) console.log('SMTP 邮箱配置正常')
-    } catch (error) {
-      throw new Error('SMTP 邮箱配置异常：', error)
-    }
-    return true
-  } catch (e) {
-    console.error('邮件初始化异常：', e.message)
-    if (throwErr) throw e
-    return false
-  }
-}
-
-// 博主通知
-async function noticeMaster (comment) {
-  if (!transporter) if (!await initMailer()) return
-  if (config.BLOGGER_EMAIL === comment.mail) return
-  // 判断是否存在即时消息推送配置
-  const hasIMPushConfig = config.PUSHOO_CHANNEL && config.PUSHOO_TOKEN
-  // 存在即时消息推送配置，则默认不发送邮件给博主
-  if (hasIMPushConfig && config.SC_MAIL_NOTIFY !== 'true') return
-  const SITE_NAME = config.SITE_NAME
-  const NICK = comment.nick
-  const IMG = getAvatar(comment)
-  const IP = comment.ip
-  const MAIL = comment.mail
-  const COMMENT = comment.comment
-  const SITE_URL = config.SITE_URL
-  const POST_URL = appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
-  const emailSubject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}上有新评论了`
-  let emailContent
-  if (config.MAIL_TEMPLATE_ADMIN) {
-    emailContent = config.MAIL_TEMPLATE_ADMIN
-      .replace(/\${SITE_URL}/g, SITE_URL)
-      .replace(/\${SITE_NAME}/g, SITE_NAME)
-      .replace(/\${NICK}/g, NICK)
-      .replace(/\${IMG}/g, IMG)
-      .replace(/\${IP}/g, IP)
-      .replace(/\${MAIL}/g, MAIL)
-      .replace(/\${COMMENT}/g, COMMENT)
-      .replace(/\${POST_URL}/g, POST_URL)
-  } else {
-    emailContent = `
-      <div style="border-top:2px solid #12addb;box-shadow:0 1px 3px #aaaaaa;line-height:180%;padding:0 15px 12px;margin:50px auto;font-size:12px;">
-        <h2 style="border-bottom:1px solid #dddddd;font-size:14px;font-weight:normal;padding:13px 0 10px 8px;">
-          您在<a style="text-decoration:none;color: #12addb;" href="${SITE_URL}" target="_blank">${SITE_NAME}</a>上的文章有了新的评论
-        </h2>
-        <p><strong>${NICK}</strong>回复说：</p>
-        <div style="background-color: #f5f5f5;padding: 10px 15px;margin:18px 0;word-wrap:break-word;">${COMMENT}</div>
-        <p>您可以点击<a style="text-decoration:none; color:#12addb" href="${POST_URL}" target="_blank">查看回复的完整內容</a><br></p>
-      </div>`
-  }
-  let sendResult
-  try {
-    sendResult = await transporter.sendMail({
-      from: `"${config.SENDER_NAME}" <${config.SENDER_EMAIL}>`,
-      to: config.BLOGGER_EMAIL || config.SENDER_EMAIL,
-      subject: emailSubject,
-      html: emailContent
-    })
-  } catch (e) {
-    sendResult = e
-  }
-  console.log('博主通知结果：', sendResult)
-  return sendResult
-}
-
-// 即时消息通知
-async function noticePushoo (comment) {
-  if (!config.PUSHOO_CHANNEL || !config.PUSHOO_TOKEN) {
-    console.log('没有配置 pushoo，放弃即时消息通知')
-    return
-  }
-  if (config.BLOGGER_EMAIL === comment.mail) return
-  const pushContent = getIMPushContent(comment)
-  const sendResult = await pushoo(config.PUSHOO_CHANNEL, {
-    token: config.PUSHOO_TOKEN,
-    title: pushContent.subject,
-    content: pushContent.content,
-    options: {
-      bark: {
-        url: pushContent.url
-      }
-    }
-  })
-  console.log('即时消息通知结果：', sendResult)
-}
-
-// 即时消息推送内容获取
-function getIMPushContent (comment) {
-  const SITE_NAME = config.SITE_NAME
-  const NICK = comment.nick
-  const MAIL = comment.mail
-  const IP = comment.ip
-  const COMMENT = $(comment.comment).text()
-  const SITE_URL = config.SITE_URL
-  const POST_URL = appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
-  const subject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}有新评论了`
-  const content = `评论人：${NICK} ([${MAIL}](mailto:${MAIL}))
-
-评论人IP：${IP}
-
-评论内容：${COMMENT}
-
-原文链接：[${POST_URL}](${POST_URL})`
-  return {
-    subject,
-    content,
-    url: POST_URL
-  }
-}
-
-// 回复通知
-async function noticeReply (currentComment) {
-  if (!currentComment.pid) return
-  if (!transporter) if (!await initMailer()) return
-  const parentComment = await db
-    .collection('comment')
-    .findOne({ _id: currentComment.pid })
-  // 回复给博主，因为会发博主通知邮件，所以不再重复通知
-  if (config.BLOGGER_EMAIL === parentComment.mail) return
-  // 回复自己的评论，不邮件通知
-  if (currentComment.mail === parentComment.mail) return
-  const PARENT_NICK = parentComment.nick
-  const IMG = getAvatar(currentComment)
-  const PARENT_IMG = getAvatar(parentComment)
-  const SITE_NAME = config.SITE_NAME
-  const NICK = currentComment.nick
-  const COMMENT = currentComment.comment
-  const PARENT_COMMENT = parentComment.comment
-  const POST_URL = appendHashToUrl(currentComment.href || config.SITE_URL + currentComment.url, currentComment.id)
-  const SITE_URL = config.SITE_URL
-  const emailSubject = config.MAIL_SUBJECT || `${PARENT_NICK}，您在『${SITE_NAME}』上的评论收到了回复`
-  let emailContent
-  if (config.MAIL_TEMPLATE) {
-    emailContent = config.MAIL_TEMPLATE
-      .replace(/\${IMG}/g, IMG)
-      .replace(/\${PARENT_IMG}/g, PARENT_IMG)
-      .replace(/\${SITE_URL}/g, SITE_URL)
-      .replace(/\${SITE_NAME}/g, SITE_NAME)
-      .replace(/\${PARENT_NICK}/g, PARENT_NICK)
-      .replace(/\${PARENT_COMMENT}/g, PARENT_COMMENT)
-      .replace(/\${NICK}/g, NICK)
-      .replace(/\${COMMENT}/g, COMMENT)
-      .replace(/\${POST_URL}/g, POST_URL)
-  } else {
-    emailContent = `
-      <div style="border-top:2px solid #12ADDB;box-shadow:0 1px 3px #AAAAAA;line-height:180%;padding:0 15px 12px;margin:50px auto;font-size:12px;">
-        <h2 style="border-bottom:1px solid #dddddd;font-size:14px;font-weight:normal;padding:13px 0 10px 8px;">
-          您在<a style="text-decoration:none;color: #12ADDB;" href="${SITE_URL}" target="_blank">${SITE_NAME}</a>上的评论有了新的回复
-        </h2>
-        ${PARENT_NICK} 同学，您曾发表评论：
-        <div style="padding:0 12px 0 12px;margin-top:18px">
-          <div style="background-color: #f5f5f5;padding: 10px 15px;margin:18px 0;word-wrap:break-word;">${PARENT_COMMENT}</div>
-          <p><strong>${NICK}</strong>回复说：</p>
-          <div style="background-color: #f5f5f5;padding: 10px 15px;margin:18px 0;word-wrap:break-word;">${COMMENT}</div>
-          <p>
-            您可以点击<a style="text-decoration:none; color:#12addb" href="${POST_URL}" target="_blank">查看回复的完整內容</a>，
-            欢迎再次光临<a style="text-decoration:none; color:#12addb" href="${SITE_URL}" target="_blank">${SITE_NAME}</a>。<br>
-          </p>
-        </div>
-      </div>`
-  }
-  let sendResult
-  try {
-    sendResult = await transporter.sendMail({
-      from: `"${config.SENDER_NAME}" <${config.SENDER_EMAIL}>`,
-      to: parentComment.mail,
-      subject: emailSubject,
-      html: emailContent
-    })
-  } catch (e) {
-    sendResult = e
-  }
-  console.log('回复通知结果：', sendResult)
-  return sendResult
-}
-
-function appendHashToUrl (url, hash) {
-  if (url.indexOf('#') === -1) {
-    return `${url}#${hash}`
-  } else {
-    return `${url.substring(0, url.indexOf('#'))}#${hash}`
-  }
 }
 
 // 将评论转为数据库存储格式
@@ -1153,7 +634,7 @@ async function parse (comment) {
     comment: DOMPurify.sanitize(comment.comment, { FORBID_TAGS: ['style'], FORBID_ATTR: ['style'] }),
     pid: comment.pid ? comment.pid : comment.rid,
     rid: comment.rid,
-    isSpam: isAdminUser ? false : preCheckSpam(comment),
+    isSpam: isAdminUser ? false : preCheckSpam(comment, config),
     created: timestamp,
     updated: timestamp
   }
@@ -1196,87 +677,17 @@ async function limitFilter () {
   }
 }
 
-// 预垃圾评论检测
-function preCheckSpam ({ comment, nick }) {
-  // 长度限制
-  let limitLength = parseInt(config.LIMIT_LENGTH)
-  if (Number.isNaN(limitLength)) limitLength = 500
-  if (limitLength && comment.length > limitLength) {
-    throw new Error('评论内容过长')
-  }
-  if (config.AKISMET_KEY === 'MANUAL_REVIEW') {
-    // 人工审核
-    console.log('已使用人工审核模式，评论审核后才会发表~')
-    return true
-  } else if (config.FORBIDDEN_WORDS) {
-    // 违禁词检测
-    for (const forbiddenWord of config.FORBIDDEN_WORDS.split(',')) {
-      if (comment.indexOf(forbiddenWord.trim()) !== -1 || nick.indexOf(forbiddenWord.trim()) !== -1) {
-        console.log('包含违禁词，直接标记为垃圾评论~')
-        return true
-      }
-    }
-  }
-  return false
-}
-
-// 后垃圾评论检测
-async function postCheckSpam (comment) {
-  try {
-    let isSpam
-    if (comment.isSpam) {
-      // 预检测没过的，就不再检测了
-      isSpam = true
-    } else if (config.QCLOUD_SECRET_ID && config.QCLOUD_SECRET_KEY) {
-      // 腾讯云内容安全
-      const client = new tencentcloud.tms.v20200713.Client({
-        credential: { secretId: config.QCLOUD_SECRET_ID, secretKey: config.QCLOUD_SECRET_KEY },
-        region: 'ap-shanghai',
-        profile: { httpProfile: { endpoint: 'tms.tencentcloudapi.com' } }
+async function saveSpamCheckResult (comment, isSpam) {
+  comment.isSpam = isSpam
+  if (isSpam) {
+    await db
+      .collection('comment')
+      .updateOne({ created: comment.created }, {
+        $set: {
+          isSpam,
+          updated: Date.now()
+        }
       })
-      const checkResult = await client.TextModeration({
-        Content: CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(comment.comment)),
-        Device: { IP: comment.ip },
-        User: { Nickname: comment.nick }
-      })
-      console.log('腾讯云返回结果：', checkResult)
-      isSpam = checkResult.EvilFlag !== 0
-    } else if (config.AKISMET_KEY) {
-      // Akismet
-      const akismetClient = new AkismetClient({
-        key: config.AKISMET_KEY,
-        blog: config.SITE_URL
-      })
-      const isValid = await akismetClient.verifyKey()
-      if (!isValid) {
-        console.log('Akismet key 不可用：', config.AKISMET_KEY)
-        return
-      }
-      isSpam = await akismetClient.checkSpam({
-        user_ip: comment.ip,
-        user_agent: comment.ua,
-        permalink: comment.href,
-        comment_type: comment.rid ? 'reply' : 'comment',
-        comment_author: comment.nick,
-        comment_author_email: comment.mail,
-        comment_author_url: comment.link,
-        comment_content: comment.comment
-      })
-    }
-    console.log('垃圾评论检测结果：', isSpam)
-    comment.isSpam = isSpam
-    if (isSpam) {
-      await db
-        .collection('comment')
-        .updateOne({ created: comment.created }, {
-          $set: {
-            isSpam,
-            updated: Date.now()
-          }
-        })
-    }
-  } catch (err) {
-    console.error('垃圾评论检测异常：', err)
   }
 }
 
@@ -1373,14 +784,6 @@ async function getCommentsCount (event) {
   return res
 }
 
-function getUrlsQuery (urls) {
-  const query = []
-  for (const url of urls) {
-    if (url) query.push(...getUrlQuery(url))
-  }
-  return query
-}
-
 /**
  * 获取最新评论 API
  * @param {Boolean} event.includeReply 评论数是否包括回复，默认：false
@@ -1403,7 +806,7 @@ async function getRecentComments (event) {
         id: comment._id.toString(),
         url: comment.url,
         nick: comment.nick,
-        avatar: getAvatar(comment),
+        avatar: getAvatar(comment, config),
         mailMd5: comment.mailMd5 || md5(comment.mail),
         link: comment.link,
         comment: comment.comment,
@@ -1416,183 +819,6 @@ async function getRecentComments (event) {
     return res
   }
   return res
-}
-
-async function emailTest (event) {
-  const res = {}
-  const isAdminUser = await isAdmin()
-  if (isAdminUser) {
-    try {
-      // 邮件测试前清除 transporter，保证读取的是最新的配置
-      transporter = null
-      await initMailer({ throwErr: true })
-      const sendResult = await transporter.sendMail({
-        from: config.SENDER_EMAIL,
-        to: event.mail || config.BLOGGER_EMAIL || config.SENDER_EMAIL,
-        subject: 'Twikoo 邮件通知测试邮件',
-        html: '如果您收到这封邮件，说明 Twikoo 邮件功能配置正确'
-      })
-      res.result = sendResult
-    } catch (e) {
-      res.message = e.message
-    }
-  } else {
-    res.code = RES_CODE.NEED_LOGIN
-    res.message = '请先登录'
-  }
-  return res
-}
-
-async function uploadImage (event) {
-  const { photo, fileName } = event
-  const res = {}
-  try {
-    if (!config.IMAGE_CDN || !config.IMAGE_CDN_TOKEN) {
-      throw new Error('未配置图片上传服务')
-    }
-    // tip: qcloud 图床走前端上传，其他图床走后端上传
-    if (config.IMAGE_CDN === '7bu') {
-      await uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: 'https://7bu.top' })
-    } else if (config.IMAGE_CDN === 'smms') {
-      await uploadImageToSmms({ photo, fileName, config, res })
-    } else if (isUrl(config.IMAGE_CDN)) {
-      await uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN })
-    }
-  } catch (e) {
-    console.error(e)
-    res.code = RES_CODE.UPLOAD_FAILED
-    res.err = e.message
-  }
-  return res
-}
-
-async function uploadImageToSmms ({ photo, fileName, config, res }) {
-  // SM.MS 图床 https://sm.ms
-  const formData = new FormData()
-  formData.append('smfile', base64UrlToReadStream(photo, fileName))
-  const uploadResult = await axios.post('https://sm.ms/api/v2/upload', formData, {
-    headers: {
-      ...formData.getHeaders(),
-      Authorization: config.IMAGE_CDN_TOKEN
-    }
-  })
-  if (uploadResult.data.success) {
-    res.data = uploadResult.data.data
-  } else {
-    throw new Error(uploadResult.data.message)
-  }
-}
-
-async function uploadImageToLskyPro ({ photo, fileName, config, res, imageCdn }) {
-  // 自定义兰空图床（v2）URL
-  const formData = new FormData()
-  formData.append('file', base64UrlToReadStream(photo, fileName))
-  const url = `${imageCdn}/api/v1/upload`
-  let token = config.IMAGE_CDN_TOKEN
-  if (!token.startsWith('Bearer')) {
-    token = `Bearer ${token}`
-  }
-  const uploadResult = await axios.post(url, formData, {
-    headers: {
-      ...formData.getHeaders(),
-      Authorization: token
-    }
-  })
-  if (uploadResult.data.status) {
-    res.data = uploadResult.data.data
-    res.data.url = res.data.links.url
-  } else {
-    throw new Error(uploadResult.data.message)
-  }
-}
-
-function base64UrlToReadStream (base64Url, fileName) {
-  const base64 = base64Url.split(';base64,').pop()
-  const path = `/tmp/${fileName}`
-  fs.writeFileSync(path, base64, { encoding: 'base64' })
-  return fs.createReadStream(path)
-}
-
-function isUrl (s) {
-  return /^http(s)?:\/\//.test(s)
-}
-
-function getAvatar (comment) {
-  if (comment.avatar) {
-    return comment.avatar
-  } else {
-    const gravatarCdn = config.GRAVATAR_CDN || 'cravatar.cn'
-    const defaultGravatar = config.DEFAULT_GRAVATAR || 'identicon'
-    const mailMd5 = comment.mailMd5 || md5(comment.mail)
-    return `https://${gravatarCdn}/avatar/${mailMd5}?d=${defaultGravatar}`
-  }
-}
-
-function isQQ (mail) {
-  return /^[1-9][0-9]{4,10}$/.test(mail) ||
-    /^[1-9][0-9]{4,10}@qq.com$/i.test(mail)
-}
-
-function addQQMailSuffix (mail) {
-  if (/^[1-9][0-9]{4,10}$/.test(mail)) return `${mail}@qq.com`
-  else return mail
-}
-
-async function getQQAvatar (qq) {
-  try {
-    const qqNum = qq.replace(/@qq.com/ig, '')
-    const result = await axios.get(`https://ssl.ptlogin2.qq.com/getface?imgtype=4&uin=${qqNum}`, { timeout: 5000 })
-    if (result && result.data) {
-      const start = result.data.indexOf('http')
-      const end = result.data.indexOf('"', start)
-      if (start === -1 || end === -1) return null
-      return result.data.substring(start, end)
-    }
-  } catch (e) {
-    console.error('获取 QQ 头像失败：', e)
-  }
-}
-
-async function getConfig () {
-  return {
-    code: RES_CODE.SUCCESS,
-    config: {
-      VERSION,
-      IS_ADMIN: await isAdmin(),
-      SITE_NAME: config.SITE_NAME,
-      SITE_URL: config.SITE_URL,
-      MASTER_TAG: config.MASTER_TAG,
-      COMMENT_BG_IMG: config.COMMENT_BG_IMG,
-      GRAVATAR_CDN: config.GRAVATAR_CDN,
-      DEFAULT_GRAVATAR: config.DEFAULT_GRAVATAR,
-      SHOW_IMAGE: config.SHOW_IMAGE || 'true',
-      IMAGE_CDN: config.IMAGE_CDN,
-      SHOW_EMOTION: config.SHOW_EMOTION || 'true',
-      EMOTION_CDN: config.EMOTION_CDN,
-      COMMENT_PLACEHOLDER: config.COMMENT_PLACEHOLDER,
-      REQUIRED_FIELDS: config.REQUIRED_FIELDS,
-      HIDE_ADMIN_CRYPT: config.HIDE_ADMIN_CRYPT,
-      HIGHLIGHT: config.HIGHLIGHT || 'true',
-      HIGHLIGHT_THEME: config.HIGHLIGHT_THEME,
-      LIMIT_LENGTH: config.LIMIT_LENGTH
-    }
-  }
-}
-
-async function getConfigForAdmin () {
-  const isAdminUser = await isAdmin()
-  if (isAdminUser) {
-    delete config.CREDENTIALS
-    return {
-      code: RES_CODE.SUCCESS,
-      config
-    }
-  } else {
-    return {
-      code: RES_CODE.NEED_LOGIN,
-      message: '请先登录'
-    }
-  }
 }
 
 // 修改配置
@@ -1675,29 +901,6 @@ async function isAdmin () {
   return config.ADMIN_PASS === md5(uid)
 }
 
-/**
- * 获取 IP 属地
- * @param detail true 返回省市运营商，false 只返回省
- * @returns {String}
- */
-function getIpRegion ({ ip, detail = false }) {
-  if (!ip) return ''
-  try {
-    const { region } = ipRegionSearcher.binarySearchSync(ip)
-    const [country,, province, city, isp] = region.split('|')
-    // 有省显示省，没有省显示国家
-    const area = province.trim() ? province : country
-    if (detail) {
-      return area === city ? [city, isp].join(' ') : [area, city, isp].join(' ')
-    } else {
-      return area
-    }
-  } catch (e) {
-    console.error('IP 属地查询失败：', e)
-    return ''
-  }
-}
-
 // 判断是否为递归调用（即云函数调用自身）
 function isRecursion () {
   return request.headers['x-twikoo-recursion'] === (config.ADMIN_PASS || 'true')
@@ -1715,13 +918,4 @@ async function createCollections () {
     }
   }
   return res
-}
-
-// 请求参数校验
-function validate (event = {}, requiredParams = []) {
-  for (const requiredParam of requiredParams) {
-    if (!event[requiredParam]) {
-      throw new Error(`参数"${requiredParam}"不合法`)
-    }
-  }
 }

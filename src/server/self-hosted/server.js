@@ -1,0 +1,31 @@
+const http = require('http')
+const twikoo = require('.')
+const server = http.createServer()
+
+server.on('request', async function (request, response) {
+  try {
+    const buffers = []
+    for await (const chunk of request) {
+      buffers.push(chunk)
+    }
+    request.body = JSON.parse(Buffer.concat(buffers).toString())
+  } catch (e) {
+    console.error(e)
+  }
+  response.status = function (code) {
+    this.statusCode = code
+    return this
+  }
+  response.json = function (json) {
+    if (!response.writableEnded) {
+      this.writeHead(200, { 'Content-Type': 'application/json' })
+      this.end(JSON.stringify(json))
+    }
+    return this
+  }
+  return await twikoo(request, response)
+})
+
+server.listen(parseInt(process.env.TWIKOO_PORT) || 8080, function () {
+  console.log('Twikoo function started on port 8080')
+})

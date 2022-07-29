@@ -1,7 +1,7 @@
 {
   "name": "twikoo",
-  "version": "1.5.11",
-  "description": "A simple comment system based on Tencent CloudBase (tcb).",
+  "version": "1.6.0",
+  "description": "A simple comment system.",
   "keywords": [
     "twikoojs",
     "comment",

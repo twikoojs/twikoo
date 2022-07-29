@@ -2,7 +2,7 @@
 
 Twikoo 分为云函数和前端两部分，部署时请注意保持二者版本一致。
 
-* [云函数部署](#云函数部署)有 4 种方式，[一键部署](#一键部署)、[手动部署](#手动部署)、[命令行部署](#命令行部署)和[Vercel 部署](#vercel-部署)。
+* [云函数部署](#云函数部署)有 5 种方式，[一键部署](#一键部署)、[手动部署](#手动部署)、[命令行部署](#命令行部署)、[Vercel 部署](#vercel-部署)和[私有部署](#私有部署)。
 * [前端部署](#前端部署)有 2 种方式，如果您的网站主题支持 Twikoo，您只需在配置文件中指定 Twikoo 即可；如果您的网站主题不支持 Twikoo，您需要修改源码手动引入 Twikoo 的 js 文件并初始化。
 
 ## 云函数部署
@@ -13,6 +13,7 @@ Twikoo 分为云函数和前端两部分，部署时请注意保持二者版本�
 | [手动部署](#手动部署) | [ 建议 ] 手动部署到腾讯云云开发环境，在中国大陆访问速度较快。由于基础版 1 已从 0 元涨价至 6.9 元 / 月，需要付费购买环境才能部署。 |
 | [命令行部署](#命令行部署) | [ 不建议 ] 仅针对有 Node.js 经验的开发者。 |
 | [Vercel 部署](#vercel-部署) | [ 建议 ] 适用于想要免费部署的用户，在中国大陆访问速度较慢。 |
+| [私有部署](#私有部署) | [ 建议 ] 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 
 ### 一键部署
 
@@ -44,7 +45,7 @@ exports.main = require('twikoo-func').main
 8. 创建完成后，点击“twikoo"进入云函数详情页，进入“函数代码”标签，点击“文件 - 新建文件”，输入 `package.json`，回车
 9. 复制以下代码、粘贴到代码框中，点击“保存并安装依赖”
 ``` json
-{ "dependencies": { "twikoo-func": "1.5.11" } }
+{ "dependencies": { "twikoo-func": "1.6.0" } }
 ```
 
 ### 命令行部署
@@ -96,11 +97,37 @@ Vercel 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 3. 在 Clusters 页面点击 CONNECT，按步骤设置允许所有 IP 地址的连接（[为什么？](https://vercel.com/support/articles/how-to-allowlist-deployment-ip-address)），创建数据库用户，并记录数据库连接字符串，请将连接字符串中的 `<password>` 修改为数据库密码
 4. 申请 [Vercel](https://vercel.com/signup) 账号
 5. 点击以下按钮将 Twikoo 一键部署到 Vercel<br>
-[![](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/imaegoo/twikoo/tree/main/src/vercel-min)
+[![](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/imaegoo/twikoo/tree/main/src/server/vercel-min)
 6. 进入 Settings - Environment Variables，添加环境变量 `MONGODB_URI`，值为第 3 步的数据库连接字符串
 7. 进入 Deployments , 然后在任意一项后面点击更多（三个点） , 然后点击Redeploy , 最后点击下面的Redeploy
 8. 进入 Overview，点击 Domains 下方的链接，如果环境配置正确，可以看到 “Twikoo 云函数运行正常” 的提示
 9. Vercel Domains（包含 `https://` 前缀，例如 `https://xxx.vercel.app`）即为您的环境 id
+
+### 私有部署
+
+::: warning 注意
+私有部署的环境需配合 1.6.0 或以上版本的 twikoo.js 使用
+:::
+
+1. 服务端下载安装 [Node.js](https://nodejs.org/zh-cn/)
+2. 安装 Twikoo server: `npm i -g tkserver`
+3. 根据需要配置环境变量
+
+| 名称 | 描述 | 默认值 |
+| ---- | ---- | ---- |
+| `TWIKOO_DATA` | 数据库存储路径 | `./data` |
+| `TWIKOO_PORT` | 端口号 | `8080` |
+| `TWIKOO_THROTTLE` | IP 请求限流，当同一 IP 短时间内请求次数超过阈值将对该 IP 返回错误 | `250` |
+
+4. 启动 Twikoo server: `tkserver`
+5. 访问 `http://服务端IP:8080`
+6. 若能正常访问，服务端地址（包含 `http://` 和端口号，例如 `http://12.34.56.78:8080`）即为您的环境 id
+
+::: tip 提示
+1. Linux 服务器可以用 `nohup tkserver >> tkserver.log 2>&1 &` 命令后台启动
+2. 强烈建议配置前置 nginx 服务器并配置 https 证书
+3. 数据在服务器上，请注意定期备份数据
+:::
 
 ## 前端部署
 
@@ -175,14 +202,14 @@ twikoo:
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.staticfile.org/twikoo/1.5.11/twikoo.all.min.js"></script>
+<script src="https://cdn.staticfile.org/twikoo/1.6.0/twikoo.all.min.js"></script>
 <script>
 twikoo.init({
   envId: '您的环境id', // 腾讯云环境填 envId；Vercel 环境填地址（https://xxx.vercel.app）
   el: '#tcomment', // 容器元素
   // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，腾讯云环境填 ap-shanghai 或 ap-guangzhou；Vercel 环境不填
   // path: location.pathname, // 用于区分不同文章的自定义 js 路径，如果您的文章路径不是 location.pathname，需传此参数
-  // lang: 'zh-CN', // 用于手动设定评论区语言，支持的语言列表 https://github.com/imaegoo/twikoo/blob/main/src/js/utils/i18n/index.js
+  // lang: 'zh-CN', // 用于手动设定评论区语言，支持的语言列表 https://github.com/imaegoo/twikoo/blob/main/src/client/utils/i18n/index.js
 })
 </script>
 ```
@@ -193,10 +220,10 @@ twikoo.init({
 
 如果遇到默认 CDN 加载速度缓慢，可更换其他 CDN 镜像。以下为可供选择的公共 CDN，其中一些 CDN 可能需要数天时间同步最新版本：
 
-* `https://cdn.staticfile.org/twikoo/1.5.11/twikoo.all.min.js`
-* `https://lib.baomitu.com/twikoo/1.5.11/twikoo.all.min.js`
-* `https://cdn.bootcdn.net/ajax/libs/twikoo/1.5.11/twikoo.all.min.js`
-* `https://cdn.jsdelivr.net/npm/twikoo@1.5.11/dist/twikoo.all.min.js`
+* `https://cdn.staticfile.org/twikoo/1.6.0/twikoo.all.min.js`
+* `https://lib.baomitu.com/twikoo/1.6.0/twikoo.all.min.js`
+* `https://cdn.bootcdn.net/ajax/libs/twikoo/1.6.0/twikoo.all.min.js`
+* `https://cdn.jsdelivr.net/npm/twikoo@1.6.0/dist/twikoo.all.min.js`
 
 ## 开启管理面板（腾讯云环境）
 
@@ -248,6 +275,11 @@ yarn deploy -e 您的环境id
 3. 打开 package.json，点击编辑
 4. 将 `"twikoo-vercel": "x.x.x"` 其中的版本号修改为最新版本号。点击 Commit changes
 5. 部署会自动触发，可以回到 [Vercel 仪表板](https://vercel.com/dashboard)，查看部署状态
+
+### 针对私有部署的更新方式
+
+1. 在服务器上执行 `npm i -g tkserver@latest`
+2. 重新启动 `tkserver`
 
 ### 自动更新
 

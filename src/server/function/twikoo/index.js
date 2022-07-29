@@ -62,7 +62,7 @@ const requestTimes = {}
 
 // 云函数入口点 / entry point
 exports.main = async (event, context) => {
-  console.log('请求ＩＰ：', auth.getClientIP())
+  console.log('请求 IP：', auth.getClientIP())
   console.log('请求方法：', event.event)
   console.log('请求参数：', event)
   let res = {}
@@ -107,10 +107,10 @@ exports.main = async (event, context) => {
         res = await setPassword(event)
         break
       case 'GET_CONFIG':
-        res = getConfig({ config, VERSION, isAdmin })
+        res = getConfig({ config, VERSION, isAdmin: await isAdmin() })
         break
       case 'GET_CONFIG_FOR_ADMIN':
-        res = await getConfigForAdmin({ config, isAdmin })
+        res = await getConfigForAdmin({ config, isAdmin: await isAdmin() })
         break
       case 'SET_CONFIG':
         res = await setConfig(event)
@@ -125,7 +125,7 @@ exports.main = async (event, context) => {
         res = await getRecentComments(event)
         break
       case 'EMAIL_TEST': // >= 1.4.6
-        res = await emailTest(event, config, isAdmin)
+        res = await emailTest(event, config, await isAdmin())
         break
       case 'UPLOAD_IMAGE': // >= 1.5.0
         res = await uploadImage(event, config)

@@ -3,19 +3,19 @@ const {
   $,
   nodemailer,
   pushoo
-} = require('./utils/lib')
+} = require('./lib')
 const { RES_CODE } = require('./constants')
 
 let transporter
 
-module.exports = {
+const fn = {
   // 发送通知
   async sendNotice (comment, config, getParentComment) {
     if (comment.isSpam && config.NOTIFY_SPAM === 'false') return
     await Promise.all([
-      this.noticeMaster(comment, config),
-      this.noticeReply(comment, config, getParentComment),
-      this.noticePushoo(comment, config)
+      fn.noticeMaster(comment, config),
+      fn.noticeReply(comment, config, getParentComment),
+      fn.noticePushoo(comment, config)
     ]).catch(err => {
       console.error('通知异常：', err)
     })
@@ -57,7 +57,7 @@ module.exports = {
   },
   // 博主通知
   async noticeMaster (comment, config) {
-    if (!transporter) if (!await this.initMailer({ config })) return
+    if (!transporter) if (!await fn.initMailer({ config })) return
     if (config.BLOGGER_EMAIL === comment.mail) return
     // 判断是否存在即时消息推送配置
     const hasIMPushConfig = config.PUSHOO_CHANNEL && config.PUSHOO_TOKEN
@@ -70,7 +70,7 @@ module.exports = {
     const MAIL = comment.mail
     const COMMENT = comment.comment
     const SITE_URL = config.SITE_URL
-    const POST_URL = this.appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
+    const POST_URL = fn.appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
     const emailSubject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}上有新评论了`
     let emailContent
     if (config.MAIL_TEMPLATE_ADMIN) {
@@ -115,7 +115,7 @@ module.exports = {
       return
     }
     if (config.BLOGGER_EMAIL === comment.mail) return
-    const pushContent = this.getIMPushContent(comment, config)
+    const pushContent = fn.getIMPushContent(comment, config)
     const sendResult = await pushoo(config.PUSHOO_CHANNEL, {
       token: config.PUSHOO_TOKEN,
       title: pushContent.subject,
@@ -136,15 +136,15 @@ module.exports = {
     const IP = comment.ip
     const COMMENT = $(comment.comment).text()
     const SITE_URL = config.SITE_URL
-    const POST_URL = this.appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
+    const POST_URL = fn.appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
     const subject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}有新评论了`
     const content = `评论人：${NICK} ([${MAIL}](mailto:${MAIL}))
 
-  评论人IP：${IP}
+评论人IP：${IP}
 
-  评论内容：${COMMENT}
+评论内容：${COMMENT}
 
-  原文链接：[${POST_URL}](${POST_URL})`
+原文链接：[${POST_URL}](${POST_URL})`
     return {
       subject,
       content,
@@ -154,7 +154,7 @@ module.exports = {
   // 回复通知
   async noticeReply (currentComment, config, getParentComment) {
     if (!currentComment.pid) return
-    if (!transporter) if (!await this.initMailer({ config })) return
+    if (!transporter) if (!await fn.initMailer({ config })) return
     const parentComment = await getParentComment()
     // 回复给博主，因为会发博主通知邮件，所以不再重复通知
     if (config.BLOGGER_EMAIL === parentComment.mail) return
@@ -167,7 +167,7 @@ module.exports = {
     const NICK = currentComment.nick
     const COMMENT = currentComment.comment
     const PARENT_COMMENT = parentComment.comment
-    const POST_URL = this.appendHashToUrl(currentComment.href || config.SITE_URL + currentComment.url, currentComment.id)
+    const POST_URL = fn.appendHashToUrl(currentComment.href || config.SITE_URL + currentComment.url, currentComment.id)
     const SITE_URL = config.SITE_URL
     const emailSubject = config.MAIL_SUBJECT || `${PARENT_NICK}，您在『${SITE_NAME}』上的评论收到了回复`
     let emailContent
@@ -221,14 +221,13 @@ module.exports = {
       return `${url.substring(0, url.indexOf('#'))}#${hash}`
     }
   },
-  async emailTest (event, config, isAdmin) {
+  async emailTest (event, config, isAdminUser) {
     const res = {}
-    const isAdminUser = await isAdmin()
     if (isAdminUser) {
       try {
         // 邮件测试前清除 transporter，保证读取的是最新的配置
         transporter = null
-        await this.initMailer({ config, throwErr: true })
+        await fn.initMailer({ config, throwErr: true })
         const sendResult = await transporter.sendMail({
           from: config.SENDER_EMAIL,
           to: event.mail || config.BLOGGER_EMAIL || config.SENDER_EMAIL,
@@ -246,3 +245,5 @@ module.exports = {
     return res
   }
 }
+
+module.exports = fn

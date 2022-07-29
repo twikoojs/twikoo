@@ -41,7 +41,7 @@ const {
 } = require('twikoo-func/utils/import')
 const { postCheckSpam } = require('twikoo-func/utils/spam')
 const { sendNotice, emailTest } = require('twikoo-func/utils/notify')
-const { uploadImage } = require('./utils/image')
+const { uploadImage } = require('twikoo-func/utils/image')
 
 // 初始化反 XSS
 const window = new JSDOM('').window
@@ -53,25 +53,21 @@ const { RES_CODE, MAX_REQUEST_TIMES } = require('twikoo-func/utils/constants')
 // 全局变量 / variables
 let db = null
 let config
-let request
-let response
 let accessToken
 const requestTimes = {}
 
-module.exports = async (requestArg, responseArg) => {
-  request = requestArg
-  response = responseArg
+module.exports = async (request, response) => {
   const event = request.body || {}
-  console.log('请求ＩＰ：', request.headers['x-real-ip'])
+  console.log('请求 IP：', request.headers['x-real-ip'])
   console.log('请求方法：', event.event)
   console.log('请求参数：', event)
   let res = {}
   try {
-    protect()
-    anonymousSignIn()
+    protect(request)
+    accessToken = anonymousSignIn(request)
     await connectToDatabase(process.env.MONGODB_URI)
     await readConfig()
-    allowCors()
+    allowCors(request, response)
     if (request.method === 'OPTIONS') {
       response.status(204).end()
       return
@@ -99,10 +95,10 @@ module.exports = async (requestArg, responseArg) => {
         res = await commentLike(event)
         break
       case 'COMMENT_SUBMIT':
-        res = await commentSubmit(event)
+        res = await commentSubmit(event, request)
         break
       case 'POST_SUBMIT':
-        res = await postSubmit(event.comment)
+        res = await postSubmit(event.comment, request)
         break
       case 'COUNTER_GET':
         res = await counterGet(event)
@@ -114,10 +110,10 @@ module.exports = async (requestArg, responseArg) => {
         res = await setPassword(event)
         break
       case 'GET_CONFIG':
-        res = await getConfig({ config, VERSION, isAdmin })
+        res = await getConfig({ config, VERSION, isAdmin: isAdmin() })
         break
       case 'GET_CONFIG_FOR_ADMIN':
-        res = await getConfigForAdmin({ config, isAdmin })
+        res = await getConfigForAdmin({ config, isAdmin: isAdmin() })
         break
       case 'SET_CONFIG':
         res = await setConfig(event)
@@ -132,7 +128,7 @@ module.exports = async (requestArg, responseArg) => {
         res = await getRecentComments(event)
         break
       case 'EMAIL_TEST': // >= 1.4.6
-        res = await emailTest(event, config, isAdmin)
+        res = await emailTest(event, config, isAdmin())
         break
       case 'UPLOAD_IMAGE': // >= 1.5.0
         res = await uploadImage(event, config)
@@ -161,10 +157,10 @@ module.exports = async (requestArg, responseArg) => {
   response.status(200).json(res)
 }
 
-function allowCors () {
+function allowCors (request, response) {
   if (request.headers.origin) {
     response.setHeader('Access-Control-Allow-Credentials', true)
-    response.setHeader('Access-Control-Allow-Origin', getAllowedOrigin())
+    response.setHeader('Access-Control-Allow-Origin', getAllowedOrigin(request))
     response.setHeader('Access-Control-Allow-Methods', 'POST')
     response.setHeader(
       'Access-Control-Allow-Headers',
@@ -173,7 +169,7 @@ function allowCors () {
   }
 }
 
-function getAllowedOrigin () {
+function getAllowedOrigin (request) {
   const localhostRegex = /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d{1,5})?$/
   if (localhostRegex.test(request.headers.origin)) {
     return request.headers.origin
@@ -185,12 +181,12 @@ function getAllowedOrigin () {
   }
 }
 
-function anonymousSignIn () {
+function anonymousSignIn (request) {
   if (request.body) {
     if (request.body.accessToken) {
-      accessToken = request.body.accessToken
+      return request.body.accessToken
     } else {
-      accessToken = uuidv4().replace(/-/g, '')
+      return uuidv4().replace(/-/g, '')
     }
   }
 }
@@ -218,7 +214,7 @@ async function connectToDatabase (uri) {
 
 // 写入管理密码
 async function setPassword (event) {
-  const isAdminUser = await isAdmin()
+  const isAdminUser = isAdmin()
   // 如果数据库里没有密码，则写入密码
   // 如果数据库里有密码，则只有管理员可以写入密码
   if (config.ADMIN_PASS && !isAdminUser) {
@@ -252,8 +248,8 @@ async function commentGet (event) {
   const res = {}
   try {
     validate(event, ['url'])
-    const uid = await getUid()
-    const isAdminUser = await isAdmin()
+    const uid = getUid()
+    const isAdminUser = isAdmin()
     const limit = parseInt(config.COMMENT_PAGE_SIZE) || 8
     let more = false
     let condition
@@ -315,7 +311,7 @@ async function commentGet (event) {
       .collection('comment')
       .find(query)
       .toArray()
-    res.data = parseComment([...main, ...reply], uid)
+    res.data = parseComment([...main, ...reply], uid, config)
     res.more = more
     res.count = count
   } catch (e) {
@@ -337,13 +333,13 @@ function getCommentQuery ({ condition, uid, isAdminUser }) {
 // 管理员读取评论
 async function commentGetForAdmin (event) {
   const res = {}
-  const isAdminUser = await isAdmin()
+  const isAdminUser = isAdmin()
   if (isAdminUser) {
     validate(event, ['per', 'page'])
     const collection = db
       .collection('comment')
     const condition = getCommentSearchCondition(event)
-    const count = await collection.countDocuments()
+    const count = await collection.countDocuments(condition)
     const data = await collection
       .find(condition)
       .sort({ created: -1 })
@@ -395,7 +391,7 @@ function getCommentSearchCondition (event) {
 // 管理员修改评论
 async function commentSetForAdmin (event) {
   const res = {}
-  const isAdminUser = await isAdmin()
+  const isAdminUser = isAdmin()
   if (isAdminUser) {
     validate(event, ['id', 'set'])
     const data = await db
@@ -418,7 +414,7 @@ async function commentSetForAdmin (event) {
 // 管理员删除评论
 async function commentDeleteForAdmin (event) {
   const res = {}
-  const isAdminUser = await isAdmin()
+  const isAdminUser = isAdmin()
   if (isAdminUser) {
     validate(event, ['id'])
     const data = await db
@@ -440,7 +436,7 @@ async function commentImportForAdmin (event) {
   const log = (message) => {
     logText += `${new Date().toLocaleString()} ${message}\n`
   }
-  const isAdminUser = await isAdmin()
+  const isAdminUser = isAdmin()
   if (isAdminUser) {
     try {
       validate(event, ['source', 'file'])
@@ -515,7 +511,7 @@ async function bulkSaveComments (comments) {
 async function commentLike (event) {
   const res = {}
   validate(event, ['id'])
-  res.updated = await like(event.id, await getUid())
+  res.updated = await like(event.id, getUid())
   return res
 }
 
@@ -555,14 +551,14 @@ async function like (id, uid) {
  * @param {String} event.pid 回复的 ID
  * @param {String} event.rid 评论楼 ID
  */
-async function commentSubmit (event) {
+async function commentSubmit (event, request) {
   const res = {}
   // 参数校验
   validate(event, ['url', 'ua', 'comment'])
   // 限流
-  await limitFilter()
+  await limitFilter(request)
   // 预检测、转换
-  const data = await parse(event)
+  const data = await parse(event, request)
   // 保存
   const comment = await save(data)
   res.id = comment.id
@@ -586,8 +582,7 @@ async function commentSubmit (event) {
 }
 
 // 保存评论
-async function save (event) {
-  const data = await parse(event)
+async function save (data) {
   await db
     .collection('comment')
     .insertOne(data)
@@ -603,8 +598,8 @@ async function getParentComment (currentComment) {
 }
 
 // 异步垃圾检测、发送评论通知
-async function postSubmit (comment) {
-  if (!isRecursion()) return { code: RES_CODE.FORBIDDEN }
+async function postSubmit (comment, request) {
+  if (!isRecursion(request)) return { code: RES_CODE.FORBIDDEN }
   // 垃圾检测
   const isSpam = await postCheckSpam(comment)
   await saveSpamCheckResult(comment, isSpam)
@@ -614,14 +609,14 @@ async function postSubmit (comment) {
 }
 
 // 将评论转为数据库存储格式
-async function parse (comment) {
+async function parse (comment, request) {
   const timestamp = Date.now()
-  const isAdminUser = await isAdmin()
+  const isAdminUser = isAdmin()
   const isBloggerMail = comment.mail && comment.mail === config.BLOGGER_EMAIL
   if (isBloggerMail && !isAdminUser) throw new Error('请先登录管理面板，再使用博主身份发送评论')
   const commentDo = {
     _id: uuidv4().replace(/-/g, ''),
-    uid: await getUid(),
+    uid: getUid(),
     nick: comment.nick ? comment.nick : '匿名',
     mail: comment.mail ? comment.mail : '',
     mailMd5: comment.mail ? md5(comment.mail) : '',
@@ -647,7 +642,7 @@ async function parse (comment) {
 }
 
 // 限流
-async function limitFilter () {
+async function limitFilter (request) {
   // 限制每个 IP 每 10 分钟发表的评论数量
   let limitPerMinute = parseInt(config.LIMIT_PER_MINUTE)
   if (Number.isNaN(limitPerMinute)) limitPerMinute = 10
@@ -823,7 +818,7 @@ async function getRecentComments (event) {
 
 // 修改配置
 async function setConfig (event) {
-  const isAdminUser = await isAdmin()
+  const isAdminUser = isAdmin()
   if (isAdminUser) {
     writeConfig(event.config)
     return {
@@ -837,7 +832,7 @@ async function setConfig (event) {
   }
 }
 
-function protect () {
+function protect (request) {
   // 防御
   const ip = request.headers['x-real-ip']
   requestTimes[ip] = (requestTimes[ip] || 0) + 1
@@ -891,18 +886,18 @@ async function writeConfig (newConfig) {
 }
 
 // 获取用户 ID
-async function getUid () {
+function getUid () {
   return accessToken
 }
 
 // 判断用户是否管理员
-async function isAdmin () {
-  const uid = await getUid()
+function isAdmin () {
+  const uid = getUid()
   return config.ADMIN_PASS === md5(uid)
 }
 
 // 判断是否为递归调用（即云函数调用自身）
-function isRecursion () {
+function isRecursion (request) {
   return request.headers['x-twikoo-recursion'] === (config.ADMIN_PASS || 'true')
 }
 

@@ -18,8 +18,8 @@ A **simple**, **safe**, **free** comment system.
 
 ### Simple
 
-* Free Build.（Using Tencent CloudBase as the commenting backend, each user enjoys 1 free standard basic version 1 resource package for a long time）
-* Simple Deployment.（Support one-click deployment, manual deployment, command deployment）
+* Free Build.（Using CloudBase / Vercel / self-hosted as the commenting backend）
+* Simple Deployment.（Support CloudBase / Vercel one-click deployment）
 
 ### Easy to use
 
@@ -70,13 +70,9 @@ A **simple**, **safe**, **free** comment system.
 
 ### Disadvantages
 
-* Slower requests. (except China)
-* Deployment requires real name authentication.
 * IE is not supported.
 
 ## Preview
-
-
 
 ### Comments
 

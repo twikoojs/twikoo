@@ -4,7 +4,7 @@ const {
   tencentcloud
 } = require('./lib')
 
-module.exports = {
+const fn = {
   // 后垃圾评论检测
   async postCheckSpam (comment, config) {
     try {
@@ -55,3 +55,5 @@ module.exports = {
     }
   }
 }
+
+module.exports = fn

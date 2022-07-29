@@ -1,5 +1,5 @@
 const http = require('http')
-const twikoo = require('.')
+const twikoo = require('./index')
 const server = http.createServer()
 
 server.on('request', async function (request, response) {
@@ -10,7 +10,7 @@ server.on('request', async function (request, response) {
     }
     request.body = JSON.parse(Buffer.concat(buffers).toString())
   } catch (e) {
-    console.error(e)
+    request.body = {}
   }
   response.status = function (code) {
     this.statusCode = code
@@ -26,6 +26,8 @@ server.on('request', async function (request, response) {
   return await twikoo(request, response)
 })
 
-server.listen(parseInt(process.env.TWIKOO_PORT) || 8080, function () {
-  console.log('Twikoo function started on port 8080')
+const port = parseInt(process.env.TWIKOO_PORT) || 8080
+
+server.listen(port, function () {
+  console.log(`Twikoo function started on port ${port}`)
 })

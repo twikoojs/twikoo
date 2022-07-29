@@ -1,7 +1,7 @@
 const { getRelativeUrl } = require('.')
 const { marked, DOMPurify, md5 } = require('./lib')
 
-module.exports = {
+const fn = {
   // 兼容 Leancloud 两种 JSON 导出格式
   jsonParse (content) {
     try {
@@ -184,7 +184,7 @@ module.exports = {
       arr = twikooDb.results
     }
     if (!arr) {
-      log('Valine 评论文件格式有误')
+      log('Twikoo 评论文件格式有误')
       return
     }
     const comments = []
@@ -197,12 +197,14 @@ module.exports = {
           parsed._id = comment._id.$oid
         }
         comments.push(parsed)
-        log(`${comment.id} 解析成功`)
+        log(`${comment._id} 解析成功`)
       } catch (e) {
-        log(`${comment.id} 解析失败：${e.message}`)
+        log(`${comment._id} 解析失败：${e.message}`)
       }
     }
     log(`解析成功 ${comments.length} 条评论`)
     return comments
   }
 }
+
+module.exports = fn

@@ -19,8 +19,8 @@ A **simple**, **safe**, **free** comment system.
 
 ### 简单
 
-* 免费搭建（使用云开发作为评论后台，每个用户均长期享受1个免费的标准型基础版1资源套餐）
-* 简单部署（支持一键部署、手动部署、命令行部署）
+* 免费搭建（使用云开发 / Vercel / 私有部署评论后台）
+* 简单部署（支持云开发 / Vercel 一键部署）
 
 ### 易用
 
@@ -71,8 +71,6 @@ A **simple**, **safe**, **free** comment system.
 
 ### 缺点
 
-* 国外请求较慢
-* 部署需要实名认证
 * 不支持 IE
 
 </details>
@@ -98,8 +96,6 @@ A **simple**, **safe**, **free** comment system.
 
 ## 快速上手 | Quick Start
 
-[![部署到云开发](https://main.qcloudimg.com/raw/67f5a389f1ac6f3b4d04c7256438e44f.svg)](https://console.cloud.tencent.com/tcb/env/index?action=CreateAndDeployCloudBaseProject&appUrl=https%3A%2F%2Fgithub.com%2Fimaegoo%2Ftwikoo&branch=main)
-
 有关详细教程，请查看[快速上手](https://twikoo.js.org/quick-start.html)
 
 <details>
@@ -114,10 +110,6 @@ A **simple**, **safe**, **free** comment system.
 图标设计：[Maemo Lee](https://www.maemo.cc)
 
 <!-- ## 捐赠 | Donate -->
-
-## 更新日志 & 开发计划 | Release notes & plans
-
-[更新日志](https://github.com/imaegoo/twikoo/releases) & [开发计划](https://github.com/imaegoo/twikoo/projects/2)
 
 ## 开发 | Development
 

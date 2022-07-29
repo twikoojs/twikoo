@@ -3,7 +3,7 @@ const { isUrl } = require('.')
 const { RES_CODE } = require('./constants')
 const { axios, FormData } = require('./lib')
 
-module.exports = {
+const fn = {
   async uploadImage (event, config) {
     const { photo, fileName } = event
     const res = {}
@@ -13,11 +13,11 @@ module.exports = {
       }
       // tip: qcloud 图床走前端上传，其他图床走后端上传
       if (config.IMAGE_CDN === '7bu') {
-        await this.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: 'https://7bu.top' })
+        await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: 'https://7bu.top' })
       } else if (config.IMAGE_CDN === 'smms') {
-        await this.uploadImageToSmms({ photo, fileName, config, res })
+        await fn.uploadImageToSmms({ photo, fileName, config, res })
       } else if (isUrl(config.IMAGE_CDN)) {
-        await this.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN })
+        await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN })
       }
     } catch (e) {
       console.error(e)
@@ -29,7 +29,7 @@ module.exports = {
   async uploadImageToSmms ({ photo, fileName, config, res }) {
     // SM.MS 图床 https://sm.ms
     const formData = new FormData()
-    formData.append('smfile', this.base64UrlToReadStream(photo, fileName))
+    formData.append('smfile', fn.base64UrlToReadStream(photo, fileName))
     const uploadResult = await axios.post('https://sm.ms/api/v2/upload', formData, {
       headers: {
         ...formData.getHeaders(),
@@ -45,7 +45,7 @@ module.exports = {
   async uploadImageToLskyPro ({ photo, fileName, config, res, imageCdn }) {
     // 自定义兰空图床（v2）URL
     const formData = new FormData()
-    formData.append('file', this.base64UrlToReadStream(photo, fileName))
+    formData.append('file', fn.base64UrlToReadStream(photo, fileName))
     const url = `${imageCdn}/api/v1/upload`
     let token = config.IMAGE_CDN_TOKEN
     if (!token.startsWith('Bearer')) {
@@ -71,3 +71,5 @@ module.exports = {
     return fs.createReadStream(path)
   }
 }
+
+module.exports = fn

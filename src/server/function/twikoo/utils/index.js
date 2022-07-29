@@ -1,8 +1,8 @@
-const { axios, bowser, ipToRegion, md5 } = require('./utils/lib')
+const { axios, bowser, ipToRegion, md5 } = require('./lib')
 const { RES_CODE } = require('./constants')
 const ipRegionSearcher = ipToRegion.create() // 初始化 IP 属地
 
-module.exports = {
+const fn = {
   // 获取 Twikoo 云函数版本
   getFuncVersion (VERSION) {
     return {
@@ -18,7 +18,7 @@ module.exports = {
   getUrlsQuery (urls) {
     const query = []
     for (const url of urls) {
-      if (url) query.push(...this.getUrlQuery(url))
+      if (url) query.push(...fn.getUrlQuery(url))
     }
     return query
   },
@@ -29,9 +29,9 @@ module.exports = {
       if (!comment.rid) {
         const replies = comments
           .filter((item) => item.rid === comment._id.toString())
-          .map((item) => this.toCommentDto(item, uid, [], comments, config))
+          .map((item) => fn.toCommentDto(item, uid, [], comments, config))
           .sort((a, b) => a.created - b.created)
-        result.push(this.toCommentDto(comment, uid, replies, [], config))
+        result.push(fn.toCommentDto(comment, uid, replies, [], config))
       }
     }
     return result
@@ -60,14 +60,14 @@ module.exports = {
       comment: comment.comment,
       os: displayOs,
       browser: displayBrowser,
-      ipRegion: showRegion ? this.getIpRegion({ ip: comment.ip }) : '',
+      ipRegion: showRegion ? fn.getIpRegion({ ip: comment.ip }) : '',
       master: comment.master,
       like: comment.like ? comment.like.length : 0,
       liked: comment.like ? comment.like.findIndex((item) => item === uid) > -1 : false,
       replies: replies,
       rid: comment.rid,
       pid: comment.pid,
-      ruser: this.ruser(comment.pid, comments),
+      ruser: fn.ruser(comment.pid, comments),
       top: comment.top,
       isSpam: comment.isSpam,
       created: comment.created,
@@ -103,7 +103,7 @@ module.exports = {
   },
   parseCommentForAdmin (comments) {
     for (const comment of comments) {
-      comment.ipRegion = this.getIpRegion({ ip: comment.ip, detail: true })
+      comment.ipRegion = fn.getIpRegion({ ip: comment.ip, detail: true })
     }
     return comments
   },
@@ -150,7 +150,7 @@ module.exports = {
     }
   },
   // 判断是否存在管理员密码
-  async getPasswordStatus (version, config) {
+  async getPasswordStatus (config, version) {
     return {
       code: RES_CODE.SUCCESS,
       status: !!config.ADMIN_PASS,
@@ -186,7 +186,7 @@ module.exports = {
       code: RES_CODE.SUCCESS,
       config: {
         VERSION,
-        IS_ADMIN: await isAdmin(),
+        IS_ADMIN: isAdmin,
         SITE_NAME: config.SITE_NAME,
         SITE_URL: config.SITE_URL,
         MASTER_TAG: config.MASTER_TAG,
@@ -206,6 +206,20 @@ module.exports = {
       }
     }
   },
+  async getConfigForAdmin ({ config, isAdmin }) {
+    if (isAdmin) {
+      delete config.CREDENTIALS
+      return {
+        code: RES_CODE.SUCCESS,
+        config
+      }
+    } else {
+      return {
+        code: RES_CODE.NEED_LOGIN,
+        message: '请先登录'
+      }
+    }
+  },
   // 请求参数校验
   validate (event = {}, requiredParams = []) {
     for (const requiredParam of requiredParams) {
@@ -215,3 +229,5 @@ module.exports = {
     }
   }
 }
+
+module.exports = fn

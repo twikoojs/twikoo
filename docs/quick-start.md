@@ -129,6 +129,12 @@ Vercel 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 3. 数据在服务器上，请注意定期备份数据
 :::
 
+### 私有部署 (Docker)
+
+```
+docker run -p 8080:8080 -v ${PWD}/data:/app/data -d imaegoo/twikoo
+```
+
 ## 前端部署
 
 ### 在 Hexo 中使用

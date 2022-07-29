@@ -59,7 +59,7 @@ const requestTimes = {}
 module.exports = async (request, response) => {
   const event = request.body || {}
   console.log('请求 IP：', request.headers['x-real-ip'])
-  console.log('请求方法：', event.event)
+  console.log('请求函数：', event.event)
   console.log('请求参数：', event)
   let res = {}
   try {

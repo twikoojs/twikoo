@@ -61,7 +61,7 @@ module.exports = async (request, response) => {
   let accessToken
   const event = request.body || {}
   console.log('请求 IP：', getIp(request))
-  console.log('请求方法：', event.event)
+  console.log('请求函数：', event.event)
   console.log('请求参数：', event)
   let res = {}
   try {

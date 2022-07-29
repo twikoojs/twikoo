@@ -1,21 +1,31 @@
 {
-  "name": "twikoo-server",
-  "version": "1.6.0-beta.1",
+  "name": "tkserver",
+  "version": "1.6.0-beta.2",
   "description": "A simple comment system.",
+  "keywords": [
+    "twikoo",
+    "twikoojs",
+    "comment",
+    "comment-system"
+  ],
   "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
   "license": "MIT",
   "main": "server.js",
   "bin": {
-    "twikoo": "server.js"
+    "tkserver": "server.js"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/imaegoo/twikoo.git"
   },
   "homepage": "https://twikoo.js.org",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "dependencies": {
     "lokijs": "^1.5.12",
-    "twikoo-func": "1.6.0-beta.1",
+    "twikoo-func": "1.6.0-beta.2",
     "uuid": "^8.3.2"
   }
 }

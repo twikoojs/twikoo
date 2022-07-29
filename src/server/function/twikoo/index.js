@@ -63,7 +63,7 @@ const requestTimes = {}
 // 云函数入口点 / entry point
 exports.main = async (event, context) => {
   console.log('请求 IP：', auth.getClientIP())
-  console.log('请求方法：', event.event)
+  console.log('请求函数：', event.event)
   console.log('请求参数：', event)
   let res = {}
   try {

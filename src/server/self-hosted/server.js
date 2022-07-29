@@ -1,4 +1,15 @@
+#!/usr/bin/env node
+
+const fs = require('fs')
+const path = require('path')
 const http = require('http')
+
+const dataDir = path.resolve(process.cwd(), process.env.TWIKOO_DATA || './data')
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir)
+}
+console.log(`Twikoo database stored at ${dataDir}`)
+
 const twikoo = require('./index')
 const server = http.createServer()
 
@@ -10,6 +21,7 @@ server.on('request', async function (request, response) {
     }
     request.body = JSON.parse(Buffer.concat(buffers).toString())
   } catch (e) {
+    console.error(e.message)
     request.body = {}
   }
   response.status = function (code) {

@@ -5,7 +5,7 @@ name: Docs
 
 on:
   release:
-    types: [created]
+    types: [released]
   workflow_dispatch:
 
 jobs:

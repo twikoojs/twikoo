@@ -8,8 +8,8 @@
 [![](https://data.jsdelivr.com/v1/package/npm/twikoo/badge)](https://www.jsdelivr.com/package/npm/twikoo)
 [![](https://img.shields.io/npm/l/twikoo)](https://github.com/imaegoo/twikoo/blob/main/LICENSE)
 
-一个简洁、安全、免费的静态网站评论系统，基于[腾讯云开发](https://curl.qcloud.com/KnnJtUom)。<br>
-A simple, safe, free comment system based on Tencent CloudBase (tcb).
+一个简洁、安全、免费的静态网站评论系统。<br>
+A simple, safe, free comment system.
 
 **简体中文** | [English](/en/)
 
@@ -17,8 +17,8 @@ A simple, safe, free comment system based on Tencent CloudBase (tcb).
 
 ### 简单
 
-* 免费搭建（使用云开发作为评论后台，每个用户均长期享受1个免费的标准型基础版1资源套餐）
-* 简单部署（支持一键部署、手动部署、命令行部署）
+* 免费搭建（使用云开发 / Vercel / 私有服务器作为评论后台）
+* 简单部署（支持云开发 / Vercel 一键部署）
 
 ### 易用
 
@@ -71,8 +71,6 @@ A simple, safe, free comment system based on Tencent CloudBase (tcb).
 
 ### 缺点
 
-* 国外请求较慢
-* 部署需要实名认证
 * 不支持 IE
 
 ## 预览
@@ -132,7 +130,7 @@ yarn build # 编译 (dist/twikoo.all.min.js)
 
 ## 国际化
 
-支持简体中文、繁体中文、English。欢迎[提交翻译 PR](https://github.com/imaegoo/twikoo/tree/main/src/js/utils/i18n)。
+支持简体中文、繁体中文、English。欢迎[提交翻译 PR](https://github.com/imaegoo/twikoo/tree/main/src/client/utils/i18n)。
 
 ## 许可
 

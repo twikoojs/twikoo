@@ -5,7 +5,7 @@ name: Publish
 
 on:
   release:
-    types: [created]
+    types: [published]
   workflow_dispatch:
 
 jobs:
@@ -19,12 +19,27 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: yarn install
       - run: yarn build
-      - run: yarn publish
+      - if: "github.event.release.prerelease"
+        run: yarn publish --tag beta
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
-      - run: cd src/function/twikoo && yarn publish
+      - if: "github.event.release.prerelease"
+        run: cd src/server/function/twikoo && yarn publish --tag beta
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
-      - run: cd src/vercel && yarn publish
+      - if: "github.event.release.prerelease"
+        run: cd src/server/vercel && yarn publish --tag beta
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+      - if: "!github.event.release.prerelease"
+        run: yarn publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+      - if: "!github.event.release.prerelease"
+        run: cd src/server/function/twikoo && yarn publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+      - if: "!github.event.release.prerelease"
+        run: cd src/server/vercel && yarn publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}

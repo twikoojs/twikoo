@@ -111,3 +111,7 @@ dist
 
 # VuePress temp file
 .temp
+
+# database
+db.json
+db.json.*

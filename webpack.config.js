@@ -23,8 +23,8 @@ module.exports = {
   },
   entry: {
     /* eslint-disable-next-line quote-props */
-    'twikoo': './src/js/main.js',
-    'twikoo.all': './src/js/main.all.js'
+    'twikoo': './src/client/main.js',
+    'twikoo.all': './src/client/main.all.js'
   },
   output: {
     path: BUILD_PATH,

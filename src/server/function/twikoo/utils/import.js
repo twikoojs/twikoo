@@ -196,6 +196,12 @@ const fn = {
           // 解决 id 历史数据问题
           parsed._id = comment._id.$oid
         }
+        if (comment.pid === null) {
+          delete comment.pid
+        }
+        if (comment.rid === null) {
+          delete comment.rid
+        }
         comments.push(parsed)
         log(`${comment._id} 解析成功`)
       } catch (e) {

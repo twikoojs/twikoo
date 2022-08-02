@@ -469,8 +469,8 @@ async function commentImportForAdmin (event) {
         default:
           throw new Error(`不支持 ${event.source} 的导入，请更新 Twikoo 云函数至最新版本`)
       }
-      const insertedCount = await bulkSaveComments(comments).length
-      log(`导入成功 ${insertedCount} 条评论`)
+      await bulkSaveComments(comments)
+      log('导入成功')
     } catch (e) {
       log(e.message)
     }
@@ -504,10 +504,9 @@ async function readFile (file, type, log) {
 
 // 批量导入评论
 async function bulkSaveComments (comments) {
-  const batchRes = db
+  db
     .getCollection('comment')
     .insert(comments)
-  return batchRes
 }
 
 // 点赞 / 取消点赞
@@ -755,20 +754,13 @@ async function getCommentsCount (event) {
     if (!event.includeReply) {
       query.rid = { $exists: false }
     }
-    const result = db
-      .getCollection('comment')
-      .chain()
-      .aggregate([
-        { $match: query },
-        { $group: { _id: '$url', count: { $sum: 1 } } }
-      ])
-      .data()
     res.data = []
+    const commentCollection = db.getCollection('comment')
     for (const url of event.urls) {
-      const record = result.find((item) => item._id === url)
+      const record = commentCollection.count({ ...query, url })
       res.data.push({
         url,
-        count: record ? record.count : 0
+        count: record || 0
       })
     }
   } catch (e) {

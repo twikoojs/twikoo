@@ -49,11 +49,12 @@ const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
 const { RES_CODE, MAX_REQUEST_TIMES } = require('twikoo-func/utils/constants')
+const TWIKOO_REQ_TIMES_CLEAR_TIME = parseInt(process.env.TWIKOO_REQ_TIMES_CLEAR_TIME) || 10 * 60 * 1000
 
 // 全局变量 / variables
 let db = null
 let config
-const requestTimes = {}
+let requestTimes = {}
 
 connectToDatabase()
 
@@ -912,3 +913,9 @@ async function createCollections () {
 function getIp (request) {
   return request.headers['x-forwarded-for'] || request.socket.remoteAddress || ''
 }
+
+function clearRequestTimes () {
+  requestTimes = {}
+}
+
+setTimeout(clearRequestTimes, TWIKOO_REQ_TIMES_CLEAR_TIME)

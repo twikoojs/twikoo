@@ -1,6 +1,6 @@
 {
   "name": "twikoo-vercel",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "A simple comment system.",
   "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "homepage": "https://twikoo.js.org",
   "dependencies": {
     "mongodb": "^3.6.3",
-    "twikoo-func": "1.6.0",
+    "twikoo-func": "1.6.1",
     "uuid": "^8.3.2"
   }
 }

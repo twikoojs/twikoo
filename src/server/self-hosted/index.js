@@ -49,11 +49,12 @@ const DOMPurify = createDOMPurify(window)
 
 // 常量 / constants
 const { RES_CODE, MAX_REQUEST_TIMES } = require('twikoo-func/utils/constants')
+const TWIKOO_REQ_TIMES_CLEAR_TIME = parseInt(process.env.TWIKOO_REQ_TIMES_CLEAR_TIME) || 10 * 60 * 1000
 
 // 全局变量 / variables
 let db = null
 let config
-const requestTimes = {}
+let requestTimes = {}
 
 connectToDatabase()
 
@@ -468,8 +469,8 @@ async function commentImportForAdmin (event) {
         default:
           throw new Error(`不支持 ${event.source} 的导入，请更新 Twikoo 云函数至最新版本`)
       }
-      const insertedCount = await bulkSaveComments(comments).length
-      log(`导入成功 ${insertedCount} 条评论`)
+      await bulkSaveComments(comments)
+      log('导入成功')
     } catch (e) {
       log(e.message)
     }
@@ -503,10 +504,9 @@ async function readFile (file, type, log) {
 
 // 批量导入评论
 async function bulkSaveComments (comments) {
-  const batchRes = db
+  db
     .getCollection('comment')
     .insert(comments)
-  return batchRes
 }
 
 // 点赞 / 取消点赞
@@ -531,11 +531,11 @@ async function like (id, uid) {
     // 取消赞
     likes = likes.filter((item) => item !== uid)
   }
-  const result = await record.findAndUpdate({ _id: id }, (obj) => {
+  await record.findAndUpdate({ _id: id }, (obj) => {
     obj.like = likes
     return obj
   })
-  return result
+  return 1
 }
 
 /**
@@ -720,26 +720,23 @@ async function readCounter (url) {
  * @param {String} event.title 文章标题
  */
 async function incCounter (event) {
-  let result
-  result = db
-    .getCollection('counter')
-    .findAndUpdate({ url: event.url }, (obj) => {
-      obj.time = obj.time ? obj.time + 1 : 1
-      obj.title = event.title
-      obj.updated = Date.now()
+  const counter = db.getCollection('counter')
+  const result = counter.find({ url: event.url })[0]
+  if (result) {
+    result.time = result.time ? result.time + 1 : 1
+    result.title = event.title
+    result.updated = Date.now()
+    counter.update(result)
+  } else {
+    counter.insert({
+      url: event.url,
+      title: event.title,
+      time: 1,
+      created: Date.now(),
+      updated: Date.now()
     })
-  if (result.modifiedCount === 0) {
-    result = db
-      .getCollection('counter')
-      .insert({
-        url: event.url,
-        title: event.title,
-        time: 1,
-        created: Date.now(),
-        updated: Date.now()
-      })
   }
-  return result.modifiedCount || result.insertedCount
+  return 1
 }
 
 /**
@@ -757,20 +754,13 @@ async function getCommentsCount (event) {
     if (!event.includeReply) {
       query.rid = { $exists: false }
     }
-    const result = db
-      .getCollection('comment')
-      .chain()
-      .aggregate([
-        { $match: query },
-        { $group: { _id: '$url', count: { $sum: 1 } } }
-      ])
-      .data()
     res.data = []
+    const commentCollection = db.getCollection('comment')
     for (const url of event.urls) {
-      const record = result.find((item) => item._id === url)
+      const record = commentCollection.count({ ...query, url })
       res.data.push({
         url,
-        count: record ? record.count : 0
+        count: record || 0
       })
     }
   } catch (e) {
@@ -915,3 +905,9 @@ async function createCollections () {
 function getIp (request) {
   return request.headers['x-forwarded-for'] || request.socket.remoteAddress || ''
 }
+
+function clearRequestTimes () {
+  requestTimes = {}
+}
+
+setTimeout(clearRequestTimes, TWIKOO_REQ_TIMES_CLEAR_TIME)

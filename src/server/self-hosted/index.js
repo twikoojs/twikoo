@@ -531,11 +531,11 @@ async function like (id, uid) {
     // 取消赞
     likes = likes.filter((item) => item !== uid)
   }
-  const result = await record.findAndUpdate({ _id: id }, (obj) => {
+  await record.findAndUpdate({ _id: id }, (obj) => {
     obj.like = likes
     return obj
   })
-  return result
+  return 1
 }
 
 /**
@@ -720,26 +720,23 @@ async function readCounter (url) {
  * @param {String} event.title 文章标题
  */
 async function incCounter (event) {
-  let result
-  result = db
-    .getCollection('counter')
-    .findAndUpdate({ url: event.url }, (obj) => {
-      obj.time = obj.time ? obj.time + 1 : 1
-      obj.title = event.title
-      obj.updated = Date.now()
+  const counter = db.getCollection('counter')
+  const result = counter.find({ url: event.url })[0]
+  if (result) {
+    result.time = result.time ? result.time + 1 : 1
+    result.title = event.title
+    result.updated = Date.now()
+    counter.update(result)
+  } else {
+    counter.insert({
+      url: event.url,
+      title: event.title,
+      time: 1,
+      created: Date.now(),
+      updated: Date.now()
     })
-  if (result.modifiedCount === 0) {
-    result = db
-      .getCollection('counter')
-      .insert({
-        url: event.url,
-        title: event.title,
-        time: 1,
-        created: Date.now(),
-        updated: Date.now()
-      })
   }
-  return result.modifiedCount || result.insertedCount
+  return 1
 }
 
 /**

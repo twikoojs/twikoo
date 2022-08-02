@@ -1,6 +1,6 @@
 {
   "name": "twikoo-func",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "A simple comment system.",
   "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
   "license": "MIT",
@@ -13,6 +13,7 @@
   "dependencies": {
     "@cloudbase/manager-node": "^3.9.0",
     "@cloudbase/node-sdk": "^2.5.0",
+    "@imaegoo/node-ip2region": "^2.1.1",
     "akismet-api": "^5.1.0",
     "axios": "^0.21.1",
     "blueimp-md5": "^2.18.0",
@@ -20,7 +21,6 @@
     "cheerio": "1.0.0-rc.5",
     "crypto-js": "^4.0.0",
     "dompurify": "^2.2.6",
-    "dy-node-ip2region": "^1.0.1",
     "form-data": "^4.0.0",
     "jsdom": "^16.4.0",
     "marked": "^4.0.12",

@@ -604,7 +604,7 @@ async function getParentComment (currentComment) {
 async function postSubmit (comment, request) {
   if (!isRecursion(request)) return { code: RES_CODE.FORBIDDEN }
   // 垃圾检测
-  const isSpam = await postCheckSpam(comment)
+  const isSpam = await postCheckSpam(comment, config)
   await saveSpamCheckResult(comment, isSpam)
   // 发送通知
   await sendNotice(comment, config, getParentComment)

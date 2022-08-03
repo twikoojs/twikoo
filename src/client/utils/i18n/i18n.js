@@ -519,10 +519,10 @@ export default {
     'Custom SMTP server address. If you have configured SMTP_SERVICE, please leave it empty.'
   ],
   [S.ACI + '_SMTP_PASS']: [
-    '邮件通知邮箱密码，QQ邮箱请填写授权码。',
-    '郵件通知郵箱密碼，QQ郵箱請填寫授權碼。',
-    '郵件通知郵箱密碼，QQ郵箱請填寫授權碼。',
-    'Email notification mailbox password. Enter authorization code for QQ mail.'
+    '邮件通知邮箱密码，QQ、163邮箱请填写授权码。',
+    '郵件通知郵箱密碼，QQ、163郵箱請填寫授權碼。',
+    '郵件通知郵箱密碼，QQ、163郵箱請填寫授權碼。',
+    'Email notification mailbox password. Enter authorization code for QQ/163 mail.'
   ],
   [S.ACI + '_SMTP_PORT']: [
     '自定义 SMTP 端口。如您已配置 SMTP_SERVICE，此项请留空。',

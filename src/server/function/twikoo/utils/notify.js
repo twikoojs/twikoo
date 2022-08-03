@@ -155,7 +155,7 @@ const fn = {
   async noticeReply (currentComment, config, getParentComment) {
     if (!currentComment.pid) return
     if (!transporter) if (!await fn.initMailer({ config })) return
-    const parentComment = await getParentComment()
+    const parentComment = await getParentComment(currentComment)
     // 回复给博主，因为会发博主通知邮件，所以不再重复通知
     if (config.BLOGGER_EMAIL === parentComment.mail) return
     // 回复自己的评论，不邮件通知

@@ -8,8 +8,8 @@
           <span>{{ t('COMMENTS_COUNT_SUFFIX') }}</span>
         </span>
         <span>
-          <span class="tk-icon" v-if="!loading && !loadingMore" v-html="iconRefresh" @click="refresh"
-            ></span><span class="tk-icon" v-if="showAdminEntry" v-html="iconSetting" @click="openAdmin"
+          <span class="tk-icon __comments" v-if="!loading && !loadingMore" v-html="iconRefresh" @click="refresh"
+            ></span><span class="tk-icon __comments" v-if="showAdminEntry" v-html="iconSetting" @click="openAdmin"
             ></span>
         </span>
       </div>
@@ -119,7 +119,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .tk-comments-title {
   font-size: 1.25rem;
   font-weight: bold;
@@ -147,7 +147,7 @@ export default {
   font-size: 0.75em;
   color: #ff0000;
 }
-.tk-icon {
+.tk-icon.__comments {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -157,10 +157,6 @@ export default {
   width: 0.75em;
   line-height: 0;
   cursor: pointer;
-}
-.tk-icon :deep(svg) {
-  width: 100%;
-  height: 100%;
-  fill: #409eff;
+  color: #409eff;
 }
 </style>

@@ -184,7 +184,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .tk-admin-config-groups {
   overflow-y: auto;
   padding-right: 0.5em;

@@ -140,7 +140,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .tk-meta-input {
   display: flex;
 }
@@ -152,10 +152,10 @@ export default {
 .tk-meta-input .el-input + .el-input {
   margin-left: 0.5rem;
 }
-.tk-meta-input .el-input :deep(.el-input-group__prepend) {
+.tk-meta-input .el-input .el-input-group__prepend {
   padding: 0 1rem;
 }
-.tk-meta-input .el-input :deep(input:invalid) {
+.tk-meta-input .el-input input:invalid {
   border: 1px solid #f56c6c;
   box-shadow: none;
 }

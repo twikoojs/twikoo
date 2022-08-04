@@ -594,14 +594,14 @@ async function getParentComment (currentComment) {
   const parentComment = await db
     .collection('comment')
     .findOne({ _id: currentComment.pid })
-  return parentComment.data[0]
+  return parentComment
 }
 
 // 异步垃圾检测、发送评论通知
 async function postSubmit (comment, request) {
   if (!isRecursion(request)) return { code: RES_CODE.FORBIDDEN }
   // 垃圾检测
-  const isSpam = await postCheckSpam(comment)
+  const isSpam = await postCheckSpam(comment, config)
   await saveSpamCheckResult(comment, isSpam)
   // 发送通知
   await sendNotice(comment, config, getParentComment)

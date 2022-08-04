@@ -18,12 +18,12 @@
     </div>
     <div class="tk-row actions">
       <div class="tk-row-actions-start">
-        <div class="tk-action-icon OwO" v-show="config.SHOW_EMOTION === 'true'" v-html="iconEmotion" v-clickoutside="closeOwo" ref="owo"></div>
-        <div class="tk-action-icon" v-show="config.SHOW_IMAGE === 'true'" v-html="iconImage" @click="openSelectImage"></div>
+        <div class="tk-submit-action-icon OwO" v-show="config.SHOW_EMOTION === 'true'" v-html="iconEmotion" v-clickoutside="closeOwo" ref="owo"></div>
+        <div class="tk-submit-action-icon" v-show="config.SHOW_IMAGE === 'true'" v-html="iconImage" @click="openSelectImage"></div>
         <input class="tk-input-image" type="file" accept="image/*" value="" ref="inputFile" @change="onSelectImage" />
         <div class="tk-error-message">{{ errorMessage }}</div>
       </div>
-      <a class="tk-action-icon __markdown"
+      <a class="tk-submit-action-icon __markdown"
           alt="Markdown is supported"
           href="https://guides.github.com/features/mastering-markdown/"
           target="_blank"
@@ -342,7 +342,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .tk-submit {
   display: flex;
   flex-direction: column;
@@ -372,7 +372,7 @@ export default {
   display: flex;
   align-items: center;
 }
-.tk-action-icon {
+.tk-submit-action-icon {
   align-self: center;
   display: inline-block;
   width: 1.25em;
@@ -381,11 +381,11 @@ export default {
   cursor: pointer;
   flex-shrink: 0;
 }
-.tk-action-icon :deep(svg:hover) {
+.tk-submit-action-icon svg:hover {
   opacity: 0.8;
 }
-.tk-action-icon.__markdown :deep(svg) {
-  fill: #909399;
+.tk-submit-action-icon.__markdown {
+  color: #909399;
 }
 .tk-error-message {
   word-break: break-all;
@@ -393,16 +393,13 @@ export default {
   font-size: 0.75em;
   flex-shrink: 1;
 }
-.tk-avatar {
-  margin-right: 1rem;
-}
 .tk-input-image {
   display: none;
 }
 .tk-input {
   flex: 1;
 }
-.tk-input :deep(.el-textarea__inner) {
+.tk-input .el-textarea__inner {
   background-position: right bottom;
   background-repeat: no-repeat;
 }

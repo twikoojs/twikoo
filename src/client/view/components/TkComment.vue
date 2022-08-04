@@ -37,15 +37,15 @@
       </div>
       <div class="tk-extras" v-if="comment.ipRegion || comment.os || comment.browser">
         <div class="tk-extra" v-if="comment.ipRegion">
-          <span class="tk-icon" v-html="iconLocation"></span>
+          <span class="tk-icon __comment" v-html="iconLocation"></span>
           <span class="tk-extra-text">&nbsp;{{ comment.ipRegion }}</span>
         </div>
         <div class="tk-extra" v-if="comment.os">
-          <span class="tk-icon" v-html="iconOs"></span>
+          <span class="tk-icon __comment" v-html="iconOs"></span>
           <span class="tk-extra-text">&nbsp;{{ comment.os }}</span>
         </div>
         <div class="tk-extra" v-if="comment.browser">
-          <span class="tk-icon" v-html="iconBrowser"></span>
+          <span class="tk-icon __comment" v-html="iconBrowser"></span>
           <span class="tk-extra-text">&nbsp;{{ comment.browser }}</span>
         </div>
       </div>
@@ -274,7 +274,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .tk-main {
   flex: 1;
   width: 0;
@@ -284,9 +284,6 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-}
-.tk-avatar {
-  margin-right: 1rem;
 }
 .tk-nick-link {
   color: inherit;
@@ -317,17 +314,13 @@ export default {
   display: flex;
   align-items: center;
 }
-.tk-icon {
+.tk-icon.__comment {
   height: 1em;
   width: 1em;
   line-height: 1;
 }
 .tk-extra-text {
   line-height: 1;
-}
-.tk-icon :deep(svg) {
-  width: 100%;
-  fill: currentColor;
 }
 .tk-tag {
   display: inline-block;
@@ -373,7 +366,7 @@ export default {
 .tk-replies .tk-content {
   font-size: .9em;
 }
-.tk-comment :deep(.vemoji) {
+.tk-comment .vemoji {
   max-height: 2em;
   vertical-align: middle;
 }

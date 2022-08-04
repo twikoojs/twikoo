@@ -188,7 +188,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .tk-admin-comment {
   display: flex;
   flex-direction: column;
@@ -244,7 +244,7 @@ export default {
   flex-wrap: wrap;
   margin-bottom: 0.5em;
 }
-.tk-avatar {
+.tk-admin-comment .tk-avatar {
   margin-right: 0.5em;
 }
 .tk-admin-actions {

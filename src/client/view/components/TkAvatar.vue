@@ -63,7 +63,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .tk-avatar {
   flex-shrink: 0;
   height: 2.5rem;
@@ -71,6 +71,7 @@ export default {
   overflow: hidden;
   text-align: center;
   border-radius: 5px;
+  margin-right: 1rem;
 }
 .tk-replies .tk-avatar {
   height: 1.6rem;
@@ -84,11 +85,9 @@ export default {
 }
 .tk-avatar .tk-avatar-img {
   height: 2.5rem;
+  color: #c0c4cc;
 }
 .tk-replies .tk-avatar .tk-avatar-img {
   height: 1.6rem;
-}
-.tk-avatar .tk-avatar-img :deep(svg) {
-  fill: #c0c4cc;
 }
 </style>

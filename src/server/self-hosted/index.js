@@ -570,7 +570,7 @@ async function commentSubmit (event, request) {
     console.log('开始异步垃圾检测、发送评论通知')
     console.time('POST_SUBMIT')
     await Promise.race([
-      axios.post(`https://${request.headers.host}`, {
+      axios.post(`http://${request.headers.host}`, {
         event: 'POST_SUBMIT',
         comment
       }, { headers: { 'x-twikoo-recursion': config.ADMIN_PASS || 'true' } }),
@@ -597,14 +597,14 @@ async function getParentComment (currentComment) {
   const parentComment = db
     .getCollection('comment')
     .findOne({ _id: currentComment.pid })
-  return parentComment.data[0]
+  return parentComment
 }
 
 // 异步垃圾检测、发送评论通知
 async function postSubmit (comment, request) {
   if (!isRecursion(request)) return { code: RES_CODE.FORBIDDEN }
   // 垃圾检测
-  const isSpam = await postCheckSpam(comment)
+  const isSpam = await postCheckSpam(comment, config)
   await saveSpamCheckResult(comment, isSpam)
   // 发送通知
   await sendNotice(comment, config, getParentComment)

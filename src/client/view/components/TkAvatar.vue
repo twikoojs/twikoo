@@ -73,6 +73,7 @@ export default {
   border-radius: 5px;
   margin-right: 1rem;
 }
+.tk-comment .tk-avatar,
 .tk-replies .tk-avatar {
   height: 1.6rem;
   width: 1.6rem;

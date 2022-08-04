@@ -87,6 +87,8 @@ const fn = {
   getIpRegion ({ ip, detail = false }) {
     if (!ip) return ''
     try {
+      // 将 IPv6 格式的 IPv4 地址转换为 IPv4 格式
+      ip = ip.replace(/^::ffff:/, '')
       const { region } = ipRegionSearcher.binarySearchSync(ip)
       const [country,, province, city, isp] = region.split('|')
       // 有省显示省，没有省显示国家

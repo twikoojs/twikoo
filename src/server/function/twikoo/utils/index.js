@@ -99,7 +99,7 @@ const fn = {
         return area
       }
     } catch (e) {
-      console.error('IP 属地查询失败：', e)
+      console.error('IP 属地查询失败：', e.message)
       return ''
     }
   },

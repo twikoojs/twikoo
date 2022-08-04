@@ -594,7 +594,7 @@ async function getParentComment (currentComment) {
   const parentComment = await db
     .collection('comment')
     .findOne({ _id: currentComment.pid })
-  return parentComment.data[0]
+  return parentComment
 }
 
 // 异步垃圾检测、发送评论通知

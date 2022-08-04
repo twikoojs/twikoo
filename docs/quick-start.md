@@ -287,6 +287,8 @@ yarn deploy -e 您的环境id
 1. 在服务器上执行 `npm i -g tkserver@latest`
 2. 重新启动 `tkserver`
 
+Docker 版先执行 `docker pull imaegoo/twikoo` 再重启容器
+
 ### 自动更新
 
 考虑到可用性和安全性问题，Twikoo 没有实现自动更新，也没有计划实现自动更新。如果您希望实现自动更新，可以参考 MHuiG 基于 Github 工作流的 [twikoo-update](https://github.com/MHuiG/twikoo-update) 的实现方式。

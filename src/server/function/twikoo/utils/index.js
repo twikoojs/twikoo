@@ -96,7 +96,7 @@ const fn = {
       if (detail) {
         return area === city ? [city, isp].join(' ') : [area, city, isp].join(' ')
       } else {
-        return area
+        return area.replace(/(省|市)$/, '')
       }
     } catch (e) {
       console.error('IP 属地查询失败：', e.message)

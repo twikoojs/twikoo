@@ -80,7 +80,9 @@ function getConfig ({ extractCss }) {
   }
 }
 
-module.exports = [
-  getConfig({ extractCss: false }),
-  getConfig({ extractCss: true })
-]
+module.exports = process.env.NODE_ENV === 'production'
+  ? [
+      getConfig({ extractCss: false }),
+      getConfig({ extractCss: true })
+    ]
+  : getConfig({ extractCss: false })

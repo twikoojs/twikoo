@@ -52,7 +52,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .tk-action {
   display: flex;
   align-items: center;
@@ -86,8 +86,6 @@ export default {
   height: 1em;
   width: 1em;
   line-height: 0;
-}
-.tk-action-icon :deep(svg) {
-  fill: #409eff;
+  color: #409eff;
 }
 </style>

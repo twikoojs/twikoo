@@ -216,7 +216,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .tk-admin-container {
   position: absolute;
   top: 0;
@@ -285,7 +285,7 @@ export default {
   text-align: center;
   margin-top: 1rem;
 }
-.tk-password :deep(.el-input__inner) {
+.tk-password .el-input__inner {
   min-width: 100px;
 }
 .tk-login-msg a {

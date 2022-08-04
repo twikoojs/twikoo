@@ -39,7 +39,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .tk-footer {
   width: 100%;
   text-align: end;

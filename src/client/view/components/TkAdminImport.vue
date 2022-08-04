@@ -103,7 +103,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .tk-admin-import {
   display: flex;
   flex-direction: column;
@@ -113,10 +113,10 @@ export default {
   font-size: 1.25rem;
   font-weight: bold;
 }
-select,
-input,
-.el-button,
-.el-textarea {
+.tk-admin-import select,
+.tk-admin-import input,
+.tk-admin-import .el-button,
+.tk-admin-import .el-textarea {
   margin-top: 1em;
 }
 </style>

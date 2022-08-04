@@ -73,6 +73,7 @@ export default {
   border-radius: 5px;
   margin-right: 1rem;
 }
+.tk-comment .tk-submit .tk-avatar,
 .tk-replies .tk-avatar {
   height: 1.6rem;
   width: 1.6rem;
@@ -87,6 +88,7 @@ export default {
   height: 2.5rem;
   color: #c0c4cc;
 }
+.tk-comment .tk-submit .tk-avatar .tk-avatar-img,
 .tk-replies .tk-avatar .tk-avatar-img {
   height: 1.6rem;
 }

@@ -19,7 +19,7 @@ function getConfig ({ extractCss }) {
       rules: [
         { test: /\.vue$/, loader: 'vue-loader' },
         extractCss
-          ? { test: /\.css$/, use: ['vue-style-loader', MiniCssExtractPlugin.loader, 'css-loader'] }
+          ? { test: /\.css$/, use: [MiniCssExtractPlugin.loader, 'css-loader'] }
           : { test: /\.css$/, use: ['vue-style-loader', 'css-loader'] },
         { test: /\.svg$/, loader: 'svg-inline-loader' },
         { test: /\.js$/, use: { loader: 'babel-loader', options: { presets: ['@babel/preset-env'], plugins: ['@babel/plugin-transform-modules-commonjs', '@babel/transform-runtime'] } } }

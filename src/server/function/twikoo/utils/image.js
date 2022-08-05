@@ -30,6 +30,9 @@ const fn = {
     // SM.MS 图床 https://sm.ms
     const formData = new FormData()
     formData.append('smfile', fn.base64UrlToReadStream(photo, fileName))
+    if (process.env.TWIKOO_LSKY_STRATEGY_ID) {
+      formData.append('strategy_id', parseInt(process.env.TWIKOO_LSKY_STRATEGY_ID))
+    }
     const uploadResult = await axios.post('https://sm.ms/api/v2/upload', formData, {
       headers: {
         ...formData.getHeaders(),

@@ -420,11 +420,11 @@ async function commentDeleteForAdmin (event) {
   const isAdminUser = isAdmin(event.accessToken)
   if (isAdminUser) {
     validate(event, ['id'])
-    const data = db
+    db
       .getCollection('comment')
       .findAndRemove({ _id: event.id })
     res.code = RES_CODE.SUCCESS
-    res.deleted = data.deletedCount
+    res.deleted = 1
   } else {
     res.code = RES_CODE.NEED_LOGIN
     res.message = '请先登录'

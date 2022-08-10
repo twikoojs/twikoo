@@ -11,7 +11,6 @@ const { v4: uuidv4 } = require('uuid') // 用户 id 生成
 const {
   $,
   JSDOM,
-  axios,
   createDOMPurify,
   md5,
   xml2js
@@ -98,9 +97,6 @@ module.exports = async (request, response) => {
         break
       case 'COMMENT_SUBMIT':
         res = await commentSubmit(event, request)
-        break
-      case 'POST_SUBMIT':
-        res = await postSubmit(event.comment, request)
         break
       case 'COUNTER_GET':
         res = await counterGet(event)
@@ -396,17 +392,17 @@ async function commentSetForAdmin (event) {
   const isAdminUser = isAdmin(event.accessToken)
   if (isAdminUser) {
     validate(event, ['id', 'set'])
-    const data = db
+    db
       .getCollection('comment')
       .findAndUpdate({ _id: event.id }, (obj) => {
-        return {
-          ...obj,
-          ...event.set,
-          updated: Date.now()
+        for (const key of Object.keys(event.set)) {
+          obj[key] = event.set[key]
         }
+        obj.updated = Date.now()
+        return obj
       })
     res.code = RES_CODE.SUCCESS
-    res.updated = data
+    res.updated = 1
   } else {
     res.code = RES_CODE.NEED_LOGIN
     res.message = '请先登录'
@@ -420,11 +416,11 @@ async function commentDeleteForAdmin (event) {
   const isAdminUser = isAdmin(event.accessToken)
   if (isAdminUser) {
     validate(event, ['id'])
-    const data = db
+    db
       .getCollection('comment')
       .findAndRemove({ _id: event.id })
     res.code = RES_CODE.SUCCESS
-    res.deleted = data.deletedCount
+    res.deleted = 1
   } else {
     res.code = RES_CODE.NEED_LOGIN
     res.message = '请先登录'
@@ -566,21 +562,9 @@ async function commentSubmit (event, request) {
   const comment = await save(data)
   res.id = comment.id
   // 异步垃圾检测、发送评论通知
-  try {
-    console.log('开始异步垃圾检测、发送评论通知')
-    console.time('POST_SUBMIT')
-    await Promise.race([
-      axios.post(`http://${request.headers.host}`, {
-        event: 'POST_SUBMIT',
-        comment
-      }, { headers: { 'x-twikoo-recursion': config.ADMIN_PASS || 'true' } }),
-      // 如果超过 5 秒还没收到异步返回，直接继续，减少用户等待的时间
-      new Promise((resolve) => setTimeout(resolve, 5000))
-    ])
-    console.timeEnd('POST_SUBMIT')
-  } catch (e) {
-    console.log('POST_SUBMIT 失败', e)
-  }
+  console.log('开始异步垃圾检测、发送评论通知')
+  // 私有部署支持直接异步调用
+  postSubmit(comment)
   return res
 }
 
@@ -601,14 +585,17 @@ async function getParentComment (currentComment) {
 }
 
 // 异步垃圾检测、发送评论通知
-async function postSubmit (comment, request) {
-  if (!isRecursion(request)) return { code: RES_CODE.FORBIDDEN }
-  // 垃圾检测
-  const isSpam = await postCheckSpam(comment, config)
-  await saveSpamCheckResult(comment, isSpam)
-  // 发送通知
-  await sendNotice(comment, config, getParentComment)
-  return { code: RES_CODE.SUCCESS }
+async function postSubmit (comment) {
+  try {
+    console.log('POST_SUBMIT')
+    // 垃圾检测
+    const isSpam = await postCheckSpam(comment, config)
+    await saveSpamCheckResult(comment, isSpam)
+    // 发送通知
+    await sendNotice(comment, config, getParentComment)
+  } catch (e) {
+    console.log('POST_SUBMIT 失败', e)
+  }
 }
 
 // 将评论转为数据库存储格式
@@ -883,11 +870,6 @@ async function writeConfig (newConfig) {
 // 判断用户是否管理员
 function isAdmin (accessToken) {
   return config.ADMIN_PASS === md5(accessToken)
-}
-
-// 判断是否为递归调用（即云函数调用自身）
-function isRecursion (request) {
-  return request.headers['x-twikoo-recursion'] === (config.ADMIN_PASS || 'true')
 }
 
 // 建立数据库 collections

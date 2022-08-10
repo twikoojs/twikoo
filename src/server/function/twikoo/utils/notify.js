@@ -153,13 +153,23 @@ const fn = {
   },
   // 回复通知
   async noticeReply (currentComment, config, getParentComment) {
-    if (!currentComment.pid) return
-    if (!transporter) if (!await fn.initMailer({ config })) return
+    if (!currentComment.pid) {
+      console.log('无父级评论，不通知')
+      return
+    }
+    if (!transporter && !await fn.initMailer({ config })) {
+      console.log('未配置邮箱或邮箱配置有误，不通知')
+      return
+    }
     const parentComment = await getParentComment(currentComment)
-    // 回复给博主，因为会发博主通知邮件，所以不再重复通知
-    if (config.BLOGGER_EMAIL === parentComment.mail) return
-    // 回复自己的评论，不邮件通知
-    if (currentComment.mail === parentComment.mail) return
+    if (config.BLOGGER_EMAIL === parentComment.mail) {
+      console.log('回复给博主，因为会发博主通知邮件，所以不再重复通知')
+      return
+    }
+    if (currentComment.mail === parentComment.mail) {
+      console.log('回复自己的评论，不邮件通知')
+      return
+    }
     const PARENT_NICK = parentComment.nick
     const IMG = getAvatar(currentComment, config)
     const PARENT_IMG = getAvatar(parentComment, config)

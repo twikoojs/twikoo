@@ -392,17 +392,17 @@ async function commentSetForAdmin (event) {
   const isAdminUser = isAdmin(event.accessToken)
   if (isAdminUser) {
     validate(event, ['id', 'set'])
-    const data = db
+    db
       .getCollection('comment')
       .findAndUpdate({ _id: event.id }, (obj) => {
-        return {
-          ...obj,
-          ...event.set,
-          updated: Date.now()
+        for (const key of Object.keys(event.set)) {
+          obj[key] = event.set[key]
         }
+        obj.updated = Date.now()
+        return obj
       })
     res.code = RES_CODE.SUCCESS
-    res.updated = data
+    res.updated = 1
   } else {
     res.code = RES_CODE.NEED_LOGIN
     res.message = '请先登录'

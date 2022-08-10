@@ -57,12 +57,20 @@ const fn = {
   },
   // 博主通知
   async noticeMaster (comment, config) {
-    if (!transporter) if (!await fn.initMailer({ config })) return
-    if (config.BLOGGER_EMAIL === comment.mail) return
+    if (!transporter && !await fn.initMailer({ config })) {
+      console.log('未配置邮箱或邮箱配置有误，不通知')
+      return
+    }
+    if (config.BLOGGER_EMAIL && config.BLOGGER_EMAIL === comment.mail) {
+      console.log('博主本人评论，不发送通知给博主')
+      return
+    }
     // 判断是否存在即时消息推送配置
     const hasIMPushConfig = config.PUSHOO_CHANNEL && config.PUSHOO_TOKEN
-    // 存在即时消息推送配置，则默认不发送邮件给博主
-    if (hasIMPushConfig && config.SC_MAIL_NOTIFY !== 'true') return
+    if (hasIMPushConfig && config.SC_MAIL_NOTIFY !== 'true') {
+      console.log('存在即时消息推送配置，默认不发送邮件给博主，您可以在管理面板修改此行为')
+      return
+    }
     const SITE_NAME = config.SITE_NAME
     const NICK = comment.nick
     const IMG = getAvatar(comment, config)
@@ -114,7 +122,10 @@ const fn = {
       console.log('没有配置 pushoo，放弃即时消息通知')
       return
     }
-    if (config.BLOGGER_EMAIL === comment.mail) return
+    if (config.BLOGGER_EMAIL && config.BLOGGER_EMAIL === comment.mail) {
+      console.log('博主本人评论，不发送通知给博主')
+      return
+    }
     const pushContent = fn.getIMPushContent(comment, config)
     const sendResult = await pushoo(config.PUSHOO_CHANNEL, {
       token: config.PUSHOO_TOKEN,

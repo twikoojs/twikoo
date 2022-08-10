@@ -8,7 +8,7 @@
 
 ## 如何修改、重置管理员密码？
 
-请前往[云开发控制台](https://console.cloud.tencent.com/tcb/database/collection/config)编辑配置，删除 config.ADMIN_PASS 配置项，然后前往 Twikoo 管理面板重新设置密码。
+腾讯云请前往[云开发控制台](https://console.cloud.tencent.com/tcb/database/collection/config)，Vercel 请前往 MongoDB，私有部署请直接编辑 `data/db.json.1`，编辑配置，删除 config.ADMIN_PASS 配置项，然后前往 Twikoo 管理面板重新设置密码。
 
 ## 如何获得管理面板的私钥文件？
 
@@ -25,21 +25,6 @@
 ```
 
 来展示访问量。暂不支持全站访问量统计。
-
-## 如何测试 Akismet 反垃圾配置是否生效？
-
-请填写 `viagra-test-123` 作为昵称，或填写 `akismet-guaranteed-spam@example.com` 作为邮箱，发表评论，这条评论将一定会被视为垃圾评论。
-
-需要注意的是，由于 Akismet 服务响应速度较慢（大约 6 秒），影响用户体验，Twikoo 采取 “先放行，后检测” 的策略，垃圾评论会在发表后短暂可见。
-
-## 免费资源如何计算？
-
-您可以在云开发[环境总览](https://console.cloud.tencent.com/tcb/env/overview)看到资源使用情况。Twikoo 会消耗**数据库**和**云函数**两种资源，两种资源的免费用量为——
-
-* 数据库：读 50,000 次/日，写 50,000 次/日
-* 云函数：40,000 GBs/月
-
-Twikoo 云函数的内存消耗恒定为 0.1GB，由此可计算出 Twikoo 云函数每月有长达 400,000 秒的运行时长，而免费资源的瓶颈主要在数据库日读取次数限制。建议站长关注免费资源的使用情况。
 
 ## 如何启用 Katex 支持？
 
@@ -101,6 +86,12 @@ Akismet (Automattic Kismet) 是应用广泛的一个垃圾留言过滤系统，�
 1. 注册 [akismet.com](https://akismet.com)
 2. 选择 Akismet Personal 订阅，复制得到的 Akismet API Key，到 Twikoo 管理面板“反垃圾”模块中配置
 
+### 如何测试 Akismet 反垃圾配置是否生效？
+
+请填写 `viagra-test-123` 作为昵称，或填写 `akismet-guaranteed-spam@example.com` 作为邮箱，发表评论，这条评论将一定会被视为垃圾评论。
+
+需要注意的是，由于 Akismet 服务响应速度较慢（大约 6 秒），影响用户体验，Twikoo 采取 “先放行，后检测” 的策略，垃圾评论会在发表后短暂可见。
+
 ## 登录管理面板遇到错误 AUTH_INVALID_CUSTOM_LOGIN_TICKET
 
 一般是配置好登录私钥之后，又重新下载了登录私钥，导致之前配置的登录私钥失效了。<br>
@@ -112,7 +103,9 @@ Akismet (Automattic Kismet) 是应用广泛的一个垃圾留言过滤系统，�
 
 为了避免频繁检查邮箱带来的性能问题，邮件配置有 10 分钟左右的缓存，如果确定配置没有问题，但测试失败，可以等待 10 分钟后再测试。
 
-## Vercel 无法上传图片？
+由于博主发表评论时，不会通知博主，如果您想实际测试通知功能，请注销管理面板后用非博主邮箱发表或回复评论。
+
+## Vercel、私有部署无法上传图片？
 
 腾讯云环境自带云存储，所以腾讯云环境下可以直接上传图片，图片保存在云存储中。然而 Vercel 环境没有，上传图片功能依赖第三方图床，请在管理面板中配置图床，Twikoo 支持以下图床：
 
@@ -123,8 +116,10 @@ Akismet (Automattic Kismet) 是应用广泛的一个垃圾留言过滤系统，�
 | smms | https://sm.ms | SMMS 图床，有免费套餐，请自行注册账号，`IMAGE_CDN_TOKEN` 可在 [Dashboard](https://sm.ms/home/apitoken) 中获取 |
 | [lsky-pro](https://www.lsky.pro) | 私有部署 | 兰空图床 2.0 版本，`IMAGE_CDN` 请配置图床首页 URL 地址（如 `https://7bu.top`），`IMAGE_CDN_TOKEN` 获取方式请参考教程 [杜老师说图床：新版本去不图床 Token 的获取与清空](https://dusays.com/454/)，获取到的 token 格式应为 `1\|1bJbwlqBfnggmOMEZqXT5XusaIwqiZjCDs7r1Ob5`） |
 
-## 能私有部署吗？
+## 私有部署能连接自己的数据库吗？
 
-不能。如果您确实需要支持私有部署评论系统，请优先考虑其他评论系统。
+不能。私有部署不需要连接外部数据库，数据存储在启动 twikoo 时所在目录下的 data 目录，您可以直接复制该目录以完成数据备份。
 
-您可以在这个项目 [twikoo-docker](https://github.com/twikoojs/twikoo-docker) 中看到私有部署的实现进度。私有部署存在一系列问题，现阶段作者仍没有时间和精力解决。欢迎贡献。
+twikoo 私有部署版使用内置数据库。如果连接外部数据库，会增加部署难度，导致诸如 _连接字符串不会配置、服务器内存不足、数据库版本不兼容、高 ping、连接不稳定_ 等麻烦事。
+
+twikoo 内置的数据库为 LokiJS 数据库，支持的数据库容量大约为 1 GB。

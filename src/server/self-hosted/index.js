@@ -164,6 +164,7 @@ function allowCors (request, response) {
       'Access-Control-Allow-Headers',
       'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
     )
+    response.setHeader('Access-Control-Max-Age', '600')
   }
 }
 

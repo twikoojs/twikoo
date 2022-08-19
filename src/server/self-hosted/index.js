@@ -5,6 +5,8 @@
  */
 
 const { version: VERSION } = require('./package.json')
+const fs = require('fs')
+const path = require('path')
 const Loki = require('lokijs')
 const Lfsa = require('lokijs/src/loki-fs-structured-adapter')
 const { v4: uuidv4 } = require('uuid') // 用户 id 生成
@@ -164,6 +166,7 @@ function allowCors (request, response) {
       'Access-Control-Allow-Headers',
       'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
     )
+    response.setHeader('Access-Control-Max-Age', '600')
   }
 }
 
@@ -191,9 +194,14 @@ function anonymousSignIn (request) {
 
 async function connectToDatabase () {
   if (db) return db
+  const dataDir = path.resolve(process.cwd(), process.env.TWIKOO_DATA || './data')
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir)
+  }
+  console.log(`Twikoo database stored at ${dataDir}`)
   await new Promise((resolve) => {
     console.log('Connecting to database...')
-    db = new Loki('data/db.json', {
+    db = new Loki(path.resolve(dataDir, './db.json'), {
       adapter: new Lfsa(),
       autoload: true,
       autoloadCallback: resolve,
@@ -892,4 +900,4 @@ function clearRequestTimes () {
   requestTimes = {}
 }
 
-setTimeout(clearRequestTimes, TWIKOO_REQ_TIMES_CLEAR_TIME)
+setInterval(clearRequestTimes, TWIKOO_REQ_TIMES_CLEAR_TIME)

@@ -1,4 +1,6 @@
 const fs = require('fs')
+const os = require('os')
+const path = require('path')
 const { isUrl } = require('.')
 const { RES_CODE } = require('./constants')
 const { axios, FormData } = require('./lib')
@@ -69,8 +71,8 @@ const fn = {
   },
   base64UrlToReadStream (base64Url, fileName) {
     const base64 = base64Url.split(';base64,').pop()
-    const path = `/tmp/${fileName}`
-    fs.writeFileSync(path, base64, { encoding: 'base64' })
+    const writePath = path.resolve(os.tmpdir(), fileName)
+    fs.writeFileSync(writePath, base64, { encoding: 'base64' })
     return fs.createReadStream(path)
   }
 }

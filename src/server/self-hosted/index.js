@@ -900,4 +900,4 @@ function clearRequestTimes () {
   requestTimes = {}
 }
 
-setTimeout(clearRequestTimes, TWIKOO_REQ_TIMES_CLEAR_TIME)
+setInterval(clearRequestTimes, TWIKOO_REQ_TIMES_CLEAR_TIME)

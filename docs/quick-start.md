@@ -132,7 +132,7 @@ Vercel 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 ### 私有部署 (Docker)
 
 ```
-docker run -p 8080:8080 -v ${PWD}/data:/app/data -d imaegoo/twikoo
+docker run --name twikoo -e TWIKOO_THROTTLE=1000 -p 8080:8080 -v ${PWD}/data:/app/data -d imaegoo/twikoo
 ```
 
 ## 前端部署
@@ -284,10 +284,16 @@ yarn deploy -e 您的环境id
 
 ### 针对私有部署的更新方式
 
-1. 在服务器上执行 `npm i -g tkserver@latest`
-2. 重新启动 `tkserver`
+1. 停止旧版本 `kill $(ps -ef | grep tkserver | grep -v 'grep' | awk '{print $2}')`
+2. 拉取新版本 `npm i -g tkserver@latest`
+3. 启动新版本 `nohup tkserver >> tkserver.log 2>&1 &`
 
-Docker 版先执行 `docker pull imaegoo/twikoo` 再重启容器
+### 针对私有部署 (Docker) 的更新方式
+
+1. 拉取新版本 `docker pull imaegoo/twikoo`
+2. 停止旧版本容器 `docker stop twikoo`
+3. 删除旧版本容器 `docker rm twikoo`
+4. [启动新版本容器](#私有部署-Docker)
 
 ### 自动更新
 

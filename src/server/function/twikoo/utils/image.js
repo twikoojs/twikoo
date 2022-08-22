@@ -73,7 +73,7 @@ const fn = {
     const base64 = base64Url.split(';base64,').pop()
     const writePath = path.resolve(os.tmpdir(), fileName)
     fs.writeFileSync(writePath, base64, { encoding: 'base64' })
-    return fs.createReadStream(path)
+    return fs.createReadStream(writePath)
   }
 }
 

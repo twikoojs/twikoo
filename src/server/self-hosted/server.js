@@ -30,7 +30,8 @@ server.on('request', async function (request, response) {
 })
 
 const port = parseInt(process.env.TWIKOO_PORT) || 8080
+const host = process.env.TWIKOO_LOCALHOST_ONLY ? '::1/128' : '::'
 
-server.listen(port, function () {
+server.listen(port, host, function () {
   console.log(`Twikoo function started on port ${port}`)
 })

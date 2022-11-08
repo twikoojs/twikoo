@@ -250,5 +250,6 @@ export default {
 .tk-admin-actions {
   display: flex;
   margin-bottom: 1em;
+  border-bottom: 1px solid rgba(255,255,255,0.5);
 }
 </style>

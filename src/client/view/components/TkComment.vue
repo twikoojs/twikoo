@@ -32,7 +32,7 @@
             @reply="onReply" />
       </div>
       <div class="tk-content">
-        <span v-if="comment.pid">{{ t('COMMENT_REPLIED') }} <a :href="`#${comment.pid}`">@{{ comment.ruser }}</a> :</span>
+        <span v-if="comment.pid">{{ t('COMMENT_REPLIED') }} <a class="tk-ruser" :href="`#${comment.pid}`">@{{ comment.ruser }}</a> :</span>
         <span v-html="comment.comment" ref="comment"></span>
       </div>
       <div class="tk-extras" v-if="comment.ipRegion || comment.os || comment.browser">

@@ -6,6 +6,7 @@
 
 const { version: VERSION } = require('../package.json')
 const MongoClient = require('mongodb').MongoClient
+const getUserIP = require('get-user-ip')
 const { URL } = require('url')
 const { v4: uuidv4 } = require('uuid') // 用户 id 生成
 const {
@@ -58,7 +59,7 @@ const requestTimes = {}
 
 module.exports = async (request, response) => {
   const event = request.body || {}
-  console.log('请求 IP：', request.headers['x-real-ip'])
+  console.log('请求 IP：', getIp(request))
   console.log('请求函数：', event.event)
   console.log('请求参数：', event)
   let res = {}
@@ -623,7 +624,7 @@ async function parse (comment, request) {
     mailMd5: comment.mail ? md5(comment.mail) : '',
     link: comment.link ? comment.link : '',
     ua: comment.ua,
-    ip: request.headers['x-real-ip'],
+    ip: getIp(request),
     master: isBloggerMail,
     url: comment.url,
     href: comment.href,
@@ -651,7 +652,7 @@ async function limitFilter (request) {
     const count = await db
       .collection('comment')
       .countDocuments({
-        ip: request.headers['x-real-ip'],
+        ip: getIp(request),
         created: { $gt: Date.now() - 600000 }
       })
     if (count > limitPerMinute) {
@@ -835,7 +836,7 @@ async function setConfig (event) {
 
 function protect (request) {
   // 防御
-  const ip = request.headers['x-real-ip']
+  const ip = getIp(request)
   requestTimes[ip] = (requestTimes[ip] || 0) + 1
   if (requestTimes[ip] > MAX_REQUEST_TIMES) {
     console.log(`${ip} 当前请求次数为 ${requestTimes[ip]}，已超过最大请求次数`)
@@ -914,4 +915,15 @@ async function createCollections () {
     }
   }
   return res
+}
+
+function getIp(request) {
+  try {
+    const { TWIKOO_IP_HEADERS } = process.env
+    const headers = TWIKOO_IP_HEADERS ? JSON.parse(TWIKOO_IP_HEADERS) : []
+    return getUserIP(request, headers)
+  } catch (e) {
+    console.error('获取 IP 错误信息：', e)
+  }
+  return getUserIP(request)
 }

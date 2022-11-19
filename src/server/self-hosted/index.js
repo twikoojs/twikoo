@@ -8,6 +8,7 @@ const { version: VERSION } = require('./package.json')
 const fs = require('fs')
 const path = require('path')
 const Loki = require('lokijs')
+const getUserIP = require('get-user-ip')
 const Lfsa = require('lokijs/src/loki-fs-structured-adapter')
 const { v4: uuidv4 } = require('uuid') // 用户 id 生成
 const {
@@ -892,8 +893,15 @@ async function createCollections () {
   return res
 }
 
-function getIp (request) {
-  return request.headers['x-forwarded-for'] || request.socket.remoteAddress || ''
+function getIp(request) {
+  try {
+    const { TWIKOO_IP_HEADERS } = process.env
+    const headers = TWIKOO_IP_HEADERS ? JSON.parse(TWIKOO_IP_HEADERS) : []
+    return getUserIP(request, headers)
+  } catch (e) {
+    console.error('获取 IP 错误信息：', e)
+  }
+  return getUserIP(request)
 }
 
 function clearRequestTimes () {

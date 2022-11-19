@@ -893,7 +893,7 @@ async function createCollections () {
   return res
 }
 
-function getIp(request) {
+function getIp (request) {
   try {
     const { TWIKOO_IP_HEADERS } = process.env
     const headers = TWIKOO_IP_HEADERS ? JSON.parse(TWIKOO_IP_HEADERS) : []

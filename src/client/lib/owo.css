@@ -65,10 +65,10 @@
   display: inline-block;
   font-size: 12px;
   line-height: 14px;
-  margin: 0 10px 12px 0;
   cursor: pointer;
   -webkit-transition: .3s;
   transition: .3s;
+  text-align: center;
 }
 
 .OwO .OwO-body .OwO-items .OwO-item:hover {
@@ -82,9 +82,34 @@
 }
 
 .OwO .OwO-body .OwO-items-image .OwO-item {
-  max-width: calc(25% - 10px);
+  width: 14%;
   box-sizing: border-box;
 }
+
+@media screen and (max-width: 600px) {
+  #twikoo .OwO-items > .OwO-item {
+    width: 16%;
+  }
+}
+
+@media screen and (max-width: 460px) {
+  #twikoo .OwO-items > .OwO-item {
+    width: 20%;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  #twikoo .OwO-items > .OwO-item {
+    width: 25%;
+  }
+}
+
+@media screen and (max-width: 330px) {
+  #twikoo .OwO-items > .OwO-item {
+    width: 33%;
+  }
+}
+
 
 .OwO .OwO-body .OwO-items-image .OwO-item img {
   max-width: 100%;

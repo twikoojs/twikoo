@@ -55,7 +55,7 @@ const fn = {
       id: comment._id.toString(),
       nick: comment.nick,
       avatar: comment.avatar,
-      mailMd5: comment.mailMd5 || md5(comment.mail),
+      mailMd5: fn.getMailMd5(comment),
       link: comment.link,
       comment: comment.comment,
       os: displayOs,
@@ -116,13 +116,22 @@ const fn = {
     }
     return url.substring(x)
   },
+  getMailMd5 (comment) {
+    if (comment.mailMd5) {
+      return comment.mailMd5
+    }
+    if (comment.mail) {
+      return md5(comment.mail)
+    }
+    return md5(comment.nick)
+  },
   getAvatar (comment, config) {
     if (comment.avatar) {
       return comment.avatar
     } else {
       const gravatarCdn = config.GRAVATAR_CDN || 'cravatar.cn'
       const defaultGravatar = config.DEFAULT_GRAVATAR || 'identicon'
-      const mailMd5 = comment.mailMd5 || md5(comment.mail)
+      const mailMd5 = fn.getMailMd5(comment)
       return `https://${gravatarCdn}/avatar/${mailMd5}?d=${defaultGravatar}`
     }
   },

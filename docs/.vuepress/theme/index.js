@@ -1,5 +1,5 @@
-const { defaultTheme } = require('@vuepress/theme-default')
-const { path } = require('@vuepress/utils')
+import { defaultTheme } from '@vuepress/theme-default'
+import { path } from '@vuepress/utils'
 
 /**
  * 继承 VuePress 默认主题，并在 page-bottom 插槽中显示评论区

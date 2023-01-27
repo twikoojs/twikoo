@@ -816,7 +816,7 @@ export default {
     '审核中',
     '審核中',
     '審核中',
-    'Reviewing'
+    'Pending'
   ],
   COMMENT_TOP_TAG: [
     '置顶',

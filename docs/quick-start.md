@@ -200,6 +200,10 @@ twikoo:
 
 请参考 [maupassant-hexo/_config.yml](https://github.com/tufu9441/maupassant-hexo/blob/master/_config.yml) 进行配置
 
+#### 在 [hexo-theme-redefine](https://github.com/EvanNotFound/hexo-theme-redefine) 主题使用
+
+请参考 [Redefine 官方文档 #comment](https://redefine-docs.ohevan.com/docs/configuration-guide/comment#twikoo) 进行配置
+
 ### 通过 CDN 引入
 
 ::: tip 提示

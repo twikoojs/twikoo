@@ -824,6 +824,12 @@ export default {
     '置頂',
     'Pinned'
   ],
+  COMMENT_FAILED: [
+    '评论失败',
+    '評論失敗',
+    '評論失敗',
+    'Comment failed'
+  ],
   META_INPUT_LINK: [
     '网址',
     '網址',
@@ -901,6 +907,24 @@ export default {
     '發送',
     '傳送',
     'Send'
+  ],
+  IMAGE_UPLOAD_PLACEHOLDER: [
+    '图片上传中',
+    '圖片上傳中',
+    '圖片上傳中',
+    'Uploading image'
+  ],
+  IMAGE_UPLOAD_FAILED: [
+    '图片上传失败',
+    '圖片上傳失敗',
+    '圖片上傳失敗',
+    'IMAGE UPLOAD FAILED'
+  ],
+  IMAGE_UPLOAD_FAILED_NO_CONF: [
+    '博主未配置图床服务',
+    '博主未配置圖床服務',
+    '博主未配置圖床服務',
+    'The blogger didn\'t configured any image bed service'
   ],
   SUBMIT_SENDING: [
     '发送中',

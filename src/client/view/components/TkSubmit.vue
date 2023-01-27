@@ -199,7 +199,7 @@ export default {
         }
       } catch (e) {
         logger.error('评论失败', e)
-        this.errorMessage = `评论失败: ${e && e.message}`
+        this.errorMessage = `${t('COMMENT_FAILED')}: ${e && e.message}`
       } finally {
         this.isSending = false
       }
@@ -258,7 +258,7 @@ export default {
       } else if (imageCdn) {
         this.uploadPhotoToThirdParty(fileIndex, fileName, fileType, photo)
       } else {
-        this.uploadFailed(fileIndex, fileType, '未配置图片上传服务')
+        this.uploadFailed(fileIndex, fileType, t('IMAGE_UPLOAD_FAILED_NO_CONF'))
       }
     },
     getUserId () {
@@ -311,7 +311,7 @@ export default {
       this.$refs.inputFile.value = ''
     },
     uploadFailed (fileIndex, fileType, reason) {
-      this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `_上传失败：${reason}_`)
+      this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `_${t('IMAGE_UPLOAD_FAILED')}: ${reason}_`)
       this.$refs.inputFile.value = ''
     },
     paste (text) {
@@ -328,7 +328,7 @@ export default {
       }
     },
     getImagePlaceholder (fileIndex, fileType) {
-      return `![图片上传中${fileIndex}.${fileType}]()`
+      return `![${t('IMAGE_UPLOAD_PLACEHOLDER')} ${fileIndex}.${fileType}]()`
     }
   },
   mounted () {

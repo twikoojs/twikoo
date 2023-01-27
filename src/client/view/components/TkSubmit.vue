@@ -176,6 +176,9 @@ export default {
     async send () {
       this.isSending = true
       try {
+        if (this.comment.match(new RegExp(`!\\[${t('IMAGE_UPLOAD_PLACEHOLDER')}.+\\]\\(\\)`))) {
+          throw new Error(t('IMAGE_UPLOAD_PLEASE_WAIT'))
+        }
         const url = getUrl(this.$twikoo.path)
         const comment = {
           nick: this.nick,

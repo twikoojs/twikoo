@@ -926,6 +926,12 @@ export default {
     '博主未配置圖床服務',
     'The blogger didn\'t configured any image bed service'
   ],
+  IMAGE_UPLOAD_PLEASE_WAIT: [
+    '图片上传中，请稍候',
+    '圖片上傳中，請稍候',
+    '圖片上傳中，請稍候',
+    'Uploading image, please wait'
+  ],
   SUBMIT_SENDING: [
     '发送中',
     '發送中',

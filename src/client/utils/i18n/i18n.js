@@ -927,10 +927,10 @@ export default {
     'The blogger didn\'t configured any image bed service'
   ],
   IMAGE_UPLOAD_PLEASE_WAIT: [
-    '图片上传中，请稍候',
-    '圖片上傳中，請稍候',
-    '圖片上傳中，請稍候',
-    'Uploading image, please wait'
+    '图片上传中，请稍候再发送',
+    '圖片上傳中，請稍候再發送',
+    '圖片上傳中，請稍候再傳送',
+    'Uploading image, please try again later'
   ],
   SUBMIT_SENDING: [
     '发送中',

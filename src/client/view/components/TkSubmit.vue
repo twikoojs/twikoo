@@ -296,8 +296,8 @@ export default {
         })
         if (uploadResult.data) {
           this.uploadCompleted(fileIndex, fileName, fileType, uploadResult.data.url)
-        } else if (uploadResult.code == 1040 && uploadResult.err
-          && (smmsImageDuplicateCheck = uploadResult.err.match(/this image exists at: (http[^ ]+)/))) {
+        } else if (uploadResult.code === 1040 && uploadResult.err &&
+          (smmsImageDuplicateCheck = uploadResult.err.match(/this image exists at: (http[^ ]+)/))) {
           console.warn(uploadResult)
           this.uploadCompleted(fileIndex, fileName, fileType, smmsImageDuplicateCheck[1])
         } else {

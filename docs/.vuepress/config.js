@@ -1,5 +1,5 @@
-import { docsearchPlugin } from '@vuepress/plugin-docsearch'
-import twikooTheme from './theme'
+const { docsearchPlugin } = require('@vuepress/plugin-docsearch')
+const twikooTheme = require('./theme')
 
 module.exports = {
   locales: {

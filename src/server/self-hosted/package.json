@@ -14,6 +14,10 @@
   "bin": {
     "tkserver": "server.js"
   },
+  "scripts": {
+    "build": "cd .",
+    "start": "node server.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/imaegoo/twikoo.git"
@@ -26,6 +30,7 @@
   "dependencies": {
     "get-user-ip": "^1.0.1",
     "lokijs": "^1.5.12",
+    "mongodb": "^3.6.3",
     "twikoo-func": "1.6.9",
     "uuid": "^8.3.2"
   }

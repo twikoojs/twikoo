@@ -116,7 +116,7 @@ Railway 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 3. 回到 Railway 点击 New - GitHub Repo - Configure GitHub App - 授权 GitHub - 选择刚才 fork 的仓库，等待部署完成
 4. 点开环境卡片 - Variables - New Variable，左边输入 `PORT` 右边输入 `8080` 然后点 Add。
 5. 点开环境卡片 - Settings - Environment - Domains，绑定一个域名（例如 `mytwikoo.up.railway.app`）
-6. 到博客配置文件中配置 envId 为 `https://mytwikoo.up.railway.app`
+6. 到博客配置文件中配置 envId 为 `https://` 加域名（例如 `https://mytwikoo.up.railway.app`）
 
 ### Zeabur 部署
 
@@ -129,7 +129,7 @@ Zeabur 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 3. 回到 Zeabur 点击部署新服务 - 部署你的源代码 - 授权 GitHub - 选择刚才 fork 的仓库，名称随意
   > _无需配置数据库连接字符串！ Zeabur 已自动配置_
 4. 部署好后点开环境卡片 - 设置 - 域名，绑定一个域名（例如 `mytwikoo.zeabur.app`）
-5. 到博客配置文件中配置 envId 为 `https://mytwikoo.zeabur.app`
+5. 到博客配置文件中配置 envId 为 `https://` 加域名（例如 `https://mytwikoo.zeabur.app`）
 
 ### 私有部署
 

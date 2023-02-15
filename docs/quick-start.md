@@ -232,6 +232,10 @@ twikoo:
 
 请参考 [Redefine 官方文档 #comment](https://redefine-docs.ohevan.com/docs/configuration-guide/comment#twikoo) 进行配置
 
+#### 在 [hugo-theme-stack](https://github.com/CaiJimmy/hugo-theme-stack) 主题使用
+
+请参考 [Comments | Stack](https://stack.jimmycai.com/config/comments) 和 [hugo-theme-stack/config.yaml#L83](https://github.com/CaiJimmy/hugo-theme-stack/blob/master/config.yaml#L83) 进行配置
+
 ### 通过 CDN 引入
 
 ::: tip 提示

@@ -14,9 +14,11 @@ Twikoo 分为云函数和前端两部分，部署时请注意保持二者版本�
 | <div style="width: 6em">部署方式</div> | 描述 |
 | ---- | ---- |
 | [一键部署](#一键部署) | [ 不建议 ] 虽然方便，但是仅支持按量计费环境——也就是说，**一键部署的环境，当免费资源用尽后，将会产生费用**。且按量计费环境无法切换为包年包月环境。免费额度数据库读操作数只有 500 次 / 天，**无法支撑 Twikoo 的运行需求**。 |
-| [手动部署](#手动部署) | [ 建议 ] 手动部署到腾讯云云开发环境，在中国大陆访问速度较快。由于基础版 1 已从 0 元涨价至 6.9 元 / 月，需要付费购买环境才能部署。 |
+| [手动部署](#手动部署) | [ 建议 ] 手动部署到腾讯云云开发环境，在中国大陆访问速度较快。需要付费购买环境才能部署。 |
 | [命令行部署](#命令行部署) | [ 不建议 ] 仅针对有 Node.js 经验的开发者。 |
-| [Vercel 部署](#vercel-部署) | [ 建议 ] 适用于想要免费部署的用户，在中国大陆访问速度较慢。 |
+| [Vercel 部署](#vercel-部署) | [ 建议 ] 适用于想要免费部署的用户，在中国大陆访问速度较慢甚至无法访问。 |
+| [Railway 部署](#railway-部署) | [ 建议 ] 有充足的免费额度，部署简单，适合全球访问。 |
+| [Zeabur 部署](#zeabur-部署) | [ 建议 ] 有充足的免费额度，部署简单，适合中国大陆访问。 |
 | [私有部署](#私有部署) | [ 建议 ] 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 
 ### 一键部署
@@ -49,7 +51,7 @@ exports.main = require('twikoo-func').main
 8. 创建完成后，点击“twikoo"进入云函数详情页，进入“函数代码”标签，点击“文件 - 新建文件”，输入 `package.json`，回车
 9. 复制以下代码、粘贴到代码框中，点击“保存并安装依赖”
 ``` json
-{ "dependencies": { "twikoo-func": "1.6.9" } }
+{ "dependencies": { "twikoo-func": "1.6.10" } }
 ```
 
 ### 命令行部署
@@ -107,6 +109,32 @@ Vercel 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 8. 进入 Overview，点击 Domains 下方的链接，如果环境配置正确，可以看到 “Twikoo 云函数运行正常” 的提示
 9. Vercel Domains（包含 `https://` 前缀，例如 `https://xxx.vercel.app`）即为您的环境 id
 
+### Railway 部署
+
+::: warning 注意
+Railway 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
+:::
+
+1. 在 [Railway](https://railway.app/dashboard) 申请并登录账号，点击 New Project - Provision MongoDB，名称随意
+2. 打开 [imaegoo/twikoo-zeabur](https://github.com/imaegoo/twikoo-zeabur) 点击 fork 将仓库 fork 到自己的账号下
+3. 回到 Railway 点击 New - GitHub Repo - Configure GitHub App - 授权 GitHub - 选择刚才 fork 的仓库，等待部署完成
+4. 点开环境卡片 - Variables - New Variable，左边输入 `PORT` 右边输入 `8080` 然后点 Add。
+5. 点开环境卡片 - Settings - Environment - Domains，绑定一个域名（例如 `mytwikoo.up.railway.app`）
+6. 到博客配置文件中配置 envId 为 `https://mytwikoo.up.railway.app`
+
+### Zeabur 部署
+
+::: warning 注意
+Zeabur 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
+:::
+
+1. 在 [Zeabur](https://dash.zeabur.com) 申请并登录账号，点击部署新服务 - 部署其他服务 - 部署 MongoDB，名称随意
+2. 打开 [imaegoo/twikoo-zeabur](https://github.com/imaegoo/twikoo-zeabur) 点击 fork 将仓库 fork 到自己的账号下
+3. 回到 Zeabur 点击部署新服务 - 部署你的源代码 - 授权 GitHub - 选择刚才 fork 的仓库，名称随意
+  > _无需配置数据库连接字符串！ Zeabur 已自动配置_
+4. 部署好后点开环境卡片 - 设置 - 域名，绑定一个域名（例如 `mytwikoo.zeabur.app`）
+5. 到博客配置文件中配置 envId 为 `https://mytwikoo.zeabur.app`
+
 ### 私有部署
 
 ::: warning 注意
@@ -132,6 +160,12 @@ Vercel 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 2. 强烈建议配置前置 nginx 服务器并配置 https 证书
 3. 数据在服务器上，请注意定期备份数据
 :::
+
+### 私有部署 (Docker)
+
+```
+docker run --name twikoo -e TWIKOO_THROTTLE=1000 -p 8080:8080 -v ${PWD}/data:/app/data -d imaegoo/twikoo
+```
 
 ## 前端部署
 
@@ -198,6 +232,10 @@ twikoo:
 
 请参考 [maupassant-hexo/_config.yml](https://github.com/tufu9441/maupassant-hexo/blob/master/_config.yml) 进行配置
 
+#### 在 [hexo-theme-redefine](https://github.com/EvanNotFound/hexo-theme-redefine) 主题使用
+
+请参考 [Redefine 官方文档 #comment](https://redefine-docs.ohevan.com/docs/configuration-guide/comment#twikoo) 进行配置
+
 ### 通过 CDN 引入
 
 ::: tip 提示
@@ -206,7 +244,7 @@ twikoo:
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.9/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.staticfile.org/twikoo/1.6.10/twikoo.all.min.js"></script>
 <script>
 twikoo.init({
   envId: '您的环境id', // 腾讯云环境填 envId；Vercel 环境填地址（https://xxx.vercel.app）
@@ -224,10 +262,10 @@ twikoo.init({
 
 如果遇到默认 CDN 加载速度缓慢，可更换其他 CDN 镜像。以下为可供选择的公共 CDN，其中一些 CDN 可能需要数天时间同步最新版本：
 
-* `https://cdn.staticfile.org/twikoo/1.6.9/twikoo.all.min.js`
-* `https://lib.baomitu.com/twikoo/1.6.9/twikoo.all.min.js`
-* `https://cdn.bootcdn.net/ajax/libs/twikoo/1.6.9/twikoo.all.min.js`
-* `https://cdn.jsdelivr.net/npm/twikoo@1.6.9/dist/twikoo.all.min.js`
+* `https://cdn.staticfile.org/twikoo/1.6.10/twikoo.all.min.js`
+* `https://lib.baomitu.com/twikoo/1.6.10/twikoo.all.min.js`
+* `https://cdn.bootcdn.net/ajax/libs/twikoo/1.6.10/twikoo.all.min.js`
+* `https://cdn.jsdelivr.net/npm/twikoo@1.6.10/dist/twikoo.all.min.js`
 
 ## 开启管理面板（腾讯云环境）
 
@@ -282,10 +320,16 @@ yarn deploy -e 您的环境id
 
 ### 针对私有部署的更新方式
 
-1. 在服务器上执行 `npm i -g tkserver@latest`
-2. 重新启动 `tkserver`
+1. 停止旧版本 `kill $(ps -ef | grep tkserver | grep -v 'grep' | awk '{print $2}')`
+2. 拉取新版本 `npm i -g tkserver@latest`
+3. 启动新版本 `nohup tkserver >> tkserver.log 2>&1 &`
 
-Docker 版先执行 `docker pull imaegoo/twikoo` 再重启容器
+### 针对私有部署 (Docker) 的更新方式
+
+1. 拉取新版本 `docker pull imaegoo/twikoo`
+2. 停止旧版本容器 `docker stop twikoo`
+3. 删除旧版本容器 `docker rm twikoo`
+4. [启动新版本容器](#私有部署-Docker)
 
 ### 自动更新
 

@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 const http = require('http')
-const twikoo = process.env.MONGODB_URI ? require('./mongo') : require('./index')
+const dbUrl = process.env.MONGODB_URI || process.env.MONGO_URL || null
+const twikoo = dbUrl ? require('./mongo') : require('./index')
 const server = http.createServer()
 
 server.on('request', async function (request, response) {
@@ -33,6 +34,6 @@ const port = parseInt(process.env.TWIKOO_PORT) || 8080
 const host = process.env.TWIKOO_LOCALHOST_ONLY === 'true' ? 'localhost' : '::'
 
 server.listen(port, host, function () {
-  console.log(`Twikoo is using ${process.env.MONGODB_URI ? 'mongo' : 'loki'} database`)
+  console.log(`Twikoo is using ${dbUrl ? 'mongo' : 'loki'} database`)
   console.log(`Twikoo function started on host ${host} port ${port}`)
 })

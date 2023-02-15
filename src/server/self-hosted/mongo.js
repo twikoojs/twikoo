@@ -67,7 +67,7 @@ module.exports = async (request, response) => {
   try {
     protect(request)
     accessToken = anonymousSignIn(request)
-    await connectToDatabase(process.env.MONGODB_URI)
+    await connectToDatabase(process.env.MONGODB_URI || process.env.MONGO_URL)
     await readConfig()
     allowCors(request, response)
     if (request.method === 'OPTIONS') {
@@ -197,7 +197,7 @@ async function connectToDatabase (uri) {
   // If the database connection is cached,
   // use it instead of creating a new connection
   if (db) return db
-  if (!uri) throw new Error('未设置环境变量 MONGODB_URI')
+  if (!uri) throw new Error('未设置环境变量 MONGODB_URI | MONGO_URL')
   // If no connection is cached, create a new one
   console.log('Connecting to database...')
   const client = await MongoClient.connect(uri, {

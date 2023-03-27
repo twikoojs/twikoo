@@ -174,13 +174,22 @@ function allowCors (request, response) {
 
 function getAllowedOrigin (request) {
   const localhostRegex = /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d{1,5})?$/
-  if (localhostRegex.test(request.headers.origin)) {
-    return request.headers.origin
-  } else if (config.CORS_ALLOW_ORIGIN) {
-    // 许多用户设置安全域名时，喜欢带结尾的 "/"，必须处理掉
-    return config.CORS_ALLOW_ORIGIN.replace(/\/$/, '')
+  if (localhostRegex.test(request.headers.origin)) { // 判断是否为本地主机，如是则允许跨域
+    return request.headers.origin // Allow
+  } else if (config.CORS_ALLOW_ORIGIN) { // 如设置了安全域名则检查
+    // 适配多条 CORS 规则
+    // 以逗号分隔 CORS
+    const corsList = config.CORS_ALLOW_ORIGIN.split(',')
+    // 遍历 CORS 列表
+    for (let i = 0; i < corsList.length; i++) {
+      const cors = corsList[i].replace(/\/$/, '') // 获取当前 CORS 并去除末尾的斜杠
+      if (cors === request.headers.origin) {
+        return request.headers.origin // Allow
+      }
+    }
+    return '' // 不在安全域名列表中则禁止跨域
   } else {
-    return request.headers.origin
+    return request.headers.origin // 未设置安全域名直接 Allow
   }
 }
 

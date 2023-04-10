@@ -26,14 +26,14 @@ export default {
           collection
         })
         if (result.result.data) {
-          this.downloadJson(`${collection}.json`, result.result.data)
+          this.downloadJson(`twikoo-${collection}.json`, result.result.data)
         }
       } finally {
         this.loading = false
       }
     },
     downloadJson (fileName, json) {
-      const jsonStr = (json instanceof Object) ? JSON.stringify(json) : json
+      const jsonStr = (json instanceof Object) ? JSON.stringify(json, null, 2) : json
       const url = window.URL || window.webkitURL || window
       const blob = new Blob([jsonStr])
       const saveLink = document.createElementNS('http://www.w3.org/1999/xhtml', 'a')

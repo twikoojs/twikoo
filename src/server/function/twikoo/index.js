@@ -8,8 +8,7 @@ const { version: VERSION } = require('./package.json')
 const tcb = require('@cloudbase/node-sdk') // 云开发 SDK
 const {
   $,
-  JSDOM,
-  createDOMPurify,
+  getDomPurify,
   md5,
   xml2js
 } = require('./utils/lib')
@@ -35,6 +34,7 @@ const {
   commentImportValine,
   commentImportDisqus,
   commentImportArtalk,
+  commentImportArtalk2,
   commentImportTwikoo
 } = require('./utils/import')
 const { postCheckSpam } = require('./utils/spam')
@@ -46,10 +46,7 @@ const app = tcb.init({ env: tcb.SYMBOL_CURRENT_ENV })
 const auth = app.auth()
 const db = app.database()
 const _ = db.command
-
-// 初始化反 XSS
-const window = new JSDOM('').window
-const DOMPurify = createDOMPurify(window)
+const DOMPurify = getDomPurify()
 
 // 常量 / constants
 const { RES_CODE, MAX_REQUEST_TIMES } = require('./utils/constants')
@@ -130,6 +127,9 @@ exports.main = async (event, context) => {
         break
       case 'UPLOAD_IMAGE': // >= 1.5.0
         res = await uploadImage(event, config)
+        break
+      case 'COMMENT_EXPORT_FOR_ADMIN': // >= 1.6.13
+        res = await commentExportForAdmin(event)
         break
       default:
         if (event.event) {
@@ -430,6 +430,11 @@ async function commentImportForAdmin (event) {
           comments = await commentImportArtalk(artalkDb, log)
           break
         }
+        case 'artalk2': {
+          const artalkDb = await readFile(event.fileId, 'json', log)
+          comments = await commentImportArtalk2(artalkDb, log)
+          break
+        }
         case 'twikoo': {
           const twikooDb = await readFile(event.fileId, 'json', log)
           comments = await commentImportTwikoo(twikooDb, log)
@@ -448,6 +453,23 @@ async function commentImportForAdmin (event) {
     res.code = RES_CODE.SUCCESS
     res.log = logText
     console.log(logText)
+  } else {
+    res.code = RES_CODE.NEED_LOGIN
+    res.message = '请先登录'
+  }
+  return res
+}
+
+async function commentExportForAdmin (event) {
+  const res = {}
+  const isAdminUser = await isAdmin()
+  if (isAdminUser) {
+    const collection = event.collection || 'comment'
+    const data = await db
+      .collection(collection)
+      .get()
+    res.code = RES_CODE.SUCCESS
+    res.data = data.data
   } else {
     res.code = RES_CODE.NEED_LOGIN
     res.message = '请先登录'

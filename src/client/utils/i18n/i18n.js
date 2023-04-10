@@ -584,6 +584,30 @@ export default {
     '忘記密碼',
     'Forget your password'
   ],
+  ADMIN_EXPORT: [
+    '导出',
+    '匯出',
+    '匯出',
+    'Export'
+  ],
+  ADMIN_EXPORT_WARN: [
+    '将全部数据导出为 JSON 文件。如果遇到评论较多、导出失败或缺失数据，请连接数据库手动导出',
+    '將全部數據匯出為 JSON 檔。如果遇到評論較多、匯出失敗或缺失數據，請連接資料庫手動匯出',
+    '將全部數據匯出為 JSON 檔。如果遇到評論較多、匯出失敗或缺失數據，請連接資料庫手動匯出',
+    'Export all data as a JSON file. If you encounter export failures or missing data, connect to the database to export manually'
+  ],
+  ADMIN_EXPORT_COMMENT: [
+    '导出评论',
+    '匯出評論',
+    '匯出評論',
+    'Export comment'
+  ],
+  ADMIN_EXPORT_COUNTER: [
+    '导出访问量',
+    '匯出訪問量',
+    '匯出訪問量',
+    'Export counter'
+  ],
   [S.AI]: [
     '导入',
     '匯入',

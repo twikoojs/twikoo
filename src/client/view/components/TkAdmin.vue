@@ -45,10 +45,12 @@
             <div class="tk-tab" :class="{ __active: activeTabName === 'comment' }" @click="activeTabName = 'comment'">{{ t('ADMIN_COMMENT') }}</div>
             <div class="tk-tab" :class="{ __active: activeTabName === 'config' }" @click="activeTabName = 'config'">{{ t('ADMIN_CONFIG') }}</div>
             <div class="tk-tab" :class="{ __active: activeTabName === 'import' }" @click="activeTabName = 'import'">{{ t('ADMIN_IMPORT') }}</div>
+            <div class="tk-tab" :class="{ __active: activeTabName === 'export' }" @click="activeTabName = 'export'">{{ t('ADMIN_EXPORT') }}</div>
           </div>
           <tk-admin-comment v-show="activeTabName === 'comment'" />
           <tk-admin-config v-show="activeTabName === 'config'" />
           <tk-admin-import v-show="activeTabName === 'import'" />
+          <tk-admin-export v-show="activeTabName === 'export'" />
         </div>
       </div>
     </div>
@@ -60,6 +62,7 @@ import md5 from 'blueimp-md5'
 import TkAdminComment from './TkAdminComment.vue'
 import TkAdminConfig from './TkAdminConfig.vue'
 import TkAdminImport from './TkAdminImport.vue'
+import TkAdminExport from './TkAdminExport.vue'
 import { logger, call, t } from '../../utils'
 import iconClose from '@fortawesome/fontawesome-free/svgs/solid/times.svg'
 
@@ -67,7 +70,8 @@ export default {
   components: {
     TkAdminComment,
     TkAdminConfig,
-    TkAdminImport
+    TkAdminImport,
+    TkAdminExport
   },
   props: {
     show: Boolean

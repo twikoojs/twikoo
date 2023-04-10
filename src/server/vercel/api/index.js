@@ -11,9 +11,8 @@ const { URL } = require('url')
 const { v4: uuidv4 } = require('uuid') // 用户 id 生成
 const {
   $,
-  JSDOM,
   axios,
-  createDOMPurify,
+  getDomPurify,
   md5,
   xml2js
 } = require('twikoo-func/utils/lib')
@@ -39,15 +38,14 @@ const {
   commentImportValine,
   commentImportDisqus,
   commentImportArtalk,
+  commentImportArtalk2,
   commentImportTwikoo
 } = require('twikoo-func/utils/import')
 const { postCheckSpam } = require('twikoo-func/utils/spam')
 const { sendNotice, emailTest } = require('twikoo-func/utils/notify')
 const { uploadImage } = require('twikoo-func/utils/image')
 
-// 初始化反 XSS
-const window = new JSDOM('').window
-const DOMPurify = createDOMPurify(window)
+const DOMPurify = getDomPurify()
 
 // 常量 / constants
 const { RES_CODE, MAX_REQUEST_TIMES } = require('twikoo-func/utils/constants')
@@ -134,6 +132,9 @@ module.exports = async (request, response) => {
         break
       case 'UPLOAD_IMAGE': // >= 1.5.0
         res = await uploadImage(event, config)
+        break
+      case 'COMMENT_EXPORT_FOR_ADMIN': // >= 1.6.13
+        res = await commentExportForAdmin(event)
         break
       default:
         if (event.event) {
@@ -470,6 +471,11 @@ async function commentImportForAdmin (event) {
           comments = await commentImportArtalk(artalkDb, log)
           break
         }
+        case 'artalk2': {
+          const artalkDb = await readFile(event.file, 'json', log)
+          comments = await commentImportArtalk2(artalkDb, log)
+          break
+        }
         case 'twikoo': {
           const twikooDb = await readFile(event.file, 'json', log)
           comments = await commentImportTwikoo(twikooDb, log)
@@ -486,6 +492,24 @@ async function commentImportForAdmin (event) {
     res.code = RES_CODE.SUCCESS
     res.log = logText
     console.log(logText)
+  } else {
+    res.code = RES_CODE.NEED_LOGIN
+    res.message = '请先登录'
+  }
+  return res
+}
+
+async function commentExportForAdmin (event) {
+  const res = {}
+  const isAdminUser = isAdmin()
+  if (isAdminUser) {
+    const collection = event.collection || 'comment'
+    const data = await db
+      .collection(collection)
+      .find({})
+      .toArray()
+    res.code = RES_CODE.SUCCESS
+    res.data = data
   } else {
     res.code = RES_CODE.NEED_LOGIN
     res.message = '请先登录'

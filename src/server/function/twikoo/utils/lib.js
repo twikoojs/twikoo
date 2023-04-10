@@ -14,15 +14,21 @@ const pushoo = require('pushoo').default // 即时消息通知
 const tencentcloud = require('tencentcloud-sdk-nodejs') // 腾讯云 API NODEJS SDK
 const xml2js = require('xml2js') // XML 解析
 
+function getDomPurify () {
+  // 初始化反 XSS
+  const window = new JSDOM('').window
+  const DOMPurify = createDOMPurify(window)
+  return DOMPurify
+}
+
 module.exports = {
   $,
   AkismetClient,
   CryptoJS,
   FormData,
-  JSDOM,
   axios,
   bowser,
-  createDOMPurify,
+  getDomPurify,
   ipToRegion,
   marked,
   md5,

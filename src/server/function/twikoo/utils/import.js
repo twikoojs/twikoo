@@ -1,5 +1,5 @@
 const { getRelativeUrl } = require('.')
-const { marked, DOMPurify, md5 } = require('./lib')
+const { marked, getDomPurify, md5 } = require('./lib')
 
 const fn = {
   // 兼容 Leancloud 两种 JSON 导出格式
@@ -135,13 +135,13 @@ const fn = {
       log('Artalk 评论文件格式有误')
       return
     }
+    const DOMPurify = getDomPurify()
     marked.setOptions({
       renderer: new marked.Renderer(),
       gfm: true,
       tables: true,
       breaks: true,
       pedantic: false,
-      sanitize: true,
       smartLists: true,
       smartypants: true
     })
@@ -160,10 +160,57 @@ const fn = {
           pid: comment.rid ? `artalk${comment.rid}` : '',
           rid: comment.rid ? `artalk${comment.rid}` : '',
           master: false,
-          comment: DOMPurify.sanitize(marked(comment.content)),
+          comment: DOMPurify.sanitize(marked.marked(comment.content)),
           url: getRelativeUrl(comment.page_key),
           href: comment.page_key,
           created: new Date(comment.date).getTime(),
+          updated: Date.now()
+        }
+        comments.push(parsed)
+        log(`${comment.id} 解析成功`)
+      } catch (e) {
+        log(`${comment.id} 解析失败：${e.message}`)
+      }
+    }
+    log(`解析成功 ${comments.length} 条评论`)
+    return comments
+  },
+  // Artalk v2 导入
+  async commentImportArtalk2 (artalkDb, log) {
+    const comments = []
+    if (!artalkDb || !artalkDb.length) {
+      log('Artalk v2 评论文件格式有误')
+      return
+    }
+    const DOMPurify = getDomPurify()
+    marked.setOptions({
+      renderer: new marked.Renderer(),
+      gfm: true,
+      tables: true,
+      breaks: true,
+      pedantic: false,
+      smartLists: true,
+      smartypants: true
+    })
+    log(`共 ${artalkDb.length} 条评论`)
+    for (const comment of artalkDb) {
+      try {
+        const parsed = {
+          _id: `artalk${comment.id}`,
+          nick: comment.nick,
+          ip: comment.ip,
+          mail: comment.email,
+          mailMd5: md5(comment.email),
+          isSpam: comment.is_pending,
+          ua: comment.ua || '',
+          link: comment.link,
+          pid: comment.rid ? `artalk${comment.rid}` : '',
+          rid: comment.rid ? `artalk${comment.rid}` : '',
+          master: false,
+          comment: DOMPurify.sanitize(marked.marked(comment.content)),
+          url: getRelativeUrl(comment.page_key),
+          href: comment.page_key,
+          created: new Date(comment.created_at).getTime(),
           updated: Date.now()
         }
         comments.push(parsed)

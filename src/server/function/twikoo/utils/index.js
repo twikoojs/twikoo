@@ -1,3 +1,4 @@
+const { URL } = require('url')
 const { axios, bowser, ipToRegion, md5 } = require('./lib')
 const { RES_CODE } = require('./constants')
 const ipRegionSearcher = ipToRegion.create() // 初始化 IP 属地
@@ -110,11 +111,12 @@ const fn = {
     return comments
   },
   getRelativeUrl (url) {
-    let x = url.indexOf('/')
-    for (let i = 0; i < 2; i++) {
-      x = url.indexOf('/', x + 1)
+    try {
+      return (new URL(url)).pathname
+    } catch (e) {
+      // 如果 url 已经是一个相对地址了，会报 ERR_INVALID_URL，返回原始 url 就行
+      return url
     }
-    return url.substring(x)
   },
   getMailMd5 (comment) {
     if (comment.mailMd5) {

@@ -14,7 +14,9 @@ const langs = {
   'en-US': 3,
   'en-gb': 3,
   'en-GB': 3,
-  en: 3
+  en: 3,
+  uz: 4,
+  'uz-UZ': 4
 }
 
 let userLanguage = ''

@@ -27,6 +27,6 @@
     "nodemailer": "^6.4.17",
     "pushoo": "latest",
     "tencentcloud-sdk-nodejs": "^4.0.65",
-    "xml2js": "^0.4.23"
+    "xml2js": "^0.6.0"
   }
 }

@@ -157,7 +157,11 @@ module.exports = async (request, response) => {
     res.accessToken = accessToken
   }
   console.log('请求返回：', res)
-  response.status(200).json(res)
+  if (res.code != RES_CODE.NO_PARAM) {
+    response.status(200).json(res)
+  } else {
+    response.status(404).json(res)
+  }
 }
 
 function allowCors (request, response) {

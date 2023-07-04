@@ -148,7 +148,11 @@ exports.main = async (event, context) => {
     res.message = e.message
   }
   console.log('请求返回：', res)
-  return res
+  if (res.code != RES_CODE.NO_PARAM) {
+    response.status(200).json(res)
+  } else {
+    response.status(404).json(res)
+  }
 }
 
 // 写入管理密码

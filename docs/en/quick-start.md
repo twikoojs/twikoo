@@ -13,23 +13,23 @@ Twikoo 分为云函数和前端两部分，部署时请注意保持二者版本�
 
 | <div style="width: 6em">部署方式</div> | 推荐度 | 描述 |
 | ---- | ---- | ---- |
-| [一键部署](#一键部署) | ★☆☆☆☆ | 虽然方便，但是仅支持按量计费环境——也就是说，**一键部署的环境，当免费资源用尽后，将会产生费用**。且按量计费环境无法切换为包年包月环境。免费额度数据库读操作数只有 500 次 / 天，**无法支撑 Twikoo 的运行需求**。 |
-| [手动部署](#手动部署) | ★★☆☆☆ | 手动部署到腾讯云云开发环境，在中国大陆访问速度较快。需要付费购买环境才能部署。 |
-| [命令行部署](#命令行部署) | ★☆☆☆☆ | 仅针对有 Node.js 经验的开发者。 |
+| [腾讯云一键部署](#腾讯云一键部署) | ★☆☆☆☆ | 虽然方便，但是仅支持按量计费环境——也就是说，**一键部署的环境，当免费资源用尽后，将会产生费用**。且按量计费环境无法切换为包年包月环境。免费额度数据库读操作数只有 500 次 / 天，**无法支撑 Twikoo 的运行需求**。 |
+| [腾讯云手动部署](#腾讯云手动部署) | ★★☆☆☆ | 手动部署到腾讯云云开发环境，在中国大陆访问速度较快。需要付费购买环境才能部署。 |
+| [腾讯云命令行部署](#腾讯云命令行部署) | ★☆☆☆☆ | 仅针对有 Node.js 经验的开发者。 |
 | [Vercel 部署](#vercel-部署) | ★★★☆☆ | 适用于想要免费部署的用户，在中国大陆访问速度较慢甚至无法访问，绑定自己的域名可以提高访问速度。 |
 | [Railway 部署](#railway-部署) | ★★☆☆☆ | 有免费额度但不足以支持一个月连续运行，部署简单，适合全球访问。 |
 | [Zeabur 部署](#zeabur-部署) | ★★★★☆ | 有充足的免费额度，但需要绑定支付宝或信用卡，部署简单，适合中国大陆访问。 |
 | [私有部署](#私有部署) | ★★☆☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 | [私有部署 (Docker)](#私有部署-docker) | ★★★☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 
-### 一键部署
+### 腾讯云一键部署
 
 1. 点击以下按钮将 Twikoo 一键部署到云开发<br>
 [![部署到云开发](https://main.qcloudimg.com/raw/67f5a389f1ac6f3b4d04c7256438e44f.svg)](https://console.cloud.tencent.com/tcb/env/index?action=CreateAndDeployCloudBaseProject&appUrl=https%3A%2F%2Fgithub.com%2Fimaegoo%2Ftwikoo&branch=main)
 2. 进入[环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)，启用“匿名登录”
 3. 进入[环境-安全配置](https://console.cloud.tencent.com/tcb/env/safety)，将网站域名添加到“WEB安全域名”
 
-### 手动部署
+### 腾讯云手动部署
 
 如果您打算部署到一个现有的云开发环境，请直接从第 3 步开始。
 
@@ -55,7 +55,7 @@ exports.main = require('twikoo-func').main
 { "dependencies": { "twikoo-func": "1.6.16" } }
 ```
 
-### 命令行部署
+### 腾讯云命令行部署
 
 ::: warning 注意
 * 请确保您已经安装了 [Node.js](https://nodejs.org/en/download/)
@@ -328,7 +328,7 @@ twikoo.init({
 
 不同部署方式的更新方式也不同，请对号入座。更新部署成功后，请不要忘记同时更新前端的 Twikoo CDN 地址中的 `x.x.x` 数字版本号，使之与云函数版本号相同，然后部署网站。
 
-### 针对一键部署的更新方式
+### 针对腾讯云一键部署的更新方式
 
 登录[环境-我的应用](https://console.cloud.tencent.com/tcb/apps/index)，输入
 
@@ -337,7 +337,7 @@ twikoo.init({
 
 应用目录无需填写，点击“确定”，部署完成。
 
-### 针对手动部署的更新方式
+### 针对腾讯云手动部署的更新方式
 
 登录[环境-云函数](https://console.cloud.tencent.com/tcb/scf/index)，点击 twikoo，点击函数代码，打开 `package.json` 文件，将 `"twikoo-func": "x.x.x"` 其中的版本号修改为最新版本号，点击“保存并安装依赖”即可。
 
@@ -347,7 +347,7 @@ twikoo.init({
 如果升级后出现无法读取评论列表，云函数报错，请在函数编辑页面，删除 `node_modules` 目录（删除需要半分钟左右，请耐心等待删除完成），再点击保存并安装依赖。如果仍然不能解决，请删除并重新创建 Twikoo 云函数。
 :::
 
-### 针对命令行部署的更新方式
+### 针对腾讯云命令行部署的更新方式
 
 进入 Twikoo 源码目录，执行以下命令更新现有的云函数
 
@@ -362,6 +362,12 @@ yarn deploy -e 您的环境id
 3. 打开 package.json，点击编辑
 4. 将 `"twikoo-vercel": "x.x.x"` 其中的版本号修改为最新版本号。点击 Commit changes
 5. 部署会自动触发，可以回到 [Vercel 仪表板](https://vercel.com/dashboard)，查看部署状态
+
+### 针对 Railway 和 Zeabur 部署的更新方式
+
+1. 登录 Github，找到部署时 fork 到自己账号下的名为 twikoo-zeabur 的仓库
+2. 打开 package.json，点击编辑
+3. 将 `"tkserver": "^x.x.x"` 其中的版本号修改为最新版本号。点击 Commit changes
 
 ### 针对私有部署的更新方式
 

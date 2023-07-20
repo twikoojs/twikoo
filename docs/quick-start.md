@@ -2,20 +2,21 @@
 
 Twikoo 分为云函数和前端两部分，部署时请注意保持二者版本一致。
 
-* [云函数部署](#云函数部署)有 5 种方式，[一键部署](#一键部署)、[手动部署](#手动部署)、[命令行部署](#命令行部署)、[Vercel 部署](#vercel-部署)和[私有部署](#私有部署)。
+* [云函数部署](#云函数部署)有数种方式，请根据下表选择适合自己的部署平台。
 * [前端部署](#前端部署)有 2 种方式，如果您的网站主题支持 Twikoo，您只需在配置文件中指定 Twikoo 即可；如果您的网站主题不支持 Twikoo，您需要修改源码手动引入 Twikoo 的 js 文件并初始化。
 
 ## 云函数部署
 
-| <div style="width: 6em">部署方式</div> | 描述 |
+| <div style="width: 6em">部署方式</div> | 推荐度 | 描述 |
 | ---- | ---- |
-| [一键部署](#一键部署) | [ 不建议 ] 虽然方便，但是仅支持按量计费环境——也就是说，**一键部署的环境，当免费资源用尽后，将会产生费用**。且按量计费环境无法切换为包年包月环境。免费额度数据库读操作数只有 500 次 / 天，**无法支撑 Twikoo 的运行需求**。 |
-| [手动部署](#手动部署) | [ 建议 ] 手动部署到腾讯云云开发环境，在中国大陆访问速度较快。需要付费购买环境才能部署。 |
-| [命令行部署](#命令行部署) | [ 不建议 ] 仅针对有 Node.js 经验的开发者。 |
-| [Vercel 部署](#vercel-部署) | [ 建议 ] 适用于想要免费部署的用户，在中国大陆访问速度较慢甚至无法访问。 |
-| [Railway 部署](#railway-部署) | [ 建议 ] 有充足的免费额度，部署简单，适合全球访问。 |
-| [Zeabur 部署](#zeabur-部署) | [ 建议 ] 有充足的免费额度，部署简单，适合中国大陆访问。 |
-| [私有部署](#私有部署) | [ 建议 ] 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
+| [一键部署](#一键部署) | ★☆☆☆☆ | 虽然方便，但是仅支持按量计费环境——也就是说，**一键部署的环境，当免费资源用尽后，将会产生费用**。且按量计费环境无法切换为包年包月环境。免费额度数据库读操作数只有 500 次 / 天，**无法支撑 Twikoo 的运行需求**。 |
+| [手动部署](#手动部署) | ★★☆☆☆ | 手动部署到腾讯云云开发环境，在中国大陆访问速度较快。需要付费购买环境才能部署。 |
+| [命令行部署](#命令行部署) | ★☆☆☆☆ | 仅针对有 Node.js 经验的开发者。 |
+| [Vercel 部署](#vercel-部署) | ★★★☆☆ | 适用于想要免费部署的用户，在中国大陆访问速度较慢甚至无法访问，绑定自己的域名可以提高访问速度。 |
+| [Railway 部署](#railway-部署) | ★★☆☆☆ | 有免费额度但不足以支持一个月连续运行，部署简单，适合全球访问。 |
+| [Zeabur 部署](#zeabur-部署) | ★★★★☆ | 有充足的免费额度，但需要绑定支付宝或信用卡，部署简单，适合中国大陆访问。 |
+| [私有部署](#私有部署) | ★★☆☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
+| [私有部署 (Docker)](#私有部署-docker) | ★★★☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 
 ### 一键部署
 
@@ -90,6 +91,8 @@ yarn deploy -e 您的环境id
 
 ::: warning 注意
 Vercel 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
+
+默认域名 `*.vercel.app` 在中国大陆访问速度较慢甚至无法访问，绑定自己的域名可以提高访问速度
 :::
 
 [查看视频教程](https://www.bilibili.com/video/BV1Fh411e7ZH)
@@ -109,6 +112,8 @@ Vercel 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 
 ::: warning 注意
 Railway 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
+
+请一定要创建 MongoDB，不创建 MongoDB 也能正常使用，但重新部署后数据会丢失！
 :::
 
 1. 在 [Railway](https://railway.app/dashboard) 申请并登录账号，点击 New Project - Provision MongoDB，名称随意
@@ -123,6 +128,8 @@ Railway 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 
 ::: warning 注意
 Zeabur 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
+
+请一定要创建 MongoDB，不创建 MongoDB 也能正常使用，但重新部署后数据会丢失！
 :::
 
 1. 在 [Zeabur](https://dash.zeabur.com) 申请并登录账号，点击部署新服务 - 部署其他服务 - 部署 MongoDB，名称随意
@@ -136,6 +143,10 @@ Zeabur 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 
 ::: warning 注意
 私有部署的环境需配合 1.6.0 或以上版本的 twikoo.js 使用
+
+私有部署对服务器系统没有要求，Windows、Ubuntu、CentOS、macOS 等常用系统均支持。
+
+私有部署涉及终端操作、申请证书、配置反向代理或负载均衡等高级操作，如果对这些不太了解，建议优先选择其他方式部署。
 :::
 
 1. 服务端下载安装 [Node.js](https://nodejs.org/zh-cn/)
@@ -144,9 +155,13 @@ Zeabur 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 
 | 名称 | 描述 | 默认值 |
 | ---- | ---- | ---- |
-| `TWIKOO_DATA` | 数据库存储路径 | `./data` |
+| `MONGODB_URI` | MongoDB 数据库连接字符串，不传则使用 lokijs | `null` |
+| `MONGO_URL` | MongoDB 数据库连接字符串，不传则使用 lokijs | `null` |
+| `TWIKOO_DATA` | lokijs 数据库存储路径 | `./data` |
 | `TWIKOO_PORT` | 端口号 | `8080` |
 | `TWIKOO_THROTTLE` | IP 请求限流，当同一 IP 短时间内请求次数超过阈值将对该 IP 返回错误 | `250` |
+| `TWIKOO_LOCALHOST_ONLY` | 为`true`时只监听本地请求，使得 nginx 等服务器反代之后不暴露原始端口 | `null` |
+| `TWIKOO_IP_HEADERS` | 在一些特殊情况下使用，如使用了`CloudFlare CDN` 它会将请求 IP 写到请求头的 `cf-connecting-ip` 字段上，为了能够正确的获取请求 IP 你可以写成 `['headers.cf-connecting-ip']` | `[]` |
 
 4. 启动 Twikoo server: `tkserver`
 5. 访问 `http://服务端IP:8080`
@@ -160,8 +175,33 @@ Zeabur 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 
 ### 私有部署 (Docker)
 
-```
+::: warning 注意
+私有部署的环境需配合 1.6.0 或以上版本的 twikoo.js 使用
+
+私有部署涉及终端操作、申请证书、配置反向代理或负载均衡等高级操作，如果对这些不太了解，建议优先选择其他方式部署。
+:::
+
+#### Docker
+
+```sh
 docker run --name twikoo -e TWIKOO_THROTTLE=1000 -p 8080:8080 -v ${PWD}/data:/app/data -d imaegoo/twikoo
+```
+
+#### Docker Compose
+
+```yml
+version: '3'
+services:
+  twikoo:
+    image: imaegoo/twikoo
+    container_name: twikoo
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    environment:
+      TWIKOO_THROTTLE: 1000
+    volumes:
+      - ./data:/app/data
 ```
 
 ## 前端部署

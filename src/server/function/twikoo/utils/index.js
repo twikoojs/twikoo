@@ -151,13 +151,11 @@ const fn = {
   async getQQAvatar (qq) {
     try {
       const qqNum = qq.replace(/@qq.com/ig, '')
-      const result = await axios.get(`https://ptlogin2.qq.com/getface?imgtype=4&uin=${qqNum}`)
-      if (result && result.data) {
-        const start = result.data.indexOf('http')
-        const end = result.data.indexOf('"', start)
-        if (start === -1 || end === -1) return null
-        return result.data.substring(start, end)
-      }
+      const result = await axios.get(`https://s.p.qq.com/pub/get_face?img_type=4&uin=${qqNum}`, {
+        maxRedirects: 0,
+        validateStatus: status => [301, 302, 307, 308].includes(status)
+      })
+      return result?.headers?.location || null
     } catch (e) {
       console.error('获取 QQ 头像失败：', e)
     }

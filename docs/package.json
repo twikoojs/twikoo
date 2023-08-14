@@ -3,17 +3,17 @@
   "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
   "license": "MIT",
   "private": true,
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/imaegoo/twikoo.git"
   },
   "homepage": "https://twikoo.js.org",
   "scripts": {
-    "docs:dev": "vuepress dev .",
-    "docs:build": "vuepress build ."
+    "docs:dev": "vitepress",
+    "docs:build": "vitepress build"
   },
   "devDependencies": {
-    "@vuepress/plugin-docsearch": "2.0.0-beta.49",
-    "vuepress": "2.0.0-beta.49"
+    "vitepress": "^1.0.0-rc.4"
   }
 }

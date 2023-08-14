@@ -2,11 +2,27 @@
 
 ----
 
-[![](https://img.shields.io/npm/v/twikoo)](https://www.npmjs.com/package/twikoo)
-[![](https://img.shields.io/bundlephobia/minzip/twikoo)](https://bundlephobia.com/result?p=twikoo)
-[![](https://img.shields.io/npm/dt/twikoo)](https://www.npmjs.com/package/twikoo)
-[![](https://data.jsdelivr.com/v1/package/npm/twikoo/badge)](https://www.jsdelivr.com/package/npm/twikoo)
-[![](https://img.shields.io/npm/l/twikoo)](https://github.com/imaegoo/twikoo/blob/main/LICENSE)
+<style>
+  .shields {
+    display: inline-block;
+  }
+</style>
+
+<a href="https://www.npmjs.com/package/twikoo">
+  <img class="shields" src="https://img.shields.io/npm/v/twikoo" />&nbsp;
+</a>
+<a href="https://bundlephobia.com/result?p=twikoo">
+  <img class="shields" src="https://img.shields.io/bundlephobia/minzip/twikoo" />&nbsp;
+</a>
+<a href="https://www.npmjs.com/package/twikoo">
+  <img class="shields" src="https://img.shields.io/npm/dt/twikoo" />&nbsp;
+</a>
+<a href="https://www.jsdelivr.com/package/npm/twikoo">
+  <img class="shields" src="https://data.jsdelivr.com/v1/package/npm/twikoo/badge" />&nbsp;
+</a>
+<a href="https://github.com/imaegoo/twikoo/blob/main/LICENSE">
+  <img class="shields" src="https://img.shields.io/npm/l/twikoo" />
+</a>
 
 一个简洁、安全、免费的静态网站评论系统。<br>
 A simple, safe, free comment system.

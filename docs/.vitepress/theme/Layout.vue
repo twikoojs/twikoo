@@ -4,7 +4,7 @@ import { useRouter } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 
 const { Layout } = DefaultTheme
-const envId = 'https://twikoo.vercel.app'
+const envId = 'https://twikoojsorg.imaegoo.com'
 const twikooJs = ref(null)
 const router = useRouter()
 

@@ -127,6 +127,4 @@ The Tencent Cloud environment comes with cloud storage, so you can upload images
 
 ## Can it be deployed privately?
 
-No. If you do need to support private deployment of the comment system, please prioritize other comment systems.
-
-You can see the progress of private deployment in this project [twikoo-docker](https://github.com/twikoojs/twikoo-docker). There are a number of issues with private deployments that the authors do not have the time and energy to address at this stage. Feel free to contribute.
+Yes.

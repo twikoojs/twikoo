@@ -6,11 +6,12 @@ export default defineConfig({
     root: {
       label: '简体中文',
       lang: 'zh-CN',
+      link: '/',
       title: 'Twikoo 文档',
-      description: 'Twikoo 文档',
+      description: '一个简洁、安全、免费的静态网站评论系统',
       themeConfig: {
         sidebar: [
-          { text: '简介', link: '/' },
+          { text: '简介', link: '/intro' },
           { text: '快速上手', link: '/quick-start' },
           { text: '常见问题', link: '/faq' },
           { text: 'API 文档', link: '/api' },
@@ -23,10 +24,10 @@ export default defineConfig({
       lang: 'en',
       link: '/en/',
       title: 'Twikoo Docs',
-      description: 'Twikoo Docs',
+      description: 'A simple, safe, free comment system',
       themeConfig: {
         sidebar: [
-          { text: 'Introduction', link: '/en/' },
+          { text: 'Introduction', link: '/en/intro' },
           { text: 'Quick start', link: '/en/quick-start' },
           { text: 'FAQ', link: '/en/faq' },
           { text: 'API', link: '/en/api' }

@@ -28,7 +28,7 @@
           <span v-if="comment.mail">(<a :href="`mailto:${comment.mail}`">{{ comment.mail }}</a>)&nbsp;</span>
           <span v-if="comment.isSpam">{{ t('ADMIN_COMMENT_IS_SPAM_SUFFIX') }}&nbsp;</span>
           <span class="tk-time">{{ displayCreated(comment) }}&nbsp;</span>
-          <span>{{ comment.ipRegion }}</span>
+          <span :title="comment.ua">{{ comment.ipRegion }}</span>
         </div>
         <div class="tk-content" v-html="comment.comment" ref="comments"></div>
         <div class="tk-admin-actions">

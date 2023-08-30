@@ -2,6 +2,7 @@ const { URL } = require('url')
 const { axios, bowser, ipToRegion, md5 } = require('./lib')
 const { RES_CODE } = require('./constants')
 const ipRegionSearcher = ipToRegion.create() // 初始化 IP 属地
+const logger = require('./logger')
 
 const fn = {
   // 获取 Twikoo 云函数版本
@@ -48,7 +49,7 @@ const fn = {
         displayOs = [os.name, os.versionName ? os.versionName : os.version].join(' ')
         displayBrowser = [ua.getBrowserName(), ua.getBrowserVersion()].join(' ')
       } catch (e) {
-        console.log('bowser 错误：', e)
+        logger.warn('bowser 错误：', e)
       }
     }
     const showRegion = !!config.SHOW_REGION && config.SHOW_REGION !== 'false'
@@ -100,7 +101,7 @@ const fn = {
         return area.replace(/(省|市)$/, '')
       }
     } catch (e) {
-      console.error('IP 属地查询失败：', e.message)
+      logger.warn('IP 属地查询失败：', e.message, ip)
       return ''
     }
   },
@@ -157,7 +158,7 @@ const fn = {
       })
       return result?.headers?.location || null
     } catch (e) {
-      console.error('获取 QQ 头像失败：', e)
+      logger.warn('获取 QQ 头像失败：', e)
     }
   },
   // 判断是否存在管理员密码
@@ -179,13 +180,13 @@ const fn = {
     }
     if (config.AKISMET_KEY === 'MANUAL_REVIEW') {
       // 人工审核
-      console.log('已使用人工审核模式，评论审核后才会发表~')
+      logger.log('已使用人工审核模式，评论审核后才会发表~')
       return true
     } else if (config.FORBIDDEN_WORDS) {
       // 违禁词检测
       for (const forbiddenWord of config.FORBIDDEN_WORDS.split(',')) {
         if (comment.indexOf(forbiddenWord.trim()) !== -1 || nick.indexOf(forbiddenWord.trim()) !== -1) {
-          console.log('包含违禁词，直接标记为垃圾评论~')
+          logger.warn('包含违禁词，直接标记为垃圾评论~')
           return true
         }
       }

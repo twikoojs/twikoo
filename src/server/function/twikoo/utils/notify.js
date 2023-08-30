@@ -5,6 +5,7 @@ const {
   pushoo
 } = require('./lib')
 const { RES_CODE } = require('./constants')
+const logger = require('./logger')
 
 let transporter
 
@@ -17,7 +18,7 @@ const fn = {
       fn.noticeReply(comment, config, getParentComment),
       fn.noticePushoo(comment, config)
     ]).catch(err => {
-      console.error('通知异常：', err)
+      logger.error('通知异常：', err)
     })
   },
   // 初始化邮件插件
@@ -44,31 +45,35 @@ const fn = {
       transporter = nodemailer.createTransport(transportConfig)
       try {
         const success = await transporter.verify()
-        if (success) console.log('SMTP 邮箱配置正常')
+        if (success) logger.info('SMTP 邮箱配置正常')
       } catch (error) {
         throw new Error('SMTP 邮箱配置异常：', error)
       }
       return true
     } catch (e) {
-      console.error('邮件初始化异常：', e.message)
-      if (throwErr) throw e
+      if (throwErr) {
+        logger.error('邮件初始化异常：', e.message)
+        throw e
+      } else {
+        logger.log('邮件初始化异常：', e.message)
+      }
       return false
     }
   },
   // 博主通知
   async noticeMaster (comment, config) {
     if (!transporter && !await fn.initMailer({ config })) {
-      console.log('未配置邮箱或邮箱配置有误，不通知')
+      logger.log('未配置邮箱或邮箱配置有误，不通知')
       return
     }
     if (config.BLOGGER_EMAIL && config.BLOGGER_EMAIL === comment.mail) {
-      console.log('博主本人评论，不发送通知给博主')
+      logger.log('博主本人评论，不发送通知给博主')
       return
     }
     // 判断是否存在即时消息推送配置
     const hasIMPushConfig = config.PUSHOO_CHANNEL && config.PUSHOO_TOKEN
     if (hasIMPushConfig && config.SC_MAIL_NOTIFY !== 'true') {
-      console.log('存在即时消息推送配置，默认不发送邮件给博主，您可以在管理面板修改此行为')
+      logger.log('存在即时消息推送配置，默认不发送邮件给博主，您可以在管理面板修改此行为')
       return
     }
     const SITE_NAME = config.SITE_NAME
@@ -113,17 +118,17 @@ const fn = {
     } catch (e) {
       sendResult = e
     }
-    console.log('博主通知结果：', sendResult)
+    logger.log('博主通知结果：', sendResult)
     return sendResult
   },
   // 即时消息通知
   async noticePushoo (comment, config) {
     if (!config.PUSHOO_CHANNEL || !config.PUSHOO_TOKEN) {
-      console.log('没有配置 pushoo，放弃即时消息通知')
+      logger.log('没有配置 pushoo，放弃即时消息通知')
       return
     }
     if (config.BLOGGER_EMAIL && config.BLOGGER_EMAIL === comment.mail) {
-      console.log('博主本人评论，不发送通知给博主')
+      logger.log('博主本人评论，不发送通知给博主')
       return
     }
     const pushContent = fn.getIMPushContent(comment, config)
@@ -137,7 +142,7 @@ const fn = {
         }
       }
     })
-    console.log('即时消息通知结果：', sendResult)
+    logger.log('即时消息通知结果：', sendResult)
   },
   // 即时消息推送内容获取
   getIMPushContent (comment, config) {
@@ -165,20 +170,20 @@ const fn = {
   // 回复通知
   async noticeReply (currentComment, config, getParentComment) {
     if (!currentComment.pid) {
-      console.log('无父级评论，不通知')
+      logger.log('无父级评论，不通知')
       return
     }
     if (!transporter && !await fn.initMailer({ config })) {
-      console.log('未配置邮箱或邮箱配置有误，不通知')
+      logger.log('未配置邮箱或邮箱配置有误，不通知')
       return
     }
     const parentComment = await getParentComment(currentComment)
     if (config.BLOGGER_EMAIL === parentComment.mail) {
-      console.log('回复给博主，因为会发博主通知邮件，所以不再重复通知')
+      logger.log('回复给博主，因为会发博主通知邮件，所以不再重复通知')
       return
     }
     if (currentComment.mail === parentComment.mail) {
-      console.log('回复自己的评论，不邮件通知')
+      logger.log('回复自己的评论，不邮件通知')
       return
     }
     const PARENT_NICK = parentComment.nick
@@ -232,7 +237,7 @@ const fn = {
     } catch (e) {
       sendResult = e
     }
-    console.log('回复通知结果：', sendResult)
+    logger.log('回复通知结果：', sendResult)
     return sendResult
   },
   appendHashToUrl (url, hash) {

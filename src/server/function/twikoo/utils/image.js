@@ -4,6 +4,7 @@ const path = require('path')
 const { isUrl } = require('.')
 const { RES_CODE } = require('./constants')
 const { axios, FormData } = require('./lib')
+const logger = require('./logger')
 
 const fn = {
   async uploadImage (event, config) {
@@ -22,7 +23,7 @@ const fn = {
         await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN })
       }
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       res.code = RES_CODE.UPLOAD_FAILED
       res.err = e.message
     }

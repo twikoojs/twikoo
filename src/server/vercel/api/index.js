@@ -44,6 +44,7 @@ const {
 const { postCheckSpam } = require('twikoo-func/utils/spam')
 const { sendNotice, emailTest } = require('twikoo-func/utils/notify')
 const { uploadImage } = require('twikoo-func/utils/image')
+const logger = require('twikoo-func/utils/logger')
 
 const DOMPurify = getDomPurify()
 
@@ -58,9 +59,9 @@ const requestTimes = {}
 
 module.exports = async (request, response) => {
   const event = request.body || {}
-  console.log('请求 IP：', getIp(request))
-  console.log('请求函数：', event.event)
-  console.log('请求参数：', event)
+  logger.log('请求 IP：', getIp(request))
+  logger.log('请求函数：', event.event)
+  logger.log('请求参数：', event)
   let res = {}
   try {
     protect(request)
@@ -147,16 +148,16 @@ module.exports = async (request, response) => {
         }
     }
   } catch (e) {
-    console.error('Twikoo 遇到错误，请参考以下错误信息。如有疑问，请反馈至 https://github.com/imaegoo/twikoo/issues')
-    console.error('请求参数：', event)
-    console.error('错误信息：', e)
+    logger.error('Twikoo 遇到错误，请参考以下错误信息。如有疑问，请反馈至 https://github.com/imaegoo/twikoo/issues')
+    logger.error('请求参数：', event)
+    logger.error('错误信息：', e)
     res.code = RES_CODE.FAIL
     res.message = e.message
   }
   if (!res.code && !request.body.accessToken) {
     res.accessToken = accessToken
   }
-  console.log('请求返回：', res)
+  logger.log('请求返回：', res)
   response.status(200).json(res)
 }
 
@@ -212,7 +213,7 @@ async function connectToDatabase (uri) {
   if (db) return db
   if (!uri) throw new Error('未设置环境变量 MONGODB_URI')
   // If no connection is cached, create a new one
-  console.log('Connecting to database...')
+  logger.info('Connecting to database...')
   const client = await MongoClient.connect(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -221,7 +222,7 @@ async function connectToDatabase (uri) {
   // using the database path of the connection string
   db = await client.db((new URL(uri)).pathname.substr(1))
   // Cache the database connection and return the connection
-  console.log('Connected to database')
+  logger.info('Connected to database')
   return db
 }
 
@@ -491,7 +492,7 @@ async function commentImportForAdmin (event) {
     }
     res.code = RES_CODE.SUCCESS
     res.log = logText
-    console.log(logText)
+    logger.info(logText)
   } else {
     res.code = RES_CODE.NEED_LOGIN
     res.message = '请先登录'
@@ -600,8 +601,8 @@ async function commentSubmit (event, request) {
   res.id = comment.id
   // 异步垃圾检测、发送评论通知
   try {
-    console.log('开始异步垃圾检测、发送评论通知')
-    console.time('POST_SUBMIT')
+    logger.log('开始异步垃圾检测、发送评论通知')
+    logger.log('POST_SUBMIT')
     await Promise.race([
       axios.post(`https://${process.env.VERCEL_URL}`, {
         event: 'POST_SUBMIT',
@@ -610,9 +611,9 @@ async function commentSubmit (event, request) {
       // 如果超过 5 秒还没收到异步返回，直接继续，减少用户等待的时间
       new Promise((resolve) => setTimeout(resolve, 5000))
     ])
-    console.timeEnd('POST_SUBMIT')
+    logger.log('POST_SUBMIT')
   } catch (e) {
-    console.log('POST_SUBMIT 失败', e)
+    logger.error('POST_SUBMIT 失败', e)
   }
   return res
 }
@@ -873,10 +874,10 @@ function protect (request) {
   const ip = getIp(request)
   requestTimes[ip] = (requestTimes[ip] || 0) + 1
   if (requestTimes[ip] > MAX_REQUEST_TIMES) {
-    console.log(`${ip} 当前请求次数为 ${requestTimes[ip]}，已超过最大请求次数`)
+    logger.warn(`${ip} 当前请求次数为 ${requestTimes[ip]}，已超过最大请求次数`)
     throw new Error('Too Many Requests')
   } else {
-    console.log(`${ip} 当前请求次数为 ${requestTimes[ip]}`)
+    logger.log(`${ip} 当前请求次数为 ${requestTimes[ip]}`)
   }
 }
 
@@ -889,7 +890,7 @@ async function readConfig () {
     config = res || {}
     return config
   } catch (e) {
-    console.error('读取配置失败：', e)
+    logger.error('读取配置失败：', e)
     await createCollections()
     config = {}
     return config
@@ -899,7 +900,7 @@ async function readConfig () {
 // 写入配置
 async function writeConfig (newConfig) {
   if (!Object.keys(newConfig).length) return 0
-  console.log('写入配置：', newConfig)
+  logger.info('写入配置：', newConfig)
   try {
     let updated
     let res = await db
@@ -916,7 +917,7 @@ async function writeConfig (newConfig) {
     if (updated > 0) config = null
     return updated
   } catch (e) {
-    console.error('写入配置失败：', e)
+    logger.error('写入配置失败：', e)
     return null
   }
 }
@@ -945,7 +946,7 @@ async function createCollections () {
     try {
       res[collection] = await db.createCollection(collection)
     } catch (e) {
-      console.error('建立数据库失败：', e)
+      logger.error('建立数据库失败：', e)
     }
   }
   return res
@@ -957,7 +958,7 @@ function getIp (request) {
     const headers = TWIKOO_IP_HEADERS ? JSON.parse(TWIKOO_IP_HEADERS) : []
     return getUserIP(request, headers)
   } catch (e) {
-    console.error('获取 IP 错误信息：', e)
+    logger.error('获取 IP 错误信息：', e)
   }
   return getUserIP(request)
 }

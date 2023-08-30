@@ -40,6 +40,7 @@ const {
 const { postCheckSpam } = require('./utils/spam')
 const { sendNotice, emailTest } = require('./utils/notify')
 const { uploadImage } = require('./utils/image')
+const logger = require('./utils/logger')
 
 // 云函数 SDK / tencent cloudbase sdk
 const app = tcb.init({ env: tcb.SYMBOL_CURRENT_ENV })
@@ -60,9 +61,9 @@ const requestTimes = {}
 
 // 云函数入口点 / entry point
 exports.main = async (event, context) => {
-  console.log('请求 IP：', auth.getClientIP())
-  console.log('请求函数：', event.event)
-  console.log('请求参数：', event)
+  logger.log('请求 IP：', auth.getClientIP())
+  logger.log('请求函数：', event.event)
+  logger.log('请求参数：', event)
   let res = {}
   try {
     protect()
@@ -141,13 +142,13 @@ exports.main = async (event, context) => {
         }
     }
   } catch (e) {
-    console.error('Twikoo 遇到错误，请参考以下错误信息。如有疑问，请反馈至 https://github.com/imaegoo/twikoo/issues')
-    console.error('请求参数：', event)
-    console.error('错误信息：', e)
+    logger.error('Twikoo 遇到错误，请参考以下错误信息。如有疑问，请反馈至 https://github.com/imaegoo/twikoo/issues')
+    logger.error('请求参数：', event)
+    logger.error('错误信息：', e)
     res.code = RES_CODE.FAIL
     res.message = e.message
   }
-  console.log('请求返回：', res)
+  logger.log('请求返回：', res)
   return res
 }
 
@@ -182,7 +183,7 @@ async function checkAndSaveCredentials (credentials) {
     await writeConfig({ CREDENTIALS: credentials })
     return true
   } catch (e) {
-    console.error('私钥文件异常：', e)
+    logger.error('私钥文件异常：', e)
     return false
   }
 }
@@ -452,7 +453,7 @@ async function commentImportForAdmin (event) {
     }
     res.code = RES_CODE.SUCCESS
     res.log = logText
-    console.log(logText)
+    logger.info(logText)
   } else {
     res.code = RES_CODE.NEED_LOGIN
     res.message = '请先登录'
@@ -572,7 +573,7 @@ async function commentSubmit (event, context) {
       data: { event: 'POST_SUBMIT', comment }
     }, { timeout: 300 }) // 设置较短的 timeout 来实现异步
   } catch (e) {
-    console.log('开始异步垃圾检测、发送评论通知')
+    logger.log('开始异步垃圾检测、发送评论通知')
   }
   return res
 }
@@ -836,10 +837,10 @@ function protect () {
   const ip = auth.getClientIP()
   requestTimes[ip] = (requestTimes[ip] || 0) + 1
   if (requestTimes[ip] > MAX_REQUEST_TIMES) {
-    console.log(`${ip} 当前请求次数为 ${requestTimes[ip]}，已超过最大请求次数`)
+    logger.warn(`${ip} 当前请求次数为 ${requestTimes[ip]}，已超过最大请求次数`)
     throw new Error('Too Many Requests')
   } else {
-    console.log(`${ip} 当前请求次数为 ${requestTimes[ip]}`)
+    logger.log(`${ip} 当前请求次数为 ${requestTimes[ip]}`)
   }
 }
 
@@ -853,7 +854,7 @@ async function readConfig () {
     config = res.data[0] || {}
     return config
   } catch (e) {
-    console.error('读取配置失败：', e)
+    logger.error('读取配置失败：', e)
     await createCollections()
     config = {}
     return config
@@ -863,7 +864,7 @@ async function readConfig () {
 // 写入配置
 async function writeConfig (newConfig) {
   if (!Object.keys(newConfig).length) return 0
-  console.log('写入配置：', newConfig)
+  logger.info('写入配置：', newConfig)
   try {
     let updated
     let res = await db
@@ -882,7 +883,7 @@ async function writeConfig (newConfig) {
     if (updated > 0) config = null
     return updated
   } catch (e) {
-    console.error('写入配置失败：', e)
+    logger.error('写入配置失败：', e)
     return null
   }
 }
@@ -913,7 +914,7 @@ async function createCollections () {
     try {
       res[collection] = await db.createCollection(collection)
     } catch (e) {
-      console.error('建立数据库失败：', e)
+      logger.error('建立数据库失败：', e)
     }
   }
   return res

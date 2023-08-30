@@ -3,6 +3,7 @@ const {
   CryptoJS,
   tencentcloud
 } = require('./lib')
+const logger = require('./logger')
 
 const fn = {
   // 后垃圾评论检测
@@ -24,7 +25,7 @@ const fn = {
           Device: { IP: comment.ip },
           User: { Nickname: comment.nick }
         })
-        console.log('腾讯云返回结果：', checkResult)
+        logger.log('腾讯云返回结果：', checkResult)
         isSpam = checkResult.EvilFlag !== 0
       } else if (config.AKISMET_KEY) {
         // Akismet
@@ -34,7 +35,7 @@ const fn = {
         })
         const isValid = await akismetClient.verifyKey()
         if (!isValid) {
-          console.log('Akismet key 不可用：', config.AKISMET_KEY)
+          logger.warn('Akismet key 不可用：', config.AKISMET_KEY)
           return
         }
         isSpam = await akismetClient.checkSpam({
@@ -48,10 +49,10 @@ const fn = {
           comment_content: comment.comment
         })
       }
-      console.log('垃圾评论检测结果：', isSpam)
+      logger.log('垃圾评论检测结果：', isSpam)
       return isSpam
     } catch (err) {
-      console.error('垃圾评论检测异常：', err)
+      logger.error('垃圾评论检测异常：', err)
     }
   }
 }

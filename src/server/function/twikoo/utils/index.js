@@ -101,7 +101,7 @@ const fn = {
         return area.replace(/(省|市)$/, '')
       }
     } catch (e) {
-      logger.warn('IP 属地查询失败：', e.message)
+      logger.warn('IP 属地查询失败：', e.message, ip)
       return ''
     }
   },

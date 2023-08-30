@@ -51,8 +51,12 @@ const fn = {
       }
       return true
     } catch (e) {
-      logger.error('邮件初始化异常：', e.message)
-      if (throwErr) throw e
+      if (throwErr) {
+        logger.error('邮件初始化异常：', e.message)
+        throw e
+      } else {
+        logger.log('邮件初始化异常：', e.message)
+      }
       return false
     }
   },

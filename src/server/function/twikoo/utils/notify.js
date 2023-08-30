@@ -55,7 +55,7 @@ const fn = {
         logger.error('邮件初始化异常：', e.message)
         throw e
       } else {
-        logger.log('邮件初始化异常：', e.message)
+        logger.warn('邮件初始化异常：', e.message)
       }
       return false
     }
@@ -63,17 +63,17 @@ const fn = {
   // 博主通知
   async noticeMaster (comment, config) {
     if (!transporter && !await fn.initMailer({ config })) {
-      logger.log('未配置邮箱或邮箱配置有误，不通知')
+      logger.info('未配置邮箱或邮箱配置有误，不通知')
       return
     }
     if (config.BLOGGER_EMAIL && config.BLOGGER_EMAIL === comment.mail) {
-      logger.log('博主本人评论，不发送通知给博主')
+      logger.info('博主本人评论，不发送通知给博主')
       return
     }
     // 判断是否存在即时消息推送配置
     const hasIMPushConfig = config.PUSHOO_CHANNEL && config.PUSHOO_TOKEN
     if (hasIMPushConfig && config.SC_MAIL_NOTIFY !== 'true') {
-      logger.log('存在即时消息推送配置，默认不发送邮件给博主，您可以在管理面板修改此行为')
+      logger.info('存在即时消息推送配置，默认不发送邮件给博主，您可以在管理面板修改此行为')
       return
     }
     const SITE_NAME = config.SITE_NAME
@@ -124,11 +124,11 @@ const fn = {
   // 即时消息通知
   async noticePushoo (comment, config) {
     if (!config.PUSHOO_CHANNEL || !config.PUSHOO_TOKEN) {
-      logger.log('没有配置 pushoo，放弃即时消息通知')
+      logger.info('没有配置 pushoo，放弃即时消息通知')
       return
     }
     if (config.BLOGGER_EMAIL && config.BLOGGER_EMAIL === comment.mail) {
-      logger.log('博主本人评论，不发送通知给博主')
+      logger.info('博主本人评论，不发送通知给博主')
       return
     }
     const pushContent = fn.getIMPushContent(comment, config)
@@ -142,7 +142,7 @@ const fn = {
         }
       }
     })
-    logger.log('即时消息通知结果：', sendResult)
+    logger.info('即时消息通知结果：', sendResult)
   },
   // 即时消息推送内容获取
   getIMPushContent (comment, config) {
@@ -170,20 +170,20 @@ const fn = {
   // 回复通知
   async noticeReply (currentComment, config, getParentComment) {
     if (!currentComment.pid) {
-      logger.log('无父级评论，不通知')
+      logger.info('无父级评论，不通知')
       return
     }
     if (!transporter && !await fn.initMailer({ config })) {
-      logger.log('未配置邮箱或邮箱配置有误，不通知')
+      logger.info('未配置邮箱或邮箱配置有误，不通知')
       return
     }
     const parentComment = await getParentComment(currentComment)
     if (config.BLOGGER_EMAIL === parentComment.mail) {
-      logger.log('回复给博主，因为会发博主通知邮件，所以不再重复通知')
+      logger.info('回复给博主，因为会发博主通知邮件，所以不再重复通知')
       return
     }
     if (currentComment.mail === parentComment.mail) {
-      logger.log('回复自己的评论，不邮件通知')
+      logger.info('回复自己的评论，不邮件通知')
       return
     }
     const PARENT_NICK = parentComment.nick

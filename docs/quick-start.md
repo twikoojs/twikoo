@@ -48,7 +48,7 @@ exports.main = require('twikoo-func').main
 8. 创建完成后，点击“twikoo"进入云函数详情页，进入“函数代码”标签，点击“文件 - 新建文件”，输入 `package.json`，回车
 9. 复制以下代码、粘贴到代码框中，点击“保存并安装依赖”
 ``` json
-{ "dependencies": { "twikoo-func": "1.6.17" } }
+{ "dependencies": { "twikoo-func": "1.6.18" } }
 ```
 
 ### 腾讯云命令行部署
@@ -161,7 +161,7 @@ Zeabur 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 | `TWIKOO_PORT` | 端口号 | `8080` |
 | `TWIKOO_THROTTLE` | IP 请求限流，当同一 IP 短时间内请求次数超过阈值将对该 IP 返回错误 | `250` |
 | `TWIKOO_LOCALHOST_ONLY` | 为`true`时只监听本地请求，使得 nginx 等服务器反代之后不暴露原始端口 | `null` |
-| `TWIKOO_LOG_LEVEL` | 日志级别，支持 `verbose` / `info` / `warn` / `error` | `info` |
+| `TWIKOO_LOG_LEVEL` | 日志级别，支持 `verbose` / `info` / `warn` / `error` / `info` |
 | `TWIKOO_IP_HEADERS` | 在一些特殊情况下使用，如使用了`CloudFlare CDN` 它会将请求 IP 写到请求头的 `cf-connecting-ip` 字段上，为了能够正确的获取请求 IP 你可以写成 `['headers.cf-connecting-ip']` | `[]` |
 
 4. 启动 Twikoo server: `tkserver`
@@ -286,7 +286,7 @@ twikoo:
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.staticfile.org/twikoo/1.6.17/twikoo.all.min.js"></script>
+<script src="https://cdn.staticfile.org/twikoo/1.6.18/twikoo.all.min.js"></script>
 <script>
 twikoo.init({
   envId: '您的环境id', // 腾讯云环境填 envId；Vercel 环境填地址（https://xxx.vercel.app）
@@ -304,10 +304,10 @@ twikoo.init({
 
 如果遇到默认 CDN 加载速度缓慢，可更换其他 CDN 镜像。以下为可供选择的公共 CDN，其中一些 CDN 可能需要数天时间同步最新版本：
 
-* `https://cdn.staticfile.org/twikoo/1.6.17/twikoo.all.min.js`
-* `https://lib.baomitu.com/twikoo/1.6.17/twikoo.all.min.js`
-* `https://cdn.bootcdn.net/ajax/libs/twikoo/1.6.17/twikoo.all.min.js`
-* `https://cdn.jsdelivr.net/npm/twikoo@1.6.17/dist/twikoo.all.min.js`
+* `https://cdn.staticfile.org/twikoo/1.6.18/twikoo.all.min.js`
+* `https://lib.baomitu.com/twikoo/1.6.18/twikoo.all.min.js`
+* `https://cdn.bootcdn.net/ajax/libs/twikoo/1.6.18/twikoo.all.min.js`
+* `https://cdn.jsdelivr.net/npm/twikoo@1.6.18/dist/twikoo.all.min.js`
 
 ## 开启管理面板（腾讯云环境）
 

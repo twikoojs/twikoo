@@ -91,10 +91,12 @@ const fn = {
     try {
       // 将 IPv6 格式的 IPv4 地址转换为 IPv4 格式
       ip = ip.replace(/^::ffff:/, '')
+      // Zeabur 返回的地址带端口号，去掉端口号。TODO: 不知道该怎么去掉 IPv6 地址后面的端口号
+      ip = ip.replace(/:[0-9]*$/, '')
       const { region } = ipRegionSearcher.binarySearchSync(ip)
       const [country,, province, city, isp] = region.split('|')
       // 有省显示省，没有省显示国家
-      const area = province.trim() ? province : country
+      const area = province.trim() && province !== '0' ? province : country
       if (detail) {
         return area === city ? [city, isp].join(' ') : [area, city, isp].join(' ')
       } else {
@@ -180,7 +182,7 @@ const fn = {
     }
     if (config.AKISMET_KEY === 'MANUAL_REVIEW') {
       // 人工审核
-      logger.log('已使用人工审核模式，评论审核后才会发表~')
+      logger.info('已使用人工审核模式，评论审核后才会发表~')
       return true
     } else if (config.FORBIDDEN_WORDS) {
       // 违禁词检测

@@ -567,7 +567,7 @@ export default {
     'Фойдаланувчиларнинг ОС ва браузерини кўрсатиш. Стандарт: рост.'
   ],
   [S.ACI + '_SHOW_REGION']: [
-    '是否显示用户 IP 属地到省，默认为：false',
+    '是否显示用户 IP 属地到省，可能不准确，不支持 IPv6，默认为：false',
     '是否顯示使用者 IP 屬地到省，預設為：false',
     '是否顯示使用者 IP 所屬地（精確到省），預設為：false',
     'Show users\' IP region (province). Default: false.',

@@ -17,6 +17,6 @@ const logger = {
   }
 }
 
-const logPrefix = () => new Date().toLocaleString() + ' Twikoo:'
+const logPrefix = () => `${new Date().toLocaleString()} Twikoo:`
 
 module.exports = logger

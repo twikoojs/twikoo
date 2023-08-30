@@ -377,7 +377,7 @@ yarn deploy -e 您的环境id
 1. 拉取新版本 `docker pull imaegoo/twikoo`
 2. 停止旧版本容器 `docker stop twikoo`
 3. 删除旧版本容器 `docker rm twikoo`
-4. [启动新版本容器](#私有部署-Docker)
+4. [启动新版本容器](#私有部署-docker)
 
 ### 自动更新
 

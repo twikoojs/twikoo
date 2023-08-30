@@ -510,6 +510,13 @@ export default {
     'IM notification push token. See https://pushoo.js.org for details',
     'ИМ билдиришномаси пуш токени. Тафсилотлар учун https://pushoo.js.org га қаранг'
   ],
+  [S.ACI + '_DISPLAYED_FIELDS']: [
+    '界面上展示的输入框，默认：nick,mail,link',
+    '界面上顯示的輸入框，預設：nick,mail,link',
+    '界面上顯示的輸入框，預設：nick,mail,link',
+    'Input boxes displayed on the interface. Default: nick,mail,link',
+    'Поля ввода, отображаемые на интерфейсе, Стандарт: nick,mail,link'
+  ],
   [S.ACI + '_REQUIRED_FIELDS']: [
     '评论必填信息，设为 nick,mail,link 代表全必填，设为 none 代表全选填，默认：nick,mail',
     '評論必填信息，設為 nick,mail,link 代表全必填，設為 none 代表全選填，預設：nick,mail',

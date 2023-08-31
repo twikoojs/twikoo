@@ -41,4 +41,9 @@ const { Layout } = DefaultTheme
   margin: 0 auto;
   max-width: 1152px;
 }
+
+.twikoo .el-loading-spinner .circular {
+  margin-left: auto;
+  margin-right: auto;
+}
 </style>

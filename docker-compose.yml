@@ -1,0 +1,12 @@
+# https://docs.docker.com/compose/compose-file/compose-file-v3/
+version: '3'
+services:
+  twikoo-service:
+    image: imaegoo/twikoo
+    environment:
+      TWIKOO_THROTTLE: 250
+      TZ: Asia/Shanghai
+    volumes:
+      - /app/data
+    ports:
+      - 8080:8080

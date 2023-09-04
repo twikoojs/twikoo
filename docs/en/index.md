@@ -11,10 +11,10 @@ hero:
   actions:
     - theme: brand
       text: Quick start
-      link: /quick-start
+      link: /en/quick-start
     - theme: alt
       text: Introduction
-      link: /intro
+      link: /en/intro
     - theme: alt
       text: View on GitHub
       link: https://github.com/imaegoo/twikoo

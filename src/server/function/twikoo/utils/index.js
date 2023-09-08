@@ -154,11 +154,8 @@ const fn = {
   async getQQAvatar (qq) {
     try {
       const qqNum = qq.replace(/@qq.com/ig, '')
-      const result = await axios.get(`https://s.p.qq.com/pub/get_face?img_type=4&uin=${qqNum}`, {
-        maxRedirects: 0,
-        validateStatus: status => [301, 302, 307, 308].includes(status)
-      })
-      return result?.headers?.location || null
+      const result = await axios.get(`https://aq.qq.com/cn2/get_img/get_face?img_type=3&uin=${qqNum}`)
+      return result.data?.url || null
     } catch (e) {
       logger.warn('获取 QQ 头像失败：', e)
     }

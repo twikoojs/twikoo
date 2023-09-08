@@ -94,6 +94,10 @@ const getUrl = (path) => {
   return url
 }
 
+const getHref = (href) => {
+  return window.TWIKOO_MAGIC_HREF ?? href ?? window.location.href
+}
+
 /**
  * 读取文本文件内容
  */
@@ -173,6 +177,7 @@ export {
   getCommentsCountApi,
   getRecentCommentsApi,
   getUrl,
+  getHref,
   readAsText,
   renderLinks,
   renderMath,

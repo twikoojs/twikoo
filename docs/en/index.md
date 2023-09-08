@@ -17,7 +17,7 @@ hero:
       link: /en/intro
     - theme: alt
       text: View on GitHub
-      link: https://github.com/imaegoo/twikoo
+      link: https://github.com/twikoojs/twikoo
   image:
     src: /twikoo-logo-home.png
     alt: Twikoo

@@ -54,10 +54,10 @@ export default defineConfig({
       }
     },
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/imaegoo/twikoo' }
+      { icon: 'github', link: 'https://github.com/twikoojs/twikoo' }
     ],
     editLink: {
-      pattern: 'https://github.com/imaegoo/twikoo/edit/main/docs/:path'
+      pattern: 'https://github.com/twikoojs/twikoo/edit/main/docs/:path'
     },
     footer: {
       message: 'Released under the MIT License.',

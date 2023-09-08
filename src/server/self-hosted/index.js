@@ -148,7 +148,7 @@ module.exports = async (request, response) => {
         }
     }
   } catch (e) {
-    logger.error('Twikoo 遇到错误，请参考以下错误信息。如有疑问，请反馈至 https://github.com/imaegoo/twikoo/issues')
+    logger.error('Twikoo 遇到错误，请参考以下错误信息。如有疑问，请反馈至 https://github.com/twikoojs/twikoo/issues')
     logger.error('请求参数：', event)
     logger.error('错误信息：', e)
     res.code = RES_CODE.FAIL

@@ -20,7 +20,7 @@
 <a href="https://www.jsdelivr.com/package/npm/twikoo">
   <img class="shields" src="https://data.jsdelivr.com/v1/package/npm/twikoo/badge" />&nbsp;
 </a>
-<a href="https://github.com/imaegoo/twikoo/blob/main/LICENSE">
+<a href="https://github.com/twikoojs/twikoo/blob/main/LICENSE">
   <img class="shields" src="https://img.shields.io/npm/l/twikoo" />
 </a>
 
@@ -122,7 +122,7 @@ A simple, safe, free comment system.
 
 ## 更新日志 & 开发计划
 
-[更新日志](https://github.com/imaegoo/twikoo/releases) & [开发计划](https://github.com/imaegoo/twikoo/projects/2)
+[更新日志](https://github.com/twikoojs/twikoo/releases) & [开发计划](https://github.com/twikoojs/twikoo/projects/2)
 
 <!-- ## 贡献者 | Contributors -->
 
@@ -146,7 +146,7 @@ yarn build # 编译 (dist/twikoo.all.min.js)
 
 ## 国际化
 
-支持简体中文、繁体中文、English。欢迎[提交翻译 PR](https://github.com/imaegoo/twikoo/edit/main/src/client/utils/i18n/i18n.js)。
+支持简体中文、繁体中文、English。欢迎[提交翻译 PR](https://github.com/twikoojs/twikoo/edit/main/src/client/utils/i18n/i18n.js)。
 
 ## 许可
 

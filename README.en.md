@@ -119,7 +119,7 @@ Icon design：[Maemo Lee](https://www.maemo.cc)
 
 ## Release notes & plans
 
-[Update logs](https://github.com/imaegoo/twikoo/releases) & [Development Plan](https://github.com/imaegoo/twikoo/projects/2)
+[Update logs](https://github.com/twikoojs/twikoo/releases) & [Development Plan](https://github.com/twikoojs/twikoo/projects/2)
 
 ##  Development
 
@@ -135,7 +135,7 @@ If your changes can help more people, feel free to submit a Pull Request!
 
 ## I18N
 
-Support Simplified Chinese, Traditional Chinese, English. [translate Pull Request](https://github.com/imaegoo/twikoo/tree/main/src/client/utils/i18n).
+Support Simplified Chinese, Traditional Chinese, English. [translate Pull Request](https://github.com/twikoojs/twikoo/tree/main/src/client/utils/i18n).
 
 ## License
 

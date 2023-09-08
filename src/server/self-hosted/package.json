@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/imaegoo/twikoo.git"
+    "url": "https://github.com/twikoojs/twikoo.git"
   },
   "homepage": "https://twikoo.js.org",
   "publishConfig": {

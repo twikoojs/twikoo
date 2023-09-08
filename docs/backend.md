@@ -42,7 +42,7 @@ exports.main = require('twikoo-func').main
 8. 创建完成后，点击“twikoo"进入云函数详情页，进入“函数代码”标签，点击“文件 - 新建文件”，输入 `package.json`，回车
 9. 复制以下代码、粘贴到代码框中，点击“保存并安装依赖”
 ``` json
-{ "dependencies": { "twikoo-func": "1.6.18" } }
+{ "dependencies": { "twikoo-func": "1.6.19" } }
 ```
 
 ## 腾讯云命令行部署

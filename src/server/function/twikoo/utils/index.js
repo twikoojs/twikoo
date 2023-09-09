@@ -121,12 +121,19 @@ const fn = {
       return url
     }
   },
+  normalizeMail (mail) {
+    return String(mail).trim().toLowerCase()
+  },
+  equalsMail (mail1, mail2) {
+    if (!mail1 || !mail2) return false
+    return fn.normalizeMail(mail1) === fn.normalizeMail(mail2)
+  },
   getMailMd5 (comment) {
     if (comment.mailMd5) {
       return comment.mailMd5
     }
     if (comment.mail) {
-      return md5(comment.mail)
+      return md5(fn.normalizeMail(comment.mail))
     }
     return md5(comment.nick)
   },

@@ -3,7 +3,7 @@ import timeago from './timeago'
 import marked from './marked'
 import renderCode from './highlight'
 import { isUrl, call } from './api'
-import { isQQ, getQQAvatar } from './avatar'
+import { normalizeMail, isQQ, getQQAvatar } from './avatar'
 import { initOwoEmotion, initMarkedOwo } from './emotion'
 
 const isNotSet = (option) => {
@@ -166,6 +166,7 @@ export {
   isUrl,
   call,
   getFuncVer,
+  normalizeMail,
   isQQ,
   getQQAvatar,
   initOwoEmotion,

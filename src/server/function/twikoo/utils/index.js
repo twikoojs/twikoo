@@ -140,6 +140,10 @@ const fn = {
       return `https://${gravatarCdn}/avatar/${mailMd5}?d=${defaultGravatar}`
     }
   },
+  isBlogger (comment, config) {
+    return comment.mail &&
+      comment.mail.toLowerCase() === config.BLOGGER_EMAIL.toLowerCase()
+  },
   isUrl (s) {
     return /^http(s)?:\/\//.test(s)
   },

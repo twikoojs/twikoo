@@ -24,6 +24,7 @@ const {
   parseCommentForAdmin,
   getMailMd5,
   getAvatar,
+  isBlogger,
   isQQ,
   addQQMailSuffix,
   getQQAvatar,
@@ -649,7 +650,7 @@ async function postSubmit (comment, request) {
 async function parse (comment, request) {
   const timestamp = Date.now()
   const isAdminUser = isAdmin()
-  const isBloggerMail = comment.mail && comment.mail === config.BLOGGER_EMAIL
+  const isBloggerMail = isBlogger(comment, config)
   if (isBloggerMail && !isAdminUser) throw new Error('请先登录管理面板，再使用博主身份发送评论')
   const commentDo = {
     _id: uuidv4().replace(/-/g, ''),

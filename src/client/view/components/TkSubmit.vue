@@ -53,7 +53,7 @@ import iconImage from '@fortawesome/fontawesome-free/svgs/regular/image.svg'
 import Clickoutside from 'element-ui/src/utils/clickoutside'
 import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
-import { marked, call, logger, renderLinks, renderMath, renderCode, initOwoEmotion, initMarkedOwo, t, getUrl, blobToDataURL } from '../../utils'
+import { marked, call, logger, renderLinks, renderMath, renderCode, initOwoEmotions, initMarkedOwo, t, getUrl, blobToDataURL } from '../../utils'
 import OwO from '../../lib/owo'
 
 const imageTypes = [
@@ -132,12 +132,7 @@ export default {
     },
     async initOwo () {
       if (this.config.SHOW_EMOTION === 'true') {
-        const emotion_cdn = this.config.EMOTION_CDN || 'https://owo.imaegoo.com/owo.json'
-        const odata = {}
-        emotion_cdn.split(',').forEach((url) => {
-          const sub_odata = await initOwoEmotion(url.trim())
-          Object.assign(odata, sub_odata)
-        })
+        const odata = await initOwoEmotions(this.config.EMOTION_CDN || 'https://owo.imaegoo.com/owo.json')
         this.owo = new OwO({
           logo: iconEmotion, // OwO button text, default: `OωO表情`
           container: this.$refs.owo, // OwO container, default: `document.getElementsByClassName('OwO')[0]`

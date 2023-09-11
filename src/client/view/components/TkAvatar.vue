@@ -7,7 +7,7 @@
 
 <script>
 import md5 from 'blueimp-md5'
-import { convertLink, isQQ, getQQAvatar } from '../../utils'
+import { convertLink, normalizeMail, isQQ, getQQAvatar } from '../../utils'
 import iconUser from '@fortawesome/fontawesome-free/svgs/solid/user-circle.svg'
 
 export default {
@@ -46,7 +46,7 @@ export default {
       } else if (this.mail && isQQ(this.mail)) {
         return getQQAvatar(this.mail)
       } else if (this.mail) {
-        return `https://${this.gravatarCdn}/avatar/${md5(this.mail)}?d=${this.defaultGravatar}`
+        return `https://${this.gravatarCdn}/avatar/${md5(normalizeMail(this.mail))}?d=${this.defaultGravatar}`
       } else {
         return ''
       }

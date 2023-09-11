@@ -7,7 +7,7 @@
 
 <script>
 import { version } from '../../version'
-import { call, getUrl } from '../../utils'
+import { call, getUrl, getHref } from '../../utils'
 
 export default {
   data () {
@@ -22,9 +22,10 @@ export default {
       if (!counterEl) return
       if (['localhost', '127.0.0.1', '0.0.0.0'].indexOf(window.location.hostname) !== -1) return
       const url = getUrl(this.$twikoo.path)
+      const href = getHref(this.$twikoo.href)
       const result = await call(this.$tcb, 'COUNTER_GET', {
         url,
-        href: window.location.href,
+        href,
         title: document.title
       })
       this.counter = result.result

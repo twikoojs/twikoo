@@ -3,7 +3,7 @@ import timeago from './timeago'
 import marked from './marked'
 import renderCode from './highlight'
 import { isUrl, call } from './api'
-import { isQQ, getQQAvatar } from './avatar'
+import { normalizeMail, isQQ, getQQAvatar } from './avatar'
 import { initOwoEmotions, initMarkedOwo } from './emotion'
 
 const isNotSet = (option) => {
@@ -94,6 +94,10 @@ const getUrl = (path) => {
   return url
 }
 
+const getHref = (href) => {
+  return window.TWIKOO_MAGIC_HREF ?? href ?? window.location.href
+}
+
 /**
  * 读取文本文件内容
  */
@@ -166,6 +170,7 @@ export {
   isUrl,
   call,
   getFuncVer,
+  normalizeMail,
   isQQ,
   getQQAvatar,
   initOwoEmotions,
@@ -173,6 +178,7 @@ export {
   getCommentsCountApi,
   getRecentCommentsApi,
   getUrl,
+  getHref,
   readAsText,
   renderLinks,
   renderMath,

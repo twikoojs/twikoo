@@ -364,11 +364,11 @@ export default {
     `Аватар тўлдирувчиси. Стандарт: «идентификатор». Қуйидагилардан танланг: ${defaultGravatar.join(', ')}`
   ],
   [S.ACI + '_EMOTION_CDN']: [
-    '表情 CDN，默认为：https://owo.imaegoo.com/owo.json',
-    '表情 CDN，預設為：https://owo.imaegoo.com/owo.json',
-    '表情 CDN 來源，預設為：https://owo.imaegoo.com/owo.json',
-    'Emotion CDN. Default: https://owo.imaegoo.com/owo.json',
-    'Emotion CDN. Default: https://owo.imaegoo.com/owo.json'
+    '表情 CDN，英文逗号分隔。默认为：https://owo.imaegoo.com/owo.json',
+    '表情 CDN，英文逗號分隔。預設為：https://owo.imaegoo.com/owo.json',
+    '表情 CDN 來源，使用英文逗號分隔。預設為：https://owo.imaegoo.com/owo.json',
+    'Emotion CDN. Separate by comma. Default: https://owo.imaegoo.com/owo.json',
+    'Emotion CDN. Вергул билан ажратинг. Default: https://owo.imaegoo.com/owo.json'
   ],
   [S.ACI + '_FORBIDDEN_WORDS']: [
     '违禁词配置，包含违禁词的内容会直接标记为垃圾评论。英文逗号分隔。',

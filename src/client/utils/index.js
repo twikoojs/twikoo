@@ -4,7 +4,7 @@ import marked from './marked'
 import renderCode from './highlight'
 import { isUrl, call } from './api'
 import { normalizeMail, isQQ, getQQAvatar } from './avatar'
-import { initOwoEmotion, initMarkedOwo } from './emotion'
+import { initOwoEmotions, initMarkedOwo } from './emotion'
 
 const isNotSet = (option) => {
   return option === undefined || option === null || option === ''
@@ -173,7 +173,7 @@ export {
   normalizeMail,
   isQQ,
   getQQAvatar,
-  initOwoEmotion,
+  initOwoEmotions,
   initMarkedOwo,
   getCommentsCountApi,
   getRecentCommentsApi,

@@ -18,6 +18,13 @@ function initOwoEmotion (api) {
   })
 }
 
+async function initOwoEmotions (apis) {
+  const odata = {}
+  const odatas = await Promise.all(apis.split(',').map((api) => initOwoEmotion(api.trim())))
+  Object.assign(odata, ...odatas)
+  return odata
+}
+
 // 格式化不规范的 OwO 数据格式
 function formatOdata (odata) {
   try {
@@ -69,6 +76,6 @@ function initMarkedOwo (odata) {
 }
 
 export {
-  initOwoEmotion,
+  initOwoEmotions,
   initMarkedOwo
 }

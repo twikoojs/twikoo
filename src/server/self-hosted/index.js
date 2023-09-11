@@ -517,7 +517,7 @@ async function commentExportForAdmin (event) {
       .getCollection(collection)
       .chain()
       .find({})
-      .data()
+      .data({ removeMeta: true })
     res.code = RES_CODE.SUCCESS
     res.data = data
   } else {

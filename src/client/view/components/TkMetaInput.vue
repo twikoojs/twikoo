@@ -1,7 +1,6 @@
 <template>
   <div class="tk-meta-input">
-    <el-input v-for="metaInput in metaInputs"
-        v-if="displayedFields[metaInput.key]"
+    <el-input v-for="metaInput in displayedInputs"
         :key="metaInput.key"
         :name="metaInput.name"
         :type="metaInput.type"
@@ -50,6 +49,9 @@ export default {
         mail: displayedFieldsSetting ? displayedFieldsSetting.indexOf('mail') !== -1 : true,
         link: displayedFieldsSetting ? displayedFieldsSetting.indexOf('link') !== -1 : true
       }
+    },
+    displayedInputs () {
+      return this.metaInputs.filter((i) => !!this.displayedFields[i.key])
     },
     requiredFields () {
       const requiredFieldsSetting = this.config.REQUIRED_FIELDS

@@ -311,7 +311,7 @@ export default {
       }
     },
     uploadCompleted (fileIndex, fileName, fileType, fileUrl) {
-      fileName = fileName.replace(/[\[\]]/g, '_')
+      fileName = fileName.replace(/[[\]]/g, '_')
       this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `![${fileName}](${fileUrl})`)
       this.$refs.inputFile.value = ''
     },

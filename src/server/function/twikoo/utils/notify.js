@@ -1,4 +1,4 @@
-const { getAvatar } = require('.')
+const { equalsMail, getAvatar } = require('.')
 const {
   $,
   nodemailer,
@@ -66,7 +66,7 @@ const fn = {
       logger.info('未配置邮箱或邮箱配置有误，不通知')
       return
     }
-    if (config.BLOGGER_EMAIL && config.BLOGGER_EMAIL === comment.mail) {
+    if (equalsMail(config.BLOGGER_EMAIL, comment.mail)) {
       logger.info('博主本人评论，不发送通知给博主')
       return
     }
@@ -127,7 +127,7 @@ const fn = {
       logger.info('没有配置 pushoo，放弃即时消息通知')
       return
     }
-    if (config.BLOGGER_EMAIL && config.BLOGGER_EMAIL === comment.mail) {
+    if (equalsMail(config.BLOGGER_EMAIL, comment.mail)) {
       logger.info('博主本人评论，不发送通知给博主')
       return
     }
@@ -178,11 +178,11 @@ const fn = {
       return
     }
     const parentComment = await getParentComment(currentComment)
-    if (config.BLOGGER_EMAIL === parentComment.mail) {
+    if (equalsMail(config.BLOGGER_EMAIL, parentComment.mail)) {
       logger.info('回复给博主，因为会发博主通知邮件，所以不再重复通知')
       return
     }
-    if (currentComment.mail === parentComment.mail) {
+    if (equalsMail(currentComment.mail, parentComment.mail)) {
       logger.info('回复自己的评论，不邮件通知')
       return
     }

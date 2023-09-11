@@ -22,6 +22,8 @@ const {
   getUrlsQuery,
   parseComment,
   parseCommentForAdmin,
+  normalizeMail,
+  equalsMail,
   getMailMd5,
   getAvatar,
   isQQ,
@@ -649,14 +651,14 @@ async function postSubmit (comment, request) {
 async function parse (comment, request) {
   const timestamp = Date.now()
   const isAdminUser = isAdmin()
-  const isBloggerMail = comment.mail && comment.mail === config.BLOGGER_EMAIL
+  const isBloggerMail = equalsMail(comment.mail, config.BLOGGER_EMAIL)
   if (isBloggerMail && !isAdminUser) throw new Error('请先登录管理面板，再使用博主身份发送评论')
   const commentDo = {
     _id: uuidv4().replace(/-/g, ''),
     uid: getUid(),
     nick: comment.nick ? comment.nick : '匿名',
     mail: comment.mail ? comment.mail : '',
-    mailMd5: comment.mail ? md5(comment.mail) : '',
+    mailMd5: comment.mail ? md5(normalizeMail(comment.mail)) : '',
     link: comment.link ? comment.link : '',
     ua: comment.ua,
     ip: getIp(request),
@@ -672,7 +674,7 @@ async function parse (comment, request) {
   }
   if (isQQ(comment.mail)) {
     commentDo.mail = addQQMailSuffix(comment.mail)
-    commentDo.mailMd5 = md5(commentDo.mail)
+    commentDo.mailMd5 = md5(normalizeMail(commentDo.mail))
     commentDo.avatar = await getQQAvatar(comment.mail)
   }
   return commentDo

@@ -7,7 +7,7 @@ const twikoo = require('twikoo-vercel')
  * https://docs.netlify.com/functions/create/?fn-language=js
  */
 exports.handler = async function (event, context) {
-  process.env.VERCEL_URL = event.rawUrl
+  process.env.VERCEL_URL = event.rawUrl.replace(/^https?:\/\//, '')
   process.env.TWIKOO_IP_HEADERS = JSON.stringify([
     'headers.x-nf-client-connection-ip'
   ])

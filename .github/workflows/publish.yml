@@ -32,6 +32,10 @@ jobs:
         run: cd src/server/self-hosted && yarn publish --tag beta
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+      - if: "github.event.release.prerelease"
+        run: cd src/server/netlify && yarn publish --tag beta
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
       - if: "!github.event.release.prerelease"
         run: yarn publish
         env:
@@ -46,6 +50,10 @@ jobs:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
       - if: "!github.event.release.prerelease"
         run: cd src/server/self-hosted && yarn publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+      - if: "!github.event.release.prerelease"
+        run: cd src/server/netlify && yarn publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
   publish-docker:

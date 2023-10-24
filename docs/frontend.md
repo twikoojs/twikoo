@@ -67,9 +67,15 @@ twikoo:
 
 请参考 [Redefine 官方文档 #comment](https://redefine-docs.ohevan.com/docs/configuration-guide/comment#twikoo) 进行配置
 
+## 在 Hugo 中使用
+
 ### 在 [hugo-theme-stack](https://github.com/CaiJimmy/hugo-theme-stack) 主题使用
 
 请参考 [Comments | Stack](https://stack.jimmycai.com/config/comments) 和 [hugo-theme-stack/config.yaml#L83](https://github.com/CaiJimmy/hugo-theme-stack/blob/master/config.yaml#L83) 进行配置
+
+### 在 [FixIt](https://github.com/hugo-fixit/FixIt) 主题使用
+
+请参考 [入门篇 - FixIt #主题配置](https://fixit.lruihao.cn/zh-cn/documentation/basics/#theme-configuration) 和 [hugo-fixit/FixIt/config.toml#L613-L624](https://github.com/hugo-fixit/FixIt/blob/8bb2a35dcc4c54fc3e0fb968df063d6be1daabf3/config.toml#L613-L624) 进行配置
 
 ## 通过 CDN 引入
 

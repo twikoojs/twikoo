@@ -83,16 +83,16 @@ const fn = {
     } else if (os.name === 'macOS') {
       const majorPlatformVersion = os.version.split('.')[0]
       switch (majorPlatformVersion) {
-        case 11:
+        case '11':
           os.versionName = 'Big Sur'
           break
-        case 12:
+        case '12':
           os.versionName = 'Monterey'
           break
-        case 13:
+        case '13':
           os.versionName = 'Ventura'
           break
-        case 14:
+        case '14':
           os.versionName = 'Sonoma'
           break
         default:

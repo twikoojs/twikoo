@@ -98,6 +98,7 @@ const fn = {
         default:
       }
     }
+    return os
   },
   // 获取回复人昵称 / Get replied user nick name
   ruser (pid, comments = []) {

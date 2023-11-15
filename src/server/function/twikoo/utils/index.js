@@ -45,7 +45,7 @@ const fn = {
     if (config.SHOW_UA !== 'false') {
       try {
         const ua = bowser.getParser(comment.ua)
-        const os = ua.getOS()
+        const os = fn.fixOS(ua.getOS())
         displayOs = [os.name, os.versionName ? os.versionName : os.version].join(' ')
         displayBrowser = [ua.getBrowserName(), ua.getBrowserVersion()].join(' ')
       } catch (e) {
@@ -74,6 +74,29 @@ const fn = {
       isSpam: comment.isSpam,
       created: comment.created,
       updated: comment.updated
+    }
+  },
+  fixOS (os) {
+    // Win 11 fix & macOS ^10 fix
+    if (os.name === 'Windows' && os.version === 'NT 11.0') {
+      os.versionName = '11'
+    } else if (os.name === 'macOS') {
+      const majorPlatformVersion = os.version.split('.')[0]
+      switch (majorPlatformVersion) {
+        case 11:
+          os.versionName = 'Big Sur'
+          break
+        case 12:
+          os.versionName = 'Monterey'
+          break
+        case 13:
+          os.versionName = 'Ventura'
+          break
+        case 14:
+          os.versionName = 'Sonoma'
+          break
+        default:
+      }
     }
   },
   // 获取回复人昵称 / Get replied user nick name

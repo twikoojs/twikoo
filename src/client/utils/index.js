@@ -65,6 +65,30 @@ const getRecentCommentsApi = async (tcb, options) => {
 }
 
 /**
+ * 替换 UA 中的 Windows NT 版本号以兼容识别 Windows 11
+ * https://learn.microsoft.com/en-us/microsoft-edge/web-platform/how-to-detect-win11
+ * 替换 UA 中的 macOS 版本以兼容识别 Catalina 以上版本的 macOS
+ */
+const getUserAgent = async () => {
+  let ua = window.navigator.userAgent
+  try {
+    const { platform } = navigator.userAgentData
+    if (platform === 'Windows' || platform === 'macOS') {
+      const { platformVersion } = await navigator.userAgentData.getHighEntropyValues(['platformVersion'])
+      const majorPlatformVersion = parseInt(platformVersion.split('.')[0])
+      if (platform === 'Windows' && majorPlatformVersion >= 13) {
+        const correctVersion = '11.0'
+        ua = ua.replace(/Windows NT 10\.0/i, `Windows NT ${correctVersion}`)
+      } else if (platform === 'macOS' && majorPlatformVersion >= 11) {
+        const correctVersion = platformVersion.replace(/\./g, '_')
+        ua = ua.replace(/Mac OS X 10_[0-9]+_[0-9]+/i, `Mac OS X ${correctVersion}`)
+      }
+    }
+  } catch (e) {}
+  return ua
+}
+
+/**
  * 由于 Twikoo 早期版本将 path 视为表达式处理，
  * 而其他同类评论系统都是把 path 视为字符串常量，
  * 为同时兼顾早期版本和统一性，就有了这个方法。
@@ -177,6 +201,7 @@ export {
   initMarkedOwo,
   getCommentsCountApi,
   getRecentCommentsApi,
+  getUserAgent,
   getUrl,
   getHref,
   readAsText,

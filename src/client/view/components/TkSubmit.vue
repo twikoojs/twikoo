@@ -53,7 +53,7 @@ import iconImage from '@fortawesome/fontawesome-free/svgs/regular/image.svg'
 import Clickoutside from 'element-ui/src/utils/clickoutside'
 import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
-import { marked, call, logger, renderLinks, renderMath, renderCode, initOwoEmotions, initMarkedOwo, t, getUrl, getHref, blobToDataURL } from '../../utils'
+import { marked, call, logger, renderLinks, renderMath, renderCode, initOwoEmotions, initMarkedOwo, t, getUrl, getHref, blobToDataURL, getUserAgent } from '../../utils'
 import OwO from '../../lib/owo'
 
 const imageTypes = [
@@ -179,15 +179,13 @@ export default {
         if (this.comment.match(new RegExp(`!\\[${t('IMAGE_UPLOAD_PLACEHOLDER')}.+\\]\\(\\)`))) {
           throw new Error(t('IMAGE_UPLOAD_PLEASE_WAIT'))
         }
-        const url = getUrl(this.$twikoo.path)
-        const href = getHref(this.$twikoo.href)
         const comment = {
           nick: this.nick,
           mail: this.mail,
           link: this.link,
-          ua: navigator.userAgent,
-          url,
-          href,
+          ua: await getUserAgent(),
+          url: getUrl(this.$twikoo.path),
+          href: getHref(this.$twikoo.href),
           comment: marked(this.comment),
           pid: this.pid ? this.pid : this.replyId,
           rid: this.replyId

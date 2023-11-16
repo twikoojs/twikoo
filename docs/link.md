@@ -8,3 +8,4 @@
 * [集成 Twikoo 与 lightGallery 插件，实现评论图片的点击放大](https://www.imaegoo.com/2021/twikoo-lightgallery/) by iMaeGoo
 * [Twikoo 评论数据导出教程](https://www.imaegoo.com/2022/twikoo-data-export/) by iMaeGoo
 * [【Hexo博客】Twikoo评论系统的免费部署(云函数采用Vercel方式)](https://blog.meta-code.top/2022/03/16/2022-42/) by 百里飞洋Barry-Flynn
+* [React/Next.js 前端应用中接入 Twikoo 前端](https://www.xiaobotalk.com/react-nextjs-%E4%B8%AD%E6%8E%A5%E5%85%A5-twikoo-%E5%89%8D%E7%AB%AF) by XiaoboTalk

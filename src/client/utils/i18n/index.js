@@ -17,19 +17,23 @@ const langs = {
   'ja-jp': 5
 }
 
-let userLanguage = ''
+const defaultLanguage = 'zh-cn'
+let twikooLangOption = ''
 
 const setLanguage = (options = {}) => {
-  userLanguage = options.lang in langs ? options.lang : navigator.language
+  if (options.lang && options.lang.toLowerCase() in langs) {
+    twikooLangOption = options.lang
+  }
 }
 
 const translate = (key, language) => {
-  const lang = (language || userLanguage || navigator.language).toLowerCase()
+  // 优先级: translate 入参 > twikoo.init 入参 > 浏览器语言设置 > 默认语言
+  const lang = (language || twikooLangOption || navigator.language).toLowerCase()
   let value
   if (lang && langs[lang]) {
     value = i18n[key][langs[lang]]
   } else {
-    value = i18n[key][langs['zh-cn']]
+    value = i18n[key][langs[defaultLanguage]]
   }
   return value || ''
 }

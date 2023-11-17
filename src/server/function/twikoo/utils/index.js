@@ -77,25 +77,27 @@ const fn = {
     }
   },
   fixOS (os) {
-    // Win 11 fix & macOS ^10 fix
-    if (os.name === 'Windows' && os.version === 'NT 11.0') {
-      os.versionName = '11'
-    } else if (os.name === 'macOS') {
-      const majorPlatformVersion = os.version.split('.')[0]
-      switch (majorPlatformVersion) {
-        case '11':
-          os.versionName = 'Big Sur'
-          break
-        case '12':
-          os.versionName = 'Monterey'
-          break
-        case '13':
-          os.versionName = 'Ventura'
-          break
-        case '14':
-          os.versionName = 'Sonoma'
-          break
-        default:
+    if (!os.versionName) {
+      // fix version name of Win 11 & macOS ^11 & Android ^10
+      if (os.name === 'Windows' && os.version === 'NT 11.0') {
+        os.versionName = '11'
+      } else if (os.name === 'macOS') {
+        const majorPlatformVersion = os.version.split('.')[0]
+        os.versionName = {
+          11: 'Big Sur',
+          12: 'Monterey',
+          13: 'Ventura',
+          14: 'Sonoma'
+        }[majorPlatformVersion]
+      } else if (os.name === 'Android') {
+        const majorPlatformVersion = os.version.split('.')[0]
+        os.versionName = {
+          10: 'Quince Tart',
+          11: 'Red Velvet Cake',
+          12: 'Snow Cone',
+          13: 'Tiramisu',
+          14: 'Upside Down Cake'
+        }[majorPlatformVersion]
       }
     }
     return os

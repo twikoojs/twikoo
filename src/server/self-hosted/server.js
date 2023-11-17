@@ -15,7 +15,6 @@ server.on('request', async function (request, response) {
     }
     request.body = JSON.parse(Buffer.concat(buffers).toString())
   } catch (e) {
-    logger.error('请求body解析失败', e.message)
     request.body = {}
   }
   response.status = function (code) {

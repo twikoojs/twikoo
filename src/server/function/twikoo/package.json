@@ -15,7 +15,7 @@
     "@cloudbase/node-sdk": "^2.5.0",
     "@imaegoo/node-ip2region": "^2.1.1",
     "akismet-api": "^5.1.0",
-    "axios": "^0.21.1",
+    "axios": "^1.6.2",
     "blueimp-md5": "^2.18.0",
     "bowser": "^2.11.0",
     "cheerio": "1.0.0-rc.5",

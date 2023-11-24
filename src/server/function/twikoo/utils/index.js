@@ -216,8 +216,11 @@ const fn = {
       return true
     } else if (config.FORBIDDEN_WORDS) {
       // 违禁词检测
+      const commentLowerCase = comment.toLowerCase()
+      const nickLowerCase = nick.toLowerCase()
       for (const forbiddenWord of config.FORBIDDEN_WORDS.split(',')) {
-        if (comment.indexOf(forbiddenWord.trim()) !== -1 || nick.indexOf(forbiddenWord.trim()) !== -1) {
+        const forbiddenWordLowerCase = forbiddenWord.trim().toLowerCase()
+        if (commentLowerCase.indexOf(forbiddenWordLowerCase) !== -1 || nickLowerCase.indexOf(forbiddenWordLowerCase) !== -1) {
           logger.warn('包含违禁词，直接标记为垃圾评论~')
           return true
         }

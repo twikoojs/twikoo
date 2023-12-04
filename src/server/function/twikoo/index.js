@@ -789,6 +789,9 @@ async function getRecentComments (event) {
   try {
     const query = {}
     query.isSpam = _.neq(true)
+    if (event.urls && event.urls.length) {
+      query.url = _.in(getUrlsQuery(event.urls))
+    }
     if (!event.includeReply) query.rid = _.in(['', null])
     if (event.pageSize > 100) event.pageSize = 100
     const result = await db

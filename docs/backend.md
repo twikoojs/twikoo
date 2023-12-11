@@ -9,6 +9,7 @@
 | [Railway 部署](#railway-部署) | ★★☆☆☆ | 有免费额度但不足以支持一个月连续运行，部署简单，适合全球访问。 |
 | [Zeabur 部署](#zeabur-部署) | ★☆☆☆☆ | 需要绑定支付宝或信用卡，部署简单，适合中国大陆访问，免费计划环境随时可能会被删除。 |
 | [Netlify 部署](#netlify-部署) | ★★★★☆ | 有充足的免费额度，中国大陆访问速度不错。 |
+| [Hugging Face 部署](#hugging-face-部署) | ★☆☆☆☆ | 免费，不稳定，正在测试中 |
 | [私有部署](#私有部署) | ★★☆☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 | [私有部署 (Docker)](#私有部署-docker) | ★★★☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 
@@ -34,7 +35,7 @@
 3. 进入[环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)，启用“匿名登录”
 4. 进入[环境-安全配置](https://console.cloud.tencent.com/tcb/env/safety)，将网站域名添加到“WEB安全域名”
 5. 进入[环境-云函数](https://console.cloud.tencent.com/tcb/scf/index)，点击“新建云函数”
-6. 函数名称请填写：`twikoo`，创建方式请选择：`空白函数`，运行环境请选择：`Nodejs 10.15`，函数内存请选择：`128MB`，点击“下一步”
+6. 函数名称请填写：`twikoo`，创建方式请选择：`空白函数`，运行环境请选择：`Nodejs 16.13`，函数内存请选择：`128MB`，点击“下一步”
 7. 清空输入框中的示例代码，复制以下代码、粘贴到“函数代码”输入框中，点击“确定”
 ``` js
 exports.main = require('twikoo-func').main
@@ -42,7 +43,7 @@ exports.main = require('twikoo-func').main
 8. 创建完成后，点击“twikoo"进入云函数详情页，进入“函数代码”标签，点击“文件 - 新建文件”，输入 `package.json`，回车
 9. 复制以下代码、粘贴到代码框中，点击“保存并安装依赖”
 ``` json
-{ "dependencies": { "twikoo-func": "1.6.26" } }
+{ "dependencies": { "twikoo-func": "1.6.27" } }
 ```
 
 ## 腾讯云命令行部署
@@ -108,12 +109,16 @@ Vercel 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 6. 申请 [Vercel](https://vercel.com/signup) 账号
 7. 点击以下按钮将 Twikoo 一键部署到 Vercel<br>
 
-[![](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/twikoojs/twikoo/tree/main/src/server/vercel-min)
+[![Deploy](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/twikoojs/twikoo/tree/main/src/server/vercel-min)
 
 8. 进入 Settings - Environment Variables，添加环境变量 `MONGODB_URI`，值为前面记录的数据库连接字符串
-9. 进入 Deployments , 然后在任意一项后面点击更多（三个点） , 然后点击Redeploy , 最后点击下面的Redeploy
-10. 进入 Overview，点击 Domains 下方的链接，如果环境配置正确，可以看到 “Twikoo 云函数运行正常” 的提示
-11. Vercel Domains（包含 `https://` 前缀，例如 `https://xxx.vercel.app`）即为您的环境 id
+9. 进入 Settings - Deployment Protection，设置 Vercel Authentication 为 Disabled，并 Save
+
+![](./static/vercel-1.png)
+
+10. 进入 Deployments , 然后在任意一项后面点击更多（三个点） , 然后点击 Redeploy , 最后点击下面的 Redeploy
+11. 进入 Overview，点击 Domains 下方的链接，如果环境配置正确，可以看到 “Twikoo 云函数运行正常” 的提示
+12. Vercel Domains（包含 `https://` 前缀，例如 `https://xxx.vercel.app`）即为您的环境 id
 
 ## Railway 部署
 
@@ -191,6 +196,14 @@ Netlify 免费等级（Functions Level 0）支持每月 125,000 请求次数和 
 ![](./static/netlify-5.png)
 
 13. 云函数地址（包含 `https://` 前缀和 `/.netlify/functions/twikoo` 后缀，例如 `https://xxx.netlify.app/.netlify/functions/twikoo`）即为您的环境 id
+
+## Hugging Face 部署
+
+::: warning 注意
+正在测试中，文档待完善
+:::
+
+请参考 [https://github.com/twikoojs/twikoo/blob/main/src/server/huggingface-space/README.md](https://github.com/twikoojs/twikoo/blob/main/src/server/huggingface-space/README.md)，更详细的文档会在未来版本中完善。
 
 ## 私有部署
 

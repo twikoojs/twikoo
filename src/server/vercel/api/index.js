@@ -615,7 +615,7 @@ async function commentSubmit (event, request) {
     ])
     logger.log('POST_SUBMIT')
   } catch (e) {
-    logger.error('POST_SUBMIT 失败', e)
+    logger.error('POST_SUBMIT 失败', e.message)
   }
   return res
 }
@@ -827,6 +827,9 @@ async function getRecentComments (event) {
   try {
     const query = {}
     query.isSpam = { $ne: true }
+    if (event.urls && event.urls.length) {
+      query.url = { $in: getUrlsQuery(event.urls) }
+    }
     if (!event.includeReply) query.rid = { $in: ['', null] }
     if (event.pageSize > 100) event.pageSize = 100
     const result = await db

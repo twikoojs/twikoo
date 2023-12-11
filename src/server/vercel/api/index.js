@@ -615,7 +615,7 @@ async function commentSubmit (event, request) {
     ])
     logger.log('POST_SUBMIT')
   } catch (e) {
-    logger.error('POST_SUBMIT 失败', e)
+    logger.error('POST_SUBMIT 失败', e.message)
   }
   return res
 }

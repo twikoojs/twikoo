@@ -13,12 +13,19 @@ app_port: 8080
 ## 安装
 
 1.在Huggingface创建一个Space，可视化必须为Public
+
 2.在Space中添加`MONGODB_URI`环境变量
+
 3.clone Huggingface Space仓库
+
 4.clone主仓库，进入该目录，将该目录下的所有文件（不包括.git文件夹）复制到Huggingface Space仓库中
+
 5.push Huggingface Space仓库
+
 6.在Huggingface Space页面中右键，选择查看框架源代码，获取真实部署url
+
 7.前端url配置方式与其他部署方式相同（url末尾不要带有任何字符串）
+
 8.开始享受Twikoo！
 
 ## 环境变量

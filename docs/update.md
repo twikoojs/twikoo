@@ -51,6 +51,10 @@ yarn deploy -e 您的环境id
 3. 将 `"twikoo-vercel": "latest"` 其中的 `latest` 修改为最新版本号。点击 Commit changes
 4. 部署会自动触发
 
+## 针对 Hugging Face 部署的更新方式
+
+1. 登录 Hugging Face，找到部署的 Space，点击上方 Settings，往下滚动找到并点击 Factory rebuild
+
 ## 针对私有部署的更新方式
 
 1. 停止旧版本 `kill $(ps -ef | grep tkserver | grep -v 'grep' | awk '{print $2}')`

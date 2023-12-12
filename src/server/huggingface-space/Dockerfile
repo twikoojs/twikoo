@@ -1,3 +1,0 @@
-FROM imaegoo/twikoo
-ARG MONGODB_URI
-EXPOSE 8080

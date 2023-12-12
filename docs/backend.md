@@ -9,7 +9,7 @@
 | [Railway 部署](#railway-部署) | ★★☆☆☆ | 有免费额度但不足以支持一个月连续运行，部署简单，适合全球访问。 |
 | [Zeabur 部署](#zeabur-部署) | ★☆☆☆☆ | 需要绑定支付宝或信用卡，部署简单，适合中国大陆访问，免费计划环境随时可能会被删除。 |
 | [Netlify 部署](#netlify-部署) | ★★★★☆ | 有充足的免费额度，中国大陆访问速度不错。 |
-| [Hugging Face 部署](#hugging-face-部署) | ★☆☆☆☆ | 免费，不稳定，正在测试中 |
+| [Hugging Face 部署](#hugging-face-部署) | ★★★★☆ | 免费，中国大陆访问速度不错。 |
 | [私有部署](#私有部署) | ★★☆☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 | [私有部署 (Docker)](#私有部署-docker) | ★★★☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 
@@ -199,11 +199,51 @@ Netlify 免费等级（Functions Level 0）支持每月 125,000 请求次数和 
 
 ## Hugging Face 部署
 
-::: warning 注意
-正在测试中，文档待完善
-:::
+1. 申请 [MongoDB](https://www.mongodb.com/cloud/atlas/register) 账号
+2. 创建免费 MongoDB 数据库
+3. 在 Database Access 页面点击 Add New Database User 创建数据库用户，Authentication Method 选 Password，在 Password Authentication 下设置数据库用户名和密码，用户名和密码可包含数字和大小写字母，请勿包含特殊符号。点击 Database User Privileges 下方的 Add Built In Role，Select Role 选择 Atlas Admin，最后点击 Add User
 
-请参考 [https://github.com/twikoojs/twikoo/blob/main/src/server/huggingface-space/README.md](https://github.com/twikoojs/twikoo/blob/main/src/server/huggingface-space/README.md)，更详细的文档会在未来版本中完善。
+![](./static/mongodb-1.png)
+
+4. 在 Network Access 页面点击 Add IP Address，Access List Entry 输入 `0.0.0.0/0`（允许所有 IP 地址的连接），点击 Confirm
+
+![](./static/mongodb-2.png)
+
+5. 在 Database 页面点击 Connect，连接方式选择 Drivers，并记录数据库连接字符串，请将连接字符串中的 `<username>:<password>` 修改为刚刚创建的数据库 `用户名:密码`
+
+![](./static/mongodb-3.png)
+
+6. 申请 [Hugging Face](https://huggingface.co/join) 账号
+7. 登录，点击 Spaces - Create new Space
+
+![](./static/hugging-1.png)
+
+8. 输入 Space name，Select the Space SDK 选择 Docker，Choose a Docker template 选择 Blank，Space hardware 选择 FREE，选择 Public，点击 Create Space
+
+![](./static/hugging-2.png)
+
+9. 进入刚刚创建的 Space，点击页面上方的 Settings，滚动到 Variables and secrets 部分，点击 New secret，Name 输入 `MONGODB_URI`，Value 输入前面记录的数据库连接字符串，点击 Save
+
+![](./static/hugging-3.png)
+
+10. 点击页面上方的 Files - Add file - Create a new file
+
+![](./static/hugging-4.png)
+
+11. 在 Name your file 中输入 `Dockerfile`，在 Edit 区域输入以下内容
+
+```Dockerfile
+FROM imaegoo/twikoo
+ENV TWIKOO_PORT 7860
+EXPOSE 7860
+```
+
+![](./static/hugging-5.png)
+
+12. 点击 Commit new file to main
+13. 点击右上角 Settings 右方的菜单（三个点）图标 - Embed this Space，Direct URL 下的内容（例如 `https://xxx-xxx.hf.space`）即为您的环境 id
+
+![](./static/hugging-6.png)
 
 ## 私有部署
 

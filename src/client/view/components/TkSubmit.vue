@@ -42,7 +42,7 @@
           :disabled="!canSend"
           @click="send">{{ isSending ? t('SUBMIT_SENDING') : t('SUBMIT_SEND') }}</el-button>
       <div class="tk-turnstile-container" ref="turnstile-container">
-        <div class="tk-turnstile" id="tk-turnstile"></div>
+        <div class="tk-turnstile" ref="turnstile"></div>
       </div>
     </div>
     <div class="tk-preview-container" v-if="isPreviewing" v-html="commentHtml" ref="comment-preview"></div>
@@ -150,6 +150,10 @@ export default {
     },
     initTurnstile () {
       if (!this.config.TURNSTILE_SITE_KEY) return
+      if (window.turnstile) {
+        this.turnstileLoad = Promise.resolve()
+        return
+      }
       this.turnstileLoad = new Promise((resolve, reject) => {
         const scriptEl = document.createElement('script')
         scriptEl.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
@@ -161,7 +165,7 @@ export default {
     getTurnstileToken () {
       return new Promise((resolve, reject) => {
         this.turnstileLoad.then(() => {
-          const widgetId = window.turnstile.render('#tk-turnstile', {
+          const widgetId = window.turnstile.render(this.$refs.turnstile, {
             sitekey: this.config.TURNSTILE_SITE_KEY,
             callback: (token) => {
               resolve(token)
@@ -372,6 +376,7 @@ export default {
     this.initOwo()
     this.addEventListener()
     this.onBgImgChange()
+    this.initTurnstile()
   },
   watch: {
     'config.SHOW_EMOTION': function () {

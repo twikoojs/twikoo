@@ -85,7 +85,7 @@ twikoo:
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.staticfile.org/twikoo/1.6.28/twikoo.all.min.js"></script>
+<script src="https://cdn.staticfile.org/twikoo/1.6.29/twikoo.all.min.js"></script>
 <script>
 twikoo.init({
   envId: '您的环境id', // 腾讯云环境填 envId；Vercel 环境填地址（https://xxx.vercel.app）
@@ -103,10 +103,10 @@ twikoo.init({
 
 如果遇到默认 CDN 加载速度缓慢，可更换其他 CDN 镜像。以下为可供选择的公共 CDN，其中一些 CDN 可能需要数天时间同步最新版本：
 
-* `https://cdn.staticfile.org/twikoo/1.6.28/twikoo.all.min.js`
-* `https://lib.baomitu.com/twikoo/1.6.28/twikoo.all.min.js`
-* `https://cdn.bootcdn.net/ajax/libs/twikoo/1.6.28/twikoo.all.min.js`
-* `https://cdn.jsdelivr.net/npm/twikoo@1.6.28/dist/twikoo.all.min.js`
+* `https://cdn.staticfile.org/twikoo/1.6.29/twikoo.all.min.js`
+* `https://lib.baomitu.com/twikoo/1.6.29/twikoo.all.min.js`
+* `https://cdn.bootcdn.net/ajax/libs/twikoo/1.6.29/twikoo.all.min.js`
+* `https://cdn.jsdelivr.net/npm/twikoo@1.6.29/dist/twikoo.all.min.js`
 
 ## 开启管理面板（腾讯云环境）
 

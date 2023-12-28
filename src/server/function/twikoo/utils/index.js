@@ -1,5 +1,5 @@
 const { URL } = require('url')
-const { axios, bowser, ipToRegion, md5 } = require('./lib')
+const { axios, FormData, bowser, ipToRegion, md5 } = require('./lib')
 const { RES_CODE } = require('./constants')
 const ipRegionSearcher = ipToRegion.create() // 初始化 IP 属地
 const logger = require('./logger')
@@ -210,6 +210,16 @@ const fn = {
     if (limitLength && comment.length > limitLength) {
       throw new Error('评论内容过长')
     }
+    if (config.BLOCKED_WORDS) {
+      const commentLowerCase = comment.toLowerCase()
+      const nickLowerCase = nick.toLowerCase()
+      for (const blockedWord of config.BLOCKED_WORDS.split(',')) {
+        const blockedWordLowerCase = blockedWord.trim().toLowerCase()
+        if (commentLowerCase.indexOf(blockedWordLowerCase) !== -1 || nickLowerCase.indexOf(blockedWordLowerCase) !== -1) {
+          throw new Error('包含屏蔽词')
+        }
+      }
+    }
     if (config.AKISMET_KEY === 'MANUAL_REVIEW') {
       // 人工审核
       logger.info('已使用人工审核模式，评论审核后才会发表~')
@@ -227,6 +237,21 @@ const fn = {
       }
     }
     return false
+  },
+  async checkTurnstileCaptcha ({ ip, turnstileToken, turnstileTokenSecretKey }) {
+    try {
+      const formData = new FormData()
+      formData.append('secret', turnstileTokenSecretKey)
+      formData.append('response', turnstileToken)
+      formData.append('remoteip', ip)
+      const { data } = await axios.post('https://challenges.cloudflare.com/turnstile/v0/siteverify', formData, {
+        headers: formData.getHeaders()
+      })
+      logger.log('验证码检测结果', data)
+      if (!data.success) throw new Error('验证码错误')
+    } catch (e) {
+      throw new Error('验证码检测失败: ' + e.message)
+    }
   },
   async getConfig ({ config, VERSION, isAdmin }) {
     return {
@@ -250,7 +275,8 @@ const fn = {
         HIDE_ADMIN_CRYPT: config.HIDE_ADMIN_CRYPT,
         HIGHLIGHT: config.HIGHLIGHT || 'true',
         HIGHLIGHT_THEME: config.HIGHLIGHT_THEME,
-        LIMIT_LENGTH: config.LIMIT_LENGTH
+        LIMIT_LENGTH: config.LIMIT_LENGTH,
+        TURNSTILE_SITE_KEY: config.TURNSTILE_SITE_KEY
       }
     }
   },

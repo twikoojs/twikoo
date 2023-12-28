@@ -117,3 +117,5 @@ docs/.vitepress/cache
 # database
 db.json
 db.json.*
+
+pnpm-lock.yaml

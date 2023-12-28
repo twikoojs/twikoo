@@ -27,6 +27,7 @@ const {
   getQQAvatar,
   getPasswordStatus,
   preCheckSpam,
+  checkTurnstileCaptcha,
   getConfig,
   getConfigForAdmin,
   validate
@@ -563,6 +564,8 @@ async function commentSubmit (event, context) {
   validate(event, ['url', 'ua', 'comment'])
   // 限流
   await limitFilter()
+  // 验证码
+  await checkCaptcha(event)
   // 预检测、转换
   const data = await parse(event)
   // 保存
@@ -672,6 +675,16 @@ async function limitFilter () {
     if (count > limitPerMinuteAll) {
       throw new Error('评论太火爆啦 >_< 请稍后再试')
     }
+  }
+}
+
+async function checkCaptcha (comment) {
+  if (config.TURNSTILE_SITE_KEY && config.TURNSTILE_SECRET_KEY) {
+    await checkTurnstileCaptcha({
+      ip: auth.getClientIP(),
+      turnstileToken: comment.turnstileToken,
+      turnstileTokenSecretKey: config.TURNSTILE_SECRET_KEY
+    })
   }
 }
 

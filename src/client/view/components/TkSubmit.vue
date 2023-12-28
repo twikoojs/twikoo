@@ -41,6 +41,9 @@
           size="small"
           :disabled="!canSend"
           @click="send">{{ isSending ? t('SUBMIT_SENDING') : t('SUBMIT_SEND') }}</el-button>
+      <div class="tk-turnstile-container" ref="turnstile-container">
+        <div class="tk-turnstile" id="tk-turnstile"></div>
+      </div>
     </div>
     <div class="tk-preview-container" v-if="isPreviewing" v-html="commentHtml" ref="comment-preview"></div>
   </div>
@@ -94,6 +97,7 @@ export default {
       nick: '',
       mail: '',
       link: '',
+      turnstileLoad: null,
       iconMarkdown,
       iconEmotion,
       iconImage
@@ -144,6 +148,32 @@ export default {
         marked.setOptions({ odata: initMarkedOwo(odata) })
       }
     },
+    initTurnstile () {
+      if (!this.config.TURNSTILE_SITE_KEY) return
+      this.turnstileLoad = new Promise((resolve, reject) => {
+        const scriptEl = document.createElement('script')
+        scriptEl.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
+        scriptEl.onload = resolve
+        scriptEl.onerror = reject
+        this.$refs['turnstile-container'].appendChild(scriptEl)
+      })
+    },
+    getTurnstileToken () {
+      return new Promise((resolve, reject) => {
+        this.turnstileLoad.then(() => {
+          const widgetId = window.turnstile.render('#tk-turnstile', {
+            sitekey: this.config.TURNSTILE_SITE_KEY,
+            callback: (token) => {
+              resolve(token)
+              setTimeout(() => {
+                window.turnstile.remove(widgetId)
+              }, 5000)
+            },
+            'error-callback': reject
+          })
+        })
+      })
+    },
     onMetaUpdate (updates) {
       this.nick = updates.meta.nick
       this.mail = updates.meta.mail
@@ -189,6 +219,9 @@ export default {
           comment: marked(this.comment),
           pid: this.pid ? this.pid : this.replyId,
           rid: this.replyId
+        }
+        if (this.config.TURNSTILE_SITE_KEY) {
+          comment.turnstileToken = await this.getTurnstileToken()
         }
         const sendResult = await call(this.$tcb, 'COMMENT_SUBMIT', comment)
         if (sendResult && sendResult.result && sendResult.result.id) {
@@ -346,6 +379,9 @@ export default {
     },
     'config.COMMENT_BG_IMG': function () {
       this.onBgImgChange()
+    },
+    'config.TURNSTILE_SITE_KEY': function () {
+      this.initTurnstile()
     }
   }
 }
@@ -411,6 +447,15 @@ export default {
 .tk-input .el-textarea__inner {
   background-position: right bottom;
   background-repeat: no-repeat;
+}
+.tk-turnstile-container {
+  position: absolute;
+  right: 0;
+  bottom: -75px;
+}
+.tk-turnstile {
+  display: flex;
+  flex-direction: column;
 }
 .tk-preview-container {
   margin-left: 3rem;

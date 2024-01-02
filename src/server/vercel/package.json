@@ -12,7 +12,7 @@
   "homepage": "https://twikoo.js.org",
   "dependencies": {
     "get-user-ip": "^1.0.1",
-    "mongodb": "^3.6.3",
+    "mongodb": "^6.3.0",
     "twikoo-func": "1.6.29",
     "uuid": "^8.3.2"
   }

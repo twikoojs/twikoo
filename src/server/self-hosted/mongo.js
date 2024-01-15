@@ -205,10 +205,7 @@ async function connectToDatabase (uri) {
   if (!uri) throw new Error('未设置环境变量 MONGODB_URI | MONGO_URL')
   // If no connection is cached, create a new one
   logger.info('Connecting to database...')
-  const client = await MongoClient.connect(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
+  const client = await MongoClient.connect(uri, {})
   // Select the database through the connection,
   // using the database path of the connection string
   const dbName = (new URL(uri)).pathname.substring(1) || 'twikoo'

@@ -47,7 +47,7 @@ const fn = {
         const success = await transporter.verify()
         if (success) logger.info('SMTP 邮箱配置正常')
       } catch (error) {
-        throw new Error('SMTP 邮箱配置异常：', error)
+        throw new Error('SMTP 邮箱配置异常：' + error.message)
       }
       return true
     } catch (e) {

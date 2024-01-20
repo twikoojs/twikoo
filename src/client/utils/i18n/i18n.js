@@ -471,6 +471,14 @@ export default {
     'Тасвир токен белгиси. Қслоуд учун кераксиз',
     '画像ホスティングトークン。qcloud画像ホスティングには設定が必要ありません'
   ],
+  [S.ACI + '_LIGHTBOX']: [
+    '使用简易 Lightbox 效果。默认：false',
+    '使用簡易 Lightbox 效果。預設：false',
+    '使用簡易 Lightbox 效果。預設：false',
+    'Use simple Lightbox effect. Default: false',
+    'Используйте простые эффекты лайтбокса. По умолчанию: false',
+    'シンプルなLightbox効果を使用します。デフォルト：false'
+  ],
   [S.ACI + '_LIMIT_PER_MINUTE']: [
     '单个 IP 发言频率限制（条/10分钟），0 为无限制，默认：10',
     '單個 IP 發言頻率限制（條/10分鐘），0 為無限制，預設：10',

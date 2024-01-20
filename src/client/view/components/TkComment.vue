@@ -31,7 +31,7 @@
             @like="onLike"
             @reply="onReply" />
       </div>
-      <div class="tk-content">
+      <div class="tk-content" @click="popupLightbox">
         <span v-if="comment.pid">{{ t('COMMENT_REPLIED') }} <a class="tk-ruser" :href="`#${comment.pid}`">@{{ comment.ruser }}</a> :</span>
         <span v-html="comment.comment" ref="comment"></span>
       </div>
@@ -235,6 +235,22 @@ export default {
       $event.preventDefault()
       this.setComment({ top })
     },
+    popupLightbox (event) {
+      if (this.$twikoo.serverConfig.LIGHTBOX !== 'true') return;
+      var target = event.target;
+      if (target.tagName === 'IMG' && !target.classList.contains('tk-owo-emotion')) {
+        var lightbox = document.createElement('div');
+        lightbox.className = 'tk-lightbox';
+        var lightboxImg = document.createElement('img');
+        lightboxImg.className = 'tk-lightbox-image';
+        lightboxImg.src = target.src;
+        lightbox.appendChild(lightboxImg);
+        document.body.appendChild(lightbox);
+        lightbox.addEventListener('click', function () {
+          document.body.removeChild(lightbox);
+        });
+      };
+    },
     async setComment (set) {
       this.loading = true
       await call(this.$tcb, 'COMMENT_SET_FOR_ADMIN', {
@@ -385,5 +401,29 @@ export default {
 }
 .tk-expand {
   font-size: 0.75em;
+}
+.tk-lightbox {
+    display: block;
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.3);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+}
+.tk-lightbox-image {
+    min-width: 100px;
+    min-height: 30px;
+    width: auto;
+    height: auto;
+    max-width: 95%;
+    max-height: 95%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(90deg, #eeeeee 50%, #e3e3e3 0);
+    background-size: 40px 100%;
 }
 </style>

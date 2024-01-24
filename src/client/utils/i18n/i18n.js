@@ -472,9 +472,9 @@ export default {
     '画像ホスティングトークン。qcloud画像ホスティングには設定が必要ありません'
   ],
   [S.ACI + '_LIGHTBOX']: [
-    '使用简易 Lightbox 效果。默认：false',
-    '使用簡易 Lightbox 效果。預設：false',
-    '使用簡易 Lightbox 效果。預設：false',
+    '使用简易图片点击放大效果。默认：false',
+    '使用簡易圖片點擊放大效果。預設：false',
+    '使用簡易圖片點擊放大效果。預設：false',
     'Use simple Lightbox effect. Default: false',
     'Используйте простые эффекты лайтбокса. По умолчанию: false',
     'シンプルなLightbox効果を使用します。デフォルト：false'

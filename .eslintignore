@@ -8,3 +8,4 @@ yarn.lock
 src/server/pkg/dist/*
 src/server/pkg/patches/*
 src/server/pkg/web.config
+pnpm-lock.yaml

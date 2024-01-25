@@ -27,8 +27,8 @@
   },
   "dependencies": {
     "commander": "^11.1.0",
-    "dotenv": "^16.3.1",
-    "tkserver": "1.6.30"
+    "dotenv": "^16.4.1",
+    "tkserver": "1.6.31"
   },
   "devDependencies": {
     "patch-package": "^8.0.0",

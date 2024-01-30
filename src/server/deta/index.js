@@ -12,29 +12,29 @@ const app = express()
 process.env.TWIKOO_IP_HEADERS = JSON.stringify(['headers.cf-connecting-ip'])
 
 app.use(async function (req, res) {
-  const buffers = [];
+  const buffers = []
   req.on('data', (chunk) => {
-    buffers.push(chunk);
-  });
+    buffers.push(chunk)
+  })
   req.on('end', async () => {
     try {
-      req.body = JSON.parse(Buffer.concat(buffers).toString());
+      req.body = JSON.parse(Buffer.concat(buffers).toString())
     } catch (e) {
-      req.body = {};
+      req.body = {}
     }
     res.status = function (code) {
-      res.statusCode = code;
-      return this;
-    };
+      res.statusCode = code
+      return this
+    }
     res.json = function (json) {
       if (!res.headersSent) {
-        res.setHeader('Content-Type', 'application/json');
-        res.status(200).send(JSON.stringify(json));
+        res.setHeader('Content-Type', 'application/json')
+        res.status(200).send(JSON.stringify(json))
       }
-      return this;
-    };
-    return await twikoo(req, res);
-  });
-});
+      return this
+    }
+    return await twikoo(req, res)
+  })
+})
 
-app.listen(8080);
+app.listen(8080)

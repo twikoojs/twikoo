@@ -278,6 +278,8 @@ EXPOSE 7860
 ::: tip 提示
 1. Linux 服务器可以用 `nohup tkserver >> tkserver.log 2>&1 &` 命令后台启动
 2. 数据默认在 data 目录，请注意定期备份数据
+3. 默认端口为8080，自定义端口使用可使用 `TWIKOO_PORT=1234 tkserver` 启动。
+4. 配置systemctl服务配合`TWIKOO_PORT=1234 tkserver`设置开机启动
 :::
 
 ## 私有部署 (Docker)

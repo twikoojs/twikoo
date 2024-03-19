@@ -120,3 +120,6 @@ db.json.*
 
 pnpm-lock.yaml
 .idea/
+
+# macOS
+.DS_Store

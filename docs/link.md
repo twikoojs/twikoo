@@ -11,3 +11,4 @@
 * [React/Next.js 前端应用中接入 Twikoo 前端](https://www.xiaobotalk.com/react-nextjs-%E4%B8%AD%E6%8E%A5%E5%85%A5-twikoo-%E5%89%8D%E7%AB%AF) by XiaoboTalk
 * [本站 - 评论模块搭建过程 | Young Kbt blog](https://notes.youngkbt.cn/about/website/comment/) by  Young Kbt
 * [评论区搭建过程 | 从01开始](https://www.peterjxl.com/Blog/Comment/) by PeterJXL
+* [Astro 添加 Twikoo 评论 | 老麦笔记](https://www.iamlm.com/blog/170.Astro%20%E6%B7%BB%E5%8A%A0%20Twikoo%20%E8%AF%84%E8%AE%BA/) by 老麦

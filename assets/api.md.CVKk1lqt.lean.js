@@ -1,0 +1,1 @@
+import{_ as s,c as i,o as a,a5 as n}from"./chunks/framework.BLQGqr8S.js";const g=JSON.parse('{"title":"API 文档","description":"","frontmatter":{},"headers":[],"relativePath":"api.md","filePath":"api.md","lastUpdated":null}'),l={name:"api.md"},h=n("",27),e=[h];function t(p,k,r,E,d,o){return a(),i("div",null,e)}const y=s(l,[["render",t]]);export{g as __pageData,y as default};

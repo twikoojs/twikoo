@@ -67,7 +67,7 @@ twikoo:
 
 请参考 [Redefine 官方文档 #comment](https://redefine-docs.ohevan.com/docs/configuration-guide/comment#twikoo) 进行配置
 
-### 在 [Hexo Solitude])(https://github.com/valor-x/hexo-theme-solitude) 主题使用
+### 在 [Hexo-Theme-Solitude](https://github.com/valor-x/hexo-theme-solitude) 主题使用
 请参考 [Solitude 文档](https://solitude-docs.efu.me/comments/twikoo) 进行配置
 
 ## 在 Hugo 中使用

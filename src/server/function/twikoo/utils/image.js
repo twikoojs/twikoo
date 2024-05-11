@@ -49,8 +49,8 @@ const fn = {
     // 自定义兰空图床（v2）URL
     const formData = new FormData()
     formData.append('file', fn.base64UrlToReadStream(photo, fileName))
-    if (process.env.TWIKOO_LSKY_STRATEGY_ID) {
-      formData.append('strategy_id', parseInt(process.env.TWIKOO_LSKY_STRATEGY_ID))
+    if ((process ? process.env : env).env.TWIKOO_LSKY_STRATEGY_ID) {
+      formData.append('strategy_id', parseInt((process ? process.env : env).env.TWIKOO_LSKY_STRATEGY_ID))
     }
     const url = `${imageCdn}/api/v1/upload`
     let token = config.IMAGE_CDN_TOKEN

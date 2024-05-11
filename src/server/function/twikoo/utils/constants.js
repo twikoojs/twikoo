@@ -15,5 +15,5 @@ module.exports = {
     AKISMET_ERROR: 1030,
     UPLOAD_FAILED: 1040
   },
-  MAX_REQUEST_TIMES: parseInt(process.env.TWIKOO_THROTTLE) || 250
+  MAX_REQUEST_TIMES: parseInt((process ? process.env : env).TWIKOO_THROTTLE) || 250
 }

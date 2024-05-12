@@ -1,4 +1,4 @@
-let envLogLevel = (process ? process.env : env).TWIKOO_LOG_LEVEL || 'info'
+let envLogLevel = process.env.TWIKOO_LOG_LEVEL || 'info'
 envLogLevel = envLogLevel.toLowerCase()
 const logLevel = { verbose: 1, info: 2, warn: 3, error: 4 }[envLogLevel] || 2
 

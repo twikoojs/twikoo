@@ -8,7 +8,6 @@ const { version: VERSION } = require('./package.json')
 const tcb = require('@cloudbase/node-sdk') // 云开发 SDK
 const {
   $,
-  getDomPurify,
   md5,
   xml2js
 } = require('./utils/lib')
@@ -44,6 +43,7 @@ const { postCheckSpam } = require('./utils/spam')
 const { sendNotice, emailTest } = require('./utils/notify')
 const { uploadImage } = require('./utils/image')
 const logger = require('./utils/logger')
+const { getDomPurify } = require('./utils/dom')
 
 // 云函数 SDK / tencent cloudbase sdk
 const app = tcb.init({ env: tcb.SYMBOL_CURRENT_ENV })

@@ -13,7 +13,6 @@ const Lfsa = require('lokijs/src/loki-fs-structured-adapter')
 const { v4: uuidv4 } = require('uuid') // 用户 id 生成
 const {
   $,
-  getDomPurify,
   md5,
   xml2js
 } = require('twikoo-func/utils/lib')
@@ -49,6 +48,7 @@ const { postCheckSpam } = require('twikoo-func/utils/spam')
 const { sendNotice, emailTest } = require('twikoo-func/utils/notify')
 const { uploadImage } = require('twikoo-func/utils/image')
 const logger = require('twikoo-func/utils/logger')
+const { getDomPurify } = require('twikoo-func/utils/dom')
 
 const DOMPurify = getDomPurify()
 

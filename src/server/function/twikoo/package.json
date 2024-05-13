@@ -1,6 +1,6 @@
 {
-  "name": "twikoo-func-cloudflare-patch",
-  "version": "1.6.33-rc.0",
+  "name": "twikoo-func",
+  "version": "1.6.33",
   "description": "A simple comment system.",
   "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
   "license": "MIT",
@@ -27,6 +27,7 @@
     "nodemailer": "^6.4.17",
     "pushoo": "latest",
     "tencentcloud-sdk-nodejs": "^4.0.65",
-    "xml2js": "^0.6.0"
+    "xml2js": "^0.6.0",
+    "xss": "^1.0.15"
   }
 }

@@ -1,8 +1,14 @@
 const { URL } = require('url')
-const { axios, FormData, bowser, ipToRegion, md5 } = require('./lib')
+const { axios, FormData, bowser, md5 } = require('./lib')
 const { RES_CODE } = require('./constants')
-const ipRegionSearcher = ipToRegion.create() // 初始化 IP 属地
 const logger = require('./logger')
+
+let ipRegionSearcher
+
+// IP 属地查询
+function getIpRegionSearcher () {
+  return ipRegionSearcher ?? (ipRegionSearcher = require('@imaegoo/node-ip2region').create())
+}
 
 const fn = {
   // 获取 Twikoo 云函数版本
@@ -119,7 +125,7 @@ const fn = {
       ip = ip.replace(/^::ffff:/, '')
       // Zeabur 返回的地址带端口号，去掉端口号。TODO: 不知道该怎么去掉 IPv6 地址后面的端口号
       ip = ip.replace(/:[0-9]*$/, '')
-      const { region } = ipRegionSearcher.binarySearchSync(ip)
+      const { region } = getIpRegionSearcher().binarySearchSync(ip)
       const [country,, province, city, isp] = region.split('|')
       // 有省显示省，没有省显示国家
       const area = province.trim() && province !== '0' ? province : country

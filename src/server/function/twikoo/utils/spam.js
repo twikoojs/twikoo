@@ -5,9 +5,21 @@ const {
 } = require('./lib')
 const AkismetClient = getAkismetClient()
 const CryptoJS = getCryptoJS()
-const tencentcloud = getTencentcloud()
 
 const logger = require('./logger')
+
+let tencentcloud
+
+function getTencentCloud () {
+  if (!tencentcloud) {
+    try {
+      tencentcloud = getTencentcloud() // 腾讯云 API NODEJS SDK
+    } catch (e) {
+      logger.warn('加载 "tencentcloud-sdk-nodejs" 失败', e)
+    }
+  }
+  return tencentcloud
+}
 
 const fn = {
   // 后垃圾评论检测
@@ -19,7 +31,7 @@ const fn = {
         isSpam = true
       } else if (config.QCLOUD_SECRET_ID && config.QCLOUD_SECRET_KEY) {
         // 腾讯云内容安全
-        const client = new tencentcloud.tms.v20200713.Client({
+        const client = new (getTencentCloud().tms.v20200713.Client)({
           credential: { secretId: config.QCLOUD_SECRET_ID, secretKey: config.QCLOUD_SECRET_KEY },
           region: 'ap-shanghai',
           profile: { httpProfile: { endpoint: 'tms.tencentcloudapi.com' } }

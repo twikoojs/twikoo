@@ -9,7 +9,6 @@ const {
 const axios = getAxios()
 const FormData = getFormData()
 const bowser = getBowser()
-const ipToRegion = getIpToRegion()
 const md5 = getMd5()
 const { RES_CODE } = require('./constants')
 const logger = require('./logger')
@@ -19,6 +18,7 @@ let ipRegionSearcher
 // IP 属地查询
 function getIpRegionSearcher () {
   if (!ipRegionSearcher) {
+    const ipToRegion = getIpToRegion()
     ipRegionSearcher = ipToRegion.create() // 初始化 IP 属地
   }
   return ipRegionSearcher

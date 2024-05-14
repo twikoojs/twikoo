@@ -3,7 +3,9 @@ const os = require('os')
 const path = require('path')
 const { isUrl } = require('.')
 const { RES_CODE } = require('./constants')
-const { axios, FormData } = require('./lib')
+const { getAxios, getFormData } = require('./lib')
+const axios = getAxios()
+const FormData = getFormData()
 const logger = require('./logger')
 
 const fn = {

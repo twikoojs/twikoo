@@ -1,8 +1,12 @@
 const {
-  AkismetClient,
-  CryptoJS,
-  tencentcloud
+  getAkismetClient,
+  getCryptoJS,
+  getTencentcloud
 } = require('./lib')
+const AkismetClient = getAkismetClient()
+const CryptoJS = getCryptoJS()
+const tencentcloud = getTencentcloud()
+
 const logger = require('./logger')
 
 const fn = {

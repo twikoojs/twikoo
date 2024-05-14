@@ -1,5 +1,16 @@
 const { URL } = require('url')
-const { axios, FormData, bowser, ipToRegion, md5 } = require('./lib')
+const {
+  getAxios,
+  getFormData,
+  getBowser,
+  getIpToRegion,
+  getMd5
+} = require('./lib')
+const axios = getAxios()
+const FormData = getFormData()
+const bowser = getBowser()
+const ipToRegion = getIpToRegion()
+const md5 = getMd5()
 const { RES_CODE } = require('./constants')
 const ipRegionSearcher = ipToRegion.create() // 初始化 IP 属地
 const logger = require('./logger')

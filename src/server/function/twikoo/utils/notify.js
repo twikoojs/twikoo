@@ -1,9 +1,12 @@
 const { equalsMail, getAvatar } = require('.')
 const {
-  $,
-  nodemailer,
-  pushoo
+  getCheerio,
+  getNodemailer,
+  getPushoo
 } = require('./lib')
+const $ = getCheerio()
+const nodemailer = getNodemailer()
+const pushoo = getPushoo()
 const { RES_CODE } = require('./constants')
 const logger = require('./logger')
 

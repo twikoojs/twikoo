@@ -12,9 +12,10 @@ const getUserIP = require('get-user-ip')
 const Lfsa = require('lokijs/src/loki-fs-structured-adapter')
 const { v4: uuidv4 } = require('uuid') // 用户 id 生成
 const {
-  $,
-  md5,
-  xml2js
+  getCheerio,
+  getDomPurify,
+  getMd5,
+  getXml2js
 } = require('twikoo-func/utils/lib')
 const {
   getFuncVersion,
@@ -48,9 +49,11 @@ const { postCheckSpam } = require('twikoo-func/utils/spam')
 const { sendNotice, emailTest } = require('twikoo-func/utils/notify')
 const { uploadImage } = require('twikoo-func/utils/image')
 const logger = require('twikoo-func/utils/logger')
-const { getDomPurify } = require('twikoo-func/utils/dom')
 
+const $ = getCheerio()
 const DOMPurify = getDomPurify()
+const md5 = getMd5()
+const xml2js = getXml2js()
 
 // 常量 / constants
 const { RES_CODE, MAX_REQUEST_TIMES } = require('twikoo-func/utils/constants')

@@ -7,9 +7,10 @@
 const { version: VERSION } = require('./package.json')
 const tcb = require('@cloudbase/node-sdk') // 云开发 SDK
 const {
-  $,
-  md5,
-  xml2js
+  getCheerio,
+  getDomPurify,
+  getMd5,
+  getXml2js
 } = require('./utils/lib')
 const {
   getFuncVersion,
@@ -43,14 +44,16 @@ const { postCheckSpam } = require('./utils/spam')
 const { sendNotice, emailTest } = require('./utils/notify')
 const { uploadImage } = require('./utils/image')
 const logger = require('./utils/logger')
-const { getDomPurify } = require('./utils/dom')
 
 // 云函数 SDK / tencent cloudbase sdk
 const app = tcb.init({ env: tcb.SYMBOL_CURRENT_ENV })
 const auth = app.auth()
 const db = app.database()
 const _ = db.command
+const $ = getCheerio()
 const DOMPurify = getDomPurify()
+const md5 = getMd5()
+const xml2js = getXml2js()
 
 // 常量 / constants
 const { RES_CODE, MAX_REQUEST_TIMES } = require('./utils/constants')

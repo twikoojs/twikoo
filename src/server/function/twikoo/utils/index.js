@@ -1,5 +1,16 @@
 const { URL } = require('url')
-const { axios, FormData, bowser, md5 } = require('./lib')
+const {
+  getAxios,
+  getFormData,
+  getBowser,
+  getIpToRegion,
+  getMd5
+} = require('./lib')
+const axios = getAxios()
+const FormData = getFormData()
+const bowser = getBowser()
+const ipToRegion = getIpToRegion()
+const md5 = getMd5()
 const { RES_CODE } = require('./constants')
 const logger = require('./logger')
 
@@ -7,7 +18,10 @@ let ipRegionSearcher
 
 // IP 属地查询
 function getIpRegionSearcher () {
-  return ipRegionSearcher ?? (ipRegionSearcher = require('@imaegoo/node-ip2region').create())
+  if (!ipRegionSearcher) {
+    ipRegionSearcher = ipToRegion.create() // 初始化 IP 属地
+  }
+  return ipRegionSearcher
 }
 
 const fn = {

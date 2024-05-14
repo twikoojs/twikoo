@@ -1,6 +1,7 @@
 const { getRelativeUrl, normalizeMail } = require('.')
-const { marked, md5 } = require('./lib')
-const { getDomPurify } = require('./dom')
+const { getMarked, getDomPurify, getMd5 } = require('./lib')
+const marked = getMarked()
+const md5 = getMd5()
 
 const fn = {
   // 兼容 Leancloud 两种 JSON 导出格式

@@ -121,3 +121,17 @@ Akismet (Automattic Kismet) 是应用广泛的一个垃圾留言过滤系统，�
 Twikoo 私有部署版默认使用内置数据库：LokiJS 数据库，支持的数据库容量大约为 1 GB，不需要连接外部数据库，数据存储在启动 twikoo 时所在目录下的 data 目录，您可以直接复制该目录以完成数据备份。
 
 如果您有 MongoDB 实例，可以连接 MongoDB 作为外部数据库，只需配置环境变量 MONGODB_URI 为数据库连接地址即可，如：`mongodb://<username>:<password>@<host>/`。
+
+## 部署后遇到评论失败: 0，管理面板进不去？
+
+在包含评论框的页面，打开浏览器开发者工具（Windows 下快捷键为 F12），点击 Console 标签，查找包含 twikoo 关键字的报错。
+
+如果看到 ERR_BLOCKED_BY_CLIENT，请禁用浏览器去广告插件或将当前网站加入白名单，然后刷新重试。
+
+如果看到 ERR_CONNECTION_CLOSED，请检查自己所处的地区网络环境是否正常，能够连通云函数，部分地区无法访问 Vercel 等服务，请更换部署方式再试。
+
+如果看到 `Access to XMLHttpRequest at 'https://tcb-api.tencentcloudapi.com/web?env=...' from origin '...' has been blocked by CORS policy...`：请检查前端 js 文件版本是否最新，并确保 envId 以 `https://` 开头。
+
+如果看到 `Access to XMLHttpRequest at ... No 'Access-Control-Allow-Origin' header is present on the requested resource.`：请先访问一下 envId 查看云函数是否运行正常，如果没有运行正常的提示，请重新部署云函数，确保不要漏下任何步骤；如果提示运行正常，请本地启动网站（localhost）并访问管理面板-配置管理-通用，清空 `CORS_ALLOW_ORIGIN` 字段并保存，然后刷新重试。
+
+如果看到其他错误，请 [提交 issue](https://github.com/twikoojs/twikoo/issues/new) 并附上错误信息。

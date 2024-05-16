@@ -24,7 +24,11 @@
         :config="config"
         @reply="onReply"
         @load="initComments" />
-      <div class="tk-expand" v-if="showExpand && !loading" @click="onExpand" v-loading="loadingMore">{{ t('COMMENTS_EXPAND') }}</div>
+      <div class="tk-expand-wrap" v-if="showExpand && !loading">
+        <div class="tk-expand" @click="onExpand" v-loading="loadingMore">
+            {{ t('COMMENTS_EXPAND') }}
+        </div>
+      </div>
     </div>
   </div>
 </template>

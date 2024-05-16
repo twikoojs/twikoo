@@ -1,5 +1,5 @@
 <template>
-  <div class="tk-submit">
+  <div class="tk-submit" ref="tk-submit">
     <div class="tk-row">
       <tk-avatar :config="config" :mail="mail" />
       <div class="tk-col">
@@ -372,6 +372,12 @@ export default {
     }
   },
   mounted () {
+    if (this.pid) {
+      this.$refs["tk-submit"].scrollIntoView({
+        "behavier": "smooth",
+        "block": "center"
+      })
+    }
     this.initDraft()
     this.initOwo()
     this.addEventListener()

@@ -1,39 +1,62 @@
-const $ = require('cheerio') // jQuery 服务器版
-const { AkismetClient } = require('akismet-api') // 反垃圾 API
-const CryptoJS = require('crypto-js') // 编解码
-const FormData = require('form-data') // 图片上传
-const { JSDOM } = require('jsdom') // document.window 服务器版
-const axios = require('axios') // 发送 REST 请求
-const bowser = require('bowser') // UserAgent 格式化
-const createDOMPurify = require('dompurify') // 反 XSS
-const ipToRegion = require('@imaegoo/node-ip2region') // IP 属地查询
-const marked = require('marked') // Markdown 解析
-const md5 = require('blueimp-md5') // MD5 加解密
-const nodemailer = require('nodemailer') // 发送邮件
-const pushoo = require('pushoo').default // 即时消息通知
-const tencentcloud = require('tencentcloud-sdk-nodejs') // 腾讯云 API NODEJS SDK
-const xml2js = require('xml2js') // XML 解析
-
-function getDomPurify () {
-  // 初始化反 XSS
-  const window = new JSDOM('').window
-  const DOMPurify = createDOMPurify(window)
-  return DOMPurify
-}
-
 module.exports = {
-  $,
-  AkismetClient,
-  CryptoJS,
-  FormData,
-  axios,
-  bowser,
-  getDomPurify,
-  ipToRegion,
-  marked,
-  md5,
-  nodemailer,
-  pushoo,
-  tencentcloud,
-  xml2js
+  getCheerio () {
+    const $ = require('cheerio') // jQuery 服务器版
+    return $
+  },
+  getAkismetClient () {
+    const { AkismetClient } = require('akismet-api') // 反垃圾 API
+    return AkismetClient
+  },
+  getCryptoJS () {
+    const CryptoJS = require('crypto-js') // 编解码
+    return CryptoJS
+  },
+  getFormData () {
+    const FormData = require('form-data') // 图片上传
+    return FormData
+  },
+  getAxios () {
+    const axios = require('axios') // 发送 REST 请求
+    return axios
+  },
+  getBowser () {
+    const bowser = require('bowser') // UserAgent 格式化
+    return bowser
+  },
+  getDomPurify () {
+    // 初始化反 XSS
+    const { JSDOM } = require('jsdom') // document.window 服务器版
+    const createDOMPurify = require('dompurify') // 反 XSS
+    const window = new JSDOM('').window
+    const DOMPurify = createDOMPurify(window)
+    return DOMPurify
+  },
+  getIpToRegion () {
+    const ipToRegion = require('@imaegoo/node-ip2region') // IP 属地查询
+    return ipToRegion
+  },
+  getMarked () {
+    const marked = require('marked') // Markdown 解析
+    return marked
+  },
+  getMd5 () {
+    const md5 = require('blueimp-md5') // MD5 加解密
+    return md5
+  },
+  getNodemailer () {
+    const nodemailer = require('nodemailer') // 发送邮件
+    return nodemailer
+  },
+  getPushoo () {
+    const pushoo = require('pushoo').default // 即时消息通知
+    return pushoo
+  },
+  getTencentcloud () {
+    const tencentcloud = require('tencentcloud-sdk-nodejs') // 腾讯云 API NODEJS SDK
+    return tencentcloud
+  },
+  getXml2js () {
+    const xml2js = require('xml2js') // XML 解析
+    return xml2js
+  }
 }

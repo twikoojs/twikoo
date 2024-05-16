@@ -12,8 +12,8 @@ const renderCode = (el, theme) => {
     Prism = require('prismjs')
     require('prismjs/plugins/autoloader/prism-autoloader')
     Prism.plugins.autoloader.languages_path = `${prismCdn}/components/`
-    require('prismjs/plugins/toolbar/prism-toolbar')
-    require('prismjs/plugins/show-language/prism-show-language')
+    // require('prismjs/plugins/toolbar/prism-toolbar')
+    // require('prismjs/plugins/show-language/prism-show-language')
   }
   loadCss(theme, prismCdn)
   Prism.highlightAllUnder(el)

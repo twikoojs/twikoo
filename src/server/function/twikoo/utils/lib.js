@@ -1,4 +1,9 @@
+let customLibs = {}
+
 module.exports = {
+  setCustomLibs (libs) {
+    customLibs = libs
+  },
   getCheerio () {
     const $ = require('cheerio') // jQuery 服务器版
     return $
@@ -24,6 +29,7 @@ module.exports = {
     return bowser
   },
   getDomPurify () {
+    if (customLibs.DOMPurify) return customLibs.DOMPurify
     // 初始化反 XSS
     const { JSDOM } = require('jsdom') // document.window 服务器版
     const createDOMPurify = require('dompurify') // 反 XSS
@@ -44,6 +50,7 @@ module.exports = {
     return md5
   },
   getNodemailer () {
+    if (customLibs.nodemailer) return customLibs.nodemailer
     const nodemailer = require('nodemailer') // 发送邮件
     return nodemailer
   },

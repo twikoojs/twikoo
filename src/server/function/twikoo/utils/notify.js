@@ -5,10 +5,15 @@ const {
   getPushoo
 } = require('./lib')
 const $ = getCheerio()
-const nodemailer = getNodemailer()
 const pushoo = getPushoo()
 const { RES_CODE } = require('./constants')
 const logger = require('./logger')
+
+let nodemailer
+
+function lazilyGetNodemailer () {
+  return nodemailer ?? (nodemailer = getNodemailer())
+}
 
 let transporter
 
@@ -45,7 +50,7 @@ const fn = {
       } else {
         throw new Error('SMTP 服务器没有配置')
       }
-      transporter = nodemailer.createTransport(transportConfig)
+      transporter = lazilyGetNodemailer().createTransport(transportConfig)
       try {
         const success = await transporter.verify()
         if (success) logger.info('SMTP 邮箱配置正常')

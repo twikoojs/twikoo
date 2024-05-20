@@ -31,9 +31,19 @@
             @like="onLike"
             @reply="onReply" />
       </div>
-      <div class="tk-content">
+      <div class="tk-content" :class="{ 'tk-content-expand': isContentExpanded || !showContentExpand }" ref="tk-content">
         <span v-if="comment.pid">{{ t('COMMENT_REPLIED') }} <a class="tk-ruser" :href="`#${comment.pid}`">@{{ comment.ruser }}</a> :</span>
         <span v-html="comment.comment" ref="comment" @click="popupLightbox"></span>
+      </div>
+      <div class="tk-expand-wrap" v-if="showContentExpand">
+        <div class="tk-expand" @click="onContentExpand">
+            {{ t('COMMENT_EXPAND') }}
+        </div>
+      </div>
+      <div class="tk-collapse-wrap" v-if="showContentCollapse">
+        <div class="tk-expand _collapse" @click="onContentCollapse">
+            {{ t('COMMENT_COLLAPSE') }}
+        </div>
       </div>
       <div class="tk-extras" v-if="comment.ipRegion || comment.os || comment.browser">
         <div class="tk-extra" v-if="comment.ipRegion">
@@ -49,25 +59,35 @@
           <span class="tk-extra-text">&nbsp;{{ comment.browser }}</span>
         </div>
       </div>
+      <!-- 回复框 -->
+      <tk-submit v-if="replying && !pid"
+        :reply-id="replyId ? replyId : comment.id"
+        :pid="comment.id"
+        :config="config"
+        @load="onLoad"
+        @cancel="onCancel" />
       <!-- 回复列表 -->
-      <div class="tk-replies" :class="{ 'tk-replies-expand': isExpanded || !showExpand }" ref="tk-replies">
+      <div class="tk-replies" :class="{ 'tk-replies-expand': isExpanded || !showExpand || replying }" ref="tk-replies">
         <tk-comment v-for="reply in comment.replies"
             :key="reply.id"
             :comment="reply"
+            :replyId="comment.id"
+            :replying="replying && pid === reply.id"
             :config="config"
             @expand="onExpand"
             @load="onLoad"
             @reply="onReplyReply" />
       </div>
-      <!-- 回复框 -->
-      <tk-submit v-if="replying"
-          :reply-id="comment.id"
-          :pid="pid"
-          :config="config"
-          @load="onLoad"
-          @cancel="onCancel" />
-      <div class="tk-expand" v-if="showExpand" @click="onExpand">{{ t('COMMENT_EXPAND') }}</div>
-      <div class="tk-expand _collapse" v-if="showCollapse" @click="onCollapse">{{ t('COMMENT_COLLAPSE') }}</div>
+      <div class="tk-expand-wrap" v-if="showExpand && !replying">
+        <div class="tk-expand" @click="onExpand">
+            {{ t('COMMENT_EXPAND') }}
+        </div>
+      </div>
+      <div class="tk-collapse-wrap" v-if="showCollapse && !replying">
+        <div class="tk-expand _collapse" @click="onCollapse">
+            {{ t('COMMENT_COLLAPSE') }}
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -125,11 +145,14 @@ export default {
       likeLoading: false,
       isExpanded: false,
       hasExpand: false,
+      isContentExpanded: false,
+      hasContentExpand: false,
       isLogin: false
     }
   },
   props: {
     comment: Object,
+    replyId: String,
     replying: Boolean,
     config: Object
   },
@@ -156,6 +179,12 @@ export default {
     showCollapse () {
       return this.hasExpand && this.isExpanded
     },
+    showContentExpand () {
+      return this.hasContentExpand && !this.isContentExpanded
+    },
+    showContentCollapse () {
+      return this.hasContentExpand && this.isContentExpanded
+    },
     convertedLink () {
       return convertLink(this.comment.link)
     }
@@ -173,12 +202,22 @@ export default {
       if (this.comment.replies && this.comment.replies.length > 0 && this.$refs['tk-replies']) {
         // 200 是回复区域最大高度
         // 36 是展开按钮高度
-        this.hasExpand = this.$refs['tk-replies'].scrollHeight > 200 + 36
+        this.hasExpand = parseFloat(getComputedStyle(this.$refs['tk-replies'], null).height.replace('px', '')) > 501  // 200 + 36
       }
+    },
+    showContentExpandIfNeed () {
+      this.hasContentExpand = parseFloat(getComputedStyle(this.$refs['tk-content'], null).height.replace('px', '')) > 301 // window.innerHeight * 0.75
+      this.$refs['tk-content'].querySelectorAll('img').forEach(img => {
+        img.onload = () => {
+          this.hasContentExpand = parseFloat(getComputedStyle(this.$refs['tk-content'], null).height.replace('px', '')) > 301
+        }
+      });
     },
     scrollToComment () {
       if (window.location.hash.indexOf(this.comment.id) !== -1) {
-        this.$refs['tk-comment'].scrollIntoView()
+        this.$refs['tk-comment'].scrollIntoView({
+          "behavier": "smooth"
+        })
         this.$emit('expand')
       }
     },
@@ -194,19 +233,32 @@ export default {
       this.liked = !this.liked
       this.likeLoading = false
     },
-    onReply () {
+    onReply (id) {
+      this.pid = id
       this.$emit('reply', this.comment.id)
     },
     onReplyReply (id) {
       // 楼中楼回复
       this.pid = id
-      this.$emit('reply', this.comment.id)
+      if (id) {
+        // action 回复按钮 触发
+        this.$emit('reply', this.comment.id)
+      } else {
+        // submit 取消按钮 触发
+        this.$emit('reply', '')
+      }
     },
     onCancel () {
       this.pid = ''
       this.$emit('reply', '')
     },
     onLoad () {
+      if (this.comment.replies.length > 0) {
+        this.$refs["tk-replies"].lastElementChild.scrollIntoView({
+          "behavier": "smooth",
+          "block": "center"
+        })
+      }
       this.pid = ''
       this.$emit('reply', '')
       this.$emit('load')
@@ -217,6 +269,12 @@ export default {
     },
     onCollapse () {
       this.isExpanded = false
+    },
+    onContentExpand () {
+      this.isContentExpanded = true
+    },
+    onContentCollapse () {
+      this.isContentExpanded = false
     },
     async checkAuth () {
       // 检查用户身份
@@ -262,6 +320,7 @@ export default {
     }
   },
   mounted () {
+    this.$nextTick(this.showContentExpandIfNeed)
     this.$nextTick(this.showExpandIfNeed)
     this.$nextTick(this.scrollToComment)
     this.$nextTick(() => {
@@ -389,11 +448,20 @@ export default {
   vertical-align: middle;
 }
 .tk-replies {
-  max-height: 200px;
+  max-height: 500px;
   overflow: hidden;
   position: relative;
 }
 .tk-replies-expand {
+  max-height: none;
+  overflow: unset;
+}
+.tk-content {
+  max-height: 300px;
+  overflow: hidden;
+  position: relative;
+}
+.tk-content-expand {
   max-height: none;
 }
 .tk-submit {

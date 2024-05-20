@@ -247,6 +247,9 @@ export default {
 .tk-admin-comment .tk-avatar {
   margin-right: 0.5em;
 }
+.tk-admin-comment .tk-content {
+  max-height: none;
+}
 .tk-admin-actions {
   display: flex;
   margin-bottom: 1em;

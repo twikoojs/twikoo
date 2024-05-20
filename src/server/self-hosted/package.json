@@ -1,6 +1,6 @@
 {
   "name": "tkserver",
-  "version": "1.6.34",
+  "version": "1.6.35",
   "description": "A simple comment system.",
   "keywords": [
     "twikoo",
@@ -31,7 +31,7 @@
     "get-user-ip": "^1.0.1",
     "lokijs": "^1.5.12",
     "mongodb": "^6.3.0",
-    "twikoo-func": "1.6.34",
+    "twikoo-func": "1.6.35",
     "uuid": "^8.3.2"
   }
 }

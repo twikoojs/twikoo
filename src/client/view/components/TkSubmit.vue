@@ -373,9 +373,9 @@ export default {
   },
   mounted () {
     if (this.pid) {
-      this.$refs["tk-submit"].scrollIntoView({
-        "behavier": "smooth",
-        "block": "center"
+      this.$refs['tk-submit'].scrollIntoView({
+        behavier: 'smooth',
+        block: 'center'
       })
     }
     this.initDraft()
@@ -463,6 +463,7 @@ export default {
   position: absolute;
   right: 0;
   bottom: -75px;
+  z-index: 1;
 }
 .tk-turnstile {
   display: flex;

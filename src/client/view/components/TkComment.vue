@@ -36,14 +36,10 @@
         <span v-html="comment.comment" ref="comment" @click="popupLightbox"></span>
       </div>
       <div class="tk-expand-wrap" v-if="showContentExpand">
-        <div class="tk-expand" @click="onContentExpand">
-            {{ t('COMMENT_EXPAND') }}
-        </div>
+        <div class="tk-expand" @click="onContentExpand">{{ t('COMMENT_EXPAND') }}</div>
       </div>
       <div class="tk-collapse-wrap" v-if="showContentCollapse">
-        <div class="tk-expand _collapse" @click="onContentCollapse">
-            {{ t('COMMENT_COLLAPSE') }}
-        </div>
+        <div class="tk-expand _collapse" @click="onContentCollapse">{{ t('COMMENT_COLLAPSE') }}</div>
       </div>
       <div class="tk-extras" v-if="comment.ipRegion || comment.os || comment.browser">
         <div class="tk-extra" v-if="comment.ipRegion">
@@ -61,11 +57,11 @@
       </div>
       <!-- 回复框 -->
       <tk-submit v-if="replying && !pid"
-        :reply-id="replyId ? replyId : comment.id"
-        :pid="comment.id"
-        :config="config"
-        @load="onLoad"
-        @cancel="onCancel" />
+          :reply-id="replyId ? replyId : comment.id"
+          :pid="comment.id"
+          :config="config"
+          @load="onLoad"
+          @cancel="onCancel" />
       <!-- 回复列表 -->
       <div class="tk-replies" :class="{ 'tk-replies-expand': isExpanded || !showExpand || replying }" ref="tk-replies">
         <tk-comment v-for="reply in comment.replies"
@@ -79,14 +75,10 @@
             @reply="onReplyReply" />
       </div>
       <div class="tk-expand-wrap" v-if="showExpand && !replying">
-        <div class="tk-expand" @click="onExpand">
-            {{ t('COMMENT_EXPAND') }}
-        </div>
+        <div class="tk-expand" @click="onExpand">{{ t('COMMENT_EXPAND') }}</div>
       </div>
       <div class="tk-collapse-wrap" v-if="showCollapse && !replying">
-        <div class="tk-expand _collapse" @click="onCollapse">
-            {{ t('COMMENT_COLLAPSE') }}
-        </div>
+        <div class="tk-expand _collapse" @click="onCollapse">{{ t('COMMENT_COLLAPSE') }}</div>
       </div>
     </div>
   </div>
@@ -202,21 +194,21 @@ export default {
       if (this.comment.replies && this.comment.replies.length > 0 && this.$refs['tk-replies']) {
         // 200 是回复区域最大高度
         // 36 是展开按钮高度
-        this.hasExpand = parseFloat(getComputedStyle(this.$refs['tk-replies'], null).height.replace('px', '')) > 501  // 200 + 36
+        this.hasExpand = this.$refs['tk-replies'].scrollHeight > 200 + 36
       }
     },
     showContentExpandIfNeed () {
-      this.hasContentExpand = parseFloat(getComputedStyle(this.$refs['tk-content'], null).height.replace('px', '')) > 301 // window.innerHeight * 0.75
-      this.$refs['tk-content'].querySelectorAll('img').forEach(img => {
-        img.onload = () => {
-          this.hasContentExpand = parseFloat(getComputedStyle(this.$refs['tk-content'], null).height.replace('px', '')) > 301
-        }
-      });
+      this.hasContentExpand = this.$refs['tk-content'].scrollHeight > 500
+    },
+    showContentExpandIfNeedAfterImagesLoaded () {
+      this.$refs['tk-content'].querySelectorAll('img').forEach((imgEl) => {
+        imgEl.onload = this.showContentExpandIfNeed
+      })
     },
     scrollToComment () {
       if (window.location.hash.indexOf(this.comment.id) !== -1) {
         this.$refs['tk-comment'].scrollIntoView({
-          "behavier": "smooth"
+          behavier: 'smooth'
         })
         this.$emit('expand')
       }
@@ -254,9 +246,9 @@ export default {
     },
     onLoad () {
       if (this.comment.replies.length > 0) {
-        this.$refs["tk-replies"].lastElementChild.scrollIntoView({
-          "behavier": "smooth",
-          "block": "center"
+        this.$refs['tk-replies'].lastElementChild.scrollIntoView({
+          behavier: 'smooth',
+          block: 'center'
         })
       }
       this.pid = ''
@@ -321,6 +313,7 @@ export default {
   },
   mounted () {
     this.$nextTick(this.showContentExpandIfNeed)
+    this.$nextTick(this.showContentExpandIfNeedAfterImagesLoaded)
     this.$nextTick(this.showExpandIfNeed)
     this.$nextTick(this.scrollToComment)
     this.$nextTick(() => {
@@ -437,8 +430,12 @@ export default {
 }
 .tk-content {
   margin-top: 0.5rem;
-  overflow: auto;
+  overflow: hidden;
   max-height: 500px;
+  position: relative;
+}
+.tk-content-expand {
+  max-height: none;
 }
 .tk-replies .tk-content {
   font-size: .9em;
@@ -448,21 +445,13 @@ export default {
   vertical-align: middle;
 }
 .tk-replies {
-  max-height: 500px;
+  max-height: 200px;
   overflow: hidden;
   position: relative;
 }
 .tk-replies-expand {
   max-height: none;
   overflow: unset;
-}
-.tk-content {
-  max-height: 300px;
-  overflow: hidden;
-  position: relative;
-}
-.tk-content-expand {
-  max-height: none;
 }
 .tk-submit {
   margin-top: 1rem;

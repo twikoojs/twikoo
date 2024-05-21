@@ -6,7 +6,7 @@ https://docs.aws.amazon.com/lambda/latest/dg/urls-invocation.html
 */
 
 exports.handler = async function (event, context) {
-  process.env.VERCEL_URL = event.requestContext.domainName;
+  process.env.VERCEL_URL = event.requestContext.domainName
   process.env.TWIKOO_IP_HEADERS = JSON.stringify([
     'headers.requestContext.http.sourceIp'
   ])
@@ -22,9 +22,9 @@ exports.handler = async function (event, context) {
   }
   try {
     if (event.isBase64Encoded) {
-      request.body = JSON.parse(Buffer.from(event.body, 'base64').toString('utf-8'));
+      request.body = JSON.parse(Buffer.from(event.body, 'base64').toString('utf-8'))
     } else {
-      request.body = JSON.parse(event.body);
+      request.body = JSON.parse(event.body)
     }
   } catch (e) {}
   const response = {

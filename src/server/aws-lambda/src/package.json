@@ -1,0 +1,16 @@
+{
+  "name": "twikoo-aws-lambda",
+  "version": "1.6.35",
+  "description": "A simple comment system.",
+  "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
+  "license": "MIT",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/twikoojs/twikoo.git"
+  },
+  "homepage": "https://twikoo.js.org",
+  "dependencies": {
+    "twikoo-vercel": "latest"
+  }
+}

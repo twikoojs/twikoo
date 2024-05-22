@@ -10,6 +10,7 @@
 | [Zeabur 部署](#zeabur-部署) | ★☆☆☆☆ | 需要绑定支付宝或信用卡，部署简单，适合中国大陆访问，免费计划环境随时可能会被删除。 |
 | [Netlify 部署](#netlify-部署) | ★★★★☆ | 有充足的免费额度，中国大陆访问速度不错。 |
 | [Hugging Face 部署](#hugging-face-部署) | ★★★★☆ | 免费，中国大陆访问速度不错。 |
+| [AWS Lambda 部署](#aws-lambda-部署) | ★★★☆☆ | 全球最大的云平台，适合已经使用 AWS 全家桶的用户。 |
 | [私有部署](#私有部署) | ★★☆☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 | [私有部署 (Docker)](#私有部署-docker) | ★★★☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 
@@ -244,6 +245,19 @@ EXPOSE 7860
 13. 点击右上角 Settings 右方的菜单（三个点）图标 - Embed this Space，Direct URL 下的内容（例如 `https://xxx-xxx.hf.space`）即为您的环境 id
 
 ![](./static/hugging-6.png)
+
+## AWS Lambda 部署
+
+1. 注册 AWS 账号并配置 Terraform CLI。
+2. 参考 `src/server/aws-lambda/terraform` 目录中 Terraform 代码创建 AWS 资源。
+3. 部署完成后，Terraform 会将 `lambda_function_url` 打印在屏幕上，您也可以使用 `terraform output` 获取这一 URL，如：
+
+```
+$ terraform output
+lambda_function_url = "https://axtoiiithbcexamplegq7ozalu0cnkii.lambda-url.us-west-2.on.aws/"
+```
+
+该 URL 即为您的环境 ID，请记下这一 URL 用于前端配置。
 
 ## 私有部署
 

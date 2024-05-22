@@ -296,6 +296,7 @@ const fn = {
         HIDE_ADMIN_CRYPT: config.HIDE_ADMIN_CRYPT,
         HIGHLIGHT: config.HIGHLIGHT || 'true',
         HIGHLIGHT_THEME: config.HIGHLIGHT_THEME,
+        HIGHLIGHT_PLUGIN: config.HIGHLIGHT_PLUGIN,
         LIMIT_LENGTH: config.LIMIT_LENGTH,
         TURNSTILE_SITE_KEY: config.TURNSTILE_SITE_KEY
       }

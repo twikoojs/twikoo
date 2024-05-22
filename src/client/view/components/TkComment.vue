@@ -334,7 +334,7 @@ export default {
       handler: function (highlight) {
         if (highlight === 'true') {
           this.$nextTick(() => {
-            renderCode(this.$refs.comment, this.config.HIGHLIGHT_THEME)
+            renderCode(this.$refs.comment, this.config.HIGHLIGHT_THEME, this.serverConfig.HIGHLIGHT_PLUGIN)
           })
         }
       },

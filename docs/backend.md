@@ -11,6 +11,7 @@
 | [Netlify 部署](#netlify-部署) | ★★★★☆ | 有充足的免费额度，中国大陆访问速度不错。 |
 | [Hugging Face 部署](#hugging-face-部署) | ★★★★☆ | 免费，中国大陆访问速度不错。 |
 | [AWS Lambda 部署](#aws-lambda-部署) | ★★★☆☆ | 全球最大的云平台，适合已经使用 AWS 全家桶的用户。 |
+| [Cloudflare workers 部署](#cloudflare-workers-部署) | ★★☆☆☆ | 部署需使用命令行，冷启动时间较短，功能有部分限制。 |
 | [私有部署](#私有部署) | ★★☆☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 | [私有部署 (Docker)](#私有部署-docker) | ★★★☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 
@@ -258,6 +259,10 @@ lambda_function_url = "https://axtoiiithbcexamplegq7ozalu0cnkii.lambda-url.us-we
 ```
 
 该 URL 即为您的环境 ID，请记下这一 URL 用于前端配置。
+
+## Cloudflare workers 部署
+
+请参考 [github.com/twikoojs/twikoo-cloudflare](https://github.com/twikoojs/twikoo-cloudflare)
 
 ## 私有部署
 

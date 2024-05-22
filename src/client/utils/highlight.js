@@ -14,13 +14,13 @@ const renderCode = (el, theme, plugins) => {
     Prism.plugins.autoloader.languages_path = `${prismCdn}/components/`
     if (plugins) {
       require('prismjs/plugins/toolbar/prism-toolbar')
-      plugins.split(',').map(item => {return item.trim()} ).forEach(p => {
+      plugins.split(',').map(item => { return item.trim() }).forEach(p => {
         if (p === 'showLanguage') {
           require('prismjs/plugins/show-language/prism-show-language')
         } else if (p === 'copyButton') {
           require('prismjs/plugins/copy-to-clipboard/prism-copy-to-clipboard')
         }
-      });
+      })
     }
   }
   loadCss(theme, prismCdn)

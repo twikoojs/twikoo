@@ -212,8 +212,8 @@ EXPOSE 7860
 
 1. 注册 AWS 账号并配置 Terraform CLI。
 2. 如需使用托管的 MongoDB 数据库，可申请 [MongoDB Atlas](./mongodb-atlas.md) 账号。
-2. 参考 `src/server/aws-lambda/terraform` 目录中 Terraform 代码创建 AWS 资源。
-3. 部署完成后，Terraform 会将 `lambda_function_url` 打印在屏幕上，您也可以使用 `terraform output` 获取这一 URL，如：
+3. 参考 `src/server/aws-lambda/terraform` 目录中 Terraform 代码创建 AWS 资源。
+4. 部署完成后，Terraform 会将 `lambda_function_url` 打印在屏幕上，您也可以使用 `terraform output` 获取这一 URL，如：
 
 ```
 $ terraform output

@@ -185,7 +185,7 @@ div.code-toolbar>.toolbar {
 .twikoo div.code-toolbar>.toolbar>.toolbar-item>button {
   border: 1px solid rgba(128, 128, 128, 0.31);
 }
-div.code-toolbar>.toolbar>.toolbar-item>button:hover {
+.twikoo div.code-toolbar>.toolbar>.toolbar-item>button:hover {
   cursor: pointer;
 }
 </style>

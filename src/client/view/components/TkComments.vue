@@ -165,7 +165,7 @@ export default {
   position: relative;
   border-radius: .3em
 }
-div.code-toolbar>.toolbar {
+.twikoo div.code-toolbar>.toolbar {
   position: absolute;
   right: 4px;
   top: 4px;

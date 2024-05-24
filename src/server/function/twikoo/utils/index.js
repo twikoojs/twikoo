@@ -196,7 +196,7 @@ const fn = {
       return comment.avatar
     } else {
       const gravatarCdn = config.GRAVATAR_CDN || 'weavatar.com'
-      let defaultGravatar = gravatarCdn === 'weavatar.com' ? `letter&letter=${comment.nick}` : 'identicon'
+      let defaultGravatar = gravatarCdn === 'weavatar.com' ? `letter&letter=${comment.nick.charAt(0)}` : 'identicon'
       if (config.DEFAULT_GRAVATAR) {
         defaultGravatar = config.DEFAULT_GRAVATAR
       }

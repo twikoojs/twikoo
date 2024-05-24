@@ -36,7 +36,7 @@ export default {
       if (this.config && this.config.DEFAULT_GRAVATAR) {
         return this.config.DEFAULT_GRAVATAR
       }
-      if (this.config && this.config.GRAVATAR_CDN && this.config.GRAVATAR_CDN === 'weavatar.com') {
+      if (this.gravatarCdn === 'weavatar.com') {
         return `letter&letter=${this.nick}`
       }
       return 'identicon'

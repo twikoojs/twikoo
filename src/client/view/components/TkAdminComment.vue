@@ -22,7 +22,7 @@
     <div class="tk-admin-comment-list" ref="comment-list">
       <div class="tk-admin-comment-item" v-for="comment in comments" :key="comment._id">
         <div class="tk-admin-comment-meta">
-          <tk-avatar :config="serverConfig" :avatar="comment.avatar" :mail="comment.mail" :link="comment.link" />
+          <tk-avatar :config="serverConfig" :avatar="comment.avatar" :nick="comment.nick" :mail="comment.mail" :link="comment.link" />
           <span v-if="!comment.link">{{ comment.nick }}&nbsp;</span>
           <a v-if="comment.link" :href="convertLink(comment.link)" target="_blank">{{ comment.nick }}&nbsp;</a>
           <span v-if="comment.mail">(<a :href="`mailto:${comment.mail}`">{{ comment.mail }}</a>)&nbsp;</span>

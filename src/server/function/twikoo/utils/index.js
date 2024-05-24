@@ -4,12 +4,14 @@ const {
   getFormData,
   getBowser,
   getIpToRegion,
-  getMd5
+  getMd5,
+  getSha256
 } = require('./lib')
 const axios = getAxios()
 const FormData = getFormData()
 const bowser = getBowser()
 const md5 = getMd5()
+const sha256 = getSha256()
 const { RES_CODE } = require('./constants')
 const logger = require('./logger')
 
@@ -183,14 +185,23 @@ const fn = {
     }
     return md5(comment.nick)
   },
+  getMailSha256 (comment) {
+    if (comment.mail) {
+      return sha256(fn.normalizeMail(comment.mail))
+    }
+    return sha256(comment.nick)
+  },
   getAvatar (comment, config) {
     if (comment.avatar) {
       return comment.avatar
     } else {
-      const gravatarCdn = config.GRAVATAR_CDN || 'cravatar.cn'
-      const defaultGravatar = config.DEFAULT_GRAVATAR || 'identicon'
-      const mailMd5 = fn.getMailMd5(comment)
-      return `https://${gravatarCdn}/avatar/${mailMd5}?d=${defaultGravatar}`
+      const gravatarCdn = config.GRAVATAR_CDN || 'weavatar.com'
+      let defaultGravatar = gravatarCdn == "weavatar.com" ? `letter&letter=${comment.nick}` : "identicon"
+      if (config.DEFAULT_GRAVATAR) {
+        defaultGravatar = config.DEFAULT_GRAVATAR
+      }
+      const mailHash = gravatarCdn == "cravatar.cn" ? fn.getMailMd5(comment) : fn.getMailSha256(comment) // Cravatar 不支持 sha256
+      return `https://${gravatarCdn}/avatar/${mailHash}?d=${defaultGravatar}`
     }
   },
   isUrl (s) {

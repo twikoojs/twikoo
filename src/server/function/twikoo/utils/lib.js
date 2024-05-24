@@ -46,8 +46,12 @@ module.exports = {
     return marked
   },
   getMd5 () {
-    const md5 = require('blueimp-md5') // MD5 加解密
+    const md5 = require('blueimp-md5') // MD5 哈希
     return md5
+  },
+  getSha256 () {
+    const sha256 = require('js-sha256') // SHA256 哈希
+    return sha256
   },
   getNodemailer () {
     if (customLibs.nodemailer) return customLibs.nodemailer

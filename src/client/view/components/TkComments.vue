@@ -161,7 +161,7 @@ export default {
   cursor: pointer;
   color: #409eff;
 }
-div.code-toolbar {
+.twikoo div.code-toolbar {
   position: relative;
   border-radius: .3em
 }

@@ -176,9 +176,9 @@ div.code-toolbar>.toolbar {
 .twikoo div.code-toolbar>.toolbar>.toolbar-item {
   margin-left: .3em
 }
-div.code-toolbar>.toolbar>.toolbar-item>a,
-div.code-toolbar>.toolbar>.toolbar-item>button,
-div.code-toolbar>.toolbar>.toolbar-item>span {
+.twikoo div.code-toolbar>.toolbar>.toolbar-item>a,
+.twikoo div.code-toolbar>.toolbar>.toolbar-item>button,
+.twikoo div.code-toolbar>.toolbar>.toolbar-item>span {
   padding: 2px 4px;
   border-radius: .3em;
 }

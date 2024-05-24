@@ -196,11 +196,11 @@ const fn = {
       return comment.avatar
     } else {
       const gravatarCdn = config.GRAVATAR_CDN || 'weavatar.com'
-      let defaultGravatar = gravatarCdn == "weavatar.com" ? `letter&letter=${comment.nick}` : "identicon"
+      let defaultGravatar = gravatarCdn === 'weavatar.com' ? `letter&letter=${comment.nick}` : 'identicon'
       if (config.DEFAULT_GRAVATAR) {
         defaultGravatar = config.DEFAULT_GRAVATAR
       }
-      const mailHash = gravatarCdn == "cravatar.cn" ? fn.getMailMd5(comment) : fn.getMailSha256(comment) // Cravatar 不支持 sha256
+      const mailHash = gravatarCdn === 'cravatar.cn' ? fn.getMailMd5(comment) : fn.getMailSha256(comment) // Cravatar 不支持 sha256
       return `https://${gravatarCdn}/avatar/${mailHash}?d=${defaultGravatar}`
     }
   },

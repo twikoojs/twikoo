@@ -173,7 +173,7 @@ div.code-toolbar>.toolbar {
   font-weight: 500;
   display: flex;
 }
-div.code-toolbar>.toolbar>.toolbar-item {
+.twikoo div.code-toolbar>.toolbar>.toolbar-item {
   margin-left: .3em
 }
 div.code-toolbar>.toolbar>.toolbar-item>a,

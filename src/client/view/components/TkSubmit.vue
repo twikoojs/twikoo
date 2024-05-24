@@ -202,7 +202,7 @@ export default {
           renderLinks(this.$refs['comment-preview'])
           renderMath(this.$refs['comment-preview'], this.$twikoo.katex)
           if (this.config.HIGHLIGHT === 'true') {
-            renderCode(this.$refs['comment-preview'], this.config.HIGHLIGHT_THEME, this.serverConfig.HIGHLIGHT_PLUGIN)
+            renderCode(this.$refs['comment-preview'], this.config.HIGHLIGHT_THEME, this.config.HIGHLIGHT_PLUGIN)
           }
         })
       }

@@ -198,7 +198,7 @@ export default {
       }
     },
     showContentExpandIfNeed () {
-      this.hasContentExpand = this.$refs['tk-content'].scrollHeight > 500
+      this.hasContentExpand = this.hasContentExpand || this.$refs['tk-content'].scrollHeight > 500  // 如果已经折叠就不再判断 主要是为了防止图片在onload之前就已经折叠而导致图片在onload之后取消折叠
     },
     showContentExpandIfNeedAfterImagesLoaded () {
       this.$refs['tk-content'].querySelectorAll('img').forEach((imgEl) => {
@@ -334,7 +334,7 @@ export default {
       handler: function (highlight) {
         if (highlight === 'true') {
           this.$nextTick(() => {
-            renderCode(this.$refs.comment, this.config.HIGHLIGHT_THEME, this.serverConfig.HIGHLIGHT_PLUGIN)
+            renderCode(this.$refs.comment, this.config.HIGHLIGHT_THEME, this.config.HIGHLIGHT_PLUGIN)
           })
         }
       },

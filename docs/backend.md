@@ -9,7 +9,7 @@
 | [Railway 部署](#railway-部署) | ★★☆☆☆ | 有免费额度但不足以支持一个月连续运行，部署简单，适合全球访问。 |
 | [Zeabur 部署](#zeabur-部署) | ★☆☆☆☆ | 需要绑定支付宝或信用卡，部署简单，适合中国大陆访问，免费计划环境随时可能会被删除。 |
 | [Netlify 部署](#netlify-部署) | ★★★★☆ | 有充足的免费额度，中国大陆访问速度不错。 |
-| [Hugging Face 部署](#hugging-face-部署) | ★★★★☆ | 免费，中国大陆访问速度不错。 |
+| [Hugging Face 部署](#hugging-face-部署) | ★★★★☆ | 免费，中国大陆访问速度不错。允许通过Cloudflare Tunnels自定义域名。 |
 | [AWS Lambda 部署](#aws-lambda-部署) | ★★★☆☆ | 全球最大的云平台，适合已经使用 AWS 全家桶的用户。 |
 | [Cloudflare workers 部署](#cloudflare-workers-部署) | ★★☆☆☆ | 部署需使用命令行，冷启动时间较短，功能有部分限制。 |
 | [私有部署](#私有部署) | ★★☆☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
@@ -207,6 +207,27 @@ EXPOSE 7860
 9. 点击右上角 Settings 右方的菜单（三个点）图标 - Embed this Space，Direct URL 下的内容（例如 `https://xxx-xxx.hf.space`）即为您的环境 id
 
 ![](./static/hugging-6.png)
+
+### 如果你需要自定义域名
+
+> ps：除了`CF_ZERO_TRUST_TOKEN`这个环境变量以外，其他环境变量的配置方式与上一步相同
+
+1. 申请Cloudflare Zero Trust，关于申请方式请自行查找
+
+![](./static/hugging-7.png)
+
+2. 添加一条隧道，连接方式选择Cloudflared，名称任意
+
+![](./static/hugging-8.png)
+
+3.添加一个Public Hostname，回源选择HTTP，端口选择8080
+4.Clone Twikoo仓库，找到src\server\hf-space
+5.去Huggingface创建一个Space，然后Clone下来，将hf-space文件夹内的所有内容复制进去
+6.在Huggingface Space的设置中添加一个环境变量，变量名`CF_ZERO_TRUST_TOKEN`，值是Tunnels给的令牌（删掉`cloudflared.exe service install`，只保留令牌部分）
+
+![](./static/hugging-9.png)
+
+7.Push从Huggingface Space仓库
 
 ## AWS Lambda 部署
 

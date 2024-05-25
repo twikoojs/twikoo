@@ -174,7 +174,7 @@ export default {
     },
     highlightCode () {
       if (this.serverConfig.HIGHLIGHT === 'true') {
-        renderCode(this.$refs['comment-list'], this.serverConfig.HIGHLIGHT_THEME)
+        renderCode(this.$refs['comment-list'], this.serverConfig.HIGHLIGHT_THEME, this.serverConfig.HIGHLIGHT_PLUGIN)
       }
     }
   },

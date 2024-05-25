@@ -161,4 +161,31 @@ export default {
   cursor: pointer;
   color: #409eff;
 }
+.twikoo div.code-toolbar {
+  position: relative;
+  border-radius: .3em
+}
+.twikoo div.code-toolbar>.toolbar {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  font-size: .8125rem;
+  font-weight: 500;
+  display: flex;
+}
+.twikoo div.code-toolbar>.toolbar>.toolbar-item {
+  margin-left: .3em
+}
+.twikoo div.code-toolbar>.toolbar>.toolbar-item>a,
+.twikoo div.code-toolbar>.toolbar>.toolbar-item>button,
+.twikoo div.code-toolbar>.toolbar>.toolbar-item>span {
+  padding: 2px 4px;
+  border-radius: .3em;
+}
+.twikoo div.code-toolbar>.toolbar>.toolbar-item>button {
+  border: 1px solid rgba(128, 128, 128, 0.31);
+}
+.twikoo div.code-toolbar>.toolbar>.toolbar-item>button:hover {
+  cursor: pointer;
+}
 </style>

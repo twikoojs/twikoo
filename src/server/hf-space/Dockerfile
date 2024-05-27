@@ -3,7 +3,7 @@ FROM alpine AS build
 RUN adduser -D app
 
 USER root
-RUN apk --no-cache add curl nodejs npm git
+RUN apk --no-cache add curl nodejs npm
 
 RUN npm i tkserver -g
 

@@ -1,16 +1,13 @@
-FROM alpine AS build
+FROM node:lts-slim AS build
 
-RUN adduser -D app
+RUN useradd -m app
 
 USER root
-RUN apk --no-cache add curl nodejs npm
 
-RUN npm i tkserver -g
+RUN npm i -g tkserver
 
-WORKDIR /home/app
-RUN curl -LO https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 && \
-    chmod +x cloudflared-linux-amd64 && \
-    mv cloudflared-linux-amd64 /usr/local/bin/cloudflared
+ADD https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 /usr/local/bin/cloudflared
+RUN chmod +x /usr/local/bin/cloudflared
 
 COPY ./src/start.sh /usr/bin/start.sh
 

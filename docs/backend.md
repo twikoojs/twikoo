@@ -210,24 +210,24 @@ EXPOSE 7860
 
 ### 如果你需要自定义域名
 
-> ps：除了`CF_ZERO_TRUST_TOKEN`这个环境变量以外，其他环境变量的配置方式与上一步相同
+> ps：除了 `CF_ZERO_TRUST_TOKEN` 这个环境变量以外，其他环境变量的配置方式与上一步相同
 
-1. 申请Cloudflare Zero Trust，关于申请方式请自行查找
+1. 申请 Cloudflare Zero Trust，关于申请方式请自行查找
 
 ![](./static/hugging-7.png)
 
-2. 添加一条隧道，连接方式选择Cloudflared，名称任意
+2. 添加一条隧道，连接方式选择 Cloudflared，名称任意
 
 ![](./static/hugging-8.png)
 
-3.添加一个Public Hostname，回源选择HTTP，端口选择8080
-4.Clone Twikoo仓库，找到src\server\hf-space
-5.去Huggingface创建一个Space，然后Clone下来，将hf-space文件夹内的所有内容复制进去
-6.在Huggingface Space的设置中添加一个环境变量，变量名`CF_ZERO_TRUST_TOKEN`，值是Tunnels给的令牌（删掉`cloudflared.exe service install`，只保留令牌部分）
+3.添加一个 Public Hostname，回源选择 HTTP，端口选择8080
+4.Clone Twikoo 仓库，找到src\server\hf-space
+5.去 Huggingface 创建一个 Space，然后Clone下来，将 hf-space 文件夹内的所有内容复制进去
+6.在 Huggingface Space 的设置中添加一个环境变量，变量名 `CF_ZERO_TRUST_TOKEN` ，值是 Tunnels 给的令牌（删掉 `cloudflared.exe service install`，只保留令牌部分）
 
 ![](./static/hugging-9.png)
 
-7.Push从Huggingface Space仓库
+7.Push 到 Huggingface Space 仓库
 
 ## AWS Lambda 部署
 

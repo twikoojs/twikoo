@@ -2,7 +2,7 @@
 
 ## 如何修改头像？
 
-请前往 [https://cravatar.cn](https://cravatar.cn) 通过邮箱注册并设定头像，评论时，请留下相同的邮箱。
+请前往 [https://weavatar.com](https://weavatar.com) 通过邮箱注册并设定头像，评论时，请留下相同的邮箱。
 
 访客还可以通过输入数字 QQ 邮箱地址，使用 QQ 头像发表评论。
 

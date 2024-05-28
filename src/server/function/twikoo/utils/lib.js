@@ -50,8 +50,10 @@ module.exports = {
     return md5
   },
   getSha256 () {
-    const sha256 = require('js-sha256') // SHA256 哈希
-    return sha256
+    const { SHA256 } = require('crypto-js') // SHA256 哈希
+    return (message) => {
+      return SHA256(message).toString()
+    }
   },
   getNodemailer () {
     if (customLibs.nodemailer) return customLibs.nodemailer

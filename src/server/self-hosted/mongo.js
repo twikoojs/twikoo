@@ -13,6 +13,7 @@ const {
   getCheerio,
   getDomPurify,
   getMd5,
+  getSha256,
   getXml2js
 } = require('twikoo-func/utils/lib')
 const {
@@ -51,6 +52,7 @@ const logger = require('twikoo-func/utils/logger')
 const $ = getCheerio()
 const DOMPurify = getDomPurify()
 const md5 = getMd5()
+const sha256 = getSha256()
 const xml2js = getXml2js()
 
 // 常量 / constants
@@ -641,7 +643,7 @@ async function parse (comment, request) {
     uid: request.body.accessToken,
     nick: comment.nick ? comment.nick : '匿名',
     mail: comment.mail ? comment.mail : '',
-    mailMd5: comment.mail ? md5(normalizeMail(comment.mail)) : '',
+    mailMd5: comment.mail ? sha256(normalizeMail(comment.mail)) : '',
     link: comment.link ? comment.link : '',
     ua: comment.ua,
     ip: getIp(request),

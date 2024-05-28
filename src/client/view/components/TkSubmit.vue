@@ -1,7 +1,7 @@
 <template>
   <div class="tk-submit" ref="tk-submit">
     <div class="tk-row">
-      <tk-avatar :config="config" :mail="mail" />
+      <tk-avatar :config="config" :mail="mail" :nick="nick" />
       <div class="tk-col">
         <tk-meta-input :nick="nick" :mail="mail" :link="link" @update="onMetaUpdate" :config="config" />
         <el-input class="tk-input"

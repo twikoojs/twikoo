@@ -17,6 +17,7 @@ export default defineConfig({
         sidebar: [
           { text: '简介', link: '/intro' },
           { text: '快速上手', link: '/quick-start' },
+          { text: 'MongoDB Atlas', link: '/mongodb-atlas' },
           { text: '云函数部署', link: '/backend' },
           { text: '前端部署', link: '/frontend' },
           { text: '版本更新', link: '/update' },

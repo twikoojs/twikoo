@@ -429,12 +429,12 @@ export default {
     'ブロックワード設定、 ブロックワードを含むコンテンツは送信に失敗します。コンマで区切ってください。'
   ],
   [S.ACI + '_GRAVATAR_CDN']: [
-    '自定义头像 CDN 地址。如：cn.gravatar.com, cravatar.cn, sdn.geekzu.org, gravatar.loli.net，默认：cravatar.cn',
-    '自定義頭像 CDN 地址。如：cn.gravatar.com, cravatar.cn, sdn.geekzu.org, gravatar.loli.net，預設：cravatar.cn',
-    '自訂大頭貼照 CDN 來源。如：cn.gravatar.com, cravatar.cn, sdn.geekzu.org, gravatar.loli.net，預設：cravatar.cn',
-    'Custom avator CDN. (Examples: gravatar.com) Default: cravatar.cn.',
-    'Custom avator CDN. (Мисоллар: gravatar.com) Default: cravatar.cn.',
-    'カスタムプロフィール画像CDNアドレス。例：cn.gravatar.com、cravatar.cn、sdn.geekzu.org、gravatar.loli.net、デフォルト：cravatar.cn'
+    '自定义头像 CDN 地址。如：cn.gravatar.com, weavatar.com, cravatar.cn, sdn.geekzu.org, gravatar.loli.net，默认：weavatar.com',
+    '自定義頭像 CDN 地址。如：cn.gravatar.com, weavatar.com, cravatar.cn, sdn.geekzu.org, gravatar.loli.net，預設：weavatar.com',
+    '自訂大頭貼照 CDN 來源。如：cn.gravatar.com, weavatar.com, cravatar.cn, sdn.geekzu.org, gravatar.loli.net，預設：weavatar.com',
+    'Custom avator CDN. (Examples: gravatar.com) Default: weavatar.com.',
+    'Custom avator CDN. (Мисоллар: gravatar.com) Default: weavatar.com.',
+    'カスタムプロフィール画像CDNアドレス。例：cn.gravatar.com、weavatar.com、cravatar.cn、sdn.geekzu.org、gravatar.loli.net、デフォルト：weavatar.com'
   ],
   [S.ACI + '_HIDE_ADMIN_CRYPT']: [
     '隐藏管理面板入口。可设置一个“暗号”，只有在“昵称”一栏输入相同的“暗号”时，管理面板入口才会显示，留空则不隐藏管理入口',

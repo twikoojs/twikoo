@@ -45,7 +45,7 @@ exports.main = require('twikoo-func').main
 8. 创建完成后，点击“twikoo"进入云函数详情页，进入“函数代码”标签，点击“文件 - 新建文件”，输入 `package.json`，回车
 9. 复制以下代码、粘贴到代码框中，点击“保存并安装依赖”
 ``` json
-{ "dependencies": { "twikoo-func": "1.6.35" } }
+{ "dependencies": { "twikoo-func": "1.6.36" } }
 ```
 
 ## 腾讯云命令行部署
@@ -210,6 +210,8 @@ EXPOSE 7860
 
 ### 如果你需要自定义域名
 
+> 自定义域名教程由 [Hoshino-Yumetsuki](https://github.com/Hoshino-Yumetsuki) 提供
+>
 > ps：除了 `CF_ZERO_TRUST_TOKEN` 这个环境变量以外，其他环境变量的配置方式与上一步相同
 
 1. 申请 Cloudflare Zero Trust，关于申请方式请自行查找
@@ -220,14 +222,14 @@ EXPOSE 7860
 
 ![](./static/hugging-8.png)
 
-3.添加一个 Public Hostname，回源选择 HTTP，端口选择8080
-4.Clone Twikoo 仓库，找到src\server\hf-space
-5.去 Huggingface 创建一个 Space，然后Clone下来，将 hf-space 文件夹内的所有内容复制进去
-6.在 Huggingface Space 的设置中添加一个环境变量，变量名 `CF_ZERO_TRUST_TOKEN` ，值是 Tunnels 给的令牌（删掉 `cloudflared.exe service install`，只保留令牌部分）
+3. 添加一个 Public Hostname，回源选择 HTTP，端口选择 8080
+4. Clone Twikoo 仓库，找到 `src\server\hf-space`
+5. 去 Hugging Face 创建一个 Space，然后 Clone 下来，将 hf-space 文件夹内的所有内容复制进去
+6. 在 Hugging Face Space 的设置中添加一个环境变量，变量名 `CF_ZERO_TRUST_TOKEN`，值是 Tunnels 给的令牌（删掉 `cloudflared.exe service install`，只保留令牌部分）
 
 ![](./static/hugging-9.png)
 
-7.Push 到 Huggingface Space 仓库
+7. Push 到 Hugging Face Space 仓库
 
 ## AWS Lambda 部署
 

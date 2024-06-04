@@ -12,3 +12,4 @@
 * [本站 - 评论模块搭建过程 | Young Kbt blog](https://notes.youngkbt.cn/about/website/comment/) by  Young Kbt
 * [评论区搭建过程 | 从01开始](https://www.peterjxl.com/Blog/Comment/) by PeterJXL
 * [Astro 添加 Twikoo 评论 | 老麦笔记](https://www.iamlm.com/blog/170.Astro%20%E6%B7%BB%E5%8A%A0%20Twikoo%20%E8%AF%84%E8%AE%BA/) by 老麦
+* [Re. 从零开始在 Deta Space 部署 Twikoo 评论系统的过程](https://anmeng.asia/cad9d0fd/) by FantasyLand の 暗梦

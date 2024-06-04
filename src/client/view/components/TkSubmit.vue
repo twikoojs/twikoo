@@ -1,5 +1,5 @@
 <template>
-  <div class="tk-submit" ref="tk-submit">
+  <div class="tk-submit tk-fade-in" ref="tk-submit">
     <div class="tk-row">
       <tk-avatar :config="config" :mail="mail" :nick="nick" />
       <div class="tk-col">
@@ -374,7 +374,7 @@ export default {
   mounted () {
     if (this.pid) {
       this.$refs['tk-submit'].scrollIntoView({
-        behavier: 'smooth',
+        behavior: 'instant',
         block: 'center'
       })
     }
@@ -476,5 +476,17 @@ export default {
   border: 1px solid rgba(128,128,128,0.31);
   border-radius: 4px;
   word-break: break-word;
+}
+.tk-fade-in {
+  animation: tkFadeIn .3s;
+}
+@keyframes tkFadeIn {
+  0% {
+    opacity: 0
+  }
+
+  to {
+    opacity: 1
+  }
 }
 </style>

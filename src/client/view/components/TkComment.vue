@@ -208,7 +208,7 @@ export default {
     scrollToComment () {
       if (window.location.hash.indexOf(this.comment.id) !== -1) {
         this.$refs['tk-comment'].scrollIntoView({
-          behavier: 'smooth'
+          behavior: 'smooth'
         })
         this.$emit('expand')
       }
@@ -247,7 +247,7 @@ export default {
     onLoad () {
       if (this.comment.replies.length > 0) {
         this.$refs['tk-replies'].lastElementChild.scrollIntoView({
-          behavier: 'smooth',
+          behavior: 'smooth',
           block: 'center'
         })
       }

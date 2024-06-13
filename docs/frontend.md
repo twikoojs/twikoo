@@ -81,6 +81,10 @@ twikoo:
 
 请参考 [入门篇 - FixIt #主题配置](https://fixit.lruihao.cn/zh-cn/documentation/basics/#theme-configuration) 和 [hugo-fixit/FixIt/config.toml#L613-L624](https://github.com/hugo-fixit/FixIt/blob/8bb2a35dcc4c54fc3e0fb968df063d6be1daabf3/config.toml#L613-L624) 进行配置
 
+## 在 VitePress 中使用
+
+请参考 [VitePress 集成 twikoo 参考解决方案](https://github.com/twikoojs/twikoo/issues/715) 进行配置。
+
 ## 通过 CDN 引入
 
 ::: tip 提示

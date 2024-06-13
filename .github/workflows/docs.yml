@@ -4,8 +4,11 @@
 name: Docs
 
 on:
-  release:
-    types: [released]
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
   workflow_dispatch:
 
 jobs:

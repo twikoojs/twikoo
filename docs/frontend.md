@@ -93,7 +93,7 @@ twikoo:
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.36/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.36/dist/twikoo.all.min.js" integrity="sha384-4KfOjEinLSkv1i1J8TzlkC/RTnuiLoR1OLerVgjEKoH5djYtbf7mzEFsz9p3nfuA" crossorigin="anonymous"></script>
 <script>
 twikoo.init({
   envId: '您的环境id', // 腾讯云环境填 envId；Vercel 环境填地址（https://xxx.vercel.app）
@@ -113,6 +113,8 @@ twikoo.init({
 
 * `https://lib.baomitu.com/twikoo/1.6.36/twikoo.all.min.js`
 * `https://cdn.jsdelivr.net/npm/twikoo@1.6.36/dist/twikoo.all.min.js`
+
+> 建议使用 CDN 引入 Twikoo 的用户参考上一段的示例在代码中加入 [SRI](https://developer.mozilla.org/zh-CN/docs/Web/Security/Subresource_Integrity) 属性以确保完整性。
 
 ## 开启管理面板（腾讯云环境）
 

@@ -1,6 +1,6 @@
 import { app } from '../view'
 
-const PRISM_CDN = 'https://cdn.staticfile.net/prism/1.28.0'
+const PRISM_CDN = 'https://cdn.jsdelivr.net/npm/prismjs@1.28.0'
 let Prism
 let cssEl
 

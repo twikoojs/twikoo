@@ -622,11 +622,12 @@ async function parse (comment) {
   const isAdminUser = await isAdmin()
   const isBloggerMail = equalsMail(comment.mail, config.BLOGGER_EMAIL)
   if (isBloggerMail && !isAdminUser) throw new Error('请先登录管理面板，再使用博主身份发送评论')
+  const hashMethod = this.gravatarCdn === 'cravatar.cn' ? md5 : sha256
   const commentDo = {
     uid: await getUid(),
     nick: comment.nick ? comment.nick : '匿名',
     mail: comment.mail ? comment.mail : '',
-    mailMd5: comment.mail ? sha256(normalizeMail(comment.mail)) : '',
+    mailMd5: comment.mail ? hashMethod(normalizeMail(comment.mail)) : '',
     link: comment.link ? comment.link : '',
     ua: comment.ua,
     ip: auth.getClientIP(),

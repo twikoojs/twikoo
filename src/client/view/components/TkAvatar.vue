@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import md5 from 'blueimp-md5'
 import { sha256 } from 'js-sha256'
 import { convertLink, normalizeMail, isQQ, getQQAvatar } from '../../utils'
 import iconUser from '@fortawesome/fontawesome-free/svgs/solid/user-circle.svg'
@@ -51,7 +52,8 @@ export default {
         return getQQAvatar(this.mail)
       }
       if (this.mail) {
-        return `https://${this.gravatarCdn}/avatar/${sha256(normalizeMail(this.mail))}?d=${this.defaultGravatar}`
+        const hashMethod = this.gravatarCdn === 'cravatar.cn' ? md5 : sha256
+        return `https://${this.gravatarCdn}/avatar/${hashMethod(normalizeMail(this.mail))}?d=${this.defaultGravatar}`
       }
       return ''
     }

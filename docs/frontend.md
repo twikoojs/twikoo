@@ -93,7 +93,7 @@ twikoo:
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.37/dist/twikoo.all.min.js" integrity="sha384-4KfOjEinLSkv1i1J8TzlkC/RTnuiLoR1OLerVgjEKoH5djYtbf7mzEFsz9p3nfuA" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.38/dist/twikoo.all.min.js" integrity="sha384-4KfOjEinLSkv1i1J8TzlkC/RTnuiLoR1OLerVgjEKoH5djYtbf7mzEFsz9p3nfuA" crossorigin="anonymous"></script>
 <script>
 twikoo.init({
   envId: '您的环境id', // 腾讯云环境填 envId；Vercel 环境填地址（https://xxx.vercel.app）
@@ -111,8 +111,8 @@ twikoo.init({
 
 如果遇到默认 CDN 加载速度缓慢，可更换其他 CDN 镜像。以下为可供选择的公共 CDN，其中一些 CDN 可能需要数天时间同步最新版本：
 
-* `https://lib.baomitu.com/twikoo/1.6.37/twikoo.all.min.js`
-* `https://cdn.jsdelivr.net/npm/twikoo@1.6.37/dist/twikoo.all.min.js`
+* `https://lib.baomitu.com/twikoo/1.6.38/twikoo.all.min.js`
+* `https://cdn.jsdelivr.net/npm/twikoo@1.6.38/dist/twikoo.all.min.js`
 
 > 建议使用 CDN 引入 Twikoo 的用户参考上一段的示例在代码中加入 [SRI](https://developer.mozilla.org/zh-CN/docs/Web/Security/Subresource_Integrity) 属性以确保完整性。
 

@@ -643,7 +643,7 @@ async function parse (comment) {
   }
   if (isQQ(comment.mail)) {
     commentDo.mail = addQQMailSuffix(comment.mail)
-    commentDo.mailMd5 = md5(normalizeMail(commentDo.mail))
+    commentDo.mailMd5 = hashMethod(normalizeMail(commentDo.mail))
     commentDo.avatar = await getQQAvatar(comment.mail)
   }
   return commentDo

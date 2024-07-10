@@ -111,6 +111,7 @@ twikoo.init({
 
 如果遇到默认 CDN 加载速度缓慢，可更换其他 CDN 镜像。以下为可供选择的公共 CDN，其中一些 CDN 可能需要数天时间同步最新版本：
 
+* `https://s4.zstatic.net/ajax/libs/twikoo/1.6.38/twikoo.all.min.js`
 * `https://lib.baomitu.com/twikoo/1.6.38/twikoo.all.min.js`
 * `https://cdn.jsdelivr.net/npm/twikoo@1.6.38/dist/twikoo.all.min.js`
 

@@ -979,8 +979,8 @@ async function createCollections () {
 
 function getIp (request) {
   try {
-    const { TWIKOO_IP_HEADERS } = process.env
-    const headers = TWIKOO_IP_HEADERS ? JSON.parse(TWIKOO_IP_HEADERS) : []
+    const TWIKOO_IP_HEADERS = process.env.TWIKOO_IP_HEADERS
+    let headers = TWIKOO_IP_HEADERS ? JSON.parse(TWIKOO_IP_HEADERS) : []
     return getUserIP(request, headers)
   } catch (e) {
     logger.error('获取 IP 错误信息：', e)

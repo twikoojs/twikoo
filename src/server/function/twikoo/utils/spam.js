@@ -3,6 +3,10 @@ const {
   getCryptoJS,
   getTencentcloud
 } = require('./lib')
+const {
+  equalsMail,
+  removeEmotionImages
+} = require('.')
 const AkismetClient = getAkismetClient()
 const CryptoJS = getCryptoJS()
 
@@ -29,17 +33,23 @@ const fn = {
       if (comment.isSpam) {
         // 预检测没过的，就不再检测了
         isSpam = true
+      } else if (equalsMail(config.BLOGGER_EMAIL, comment.mail)) {
+        // 博主本人评论，不再检测了
+        isSpam = false
       } else if (config.QCLOUD_SECRET_ID && config.QCLOUD_SECRET_KEY) {
         // 腾讯云内容安全
-        const client = new (getTencentCloud().tms.v20200713.Client)({
+        const client = new (getTencentCloud().tms.v20201229.Client)({
           credential: { secretId: config.QCLOUD_SECRET_ID, secretKey: config.QCLOUD_SECRET_KEY },
           region: 'ap-shanghai',
           profile: { httpProfile: { endpoint: 'tms.tencentcloudapi.com' } }
         })
+        const cleanContent = removeEmotionImages(comment.comment)
         const checkResult = await client.TextModeration({
-          Content: CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(comment.comment)),
+          Content: CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(cleanContent)),
           Device: { IP: comment.ip },
-          User: { Nickname: comment.nick }
+          BizType: { BizType: config.QCLOUD_SECRET_ID },
+          User: { Nickname: comment.nick },
+          DataId: { DataId: comment.id }
         })
         logger.log('腾讯云返回结果：', checkResult)
         isSpam = checkResult.EvilFlag !== 0

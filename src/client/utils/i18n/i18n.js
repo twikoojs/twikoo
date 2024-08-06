@@ -588,6 +588,14 @@ export default {
     'Спамни аниқлаш учун Тенсент Слоуд махфий идентификатори. Тенсент Слоуд ва Акисмет бир вақтнинг ўзида ўрнатилганда, фақат Тенсент Слоуд кучга киради. Рўйхатдан ўтиш: https://twikoo.js.org/cms.html',
     'Tencent CloudのシークレットID、スパムコメントの検出に使用されます。同時にTencent CloudとAkismetを設定した場合、Tencent Cloudのみが有効になります。登録：https://twikoo.js.org/cms.html'
   ],
+  [S.ACI + '_QCLOUD_CMS_BIZTYPE']: [
+    '腾讯云内容安全 Biztype 名称，用于垃圾评论策略。可以自定义垃圾拦截规则',
+    '騰訊雲內容安全 Biztype 名稱，用於垃圾評論策略。可以自定義垃圾攔截規則',
+    '騰訊雲內容安全 Biztype 名稱，用於垃圾評論策略。可以自定義垃圾攔截規則', // 「騰訊雲」是一家網路服務提供商，不改為「騰訊雲端」。
+    'Tencent Cloud Content Security Biztype name for spam comment policy. Spam blocking rules can be customized',
+    'Tencent Cloud Content Security Biztype име, използвано за спам политика. Може да персонализира правилата за блокиране на спам',
+    'Tencent Cloud Content Security Biztype name スパムコメントポリシー。スパムブロックルールはカスタマイズ可能'
+  ],
   [S.ACI + '_QCLOUD_SECRET_KEY']: [
     '腾讯云 secret key',
     '騰訊雲 secret key',

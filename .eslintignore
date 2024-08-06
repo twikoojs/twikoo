@@ -1,6 +1,8 @@
 *.css
 *.json
 *.md
+*.sh
+*.tf
 LICENSE
 src/client/lib/marked/*
 src/server/self-hosted/data/*
@@ -9,4 +11,5 @@ src/server/pkg/dist/*
 src/server/pkg/patches/*
 src/server/pkg/web.config
 pnpm-lock.yaml
+Dockerfile
 Spacefile

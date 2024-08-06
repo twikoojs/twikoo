@@ -198,7 +198,8 @@ export default {
       }
     },
     showContentExpandIfNeed () {
-      this.hasContentExpand = this.hasContentExpand || this.$refs['tk-content'].scrollHeight > 500  // 如果已经折叠就不再判断 主要是为了防止图片在onload之前就已经折叠而导致图片在onload之后取消折叠
+      // 如果已经折叠就不再判断 主要是为了防止图片在onload之前就已经折叠而导致图片在onload之后取消折叠
+      this.hasContentExpand = this.hasContentExpand || this.$refs['tk-content'].scrollHeight > 500
     },
     showContentExpandIfNeedAfterImagesLoaded () {
       this.$refs['tk-content'].querySelectorAll('img').forEach((imgEl) => {

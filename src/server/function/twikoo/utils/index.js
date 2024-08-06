@@ -218,6 +218,7 @@ const fn = {
   async getQQAvatar (qq) {
     try {
       const qqNum = qq.replace(/@qq.com/ig, '')
+      // TODO: 这个接口已经失效了，暂时找不到新的接口
       const result = await axios.get(`https://aq.qq.com/cn2/get_img/get_face?img_type=3&uin=${qqNum}`)
       return result.data?.url || null
     } catch (e) {

@@ -1,0 +1,1 @@
+import{_ as e,c as t,o,a5 as r}from"./chunks/framework.DG5g6f-F.js";const f=JSON.parse('{"title":"相关文档","description":"","frontmatter":{},"headers":[],"relativePath":"link.md","filePath":"link.md","lastUpdated":null}'),a={name:"link.md"},l=r("",2),i=[l];function n(s,h,c,b,_,w){return o(),t("div",null,i)}const p=e(a,[["render",n]]);export{f as __pageData,p as default};

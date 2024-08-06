@@ -4,8 +4,7 @@ const {
   getTencentcloud
 } = require('./lib')
 const {
-  equalsMail,
-  removeEmotionImages
+  equalsMail
 } = require('.')
 const AkismetClient = getAkismetClient()
 const CryptoJS = getCryptoJS()
@@ -43,16 +42,20 @@ const fn = {
           region: 'ap-shanghai',
           profile: { httpProfile: { endpoint: 'tms.tencentcloudapi.com' } }
         })
-        const cleanContent = removeEmotionImages(comment.comment)
-        const checkResult = await client.TextModeration({
-          Content: CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(cleanContent)),
-          Device: { IP: comment.ip },
-          BizType: { BizType: config.QCLOUD_SECRET_ID },
+        const textModerationParams = {
+          // 文档: https://cloud.tencent.com/document/api/1124/51860
+          Content: CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(comment.comment)),
+          DataId: comment.id,
           User: { Nickname: comment.nick },
-          DataId: { DataId: comment.id }
-        })
+          Device: { IP: comment.ip }
+        }
+        if (config.QCLOUD_CMS_BIZTYPE) {
+          textModerationParams.BizType = config.QCLOUD_CMS_BIZTYPE
+        }
+        logger.log('腾讯云请求参数：', textModerationParams)
+        const checkResult = await client.TextModeration(textModerationParams)
         logger.log('腾讯云返回结果：', checkResult)
-        isSpam = checkResult.EvilFlag !== 0
+        isSpam = checkResult.Suggestion !== 'Pass'
       } else if (config.AKISMET_KEY) {
         // Akismet
         const akismetClient = new AkismetClient({

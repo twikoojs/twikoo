@@ -334,11 +334,6 @@ const fn = {
         throw new Error(`参数"${requiredParam}"不合法`)
       }
     }
-  },
-  // 移除表情内容，用于内容安全检测
-  removeEmotionImages (content) {
-    const regex = /<img[^>]*class="tk-owo-emotion"[^>]*>/g
-    return content.replace(regex, '')
   }
 }
 

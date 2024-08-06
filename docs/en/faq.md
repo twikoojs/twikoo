@@ -89,7 +89,7 @@ How to apply for Tencent Cloud Text Content Inspection?
 
 1. Visit [Tencent Cloud Console - Text Content Security](https://console.cloud.tencent.com/cms/text/overview) to open the text content security service
 2. Visit [Tencent Cloud Console - User List](https://console.cloud.tencent.com/cam), click New User, and click Quick Create.
-3. Enter the user name, select "Programmatic Access" as the access method, cancel "AdministratorAccess" as the user privilege, and only check the box "QcloudCMSFullAccess". QcloudCMSFullAccess".
+3. Enter the user name, select "Programmatic Access" as the access method, cancel "AdministratorAccess" as the user privilege, and only check the box "QcloudTMSFullAccess". QcloudTMSFullAccess".
 4. Click "Create User". 5.
 5. Copy the "SecretId" and "SecretKey" from the "Successful New User" page to the Twikoo administration panel Configure them in the "Anti-Spam" module
 6. Test the anti-spam effect

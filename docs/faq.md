@@ -136,7 +136,7 @@ Twikoo 私有部署版默认使用内置数据库：LokiJS 数据库，支持的
 
 如果看到 ERR_BLOCKED_BY_CLIENT，请禁用浏览器去广告插件或将当前网站加入白名单，然后刷新重试。
 
-如果看到 ERR_CONNECTION_CLOSED，请检查自己所处的地区网络环境是否正常，能够连通云函数，部分地区无法访问 Vercel 等服务，请更换部署方式再试。
+如果看到 ERR_CONNECTION_CLOSED / ERR_CONNECTION_TIMED_OUT / ERR_CONNECTION_RESET，请检查自己所处的地区网络环境是否正常，能够连通云函数，部分地区无法访问 Vercel 等服务，请更换部署方式再试。
 
 如果看到 `Access to XMLHttpRequest at 'https://tcb-api.tencentcloudapi.com/web?env=...' from origin '...' has been blocked by CORS policy...`：请检查前端 js 文件版本是否最新，并确保 envId 以 `https://` 开头。
 

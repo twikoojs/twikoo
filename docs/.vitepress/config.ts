@@ -24,7 +24,35 @@ export default defineConfig({
           { text: '常见问题', link: '/faq' },
           { text: 'API 文档', link: '/api' },
           { text: '相关文档', link: '/link' }
-        ]
+        ],
+        editLink: {
+          pattern: 'https://github.com/twikoojs/twikoo/edit/main/docs/:path',
+          text: '在 GitHub 上编辑此页面'
+        },
+        footer: {
+          message: '基于 MIT 许可发布',
+          copyright: `版权所有 © 2020 至今 iMaeGoo`
+        },
+        docFooter: {
+          prev: '上一篇',
+          next: '下一篇'
+        },
+        outline: {
+          label: '本页导航'
+        },
+        lastUpdated: {
+          text: '最后更新于',
+          formatOptions: {
+            dateStyle: 'short',
+            timeStyle: 'medium'
+          }
+        },
+        langMenuLabel: '多语言',
+        returnToTopLabel: '回到顶部',
+        sidebarMenuLabel: '菜单',
+        darkModeSwitchLabel: '主题',
+        lightModeSwitchTitle: '切换到浅色模式',
+        darkModeSwitchTitle: '切换到深色模式'
       }
     },
     en: {

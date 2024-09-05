@@ -175,6 +175,10 @@ Netlify 免费等级（Functions Level 0）支持每月 125,000 请求次数和 
 
 ## Hugging Face 部署
 
+::: warning 注意
+Hugging Face 部署的环境，由于默认的邮件端口被屏蔽，无法使用邮件功能。详见 [twikoo/issues/638](https://github.com/twikoojs/twikoo/issues/638)
+:::
+
 1. 申请 [MongoDB Atlas](./mongodb-atlas.md) 账号，获取 MongoDB 连接字符串
 2. 申请 [Hugging Face](https://huggingface.co/join) 账号
 3. 登录，点击 Spaces - Create new Space

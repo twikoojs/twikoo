@@ -109,7 +109,8 @@ const fn = {
           11: 'Big Sur',
           12: 'Monterey',
           13: 'Ventura',
-          14: 'Sonoma'
+          14: 'Sonoma',
+          15: 'Sequoia'
         }[majorPlatformVersion]
       } else if (os.name === 'Android') {
         const majorPlatformVersion = os.version.split('.')[0]
@@ -118,7 +119,8 @@ const fn = {
           11: 'Red Velvet Cake',
           12: 'Snow Cone',
           13: 'Tiramisu',
-          14: 'Upside Down Cake'
+          14: 'Upside Down Cake',
+          15: 'Vanilla Ice Cream'
         }[majorPlatformVersion]
       }
     }

@@ -15,6 +15,16 @@ function lazilyGetNodemailer () {
   return nodemailer ?? (nodemailer = getNodemailer())
 }
 
+function sanitizeComment (comment) {
+  return comment.replace(/[&<>"'`=/*_]/g, function (char) {
+    const specialChars = {
+      '*': '\\*',
+      _: '\\_'
+    }
+    return specialChars[char] || char
+  })
+}
+
 let transporter
 
 const fn = {
@@ -158,7 +168,7 @@ const fn = {
     const NICK = comment.nick
     const MAIL = comment.mail
     const IP = comment.ip
-    const COMMENT = $(comment.comment).text()
+    const COMMENT = sanitizeComment($(comment.comment).text())
     const SITE_URL = config.SITE_URL
     const POST_URL = fn.appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
     const subject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}有新评论了`

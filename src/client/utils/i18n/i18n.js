@@ -642,7 +642,7 @@ export default {
     '是否同時透過 IM 和郵件 2 種方式通知博主，預設只透過 IM 通知博主，預設：false',
     'Whether to notify admin via IM and email at the same time, the default is to notify admin only via IM. Default: false.',
     'Администраторни бир вақтнинг ўзида ИМ ва электрон почта орқали хабардор қилиш керакми, сукут бўйича администраторни фақат ИМ орқали хабардор қилиш керак. Стандарт: нотўғри.',
-    '管理者にIMとEメールで同時に通知するかどうか。デフォルトはIMのみで通知、デフォルト：false'
+    '管理者にIMとメールで同時に通知するかどうか。デフォルトはIMのみで通知、デフォルト：false'
   ],
   [S.ACI + '_SENDER_EMAIL']: [
     '邮件通知邮箱地址。对于大多数邮箱服务商，SENDER_EMAIL 必须和 SMTP_USER 保持一致，否则无法发送邮件。',
@@ -1179,7 +1179,7 @@ export default {
     '郵箱',
     'Email',
     'Email',
-    'Email'
+    'メールアドレス'
   ],
   META_INPUT_NICK: [
     '昵称',

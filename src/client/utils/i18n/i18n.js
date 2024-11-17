@@ -170,7 +170,7 @@ export default {
     '只看可見',
     'Visible',
     'Кўринадиган',
-    '可視のみ'
+    '表示中のみ'
   ],
   [S.AC + '_FILTER_HIDDEN']: [
     '只看隐藏',
@@ -178,7 +178,7 @@ export default {
     '只看隱藏',
     'Hidden',
     'Яширилган',
-    '非表示のみ'
+    '非表示中のみ'
   ],
   [S.AC + '_HIDE']: [
     '隐藏',
@@ -193,7 +193,7 @@ export default {
     ' (已隱藏)',
     ' (Hidden)',
     ' (Яширилган)',
-    ' (非表示にされた)'
+    ' (非表示)'
   ],
   [S.AC + '_SEARCH']: [
     '搜索',
@@ -209,7 +209,7 @@ export default {
     '搜索暱稱、郵件、網址、IP、留言正文、文章路徑',
     'Search by nick, mail, website, IP, comment, or article path',
     'Тахаллус, почта, веб-сайт, ИП, шарҳ ёки мақола йўли бўйича излаш',
-    'ニックネーム、メールアドレス、ウェブサイトURL、IPアドレス、コメント内容、記事のURLを検索'
+    '名前、メールアドレス、ウェブサイトURL、IPアドレス、コメント内容、記事のURLを検索'
   ],
   [S.AC + '_SHOW']: [
     '显示',
@@ -225,7 +225,7 @@ export default {
     '置頂',
     'Pin',
     'Қадамоқ',
-    'トップに固定'
+    '固定する'
   ],
   [S.AC + '_UNTOP']: [
     '取消置顶',
@@ -233,7 +233,7 @@ export default {
     '取消置頂',
     'Unpin',
     'Қадоқни ечмоқ',
-    'トップ固定を解除'
+    '固定を解除'
   ],
   [S.AC + '_VIEW']: [
     '查看',
@@ -321,7 +321,7 @@ export default {
     '輸入一個郵箱帳號，發送測試郵件',
     'Input an email address & send test mail',
     'Э-почта манзилини киритинг ва синов хатини юборинг',
-    'メールアドレスを入力し、テストメールを送信してください'
+    'メールアドレスを入力してテストメールを送信'
   ],
   ADMIN_CONFIG_EMAIL_TEST_RESULT: [
     '测试结果：',
@@ -354,7 +354,7 @@ export default {
     '站長的暱稱。', // 「部落客」才是台灣對於「博主」的稱呼，音譯 "Blogger"。但此處用「站長」意譯 "Admin"。
     'Admin nick name.',
     'Админ исми.',
-    '管理者のニックネーム。'
+    '管理者の名前。'
   ],
   [S.ACI + '_BLOGGER_EMAIL']: [
     '博主的邮箱地址，用于邮件通知、博主标识。',
@@ -370,7 +370,7 @@ export default {
     '留言區塊自訂背景圖片 URL 網址。',
     'URL for custom background image.',
     'Махсус фон расми учун УРЛ.',
-    'コメントボックスのカスタム背景画像のURLアドレス。'
+    'コメントボックスのカスタム背景画像のURL。'
   ],
   [S.ACI + '_COMMENT_PAGE_SIZE']: [
     '评论列表分页大小，默认为 8。',
@@ -378,7 +378,7 @@ export default {
     '留言列表分頁大小，預設為 8。',
     'Comment page size. Default: 8.',
     'Изоҳ саҳифаси ўлчами. Стандарт: 8.',
-    'コメントリストのページサイズ、デフォルトは8。'
+    'コメントリストのページサイズ。デフォルトは8。'
   ],
   [S.ACI + '_COMMENT_PLACEHOLDER']: [
     '评论框提示信息，可用<br>换行，默认为空',
@@ -386,7 +386,7 @@ export default {
     '留言區塊提示資訊，可用<br>換行，預設空白',
     'Comment placeholder. Use <br> to start a newline. Default: empty.',
     'Изоҳ тўлдирувчиси. Янги қаторни бошлаш учун <бр> дан фойдаланинг. Стандарт: бўш.',
-    'コメントボックスのヒントメッセージ、<br>で改行可能、デフォルトは空。'
+    'コメントボックスのヒントメッセージ。<br>で改行。デフォルトは空。'
   ],
   [S.ACI + '_CORS_ALLOW_ORIGIN']: [
     'CORS 安全域名，注意：如果您不了解什么是 CORS，此项请留空，错误设置会导致无法加载，默认为空，格式为 https://blog.example.com；如需添加多域名请使用,分隔',
@@ -418,7 +418,7 @@ export default {
     '禁用詞語設定，包含禁用詞語的內容會直接標記為垃圾留言。使用英文逗號分隔。',
     'Configure prohibited words. Comments containing prohibited words will be auto spammed. Separate by comma.',
     'Тақиқланган сўзларни созланг. Тақиқланган сўзларни ўз ичига олган шарҳлар автоматик равишда спамга юборилади. Вергул билан ажратинг.',
-    '禁止ワード設定、禁止ワードを含むコンテンツは直ちにスパムコメントとしてマークされます。コンマで区切ってください。'
+    '禁止ワード設定。禁止ワードを含むコンテンツは直ちにスパムコメントとしてマークされます。コンマで区切ってください。'
   ],
   [S.ACI + '_BLOCKED_WORDS']: [
     '屏蔽词配置，包含屏蔽词的内容会直接评论失败。英文逗号分隔。',
@@ -426,7 +426,7 @@ export default {
     '屏蔽词配置，包含屏蔽词的内容会直接评论失败。英文逗号分隔。',
     'Configure blocked words. Comments containing blocked words will fail to send. Separate by comma.',
     'Configure blocked words. Comments containing blocked words will fail to send. Separate by comma.',
-    'ブロックワード設定、 ブロックワードを含むコンテンツは送信に失敗します。コンマで区切ってください。'
+    'ブロックワード設定。ブロックワードを含むコンテンツは送信に失敗します。コンマで区切ってください。'
   ],
   [S.ACI + '_GRAVATAR_CDN']: [
     '自定义头像 CDN 地址。如：cn.gravatar.com, weavatar.com, cravatar.cn, sdn.geekzu.org, gravatar.loli.net，默认：weavatar.com',
@@ -442,7 +442,7 @@ export default {
     '隱藏管理控制台入口。可設定一個“暗號”，只有在「暱稱」一欄輸入相同的「暗號」時，管理控制台入口才會顯示，留白則不隱藏管理入口',
     'Set a cipher to hide the management panel entrance, only when the same cipher is entered in the nickname field the management panel entry will be displayed. Leave it blank to not hide the management entrance.',
     'Бошқарув панелига киришни яшириш учун шифрни ўрнатинг, фақат тахаллус майдонига худди шу шифр киритилганда бошқарув панелидаги ёзув кўрсатилади. Бошқарув киришини яширмаслик учун уни бўш қолдиринг.',
-    '管理パネルのログイン画面を非表示にする。 "パスワード" を設定でき、 "ニックネーム" フィールドに同じ "パスワード" を入力した場合のみ、管理パネルのログイン画面が表示されます。空白の場合、管理パネルのログイン画面は非表示にされません。'
+    '管理パネルのログイン画面を非表示にする。 "パスワード" を設定でき、 "名前" フィールドに同じ "パスワード" を入力した場合のみ、管理パネルのログイン画面が表示されます。空白の場合、管理パネルのログイン画面は非表示にされません。'
   ],
   [S.ACI + '_HIGHLIGHT']: [
     '启用代码高亮功能。如果您的主题和代码高亮有冲突，请设为 false。默认：true',
@@ -458,7 +458,7 @@ export default {
     `程式碼醒目顯示主題，選項：${highlightThemes.join('、')}，瀏覽 https://prismjs.com 可預覽主題效果。如果您的主題和此功能發生衝突，請設定為 none。預設：none`,
     `Code highlighting theme. Select from: ${highlightThemes.join(', ')}. Visit https://prismjs.com for preview. If your theme conflicts with code highlighting, please set it to none. Default: none.`,
     `Кодни таъкидлаш мавзуси. Қуйидагилардан танланг: ${highlightThemes.join(', ')}. Олдиндан кўриш учун https://prismjs.com сайтига ташриф буюринг. Агар мавзуингиз кодни ажратиб кўрсатишга зид бўлса, уни «Ҳеч» га ўрнатинг. Стандарт: йўқ.`,
-    `コードハイライトのテーマ、選択肢：${highlightThemes.join('、')}、テーマの効果をプレビューするには https://prismjs.com を訪問してください。テーマとコードハイライトに競合がある場合、noneに設定してください。デフォルト：none`
+    `コードハイライトのテーマ。選択肢：${highlightThemes.join('、')}、テーマの効果をプレビューするには https://prismjs.com を訪問してください。テーマとコードハイライトに競合がある場合、noneに設定してください。デフォルト：none`
   ],
   [S.ACI + '_HIGHLIGHT_PLUGIN']: [
     `代码高亮插件，可选：${highlightPlugins.join('、')}，分别表示：展示代码语言、展示代码拷贝按钮。可以同时设置多个选项，如果想要不添加任何代码高亮插件，请设为 none。默认：none。`,
@@ -466,7 +466,7 @@ export default {
     `代碼高亮外掛程式，可選：${highlightPlugins.join('、')}，分別表示：展示代碼語言、展示代碼拷貝按鈕。 可以同時設置多個選項，如果想要不添加任何代碼高亮外掛程式，請設定為 none。預設：none。`,
     `Code highlight plug-in, optional: ${highlightPlugins.join(', ')}, respectively: show code language, show code copy button. Multiple options can be set at the same time, if you want to add no code highlighting plug-ins, please set it to none. Default: none. `,
     `Плагин подсветки кода, опционально: ${highlightPlugins.join(',')}, соответственно: показывать язык кода, показывать кнопку копирования кода. Вы можете установить несколько опций одновременно, если вы хотите не добавлять плагин подсветки кода, установите значение none. по умолчанию: none.`,
-    `コード・ハイライト・プラグイン、オプション: ${highlightPlugins.join(',')}, それぞれ: コード言語の表示、コード・コピー・ボタンの表示。 複数のオプションを同時に設定できますが、コード・ハイライト・プラグインを追加したくない場合は、noneに設定してください。`
+    `コード・ハイライト・プラグイン。オプション: ${highlightPlugins.join(',')}, それぞれ: コード言語の表示、コード・コピー・ボタンの表示。複数のオプションを同時に設定できますが、コード・ハイライト・プラグインを追加したくない場合は、noneに設定してください。`
   ],
   [S.ACI + '_IMAGE_CDN']: [
     `插入图片所使用的图床，目前支持：${imageBedServices.join('、')}`,
@@ -474,7 +474,7 @@ export default {
     `插入圖片所使用的圖床，目前支援：${imageBedServices.join('、')}`,
     `The image bed for image uploading. Select from: ${imageBedServices.join(', ')}`,
     `Расм юклаш учун расм тўшаги. Қуйидагилардан танланг: ${imageBedServices.join(', ')}`,
-    `画像のアップロードに使用する画像ホスティングサービス、次のうちから選択してください：${imageBedServices.join('、')}`
+    `画像のアップロードに使用する画像ホスティングサービス。次のうちから選択してください：${imageBedServices.join('、')}`
   ],
   [S.ACI + '_IMAGE_CDN_TOKEN']: [
     '图床 token。qcloud 图床无需设置',
@@ -490,7 +490,7 @@ export default {
     '使用簡易圖片點擊放大效果。預設：false',
     'Use simple Lightbox effect. Default: false',
     'Используйте простые эффекты лайтбокса. По умолчанию: false',
-    'シンプルなLightbox効果を使用します。デフォルト：false'
+    'シンプルな画像拡大機能を使用します。デフォルト：false'
   ],
   [S.ACI + '_LIMIT_PER_MINUTE']: [
     '单个 IP 发言频率限制（条/10分钟），0 为无限制，默认：10',
@@ -514,7 +514,7 @@ export default {
     '留言長度限制，0 為無限，預設：500',
     'Comment length limitation, 0 is unlimited, default: 500.',
     'Шарҳ узунлиги чеклови, 0 чексиз, стандарт: 500.',
-    'コメント長さの制限、0は無制限、デフォルト：500'
+    'コメント長さの制限。0は無制限、デフォルト：500'
   ],
   [S.ACI + '_MAIL_SUBJECT']: [
     '自定义通知邮件主题，留空则使用默认主题。',
@@ -522,7 +522,7 @@ export default {
     '自訂通知郵件主題，留白則使用預設主題。',
     'Custom Email notification subject. Leave it blank to use the default subject.',
     'Махсус электрон почта хабарномаси мавзуси. Стандарт мавзуни ишлатиш учун уни бўш қолдиринг.',
-    'カスタム通知メールの件名、空白の場合はデフォルトの件名を使用します。'
+    'カスタム通知メールの件名。空白の場合はデフォルトの件名を使用します。'
   ],
   [S.ACI + '_MAIL_SUBJECT_ADMIN']: [
     '自定义博主通知邮件主题，留空则使用默认主题。',
@@ -530,7 +530,7 @@ export default {
     '自訂站長通知郵件主題，留白則使用預設主題。',
     'Custom admin Email notification subject. Leave it blank to use the default subject.',
     'Махсус администратор электрон почта хабарномаси мавзуси. Стандарт мавзуни ишлатиш учун уни бўш қолдиринг.',
-    '管理者へのカスタム通知メールの件名、空白の場合はデフォルトの件名を使用します。'
+    '管理者へのカスタム通知メールの件名。空白の場合はデフォルトの件名を使用します。'
   ],
   [S.ACI + '_MAIL_TEMPLATE']: [
     '自定义通知邮件模板，留空则使用默认模板。可包含的字段：${SITE_URL}, ${SITE_NAME}, ${PARENT_NICK}, ${PARENT_COMMENT}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IMG}, ${PARENT_IMG}',
@@ -538,7 +538,7 @@ export default {
     '自訂通知郵件模板，留白則使用預設模板。可包含的欄位：${SITE_URL}, ${SITE_NAME}, ${PARENT_NICK}, ${PARENT_COMMENT}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IMG}, ${PARENT_IMG}',
     'Custom Email notification template. Leave it blank to use the default template. Fields that can be included: ${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IMG}, ${PARENT_IMG}',
     'Махсус электрон почта хабарномаси шаблони. Стандарт шаблонни ишлатиш учун уни бўш қолдиринг. Қўшилиши мумкин бўлган майдонлар:  ${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IMG}, ${PARENT_IMG}',
-    'カスタム通知メールテンプレート、空白の場合はデフォルトテンプレートを使用します。使用可能なフィールド：${SITE_URL}、${SITE_NAME}、${PARENT_NICK}、${PARENT_COMMENT}、${NICK}、${COMMENT}、${POST_URL}、${IMG}、${PARENT_IMG}'
+    'カスタム通知メールテンプレート。空白の場合はデフォルトテンプレートを使用します。使用可能なフィールド：${SITE_URL}、${SITE_NAME}、${PARENT_NICK}、${PARENT_COMMENT}、${NICK}、${COMMENT}、${POST_URL}、${IMG}、${PARENT_IMG}'
   ],
   [S.ACI + '_MAIL_TEMPLATE_ADMIN']: [
     '自定义博主通知邮件模板，留空则使用默认模板。可包含的字段：${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IP}, ${MAIL}, ${IMG}',
@@ -546,7 +546,7 @@ export default {
     '自訂站長通知郵件模板，留白則使用預設模板。可包含的欄位：${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IP}, ${MAIL}, ${IMG}',
     'Custom admin Email notification template. Leave it blank to use the default template. Fields that can be included: ${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IP}, ${MAIL}, ${IMG}',
     'Махсус администратор электрон почта хабарномаси шаблони. Стандарт шаблонни ишлатиш учун уни бўш қолдиринг. Қўшилиши мумкин бўлган майдонлар:  ${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IMG}, ${PARENT_IMG}',
-    '管理者へのカスタム通知メールテンプレート、空白の場合はデフォルトテンプレートを使用します。使用可能なフィールド：${SITE_URL}、${SITE_NAME}、${NICK}、${COMMENT}、${POST_URL}、${IP}、${MAIL}、${IMG}'
+    '管理者へのカスタム通知メールテンプレート。空白の場合はデフォルトテンプレートを使用します。使用可能なフィールド：${SITE_URL}、${SITE_NAME}、${NICK}、${COMMENT}、${POST_URL}、${IP}、${MAIL}、${IMG}'
   ],
   [S.ACI + '_MASTER_TAG']: [
     '博主标识自定义文字，默认为 “博主”。',
@@ -554,7 +554,7 @@ export default {
     '站長認證自訂文字，預設為「博主」。', // 可能牽涉到程式碼層面，不做更動以免造成誤導。
     'Custom admin identifier.',
     'Махсус администратор идентификатори.',
-    '管理者を表すカスタムテキスト、デフォルトは "ブロガー"'
+    '管理者を表すカスタムテキスト。デフォルト："ブロガー"'
   ],
   [S.ACI + '_NOTIFY_SPAM']: [
     '垃圾评论是否发送通知，默认：true',
@@ -562,7 +562,7 @@ export default {
     '垃圾留言是否發送通知，預設：true',
     'Notifications for spam comments. Default: true.',
     'Спам шарҳлар учун билдиришномалар. Стандарт: рост.',
-    'スパムコメントの通知を送信するかどうか、デフォルト：true'
+    'スパムコメントの通知を送信するかどうか。デフォルト：true'
   ],
   [S.ACI + '_TURNSTILE_SITE_KEY']: [
     'Turnstile 验证码的站点密钥。申请地址: https://dash.cloudflare.com/?to=/:account/turnstile',
@@ -570,7 +570,7 @@ export default {
     'Turnstile 验证码的站点密钥。申请地址: https://dash.cloudflare.com/?to=/:account/turnstile',
     'Turnstile CAPTCHA Site Key. Get from: https://dash.cloudflare.com/?to=/:account/turnstile',
     'Turnstile CAPTCHA Site Key. Get from: https://dash.cloudflare.com/?to=/:account/turnstile',
-    'Turnstile CAPTCHAのサイトキー. 参照: https://dash.cloudflare.com/?to=/:account/turnstile'
+    'Turnstile CAPTCHAのサイトキー。参照: https://dash.cloudflare.com/?to=/:account/turnstile'
   ],
   [S.ACI + '_TURNSTILE_SECRET_KEY']: [
     'Turnstile 验证码的密钥',
@@ -586,7 +586,7 @@ export default {
     '騰訊雲 Secret ID，用於垃圾留言檢測。同時設定騰訊雲和 Akismet 時，只有騰訊雲會被啟用。註冊：https://twikoo.js.org/cms.html', // 「騰訊雲」是一家網路服務提供商，不改為「騰訊雲端」。
     'Tencent Cloud secret id for spam detection. When Tencent Cloud and Akismet are set at the same time, only Tencent Cloud will take effect. Register: https://twikoo.js.org/cms.html',
     'Спамни аниқлаш учун Тенсент Слоуд махфий идентификатори. Тенсент Слоуд ва Акисмет бир вақтнинг ўзида ўрнатилганда, фақат Тенсент Слоуд кучга киради. Рўйхатдан ўтиш: https://twikoo.js.org/cms.html',
-    'Tencent CloudのシークレットID、スパムコメントの検出に使用されます。同時にTencent CloudとAkismetを設定した場合、Tencent Cloudのみが有効になります。登録：https://twikoo.js.org/cms.html'
+    'Tencent CloudのシークレットID。スパムコメントの検出に使用されます。同時にTencent CloudとAkismetを設定した場合、Tencent Cloudのみが有効になります。登録：https://twikoo.js.org/cms.html'
   ],
   [S.ACI + '_QCLOUD_CMS_BIZTYPE']: [
     '腾讯云内容安全 Biztype 名称，用于垃圾评论策略。可以自定义垃圾拦截规则',
@@ -610,7 +610,7 @@ export default {
     `即時訊息推送平台名稱，支援：${pushooChannels.join('、')} 等`,
     `IM notification push channel. Support: ${pushooChannels.join(', ')}`,
     `ИМ билдиришномаси суриш канали. Қўллаб-қувватлаш: ${pushooChannels.join(', ')}`,
-    `即時メッセージプッシュプラットフォームの名前、${pushooChannels.join('、')} などに対応しています。`
+    `即時メッセージプッシュプラットフォームの名前。${pushooChannels.join('、')} などに対応しています。`
   ],
   [S.ACI + '_PUSHOO_TOKEN']: [
     '即时消息推送 token。请参考 https://pushoo.js.org 里的详细说明配置',
@@ -626,7 +626,7 @@ export default {
     '界面上顯示的輸入框，預設：nick,mail,link',
     'Input boxes displayed on the interface. Default: nick,mail,link',
     'Поля ввода, отображаемые на интерфейсе, Стандарт: nick,mail,link',
-    '画面に表示される入力欄、デフォルト：nick,mail,link'
+    '画面に表示される入力欄。デフォルト：nick,mail,link'
   ],
   [S.ACI + '_REQUIRED_FIELDS']: [
     '评论必填信息，设为 nick,mail,link 代表全必填，设为 none 代表全选填，默认：nick,mail',
@@ -634,7 +634,7 @@ export default {
     '留言必填資訊，設為 nick,mail,link 代表全必填，設為 none 代表全選填，預設：nick,mail',
     'Required fields for comments. Set to "nick,mail,link" means all fields are required. Set to "none" means all fields are optional. Default: nick,mail.',
     'Шарҳлар учун зарур майдонлар. «Ниск,маил,линк» га ўрнатилган бўлса, барча майдонлар талаб қилинади. «Йўқ» га ўрнатилиши барча майдонлар ихтиёрий эканлигини англатади. Стандарт: ник, почта.',
-    'コメント必須情報、すべてを必須にする場合は nick,mail,link に設定、すべてを」任意にする場合はnoneに設定してください。デフォルト：nick,mail'
+    'コメント必須項目。すべてを必須にする場合は nick,mail,link に設定、すべてを任意にする場合はnoneに設定してください。デフォルト：nick,mail'
   ],
   [S.ACI + '_SC_MAIL_NOTIFY']: [
     '是否同时通过 IM 和邮件 2 种方式通知博主，默认只通过 IM 通知博主，默认：false',
@@ -642,7 +642,7 @@ export default {
     '是否同時透過 IM 和郵件 2 種方式通知博主，預設只透過 IM 通知博主，預設：false',
     'Whether to notify admin via IM and email at the same time, the default is to notify admin only via IM. Default: false.',
     'Администраторни бир вақтнинг ўзида ИМ ва электрон почта орқали хабардор қилиш керакми, сукут бўйича администраторни фақат ИМ орқали хабардор қилиш керак. Стандарт: нотўғри.',
-    '管理者にIMとEメールで同時に通知するかどうか、デフォルトはIMのみで通知、デフォルト：false'
+    '管理者にIMとメールで同時に通知するかどうか。デフォルトはIMのみで通知、デフォルト：false'
   ],
   [S.ACI + '_SENDER_EMAIL']: [
     '邮件通知邮箱地址。对于大多数邮箱服务商，SENDER_EMAIL 必须和 SMTP_USER 保持一致，否则无法发送邮件。',
@@ -650,7 +650,7 @@ export default {
     '郵件通知郵箱帳號。對於大多數電郵服務提供商，SENDER_EMAIL 必須和 SMTP_USER 保持一致，否則無法傳送郵件。',
     'Email address for Email notification. For most email service providers, SENDER_EMAIL must be consistent with SMTP_USER, otherwise emails cannot be sent.',
     'Электрон почта хабарномаси учун электрон почта манзили. Аксарият электрон почта хизмати провайдерлари учун  SENDER_EMAIL билан мос келиши керак, акс ҳолда электрон почта хабарларини юбориб бўлмайди.',
-    '電子メール通知の電子メールアドレス。 ほとんどのメールボックス・プロバイダでは、SENDER_EMAILはSMTP_USERと同じでなければなりません。'
+    'メール通知のメールアドレス。 ほとんどのメールボックス・プロバイダでは、SENDER_EMAILはSMTP_USERと同じでなければなりません。'
   ],
   [S.ACI + '_SENDER_NAME']: [
     '邮件通知标题。',
@@ -666,7 +666,7 @@ export default {
     '啟用插入表情功能，預設為：true',
     'Enable emojis. Default: true.',
     'Кулгичларни ёқинг. Стандарт: рост.',
-    '顔文字の挿入を有効にする、デフォルト：true'
+    '顔文字の挿入を有効にするかどうか。デフォルト：true'
   ],
   [S.ACI + '_SHOW_IMAGE']: [
     '启用插入图片功能，默认为：true',
@@ -674,7 +674,7 @@ export default {
     '啟用插入圖片功能，預設為：true',
     'Enable picture uploading. Default: true.',
     'Расм юклашни ёқинг. Стандарт: рост.',
-    '画像挿入機能を有効にする、デフォルト：true'
+    '画像のアップロードを有効にするかどうか。デフォルト：true'
   ],
   [S.ACI + '_SHOW_UA']: [
     '是否显示用户系统和浏览器，默认为：true',
@@ -682,7 +682,7 @@ export default {
     '是否顯示使用者作業系統和瀏覽器，預設為：true',
     'Show users\' OS and browser. Default: true.',
     'Фойдаланувчиларнинг ОС ва браузерини кўрсатиш. Стандарт: рост.',
-    'ユーザーのOSとブラウザーの情報を表示するかどうか、デフォルトは：true'
+    'ユーザーのOSとブラウザーの情報を表示するかどうか。デフォルト：true'
   ],
   [S.ACI + '_SHOW_REGION']: [
     '是否显示用户 IP 属地到省，可能不准确，不支持 IPv6，默认为：false',
@@ -690,7 +690,7 @@ export default {
     '是否顯示使用者 IP 所屬地（精確到省），預設為：false',
     'Show users\' IP region (province). Default: false.',
     'Фойдаланувчиларнинг ИП ҳудудини (вилоят) кўрсатиш. Стандарт: нотўғри.',
-    'ユーザーIPの所在地（省）を表示するかどうか。正確でない場合があります。IPv6はサポートされていません。デフォルトは：false'
+    'ユーザーIPの所在地（省）を表示するかどうか。正確でない場合があります。IPv6はサポートされていません。デフォルト：false'
   ],
   [S.ACI + '_SITE_NAME']: [
     '网站名称',
@@ -715,7 +715,7 @@ export default {
     'Custom SMTP server address. If you have configured SMTP_SERVICE, please leave it empty.',
     'Махсус СМТП сервер манзили. Агар сиз СМТП_СEРВИСE созлаган бўлсангиз, уни бўш қолдиринг.',
     '自定义 SMTP 服务器地址。如您已配置 SMTP_SERVICE，此项请留空。',
-    'カスタムSMTPサーバのアドレス。 SMTP_SERVICEを設定している場合は空白のままにします。'
+    'カスタムSMTPサーバのアドレス。SMTP_SERVICEを設定している場合は空白のままにします。'
   ],
   [S.ACI + '_SMTP_PASS']: [
     '邮件通知邮箱密码，QQ、163邮箱请填写授权码。',
@@ -723,7 +723,7 @@ export default {
     '郵件通知郵箱密碼，QQ、163 郵箱請填寫授權碼。',
     'Email notification mailbox password. Enter authorization code for QQ/163 mail.',
     'Электрон почта хабарномаси почта қутиси пароли. ҚҚ/163 почтаси учун авторизация кодини киритинг.',
-    'メール通知のメールボックスパスワード、QQ、163メールは認証コードを入力してください'
+    'メール通知のメールボックスパスワード。QQ、163メールは認証コードを入力してください'
   ],
   [S.ACI + '_SMTP_PORT']: [
     '自定义 SMTP 端口。如您已配置 SMTP_SERVICE，此项请留空。',
@@ -731,7 +731,7 @@ export default {
     '自訂 SMTP 連接埠。如您已設定 SMTP_SERVICE，此項請留白。',
     'Custom SMTP port. If you have configured SMTP_SERVICE, please leave it empty.',
     'Махсус СМТП порти. Агар сиз СМТП_СEРВИС созлаган бўлсангиз, уни бўш қолдиринг.',
-    'カスタムSMTPポート。 SMTP_SERVICEを設定している場合は、空白のままにします。'
+    'カスタムSMTPポート。SMTP_SERVICEを設定している場合は、空白のままにします。'
   ],
   [S.ACI + '_SMTP_SECURE']: [
     '自定义 SMTP 是否使用TLS，请填写 true 或 false。如您已配置 SMTP_SERVICE，此项请留空。',
@@ -747,7 +747,7 @@ export default {
     `郵件通知郵箱服務提供商。支援：${smtpServices.join('、')}`,
     `Email service provider for Email notification. Support: ${smtpServices.join(', ')}`,
     `Электрон почта хабарномаси учун электрон почта хизмати провайдери. Қўллаб-қувватлаш: ${smtpServices.join(', ')}`,
-    `メール通知メールボックスサービスプロバイダ。 サポート: ${smtpServices.join(',')}.`
+    `メール通知メールボックスサービスプロバイダ。サポート: ${smtpServices.join(',')}.`
   ],
   [S.ACI + '_SMTP_USER']: [
     '邮件通知邮箱用户名。',
@@ -963,7 +963,7 @@ export default {
     '已上傳 ',
     'Uploading ',
     'Юкланмоқда ',
-    'すでにアップロードされています'
+    'アップロード中です'
   ],
   [S.AI + '_WARN']: [
     '支持从其他评论系统的备份文件导入评论。\n数据是安全的，导入功能完全在您的云环境进行。\n建议在导入前备份 comment 数据库。',
@@ -971,7 +971,7 @@ export default {
     '支援從其他留言系統的備份檔案匯入留言。\n資料是安全的，匯入功能完全在您的雲端環境進行。\n建議在匯入前備份 comment 資料庫。',
     'Import comments from other comment systems.\nThe data is safe, and the import function is performed entirely in your cloud environment.\nPlease backup your comment database before importing.',
     'Бошқа шарҳ тизимларидан шарҳларни импорт қилинг.\nМаълумотлар хавфсиз ва импорт функцияси тўлиқ булутли муҳитда амалга оширилади.\nИмпорт қилишдан олдин шарҳлар маълумотлар базасини захираланг.',
-    '他のレビューシステムのバックアップファイルからのレビューのインポートに対応。 \nデータは安全で、インポート機能はすべてクラウド環境で実行されます。 \nインポート前にコメントデータベースをバックアップすることを推奨します。'
+    '他のコメントシステムのバックアップファイルからのインポートに対応。\nデータは安全で、インポート機能はすべてクラウド環境で実行されます。\nインポート前にコメントデータベースをバックアップすることを推奨します。'
   ],
   ADMIN_LOGIN: [
     '登录',
@@ -1107,7 +1107,7 @@ export default {
     '沒有留言',
     'No comment',
     'Изоҳларсиз',
-    'コメントなし'
+    'コメントはありません'
   ],
   COMMENT_EXPAND: [
     '展开',
@@ -1115,7 +1115,7 @@ export default {
     '展開',
     'Read more',
     'Давомини ўқиш',
-    'コメントを展開する'
+    '全文を表示'
   ],
   COMMENT_COLLAPSE: [
     '收起',
@@ -1123,7 +1123,7 @@ export default {
     '閉合',
     'Collapse',
     'Очиш',
-    'コメントを折りたたむ'
+    '折りたたむ'
   ],
   COMMENT_MASTER_TAG: [
     '博主',
@@ -1155,7 +1155,7 @@ export default {
     '置頂',
     'Pinned',
     'Қадоқланган',
-    'トップに固定'
+    '固定'
   ],
   COMMENT_FAILED: [
     '评论失败',
@@ -1179,7 +1179,7 @@ export default {
     '郵箱',
     'Email',
     'Email',
-    '受信箱'
+    'メールアドレス'
   ],
   META_INPUT_NICK: [
     '昵称',
@@ -1187,7 +1187,7 @@ export default {
     '暱稱',
     'Nickname',
     'Исм',
-    'ネットネーム'
+    '名前'
   ],
   META_INPUT_NOT_REQUIRED: [
     '选填',
@@ -1203,7 +1203,7 @@ export default {
     '必填',
     'Required',
     'Мажбурий',
-    '必須項目'
+    '必須'
   ],
   PAGINATION_COUNT_PREFIX: [
     '共 ',
@@ -1290,7 +1290,7 @@ export default {
     '博主未配置圖床服務',
     'The blogger didn\'t configured any image bed service',
     'Муаллиф ҳеч қандай тасвир хизматини созламаган',
-    '管理者が画僧配信サービスを設定していません'
+    '管理者が画像配信サービスを設定していません'
   ],
   IMAGE_UPLOAD_PLEASE_WAIT: [
     '图片上传中，请稍候再发送',
@@ -1298,7 +1298,7 @@ export default {
     '圖片上傳中，請稍候再傳送',
     'Uploading image, please try again later',
     'Расм юкланмоқда, кейинроқ қайта уриниб кўринг',
-    '画像はアップロード中です'
+    '画像のアップロードが完了するまでお待ちください'
   ],
   SUBMIT_SENDING: [
     '发送中',

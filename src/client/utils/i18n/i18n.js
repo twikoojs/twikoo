@@ -23,7 +23,8 @@ const pushooChannels = [
   'pushdeer',
   'igot',
   'telegram',
-  'feishu'
+  'feishu',
+  'webhook'
 ].map(s => `"${s}"`)
 
 const smtpServices = [

@@ -11,7 +11,7 @@ const logger = require('./logger')
 
 let nodemailer
 
-function lazilyGetNodemailer () {
+function lazilyGetNodemailer() {
   return nodemailer ?? (nodemailer = getNodemailer())
 }
 
@@ -19,7 +19,7 @@ let transporter
 
 const fn = {
   // 发送通知
-  async sendNotice (comment, config, getParentComment) {
+  async sendNotice(comment, config, getParentComment) {
     if (comment.isSpam && config.NOTIFY_SPAM === 'false') return
     await Promise.all([
       fn.noticeMaster(comment, config),
@@ -30,7 +30,7 @@ const fn = {
     })
   },
   // 初始化邮件插件
-  async initMailer ({ config, throwErr = false } = {}) {
+  async initMailer({ config, throwErr = false } = {}) {
     try {
       if (!config || !config.SMTP_USER || !config.SMTP_PASS) {
         throw new Error('数据库配置不存在')
@@ -69,7 +69,7 @@ const fn = {
     }
   },
   // 博主通知
-  async noticeMaster (comment, config) {
+  async noticeMaster(comment, config) {
     if (!transporter && !await fn.initMailer({ config })) {
       logger.info('未配置邮箱或邮箱配置有误，不通知')
       return
@@ -130,7 +130,7 @@ const fn = {
     return sendResult
   },
   // 即时消息通知
-  async noticePushoo (comment, config) {
+  async noticePushoo(comment, config) {
     if (!config.PUSHOO_CHANNEL || !config.PUSHOO_TOKEN) {
       logger.info('没有配置 pushoo，放弃即时消息通知')
       return
@@ -140,43 +140,59 @@ const fn = {
       return
     }
     const pushContent = fn.getIMPushContent(comment, config)
-    const sendResult = await pushoo(config.PUSHOO_CHANNEL, {
-      token: config.PUSHOO_TOKEN,
-      title: pushContent.subject,
-      content: pushContent.content,
-      options: {
-        bark: {
-          url: pushContent.url
+    try {
+      const sendResult = await pushoo(config.PUSHOO_CHANNEL, {
+        token: config.PUSHOO_TOKEN,
+        title: pushContent.subject,
+        content: pushContent.content,
+        options: {
+          data: {
+            url: pushContent.url,
+            text: pushContent.TEXT,
+            ip: pushContent.IP,
+            nick: pushContent.NICK,
+            mail: pushContent.MAIL,
+          }
         }
-      }
-    })
-    logger.info('即时消息通知结果：', sendResult)
+      })
+      logger.info('即时消息通知结果：', sendResult)
+    } catch (e) {
+      throw new Error(error);
+    }
   },
   // 即时消息推送内容获取
-  getIMPushContent (comment, config) {
+  getIMPushContent(comment, config) {
     const SITE_NAME = config.SITE_NAME
     const NICK = comment.nick
     const MAIL = comment.mail
     const IP = comment.ip
     const COMMENT = $(comment.comment).text()
+    const TEXT = COMMENT;
     const SITE_URL = config.SITE_URL
     const POST_URL = fn.appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id)
     const subject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}有新评论了`
-    const content = `评论人：${NICK} ([${MAIL}](mailto:${MAIL}))
+    const content = 
+                    `
+                    评论人：${NICK} ([${MAIL}](mailto:${MAIL}))
 
-评论人IP：${IP}
+                    评论人IP：${IP}
+                    
+                    评论内容：${COMMENT}
 
-评论内容：${COMMENT}
-
-原文链接：[${POST_URL}](${POST_URL})`
-    return {
-      subject,
-      content,
-      url: POST_URL
-    }
-  },
+                    原文链接：[${POST_URL}](${POST_URL})
+                    `
+        return {
+          subject,
+          content,
+          url: POST_URL,
+          NICK,
+          MAIL,
+          IP,
+          TEXT
+        }
+      },
   // 回复通知
-  async noticeReply (currentComment, config, getParentComment) {
+  async noticeReply(currentComment, config, getParentComment) {
     if (!currentComment.pid) {
       logger.info('无父级评论，不通知')
       return
@@ -248,14 +264,14 @@ const fn = {
     logger.log('回复通知结果：', sendResult)
     return sendResult
   },
-  appendHashToUrl (url, hash) {
+  appendHashToUrl(url, hash) {
     if (url.indexOf('#') === -1) {
       return `${url}#${hash}`
     } else {
       return `${url.substring(0, url.indexOf('#'))}#${hash}`
     }
   },
-  async emailTest (event, config, isAdminUser) {
+  async emailTest(event, config, isAdminUser) {
     const res = {}
     if (isAdminUser) {
       try {

@@ -1,7 +1,6 @@
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
-const { isLskyProUrl, isPicListUrl } = require('.')
 const { RES_CODE } = require('./constants')
 const { getAxios, getFormData } = require('./lib')
 const axios = getAxios()
@@ -18,14 +17,21 @@ const fn = {
       }
       // tip: qcloud 图床走前端上传，其他图床走后端上传
       // LskyPro 和 PicList 填写时需要添加前缀 并在下面使用slice去除前缀
-      if (config.IMAGE_CDN === '7bu') {
-        await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: 'https://7bu.top' })
-      } else if (config.IMAGE_CDN === 'smms') {
-        await fn.uploadImageToSmms({ photo, fileName, config, res })
-      } else if (isLskyProUrl(config.IMAGE_CDN)) {
-        await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN.slice('LskyPro '.length) })
-      } else if (isPicListUrl(config.IMAGE_CDN)) {
-        await fn.uploadImageToPicList({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN.slice('PicList '.length) })
+      switch (config.IMAGE_CDN) {
+        case '7bu':
+          await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: 'https://7bu.top' })
+          break
+        case 'smms':
+          await fn.uploadImageToSmms({ photo, fileName, config, res, imageCdn: 'https://smms.app/api/v2/upload' })
+          break
+        case 'lskypro':
+          await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN_URL })
+          break
+        case 'piclist':
+          await fn.uploadImageToPicList({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN_URL })
+          break
+        default:
+          throw new Error('不支持的图片上传服务')
       }
     } catch (e) {
       logger.error(e)
@@ -34,11 +40,11 @@ const fn = {
     }
     return res
   },
-  async uploadImageToSmms ({ photo, fileName, config, res }) {
+  async uploadImageToSmms ({ photo, fileName, config, res, imageCdn }) {
     // SM.MS 图床 https://sm.ms
     const formData = new FormData()
     formData.append('smfile', fn.base64UrlToReadStream(photo, fileName))
-    const uploadResult = await axios.post('https://smms.app/api/v2/upload', formData, {
+    const uploadResult = await axios.post(imageCdn, formData, {
       headers: {
         ...formData.getHeaders(),
         Authorization: config.IMAGE_CDN_TOKEN
@@ -76,6 +82,7 @@ const fn = {
     }
   },
   async uploadImageToPicList ({ photo, fileName, config, res, imageCdn }) {
+    logger.info( photo + fileName )
     // PicList https://piclist.cn/ 高效的云存储和图床平台管理工具
     // 鉴权使用query参数key
     const formData = new FormData()

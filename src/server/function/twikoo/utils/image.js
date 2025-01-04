@@ -1,7 +1,7 @@
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
-const { isUrl } = require('.')
+const { isLskyProUrl, isPicListUrl } = require('.')
 const { RES_CODE } = require('./constants')
 const { getAxios, getFormData } = require('./lib')
 const axios = getAxios()
@@ -17,12 +17,15 @@ const fn = {
         throw new Error('未配置图片上传服务')
       }
       // tip: qcloud 图床走前端上传，其他图床走后端上传
+      // LskyPro 和 PicList 填写时需要添加前缀 并在下面使用slice去除前缀
       if (config.IMAGE_CDN === '7bu') {
         await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: 'https://7bu.top' })
       } else if (config.IMAGE_CDN === 'smms') {
         await fn.uploadImageToSmms({ photo, fileName, config, res })
-      } else if (isUrl(config.IMAGE_CDN)) {
-        await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN })
+      } else if (isLskyProUrl(config.IMAGE_CDN)) {
+        await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN.slice('LskyPro '.length) })
+      } else if (isPicListUrl(config.IMAGE_CDN)) {
+        await fn.uploadImageToPicList({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN.slice('PicList '.length) })
       }
     } catch (e) {
       logger.error(e)
@@ -68,6 +71,24 @@ const fn = {
     if (uploadResult.data.status) {
       res.data = uploadResult.data.data
       res.data.url = res.data.links.url
+    } else {
+      throw new Error(uploadResult.data.message)
+    }
+  },
+  async uploadImageToPicList ({ photo, fileName, config, res, imageCdn }) {
+    // PicList https://piclist.cn/ 高效的云存储和图床平台管理工具
+    // 鉴权使用query参数key
+    const formData = new FormData()
+    formData.append('file', fn.base64UrlToReadStream(photo, fileName))
+    let url = `${imageCdn}/upload`
+    // 如果填写了key则拼接url
+    if (config.IMAGE_CDN_TOKEN) {
+      url += `?key=${config.IMAGE_CDN_TOKEN}`
+    }
+    const uploadResult = await axios.post(url, formData)
+    if (uploadResult.data.success) {
+      res.data = uploadResult.data
+      res.data.url = uploadResult.data.result[0]
     } else {
       throw new Error(uploadResult.data.message)
     }

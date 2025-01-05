@@ -16,7 +16,6 @@ const fn = {
         throw new Error('未配置图片上传服务')
       }
       // tip: qcloud 图床走前端上传，其他图床走后端上传
-      // LskyPro 和 PicList 填写时需要添加前缀 并在下面使用slice去除前缀
       switch (config.IMAGE_CDN) {
         case '7bu':
           await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: 'https://7bu.top' })

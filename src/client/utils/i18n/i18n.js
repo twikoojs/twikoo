@@ -88,9 +88,15 @@ const highlightPlugins = [
 
 const imageBedServices = [
   'qcloud',
-  '7bu',
-  'https://7bu.top',
-  'smms'
+  '7bu (https://7bu.top)',
+  'smms (https://sm.ms)',
+  'lskypro',
+  'piclist'
+].map(s => `"${s}"`)
+
+const customImageBedServices = [
+  'lskypro',
+  'piclist'
 ].map(s => `"${s}"`)
 
 const defaultGravatar = [
@@ -475,6 +481,15 @@ export default {
     `The image bed for image uploading. Select from: ${imageBedServices.join(', ')}`,
     `Расм юклаш учун расм тўшаги. Қуйидагилардан танланг: ${imageBedServices.join(', ')}`,
     `画像のアップロードに使用する画像ホスティングサービス。次のうちから選択してください：${imageBedServices.join('、')}`
+  ],
+  // 翻译来自 Deepseek
+  [S.ACI + '_IMAGE_CDN_URL']: [
+    `IMAGE_CDN 设置的图床的 URL，如果你的 IMAGE_CDN 是这些：${customImageBedServices.join('、')} 需要填写`, // 简体中文
+    `IMAGE_CDN 設定的圖床的URL, 如果你的IMAGE_CDN是這些: ${customImageBedServices.join('、')} 需要填寫`, // 繁体中文
+    `IMAGE_CDN 設定的圖床的URL, 如果你的IMAGE_CDN是這些: ${customImageBedServices.join('、')} 需要填寫`, // 繁体中文（台湾）
+    `The URL for the image bed set by IMAGE_CDN. Required if your IMAGE_CDN is one of these: ${customImageBedServices.join(', ')}`, // 英文
+    `IMAGE_CDN томонидан белгиланган расм тўшаги URL. Агар сизнинг IMAGE_CDN шулардан бири бўлса: ${customImageBedServices.join(', ')}`, // 乌兹别克语
+    `IMAGE_CDNで設定した画像ホスティングサービスのURL。IMAGE_CDNが以下のいずれかの場合は入力が必要です：${customImageBedServices.join('、')}` // 日语
   ],
   [S.ACI + '_IMAGE_CDN_TOKEN']: [
     '图床 token。qcloud 图床无需设置',

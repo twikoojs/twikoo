@@ -67,7 +67,7 @@ const fn = {
     if (config.SHOW_UA !== 'false') {
       try {
         const ua = bowser.getParser(comment.ua)
-        const os = fn.fixOS(ua.getOS())
+        const os = fn.fixOS(ua)
         displayOs = [os.name, os.versionName ? os.versionName : os.version].join(' ')
         displayBrowser = [ua.getBrowserName(), ua.getBrowserVersion()].join(' ')
       } catch (e) {
@@ -98,7 +98,8 @@ const fn = {
       updated: comment.updated
     }
   },
-  fixOS (os) {
+  fixOS (ua) {
+    const os = ua.getOS()
     if (!os.versionName) {
       // fix version name of Win 11 & macOS ^11 & Android ^10
       if (os.name === 'Windows' && os.version === 'NT 11.0') {
@@ -120,11 +121,26 @@ const fn = {
           12: 'Snow Cone',
           13: 'Tiramisu',
           14: 'Upside Down Cake',
-          15: 'Vanilla Ice Cream'
+          15: 'Vanilla Ice Cream',
+          16: 'Baklava'
         }[majorPlatformVersion]
+      } else if (ua.test(/harmony/i)) {
+        os.name = 'Harmony'
+        os.version = fn.getFirstMatch(/harmony[\s/-](\d+(\.\d+)*)/i, ua.getUA())
+        os.versionName = ''
       }
     }
     return os
+  },
+  /**
+   * Get first matched item for a string
+   * @param {RegExp} regexp
+   * @param {String} ua
+   * @return {Array|{index: number, input: string}|*|boolean|string}
+   */
+  getFirstMatch (regexp, ua) {
+    const match = ua.match(regexp)
+    return (match && match.length > 0 && match[1]) || ''
   },
   // 获取回复人昵称 / Get replied user nick name
   ruser (pid, comments = []) {

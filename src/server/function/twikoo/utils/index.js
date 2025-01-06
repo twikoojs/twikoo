@@ -206,14 +206,6 @@ const fn = {
       return `https://${gravatarCdn}/avatar/${mailHash}?d=${defaultGravatar}`
     }
   },
-  isLskyProUrl (s) {
-    const regex = /^LskyPro\s+http(s):\/\/[^\s]+$/
-    return regex.test(s)
-  },
-  isPicListUrl (s) {
-    const regex = /^PicList\s+http(s):\/\/[^\s]+$/
-    return regex.test(s)
-  },
   isQQ (mail) {
     return /^[1-9][0-9]{4,10}$/.test(mail) ||
       /^[1-9][0-9]{4,10}@qq.com$/i.test(mail)

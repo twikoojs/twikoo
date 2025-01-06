@@ -1,6 +1,7 @@
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
+const { isUrl } = require('.')
 const { RES_CODE } = require('./constants')
 const { getAxios, getFormData } = require('./lib')
 const axios = getAxios()
@@ -16,21 +17,18 @@ const fn = {
         throw new Error('未配置图片上传服务')
       }
       // tip: qcloud 图床走前端上传，其他图床走后端上传
-      switch (config.IMAGE_CDN) {
-        case '7bu':
-          await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: 'https://7bu.top' })
-          break
-        case 'smms':
-          await fn.uploadImageToSmms({ photo, fileName, config, res, imageCdn: 'https://smms.app/api/v2/upload' })
-          break
-        case 'lskypro':
-          await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN_URL })
-          break
-        case 'piclist':
-          await fn.uploadImageToPicList({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN_URL })
-          break
-        default:
-          throw new Error('不支持的图片上传服务')
+      if (config.IMAGE_CDN === '7bu') {
+        await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: 'https://7bu.top' })
+      } else if (config.IMAGE_CDN === 'smms') {
+        await fn.uploadImageToSmms({ photo, fileName, config, res, imageCdn: 'https://smms.app/api/v2/upload' })
+      } else if (isUrl(config.IMAGE_CDN)) {
+        await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN })
+      } else if (config.IMAGE_CDN === 'lskypro') {
+        await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN_URL })
+      } else if (config.IMAGE_CDN === 'piclist') {
+        await fn.uploadImageToPicList({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN_URL })
+      } else {
+        throw new Error('不支持的图片上传服务')
       }
     } catch (e) {
       logger.error(e)
@@ -82,11 +80,11 @@ const fn = {
   },
   async uploadImageToPicList ({ photo, fileName, config, res, imageCdn }) {
     // PicList https://piclist.cn/ 高效的云存储和图床平台管理工具
-    // 鉴权使用query参数key
+    // 鉴权使用 query 参数 key
     const formData = new FormData()
     formData.append('file', fn.base64UrlToReadStream(photo, fileName))
     let url = `${imageCdn}/upload`
-    // 如果填写了key则拼接url
+    // 如果填写了 key 则拼接 url
     if (config.IMAGE_CDN_TOKEN) {
       url += `?key=${config.IMAGE_CDN_TOKEN}`
     }

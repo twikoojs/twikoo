@@ -484,10 +484,10 @@ export default {
   ],
   // 翻译来自 Deepseek
   [S.ACI + '_IMAGE_CDN_URL']: [
-    `IMAGE_CDN 设置的图床的 URL，如果你的 IMAGE_CDN 是这些：${customImageBedServices.join('、')} 需要填写`, // 简体中文
-    `IMAGE_CDN 設定的圖床的URL, 如果你的IMAGE_CDN是這些: ${customImageBedServices.join('、')} 需要填寫`, // 繁体中文
-    `IMAGE_CDN 設定的圖床的URL, 如果你的IMAGE_CDN是這些: ${customImageBedServices.join('、')} 需要填寫`, // 繁体中文（台湾）
-    `The URL for the image bed set by IMAGE_CDN. Required if your IMAGE_CDN is one of these: ${customImageBedServices.join(', ')}`, // 英文
+    `图床的 URL，仅当 IMAGE_CDN 为 ${customImageBedServices.join(' / ')} 时需要填写`, // 简体中文
+    `圖床的 URL，僅當 IMAGE_CDN 為 ${customImageBedServices.join(' / ')} 時需要填寫`, // 繁体中文
+    `圖床的 URL，僅當 IMAGE_CDN 為 ${customImageBedServices.join(' / ')} 時需要填寫`, // 繁体中文（台湾）
+    `The URL for the image bed. Required if your IMAGE_CDN is one of these: ${customImageBedServices.join(', ')}`, // 英文
     `IMAGE_CDN томонидан белгиланган расм тўшаги URL. Агар сизнинг IMAGE_CDN шулардан бири бўлса: ${customImageBedServices.join(', ')}`, // 乌兹别克语
     `IMAGE_CDNで設定した画像ホスティングサービスのURL。IMAGE_CDNが以下のいずれかの場合は入力が必要です：${customImageBedServices.join('、')}` // 日语
   ],

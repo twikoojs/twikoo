@@ -484,7 +484,7 @@ export default {
   ],
   // 翻译来自 Deepseek
   [S.ACI + '_IMAGE_CDN_URL']: [
-    `IMAGE_CDN 设置的图床的URL, 如果你的IMAGE_CDN是这些: ${customImageBedServices.join('、')} 需要填写`, // 简体中文
+    `IMAGE_CDN 设置的图床的 URL，如果你的 IMAGE_CDN 是这些：${customImageBedServices.join('、')} 需要填写`, // 简体中文
     `IMAGE_CDN 設定的圖床的URL, 如果你的IMAGE_CDN是這些: ${customImageBedServices.join('、')} 需要填寫`, // 繁体中文
     `IMAGE_CDN 設定的圖床的URL, 如果你的IMAGE_CDN是這些: ${customImageBedServices.join('、')} 需要填寫`, // 繁体中文（台湾）
     `The URL for the image bed set by IMAGE_CDN. Required if your IMAGE_CDN is one of these: ${customImageBedServices.join(', ')}`, // 英文

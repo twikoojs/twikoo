@@ -1,6 +1,6 @@
 {
   "name": "twikoo-aws-lambda",
-  "version": "1.6.40",
+  "version": "1.6.41",
   "description": "A simple comment system.",
   "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
   "license": "MIT",

@@ -81,7 +81,6 @@ const fn = {
     }
   },
   async uploadImageToPicList ({ photo, fileName, config, res, imageCdn }) {
-    logger.info( photo + fileName )
     // PicList https://piclist.cn/ 高效的云存储和图床平台管理工具
     // 鉴权使用query参数key
     const formData = new FormData()

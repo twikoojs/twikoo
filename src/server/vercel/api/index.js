@@ -614,8 +614,9 @@ async function commentSubmit (event, request) {
   try {
     logger.log('开始异步垃圾检测、发送评论通知')
     logger.log('POST_SUBMIT')
+    const baseUrl = process.env.CUSTOM_DOMAIN ? `https://${process.env.CUSTOM_DOMAIN}` : `https://${request.headers.host}`
     await Promise.race([
-      axios.post(`https://${process.env.VERCEL_URL}`, {
+      axios.post(baseUrl, {
         event: 'POST_SUBMIT',
         comment
       }, { headers: { 'x-twikoo-recursion': config.ADMIN_PASS || 'true' } }),

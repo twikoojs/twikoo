@@ -137,7 +137,7 @@ const fn = {
       res.data = {
         url: response.url,
         thumb: response.thumb, // 可选返回缩略图
-        del: response.del      // 可选返回删除链接
+        del: response.del // 可选返回删除链接
       }
     } catch (e) {
       let errorMsg = `EasyImage2.0 上传失败: ${e.message}`

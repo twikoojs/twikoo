@@ -91,12 +91,14 @@ const imageBedServices = [
   '7bu (https://7bu.top)',
   'smms (https://sm.ms)',
   'lskypro',
-  'piclist'
+  'piclist',
+  'easyimage'
 ].map(s => `"${s}"`)
 
 const customImageBedServices = [
   'lskypro',
-  'piclist'
+  'piclist',
+  'easyimage'
 ].map(s => `"${s}"`)
 
 const defaultGravatar = [

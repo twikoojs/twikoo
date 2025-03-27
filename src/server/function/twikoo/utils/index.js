@@ -233,16 +233,17 @@ const fn = {
     if (/^[1-9][0-9]{4,10}$/.test(mail)) return `${mail}@qq.com`
     else return mail
   },
+  // 获取 QQ 头像
   async getQQAvatar (qq) {
     try {
-      const qqNum = qq.replace(/@qq.com/ig, '')
-      // TODO: 这个接口已经失效了，暂时找不到新的接口
-      const result = await axios.get(`https://aq.qq.com/cn2/get_img/get_face?img_type=3&uin=${qqNum}`)
-      return result.data?.url || null
+        const qqNum = qq.replace(/@qq.com/ig, '')
+        const response = await axios.get(`https://api.qijieya.cn/qq/qqinfo.php?qq=${qqNum}`)
+        return response.data.avatar || null
     } catch (e) {
-      logger.warn('获取 QQ 头像失败：', e)
+        logger.warn('获取 QQ 头像失败：', e)
+        return null
     }
-  },
+},
   // 判断是否存在管理员密码
   async getPasswordStatus (config, version) {
     return {

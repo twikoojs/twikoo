@@ -102,7 +102,7 @@ export default {
       }
     },
     getQQNick (qqNum) {
-      const url = `https://api.qjqq.cn/api/qqinfo?qq=${qqNum}`
+      const url = `https://api.qijieya.cn/qq/qqinfo.php?qq=${qqNum}`
       const xhr = new XMLHttpRequest()
       xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status === 200) {

@@ -36,10 +36,7 @@ export default {
       if (this.config && this.config.DEFAULT_GRAVATAR) {
         return this.config.DEFAULT_GRAVATAR
       }
-      if (this.gravatarCdn === 'weavatar.com') {
-        return `initials&name=${this.nick.charAt(0)}`
-      }
-      return 'identicon'
+      return 'initials&name=${this.nick.charAt(0)}'
     },
     avatarInner () {
       if (this.avatar) {

@@ -1,15 +1,5 @@
 import { logger, t } from '.'
 
-const locale = {
-  timeago: {
-    seconds: t('TIMEAGO_SECONDS'),
-    minutes: t('TIMEAGO_MINUTES'),
-    hours: t('TIMEAGO_HOURS'),
-    days: t('TIMEAGO_DAYS'),
-    now: t('TIMEAGO_NOW')
-  }
-}
-
 const timeAgo = (date) => {
   if (typeof date === 'number') {
     date = new Date(date)
@@ -33,16 +23,16 @@ const timeAgo = (date) => {
             // 计算相差秒数
             const leave3 = leave2 % (60 * 1000) // 计算分钟数后剩余的毫秒数
             const seconds = Math.round(leave3 / 1000)
-            return seconds + ` ${locale.timeago.seconds}`
+            return seconds + ` ${t('TIMEAGO_SECONDS')}`
           }
-          return minutes + ` ${locale.timeago.minutes}`
+          return minutes + ` ${t('TIMEAGO_MINUTES')}`
         }
-        return hours + ` ${locale.timeago.hours}`
+        return hours + ` ${t('TIMEAGO_HOURS')}`
       }
-      if (days < 0) return locale.timeago.now
+      if (days < 0) return t('TIMEAGO_NOW')
 
       if (days < 8) {
-        return days + ` ${locale.timeago.days}`
+        return days + ` ${t('TIMEAGO_DAYS')}`
       } else {
         return dateFormat(date)
       }

@@ -121,6 +121,7 @@ const defaultGravatar = [
  *   'zh-TW', // Contributor: [Jerry Wong](https://github.com/jerryc127), [kuohuanhuan](https://github.com/kuohuanhuan)
  *   'en'     // Contributor: [PCloud](https://github.com/HEIGE-PCloud)
  *   'uz-UZ'  // Contributor: [Nomad](https://github.com/digitaltwinz)
+ *   'ja-JP'  // Contributor: [yumexupanic](https://github.com/yumexupanic), [HakoMC](https://github.com/HakoMC)
  *   'ko-KR'  // Contributor: [다배](https://github.com/tipsyoncola)
  * ]
  */

@@ -93,7 +93,7 @@ twikoo:
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.42/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.43/dist/twikoo.all.min.js"></script>
 <script>
 twikoo.init({
   envId: '您的环境id', // 腾讯云环境填 envId；Vercel 环境填地址（https://xxx.vercel.app）
@@ -115,10 +115,10 @@ twikoo.init({
 
 如果遇到默认 CDN 加载速度缓慢，可更换其他 CDN 镜像。以下为可供选择的公共 CDN，其中一些 CDN 可能需要数天时间同步最新版本：
 
-* `https://s4.zstatic.net/ajax/libs/twikoo/1.6.42/twikoo.all.min.js`
-* `https://registry.npmmirror.com/twikoo/1.6.42/files/dist/twikoo.all.min.js`
-* `https://lib.baomitu.com/twikoo/1.6.42/twikoo.all.min.js`
-* `https://cdn.jsdelivr.net/npm/twikoo@1.6.42/dist/twikoo.all.min.js`
+* `https://s4.zstatic.net/ajax/libs/twikoo/1.6.43/twikoo.all.min.js`
+* `https://registry.npmmirror.com/twikoo/1.6.43/files/dist/twikoo.all.min.js`
+* `https://lib.baomitu.com/twikoo/1.6.43/twikoo.all.min.js`
+* `https://cdn.jsdelivr.net/npm/twikoo@1.6.43/dist/twikoo.all.min.js`
 
 ::: warning 注意
 建议使用 CDN 引入 Twikoo 的用户在链接地址上锁定版本，以免将来 Twikoo 升级时受到非兼容性更新的影响。

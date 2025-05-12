@@ -15,6 +15,8 @@ const langs = {
   'uz-uz': 4,
   ja: 5,
   'ja-jp': 5
+  ko: 6,
+  'ko-kr': 6
 }
 
 const defaultLanguage = 'zh-cn'

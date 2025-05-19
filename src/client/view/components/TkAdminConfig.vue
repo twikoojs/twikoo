@@ -92,8 +92,8 @@ export default {
           name: t('ADMIN_CONFIG_CATEGORY_SPAM'),
           items: [
             { key: 'AKISMET_KEY', desc: t('ADMIN_CONFIG_ITEM_AKISMET_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}8651783edxxx`, value: '' },
-            { key: 'QCLOUD_SECRET_ID', desc: t('ADMIN_CONFIG_ITEM_QCLOUD_SECRET_ID'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}AKIDBgZDdnbTw9D4ey9qPkrkwtb2Do9EwIHw`, value: '' },
-            { key: 'QCLOUD_SECRET_KEY', desc: t('ADMIN_CONFIG_ITEM_QCLOUD_SECRET_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}XrkOnvKWS7WeXbP1QZT76rPgtpWx73D7`, value: '', secret: true },
+            { key: 'QCLOUD_SECRET_ID', desc: t('ADMIN_CONFIG_ITEM_QCLOUD_SECRET_ID'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}AKI******************************IHw`, value: '' },
+            { key: 'QCLOUD_SECRET_KEY', desc: t('ADMIN_CONFIG_ITEM_QCLOUD_SECRET_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}Xrk**************************3D7`, value: '', secret: true },
             { key: 'QCLOUD_CMS_BIZTYPE', desc: t('ADMIN_CONFIG_ITEM_QCLOUD_CMS_BIZTYPE'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}1787728329856520192`, value: '' },
             { key: 'LIMIT_PER_MINUTE', desc: t('ADMIN_CONFIG_ITEM_LIMIT_PER_MINUTE'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}5`, value: '' },
             { key: 'LIMIT_PER_MINUTE_ALL', desc: t('ADMIN_CONFIG_ITEM_LIMIT_PER_MINUTE_ALL'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}5`, value: '' },

@@ -36,7 +36,7 @@ export default {
       if (this.config && this.config.DEFAULT_GRAVATAR) {
         return this.config.DEFAULT_GRAVATAR
       }
-      return `initials&name=${this.nick.charAt(0)}`
+      return `initials&name=${this.nick}`
     },
     avatarInner () {
       if (this.avatar) {

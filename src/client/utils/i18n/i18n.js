@@ -442,13 +442,13 @@ export default {
     '댓글 서버 접근 허용 웹사이트 주소. 참고: 등록된 웹사이트만 댓글 시스템과 안전하게 통신합니다. 주소 오류 시 댓글창이 사라질 수 있습니다. 기본값: 비어 있음(보안 취약), 형식: https://blog.example.com; 여러 주소는 쉼표(,)로 구분.'
   ],
   [S.ACI + '_DEFAULT_GRAVATAR']: [
-    `默认的头像显示。默认值为 "identicon"，可选：${defaultGravatar.join('、')}`,
-    `預設的頭像顯示。預設值為 "identicon"，可選：${defaultGravatar.join('、')}`,
-    `預設的大頭貼照圖示。預設值為 "identicon"，選項：${defaultGravatar.join('、')}`,
-    `Avatar placeholder. Default:  "identicon". Choose from: ${defaultGravatar.join(', ')}`,
-    `Аватар тўлдирувчиси. Стандарт: «идентификатор». Қуйидагилардан танланг: ${defaultGravatar.join(', ')}`,
-    `デフォルトのプロフィール画像表示。デフォルトは "identicon" で、選択肢は：${defaultGravatar.join('、')} です`,
-    `프로필 기본 이미지. 기본값: "identicon". 사용 가능 스타일: ${defaultGravatar.join(', ')}`
+    `默认的头像显示。默认值（留空）为 "initials"，可选：${defaultGravatar.join('、')}`,
+    `預設的頭像顯示。預設值（留空）為 "initials"，可選：${defaultGravatar.join('、')}`,
+    `預設的大頭貼照圖示。預設值（留空）為 "initials"，選項：${defaultGravatar.join('、')}`,
+    `Avatar placeholder. Default (when empty): "initials". Choose from: ${defaultGravatar.join(', ')}`,
+    `Аватар тўлдирувчиси. Стандарт (агар бўш қолдирилса): «идентификатор». Қуйидагилардан танланг: ${defaultGravatar.join(', ')}`,
+    `デフォルトのプロフィール画像表示。デフォルト（空欄時）は "initials" で、選択肢は：${defaultGravatar.join('、')} です`,
+    `프로필 기본 이미지. 기본값(비워둘 경우): "initials". 사용 가능 스타일: ${defaultGravatar.join(', ')}`
   ],
   [S.ACI + '_EMOTION_CDN']: [
     '表情 CDN，英文逗号分隔。默认为：https://owo.imaegoo.com/owo.json',

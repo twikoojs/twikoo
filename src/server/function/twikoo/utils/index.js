@@ -111,7 +111,8 @@ const fn = {
           12: 'Monterey',
           13: 'Ventura',
           14: 'Sonoma',
-          15: 'Sequoia'
+          15: 'Sequoia',
+          16: 'Tahoe'
         }[majorPlatformVersion]
       } else if (os.name === 'Android') {
         const majorPlatformVersion = os.version.split('.')[0]

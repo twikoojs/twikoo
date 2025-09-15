@@ -1,0 +1,43 @@
+# 忽略不需要的文件和目录
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.git/
+.gitignore
+README.md
+.env
+.nyc_output
+coverage/
+.nyc_output/
+.coverage/
+coverage/
+*.lcov
+
+# IDE
+.vscode/
+.idea/
+
+# 测试和文档
+test/
+docs/
+demo/
+*.test.js
+*.spec.js
+
+# 构建缓存
+.cache/
+
+# 数据文件
+data/
+*.log
+
+# 其他
+.github/
+.gitignore
+.editorconfig
+.eslintrc.js
+.eslintignore
+babel.config.json
+webpack.config.js
+cloudbaserc.json

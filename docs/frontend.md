@@ -93,7 +93,7 @@ twikoo:
 
 ``` html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.0.0/dist/twikoo.min.js"></script>
 <script>
 twikoo.init({
   envId: '您的环境id', // 腾讯云环境填 envId；Vercel 环境填地址（https://xxx.vercel.app）
@@ -117,8 +117,8 @@ twikoo.init({
 
 #### 推荐在中国使用
 
-* `https://registry.npmmirror.com/twikoo/1.6.44/files/dist/twikoo.min.js`
-* `https://s4.zstatic.net/npm/twikoo@1.6.44/dist/twikoo.min.js`
+* `https://registry.npmmirror.com/twikoo/1.0.0/files/dist/twikoo.min.js`
+* `https://s4.zstatic.net/npm/twikoo@1.0.0/dist/twikoo.min.js`
 
 #### 推荐在全球使用
 

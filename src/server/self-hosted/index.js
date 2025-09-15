@@ -17,7 +17,7 @@ const {
   getMd5,
   getSha256,
   getXml2js
-} = require('twikoo-func/utils/lib')
+} = require('../function/twikoo/utils/lib')
 const {
   getFuncVersion,
   getUrlQuery,
@@ -37,7 +37,7 @@ const {
   getConfig,
   getConfigForAdmin,
   validate
-} = require('twikoo-func/utils')
+} = require('../function/twikoo/utils')
 const {
   jsonParse,
   commentImportValine,
@@ -45,11 +45,19 @@ const {
   commentImportArtalk,
   commentImportArtalk2,
   commentImportTwikoo
-} = require('twikoo-func/utils/import')
-const { postCheckSpam } = require('twikoo-func/utils/spam')
-const { sendNotice, emailTest } = require('twikoo-func/utils/notify')
-const { uploadImage } = require('twikoo-func/utils/image')
-const logger = require('twikoo-func/utils/logger')
+} = require('../function/twikoo/utils/import')
+const { postCheckSpam } = require('../function/twikoo/utils/spam')
+const { sendNotice, emailTest } = require('../function/twikoo/utils/notify')
+const { uploadImage, uploadVoice } = require('../function/twikoo/utils')
+const logger = require('../function/twikoo/utils/logger')
+const { RES_CODE } = require('../function/twikoo/utils/constants')
+
+// 删除未使用的变量声明
+// const COS = require('cos-nodejs-sdk-v5')
+// const { isUrl } = require('../function/twikoo/utils')
+// const { getAxios, getFormData } = require('../function/twikoo/utils/lib')
+// const axios = getAxios()
+// const FormData = getFormData()
 
 const $ = getCheerio()
 const DOMPurify = getDomPurify()
@@ -58,13 +66,56 @@ const sha256 = getSha256()
 const xml2js = getXml2js()
 
 // 常量 / constants
-const { RES_CODE, MAX_REQUEST_TIMES } = require('twikoo-func/utils/constants')
+const { MAX_REQUEST_TIMES } = require('../function/twikoo/utils/constants')
 const TWIKOO_REQ_TIMES_CLEAR_TIME = parseInt(process.env.TWIKOO_REQ_TIMES_CLEAR_TIME) || 10 * 60 * 1000
 
 // 全局变量 / variables
 let db = null
 let config
 let requestTimes = {}
+
+// 生成删除令牌
+function generateDeleteToken (commentId, uid) {
+  const timestamp = Date.now()
+  const random = Math.random().toString(36).substring(2, 15)
+  const tokenData = `${commentId}:${uid}:${timestamp}:${random}`
+  return sha256(tokenData)
+}
+
+// 验证删除令牌
+function validateDeleteToken (commentId, uid, token) {
+  if (!token) return false
+
+  // 查找评论
+  const comment = db.getCollection('comment').findOne({ _id: commentId })
+  if (!comment) return false
+
+  // 验证评论所有者
+  if (comment.uid !== uid) return false
+
+  // 检查令牌是否有效
+  const commentTime = new Date(comment.created).getTime()
+  const currentTime = Date.now()
+  const timeDiff = currentTime - commentTime
+
+  // 检查是否在5分钟内
+  if (timeDiff > 5 * 60 * 1000) return false
+
+  // 验证令牌是否匹配
+  const tokens = comment.deleteTokens || []
+  return tokens.includes(token)
+}
+
+// 保存删除令牌到评论记录
+async function saveDeleteToken (commentId, token) {
+  db.getCollection('comment').findAndUpdate({ _id: commentId }, (obj) => {
+    if (!obj.deleteTokens) {
+      obj.deleteTokens = []
+    }
+    obj.deleteTokens.push(token)
+    return obj
+  })
+}
 
 connectToDatabase()
 
@@ -76,14 +127,18 @@ module.exports = async (request, response) => {
   logger.log('请求参数：', event)
   let res = {}
   try {
+    logger.log('开始处理请求...')
     protect(request)
+    logger.log('protect函数执行完成')
     accessToken = anonymousSignIn(request)
     await readConfig()
     allowCors(request, response)
     if (request.method === 'OPTIONS') {
+      logger.log('OPTIONS请求，直接返回')
       response.status(204).end()
       return
     }
+    logger.log('事件类型：', event.event)
     switch (event.event) {
       case 'GET_FUNC_VERSION':
         res = getFuncVersion({ VERSION })
@@ -142,14 +197,30 @@ module.exports = async (request, response) => {
       case 'UPLOAD_IMAGE': // >= 1.5.0
         res = await uploadImage(event, config)
         break
+      case 'UPLOAD_VOICE': // >= 1.0.0
+        logger.log('处理UPLOAD_VOICE事件')
+        res = await uploadVoice(event, config)
+        logger.log('UPLOAD_VOICE事件处理完成，结果：', res)
+        break
+      case 'TEST_VOICE_CONFIG': // >= 1.6.44
+        logger.log('处理TEST_VOICE_CONFIG事件')
+        res = await testVoiceConfig(event, config)
+        logger.log('TEST_VOICE_CONFIG事件处理完成，结果：', res)
+        break
       case 'COMMENT_EXPORT_FOR_ADMIN': // >= 1.6.13
         res = await commentExportForAdmin(event)
         break
+      case 'COMMENT_DELETE': // 用户删除自己的评论
+        res = await commentDelete(event)
+        break
       default:
+        logger.log('未识别的事件类型：', event.event)
         if (event.event) {
+          logger.log('事件存在但不被支持，返回1001错误')
           res.code = RES_CODE.EVENT_NOT_EXIST
           res.message = '请更新 Twikoo 云函数至最新版本'
         } else {
+          logger.log('事件不存在，返回NO_PARAM错误')
           res.code = RES_CODE.NO_PARAM
           res.message = 'Twikoo 云函数运行正常，请参考 https://twikoo.js.org/frontend.html 完成前端的配置'
           res.version = VERSION
@@ -342,6 +413,63 @@ async function commentGet (event) {
     res.count = count
   } catch (e) {
     res.data = []
+    res.message = e.message
+  }
+  return res
+}
+
+// 用户删除自己的评论
+async function commentDelete (event) {
+  const res = {}
+  try {
+    // 参数校验
+    validate(event, ['id', 'token'])
+    const uid = event.accessToken
+    const commentId = event.id
+    const token = event.token
+
+    logger.log('删除评论请求:', { commentId, uid, token })
+
+    // 验证删除令牌
+    const isValidToken = validateDeleteToken(commentId, uid, token)
+    logger.log('删除令牌验证结果:', { isValidToken })
+
+    if (!isValidToken) {
+      res.code = RES_CODE.FAIL
+      res.message = '删除令牌无效或已过期'
+      return res
+    }
+
+    // 查找评论及其所有回复
+    const comment = db.getCollection('comment').findOne({ _id: commentId })
+    if (!comment) {
+      res.code = RES_CODE.FAIL
+      res.message = '评论不存在'
+      return res
+    }
+
+    // 删除评论及其所有回复
+    const deleteCommentAndReplies = (id) => {
+      // 删除主评论
+      db.getCollection('comment').findAndRemove({ _id: id })
+
+      // 查找并删除所有回复
+      const replies = db.getCollection('comment').find({ rid: id })
+      replies.forEach(reply => {
+        // 递归删除回复的回复
+        deleteCommentAndReplies(reply._id)
+      })
+    }
+
+    // 执行删除操作
+    deleteCommentAndReplies(commentId)
+
+    res.code = RES_CODE.SUCCESS
+    res.deleted = 1
+    res.message = '评论删除成功'
+  } catch (e) {
+    logger.error('删除评论失败：', e)
+    res.code = RES_CODE.FAIL
     res.message = e.message
   }
   return res
@@ -616,6 +744,17 @@ async function commentSubmit (event, request) {
   // 保存
   const comment = await save(data)
   res.id = comment.id
+
+  // 生成删除令牌
+  const deleteToken = generateDeleteToken(comment.id, comment.uid)
+  logger.log('生成删除令牌:', { commentId: comment.id, uid: comment.uid, deleteToken })
+
+  // 保存删除令牌到评论记录
+  await saveDeleteToken(comment.id, deleteToken)
+
+  // 返回删除令牌
+  res.deleteToken = deleteToken
+
   // 异步垃圾检测、发送评论通知
   logger.log('开始异步垃圾检测、发送评论通知')
   // 私有部署支持直接异步调用
@@ -969,3 +1108,85 @@ function clearRequestTimes () {
 }
 
 setInterval(clearRequestTimes, TWIKOO_REQ_TIMES_CLEAR_TIME)
+
+/**
+ * 测试语音上传配置
+ * @param {Object} event 请求参数
+ * @param {Object} event.config 语音上传配置
+ */
+async function testVoiceConfig (event) {
+  const res = {}
+  try {
+    const { config: voiceConfig } = event
+
+    // 检查必要的配置项
+    if (!voiceConfig.VOICE_CDN) {
+      throw new Error('未配置语音上传服务')
+    }
+
+    // 检查腾讯云对象存储配置
+    if (voiceConfig.VOICE_CDN === 'qcloud') {
+      if (!voiceConfig.VOICE_CDN_TOKEN || !voiceConfig.VOICE_CDN_SECRET ||
+          !voiceConfig.VOICE_CDN_DOMAIN || !voiceConfig.VOICE_CDN_REGION || !voiceConfig.VOICE_CDN_BUCKET) {
+        throw new Error('语音上传服务配置不完整，请检查腾讯云对象存储相关配置')
+      }
+
+      // 尝试创建COS客户端
+      try {
+        const COS = require('cos-nodejs-sdk-v5')
+        const cos = new COS({
+          SecretId: voiceConfig.VOICE_CDN_TOKEN,
+          SecretKey: voiceConfig.VOICE_CDN_SECRET,
+          Domain: voiceConfig.VOICE_CDN_DOMAIN,
+          Region: voiceConfig.VOICE_CDN_REGION
+        })
+
+        // 尝试获取存储桶信息
+        return new Promise((resolve, reject) => {
+          cos.getBucket({
+            Bucket: voiceConfig.VOICE_CDN_BUCKET,
+            Region: voiceConfig.VOICE_CDN_REGION
+          }, (err, data) => {
+            if (err) {
+              logger.error('腾讯云对象存储连接失败:', err)
+              reject(new Error(`腾讯云对象存储连接失败: ${err.message || '未知错误'}`))
+            } else {
+              res.code = RES_CODE.SUCCESS
+              res.message = '腾讯云对象存储配置正确'
+              res.data = {
+                service: 'qcloud',
+                bucket: voiceConfig.VOICE_CDN_BUCKET,
+                region: voiceConfig.VOICE_CDN_REGION,
+                domain: voiceConfig.VOICE_CDN_DOMAIN
+              }
+              resolve(res)
+            }
+          })
+        })
+      } catch (e) {
+        logger.error('创建腾讯云对象存储客户端失败:', e)
+        throw new Error(`创建腾讯云对象存储客户端失败: ${e.message}`)
+      }
+    } else if (voiceConfig.VOICE_CDN === 'upyun') {
+      if (!voiceConfig.VOICE_CDN_TOKEN || !voiceConfig.VOICE_CDN_SECRET ||
+          !voiceConfig.VOICE_CDN_DOMAIN || !voiceConfig.VOICE_CDN_BUCKET) {
+        throw new Error('语音上传服务配置不完整，请检查又拍云相关配置')
+      }
+      // 又拍云测试逻辑待实现
+      throw new Error('又拍云语音上传服务暂未实现')
+    } else if (voiceConfig.VOICE_CDN === 'github') {
+      if (!voiceConfig.VOICE_CDN_TOKEN || !voiceConfig.VOICE_CDN_DOMAIN || !voiceConfig.VOICE_CDN_BUCKET) {
+        throw new Error('语音上传服务配置不完整，请检查GitHub相关配置')
+      }
+      // GitHub测试逻辑待实现
+      throw new Error('GitHub语音上传服务暂未实现')
+    } else {
+      throw new Error('不支持的语音上传服务')
+    }
+  } catch (e) {
+    logger.error('测试语音上传配置失败:', e)
+    res.code = RES_CODE.FAIL
+    res.message = e.message
+  }
+  return res
+}

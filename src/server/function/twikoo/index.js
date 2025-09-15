@@ -44,6 +44,7 @@ const {
 const { postCheckSpam } = require('./utils/spam')
 const { sendNotice, emailTest } = require('./utils/notify')
 const { uploadImage } = require('./utils/image')
+const { uploadVoice } = require('./utils/voice')
 const logger = require('./utils/logger')
 
 // 云函数 SDK / tencent cloudbase sdk
@@ -136,6 +137,9 @@ exports.main = async (event, context) => {
         break
       case 'UPLOAD_IMAGE': // >= 1.5.0
         res = await uploadImage(event, config)
+        break
+      case 'UPLOAD_VOICE': // >= 1.6.44
+        res = await uploadVoice(event, config)
         break
       case 'COMMENT_EXPORT_FOR_ADMIN': // >= 1.6.13
         res = await commentExportForAdmin(event)

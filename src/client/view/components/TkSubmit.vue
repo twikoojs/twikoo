@@ -21,6 +21,14 @@
         <div class="tk-submit-action-icon OwO" v-show="config.SHOW_EMOTION === 'true'" v-html="iconEmotion" v-clickoutside="closeOwo" ref="owo"></div>
         <div class="tk-submit-action-icon" v-show="config.SHOW_IMAGE === 'true'" v-html="iconImage" @click="openSelectImage"></div>
         <input class="tk-input-image" type="file" accept="image/*" value="" ref="inputFile" @change="onSelectImage" />
+        <div class="tk-voice-container" v-show="config.SHOW_VOICE === 'true'">
+          <div class="tk-submit-action-icon tk-voice-icon" v-html="isRecording ? iconVoiceRecording : iconVoice" @click="toggleRecording"></div>
+          <div class="tk-voice-status" v-if="isRecording">{{ recordingStatusText }}</div>
+          <div class="tk-voice-status" v-if="showConfirmUpload">
+            <el-button size="mini" type="primary" @click="confirmUploadVoice">确认上传</el-button>
+            <el-button size="mini" @click="cancelUploadVoice">取消</el-button>
+          </div>
+        </div>
         <div class="tk-error-message">{{ errorMessage }}</div>
       </div>
       <a class="tk-submit-action-icon __markdown"
@@ -53,6 +61,9 @@
 import iconMarkdown from '@fortawesome/fontawesome-free/svgs/brands/markdown.svg'
 import iconEmotion from '@fortawesome/fontawesome-free/svgs/regular/laugh.svg'
 import iconImage from '@fortawesome/fontawesome-free/svgs/regular/image.svg'
+import iconVoice from '@fortawesome/fontawesome-free/svgs/solid/microphone.svg'
+import iconVoiceStop from '@fortawesome/fontawesome-free/svgs/solid/microphone-slash.svg'
+import iconVoiceRecording from '@fortawesome/fontawesome-free/svgs/solid/microphone-alt.svg'
 import Clickoutside from 'element-ui/src/utils/clickoutside'
 import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
@@ -100,7 +111,19 @@ export default {
       turnstileLoad: null,
       iconMarkdown,
       iconEmotion,
-      iconImage
+      iconImage,
+      iconVoice,
+      iconVoiceStop,
+      iconVoiceRecording,
+      isRecording: false,
+      mediaRecorder: null,
+      audioChunks: [],
+      recordingTimer: null,
+      recordingTime: 0,
+      recordingStatusText: '',
+      recordedAudioBlob: null, // 新增：存储录音的Blob数据
+      showConfirmUpload: false, // 新增：是否显示确认上传按钮
+      recordedTimeString: '' // 新增：记录录音时间字符串
     }
   },
   computed: {
@@ -229,6 +252,20 @@ export default {
         }
         const sendResult = await call(this.$tcb, 'COMMENT_SUBMIT', comment)
         if (sendResult && sendResult.result && sendResult.result.id) {
+          // 保存删除令牌到localStorage
+          if (sendResult.result.deleteToken) {
+            console.log('评论提交成功，保存删除令牌:', {
+              commentId: sendResult.result.id,
+              deleteToken: sendResult.result.deleteToken
+            })
+            const deleteTokens = JSON.parse(localStorage.getItem('twikoo-delete-tokens') || '{}')
+            deleteTokens[sendResult.result.id] = sendResult.result.deleteToken
+            localStorage.setItem('twikoo-delete-tokens', JSON.stringify(deleteTokens))
+            console.log('删除令牌已保存到localStorage:', JSON.parse(localStorage.getItem('twikoo-delete-tokens')))
+          } else {
+            console.warn('评论提交成功，但没有收到删除令牌')
+          }
+
           this.comment = ''
           this.errorMessage = ''
           this.$emit('load')
@@ -369,6 +406,177 @@ export default {
     },
     getImagePlaceholder (fileIndex, fileType) {
       return `![${t('IMAGE_UPLOAD_PLACEHOLDER')} ${fileIndex}.${fileType}]()`
+    },
+    async toggleRecording () {
+      if (this.isRecording) {
+        this.stopRecording()
+      } else {
+        await this.startRecording()
+      }
+    },
+    async startRecording () {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        this.mediaRecorder = new MediaRecorder(stream)
+        this.audioChunks = []
+
+        this.mediaRecorder.ondataavailable = (event) => {
+          this.audioChunks.push(event.data)
+        }
+
+        this.mediaRecorder.onstop = () => {
+          this.recordedAudioBlob = new Blob(this.audioChunks, { type: 'audio/wav' })
+          this.recordedTimeString = this.generateTimeString()
+          stream.getTracks().forEach(track => track.stop())
+        }
+
+        this.mediaRecorder.start()
+        this.isRecording = true
+        this.recordingTime = 0
+        this.recordingStatusText = '录音中...'
+
+        // 开始计时
+        this.recordingTimer = setInterval(() => {
+          this.recordingTime++
+          this.recordingStatusText = `录音中... ${this.recordingTime}秒`
+          // 限制录音时长为60秒
+          if (this.recordingTime >= 60) {
+            this.errorMessage = t('VOICE_RECORD_TOO_LONG')
+            this.stopRecording()
+          }
+        }, 1000)
+      } catch (error) {
+        console.error('无法访问麦克风:', error)
+        this.errorMessage = `${t('VOICE_MIC_PERMISSION_DENIED')}: ${error.message}`
+      }
+    },
+    // 修改 stopRecording 方法
+    stopRecording () {
+      if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+        this.mediaRecorder.stop()
+      }
+      this.isRecording = false
+
+      // 停止计时
+      if (this.recordingTimer) {
+        clearInterval(this.recordingTimer)
+        this.recordingTimer = null
+      }
+
+      // 不再立即上传，而是显示确认按钮
+      this.recordingStatusText = '录音完成，点击确认上传'
+      this.showConfirmUpload = true
+    },
+    // 新增：确认上传语音
+    confirmUploadVoice () {
+      if (this.recordedAudioBlob) {
+        this.uploadVoice(this.recordedAudioBlob)
+        this.showConfirmUpload = false
+        this.recordedAudioBlob = null
+        this.recordedTimeString = ''
+      }
+    },
+    // 新增：取消上传语音
+    cancelUploadVoice () {
+      this.showConfirmUpload = false
+      this.recordedAudioBlob = null
+      this.recordedTimeString = ''
+      this.recordingStatusText = ''
+    },
+    // 新增：生成时间字符串方法
+    generateTimeString () {
+      const now = new Date()
+      const year = now.getFullYear()
+      const month = now.getMonth() + 1
+      const day = now.getDate()
+      const hours = now.getHours().toString().padStart(2, '0')
+      const minutes = now.getMinutes().toString().padStart(2, '0')
+      const seconds = now.getSeconds().toString().padStart(2, '0')
+      return `${year}年${month}月${day}日${hours}:${minutes}:${seconds}`
+    },
+    // 修改 uploadVoice 方法，使用预先生成的时间字符串
+    async uploadVoice (audioBlob) {
+      try {
+        const timeString = this.recordedTimeString || this.generateTimeString()
+        const pathPrefix = this.config.VOICE_CDN_PATH || 'twikoo'
+        const fileName = `${pathPrefix}/${timeString}.wav`
+
+        // 在评论框中插入语音占位符
+        this.paste(this.getVoicePlaceholder(timeString))
+
+        // 上传语音文件逻辑保持不变
+        if (this.$tcb && this.config.VOICE_CDN === 'qcloud') {
+          await this.uploadVoiceToQcloud(timeString, fileName, audioBlob)
+        } else if (this.config.VOICE_CDN) {
+          await this.uploadVoiceToThirdParty(timeString, fileName, audioBlob)
+        } else {
+          this.voiceUploadFailed(timeString, t('VOICE_UPLOAD_FAILED_NO_CONF'))
+        }
+      } catch (error) {
+        console.error('语音上传失败:', error)
+        this.errorMessage = `${t('VOICE_UPLOAD_FAILED')}: ${error.message}`
+      }
+    },
+    async uploadVoiceToQcloud (fileIndex, fileName, audioBlob) {
+      try {
+        const { result: uploadResult } = await call(this.$tcb, 'UPLOAD_VOICE', {
+          fileName: fileName,
+          voice: await blobToDataURL(audioBlob),
+          config: {
+            VOICE_CDN: this.config.VOICE_CDN,
+            VOICE_CDN_TOKEN: this.config.VOICE_CDN_TOKEN,
+            VOICE_CDN_SECRET: this.config.VOICE_CDN_SECRET,
+            VOICE_CDN_DOMAIN: this.config.VOICE_CDN_DOMAIN,
+            VOICE_CDN_REGION: this.config.VOICE_CDN_REGION,
+            VOICE_CDN_BUCKET: this.config.VOICE_CDN_BUCKET,
+            VOICE_CDN_PATH: this.config.VOICE_CDN_PATH
+          }
+        })
+        if (uploadResult.data) {
+          this.voiceUploadCompleted(fileIndex, fileName, uploadResult.data.url)
+        } else {
+          console.error(uploadResult)
+          this.voiceUploadFailed(fileIndex, uploadResult.err)
+        }
+      } catch (e) {
+        console.error(e)
+        this.voiceUploadFailed(fileIndex, e.message)
+      }
+    },
+    async uploadVoiceToThirdParty (fileIndex, fileName, audioBlob) {
+      try {
+        const { result: uploadResult } = await call(this.$tcb, 'UPLOAD_VOICE', {
+          fileName: fileName,
+          voice: await blobToDataURL(audioBlob),
+          config: {
+            VOICE_CDN: this.config.VOICE_CDN,
+            VOICE_CDN_TOKEN: this.config.VOICE_CDN_TOKEN,
+            VOICE_CDN_SECRET: this.config.VOICE_CDN_SECRET,
+            VOICE_CDN_DOMAIN: this.config.VOICE_CDN_DOMAIN,
+            VOICE_CDN_REGION: this.config.VOICE_CDN_REGION,
+            VOICE_CDN_BUCKET: this.config.VOICE_CDN_BUCKET,
+            VOICE_CDN_PATH: this.config.VOICE_CDN_PATH
+          }
+        })
+        if (uploadResult.data) {
+          this.voiceUploadCompleted(fileIndex, fileName, uploadResult.data.url)
+        } else {
+          console.error(uploadResult)
+          this.voiceUploadFailed(fileIndex, uploadResult.err)
+        }
+      } catch (e) {
+        console.error(e)
+        this.voiceUploadFailed(fileIndex, e.message)
+      }
+    },
+    voiceUploadCompleted (fileIndex, fileName, fileUrl) {
+      this.comment = this.comment.replace(this.getVoicePlaceholder(fileIndex), `<audio controls src="${fileUrl}" style="max-width: 100%;"></audio>`)
+    },
+    voiceUploadFailed (fileIndex, reason) {
+      this.comment = this.comment.replace(this.getVoicePlaceholder(fileIndex), `_${t('VOICE_UPLOAD_FAILED')}: ${reason}_`)
+    },
+    getVoicePlaceholder (fileIndex) {
+      return `[${t('VOICE_UPLOAD_PLACEHOLDER')} ${fileIndex}]()`
     }
   },
   mounted () {
@@ -436,6 +644,30 @@ export default {
   margin-right: 10px;
   cursor: pointer;
   flex-shrink: 0;
+}
+.tk-voice-icon {
+  width: 0.875em; /* 缩小30%，1.25em * 0.7 = 0.875em */
+}
+.tk-voice-container {
+  display: flex;
+  align-items: center;
+}
+.tk-voice-status {
+  font-size: 0.8em;
+  color: #409EFF;
+  margin-left: 5px;
+  animation: tkPulse 1.5s infinite;
+}
+@keyframes tkPulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 .tk-submit-action-icon svg:hover {
   opacity: 0.8;

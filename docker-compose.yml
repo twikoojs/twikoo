@@ -1,12 +1,20 @@
-# https://docs.docker.com/compose/compose-file/compose-file-v3/
-version: '3'
+version: '3.8'
+
 services:
-  twikoo-service:
-    image: imaegoo/twikoo
-    environment:
-      TWIKOO_THROTTLE: 250
-      TZ: Asia/Shanghai
-    volumes:
-      - /app/data
+  twikoo:
+    image: twikoo:latest
+    container_name: twikoo
     ports:
-      - 8080:8080
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - NODE_ENV=production
+      - TWIKOO_DATA_PATH=/app/data
+    restart: unless-stopped
+    networks:
+      - twikoo-network
+
+networks:
+  twikoo-network:
+    driver: bridge

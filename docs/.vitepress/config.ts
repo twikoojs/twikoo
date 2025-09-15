@@ -21,6 +21,7 @@ export default defineConfig({
           { text: '云函数部署', link: '/backend' },
           { text: '前端部署', link: '/frontend' },
           { text: '版本更新', link: '/update' },
+          { text: '评论删除功能', link: '/comment-deletion' },
           { text: '常见问题', link: '/faq' },
           { text: 'API 文档', link: '/api' },
           { text: '相关文档', link: '/link' }

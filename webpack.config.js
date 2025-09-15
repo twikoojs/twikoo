@@ -67,8 +67,14 @@ function getConfig ({ extractCss }) {
         serveIndex: true,
         watch: true
       }],
-      port: 9820,
+      port: 9821,
       host: 'localhost',
+      allowedHosts: 'all',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+        'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization'
+      },
       open: true,
       hot: true,
       compress: true

@@ -6,8 +6,8 @@
 [![](https://img.shields.io/bundlephobia/minzip/twikoo)](https://bundlephobia.com/result?p=twikoo)
 [![](https://img.shields.io/npm/dt/twikoo)](https://www.npmjs.com/package/twikoo)
 [![](https://data.jsdelivr.com/v1/package/npm/twikoo/badge)](https://www.jsdelivr.com/package/npm/twikoo)
-[![](https://app.cloudback.it/badge/twikoojs/twikoo)](https://cloudback.it)
 [![](https://img.shields.io/npm/l/twikoo)](./LICENSE)
+
 
 A **simple**, **safe**, **free** comment system.  
 [简体中文](./README.md) | **English**  

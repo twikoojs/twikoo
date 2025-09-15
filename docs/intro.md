@@ -9,25 +9,17 @@
 </style>
 
 <a href="https://www.npmjs.com/package/twikoo">
-  <img class="shields" src="https://img.shields.io/npm/v/twikoo" />
+  <img class="shields" src="https://img.shields.io/npm/v/twikoo" />&nbsp;
 </a>
-<span>&nbsp;</span>
 <a href="https://bundlephobia.com/result?p=twikoo">
-  <img class="shields" src="https://img.shields.io/bundlephobia/minzip/twikoo" />
+  <img class="shields" src="https://img.shields.io/bundlephobia/minzip/twikoo" />&nbsp;
 </a>
-<span>&nbsp;</span>
 <a href="https://www.npmjs.com/package/twikoo">
-  <img class="shields" src="https://img.shields.io/npm/dt/twikoo" />
+  <img class="shields" src="https://img.shields.io/npm/dt/twikoo" />&nbsp;
 </a>
-<span>&nbsp;</span>
 <a href="https://www.jsdelivr.com/package/npm/twikoo">
-  <img class="shields" src="https://data.jsdelivr.com/v1/package/npm/twikoo/badge" />
+  <img class="shields" src="https://data.jsdelivr.com/v1/package/npm/twikoo/badge" />&nbsp;
 </a>
-<span>&nbsp;</span>
-<a href="https://cloudback.it">
-  <img class="shields" src="https://app.cloudback.it/badge/twikoojs/twikoo" />
-</a>
-<span>&nbsp;</span>
 <a href="https://github.com/twikoojs/twikoo/blob/main/LICENSE">
   <img class="shields" src="https://img.shields.io/npm/l/twikoo" />
 </a>

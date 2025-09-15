@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+require('dotenv').config()
+const http = require('http')
 const logger = require('twikoo-func/utils/logger')
 
 const dbUrl = process.env.MONGODB_URI || process.env.MONGO_URL || null

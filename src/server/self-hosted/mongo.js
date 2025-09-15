@@ -32,10 +32,10 @@ const {
   getPasswordStatus,
   preCheckSpam,
   checkTurnstileCaptcha,
-  getConfig,
-  getConfigForAdmin,
   validate
 } = require('twikoo-func/utils')
+// 从本地文件导入getConfig函数
+const { getConfig, getConfigForAdmin } = require('../function/twikoo/utils')
 const {
   jsonParse,
   commentImportValine,
@@ -63,6 +63,46 @@ const TWIKOO_REQ_TIMES_CLEAR_TIME = parseInt(process.env.TWIKOO_REQ_TIMES_CLEAR_
 let db = null
 let config
 let requestTimes = {}
+
+// 生成删除令牌
+function generateDeleteToken (commentId, uid) {
+  const timestamp = Date.now()
+  const random = Math.random().toString(36).substring(2, 15)
+  const tokenData = `${commentId}:${uid}:${timestamp}:${random}`
+  return sha256(tokenData)
+}
+
+// 验证删除令牌
+async function validateDeleteToken (commentId, uid, token) {
+  if (!token) return false
+
+  // 查找评论
+  const comment = await db.collection('comment').findOne({ _id: commentId })
+  if (!comment) return false
+
+  // 验证评论所有者
+  if (comment.uid !== uid) return false
+
+  // 检查是否在5分钟内
+  const commentTime = new Date(comment.created).getTime()
+  const currentTime = Date.now()
+  const timeDiff = currentTime - commentTime
+
+  // 检查是否在5分钟内
+  if (timeDiff > 5 * 60 * 1000) return false
+
+  // 验证令牌是否匹配
+  const tokens = comment.deleteTokens || []
+  return tokens.includes(token)
+}
+
+// 保存删除令牌到评论记录
+async function saveDeleteToken (commentId, token) {
+  await db.collection('comment').updateOne(
+    { _id: commentId },
+    { $push: { deleteTokens: token } }
+  )
+}
 
 module.exports = async (request, response) => {
   let accessToken
@@ -97,6 +137,9 @@ module.exports = async (request, response) => {
       case 'COMMENT_DELETE_FOR_ADMIN':
         res = await commentDeleteForAdmin(event)
         break
+      case 'COMMENT_DELETE': // 用户删除自己的评论
+        res = await commentDelete(event)
+        break
       case 'COMMENT_IMPORT_FOR_ADMIN':
         res = await commentImportForAdmin(event)
         break
@@ -116,7 +159,9 @@ module.exports = async (request, response) => {
         res = await setPassword(event)
         break
       case 'GET_CONFIG':
+        console.log('DEBUG: config object before getConfig:', JSON.stringify(config, null, 2))
         res = await getConfig({ config, VERSION, isAdmin: isAdmin(event.accessToken) })
+        console.log('DEBUG: res object after getConfig:', JSON.stringify(res, null, 2))
         break
       case 'GET_CONFIG_FOR_ADMIN':
         res = await getConfigForAdmin({ config, isAdmin: isAdmin(event.accessToken) })
@@ -138,6 +183,10 @@ module.exports = async (request, response) => {
         break
       case 'UPLOAD_IMAGE': // >= 1.5.0
         res = await uploadImage(event, config)
+        break
+      case 'UPLOAD_VOICE': // 语音上传
+        const { uploadVoice } = require('../function/twikoo/utils')
+        res = await uploadVoice(event, config)
         break
       case 'COMMENT_EXPORT_FOR_ADMIN': // >= 1.6.13
         res = await commentExportForAdmin(event)
@@ -428,6 +477,63 @@ async function commentSetForAdmin (event) {
   return res
 }
 
+// 用户删除自己的评论
+async function commentDelete (event) {
+  const res = {}
+  try {
+    // 参数校验
+    validate(event, ['id', 'token'])
+    const uid = event.accessToken
+    const commentId = event.id
+    const token = event.token
+
+    logger.log('删除评论请求:', { commentId, uid, token })
+
+    // 验证删除令牌
+    const isValidToken = await validateDeleteToken(commentId, uid, token)
+    logger.log('删除令牌验证结果:', { isValidToken })
+
+    if (!isValidToken) {
+      res.code = RES_CODE.FAIL
+      res.message = '删除令牌无效或已过期'
+      return res
+    }
+
+    // 查找评论及其所有回复
+    const comment = await db.collection('comment').findOne({ _id: commentId })
+    if (!comment) {
+      res.code = RES_CODE.FAIL
+      res.message = '评论不存在'
+      return res
+    }
+
+    // 删除评论及其所有回复
+    const deleteCommentAndReplies = async (id) => {
+      // 删除主评论
+      await db.collection('comment').deleteOne({ _id: id })
+
+      // 查找并删除所有回复
+      const replies = await db.collection('comment').find({ rid: id }).toArray()
+      for (const reply of replies) {
+        // 递归删除回复的回复
+        await deleteCommentAndReplies(reply._id)
+      }
+    }
+
+    // 执行删除操作
+    await deleteCommentAndReplies(commentId)
+
+    res.code = RES_CODE.SUCCESS
+    res.deleted = 1
+    res.message = '评论删除成功'
+  } catch (e) {
+    logger.error('删除评论失败：', e)
+    res.code = RES_CODE.FAIL
+    res.message = e.message
+  }
+  return res
+}
+
 // 管理员删除评论
 async function commentDeleteForAdmin (event) {
   const res = {}
@@ -604,6 +710,17 @@ async function commentSubmit (event, request) {
   // 保存
   const comment = await save(data)
   res.id = comment.id
+
+  // 生成删除令牌
+  const deleteToken = generateDeleteToken(comment.id, comment.uid)
+  logger.log('生成删除令牌:', { commentId: comment.id, uid: comment.uid, deleteToken })
+
+  // 保存删除令牌到评论记录
+  await saveDeleteToken(comment.id, deleteToken)
+
+  // 返回删除令牌
+  res.deleteToken = deleteToken
+
   // 异步垃圾检测、发送评论通知
   logger.log('开始异步垃圾检测、发送评论通知')
   // 私有部署支持直接异步调用

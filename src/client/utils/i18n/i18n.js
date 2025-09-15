@@ -766,6 +766,78 @@ export default {
     '画像のアップロードを有効にするかどうか。デフォルト：true',
     '이미지 업로드 기능 활성화. 기본값: true.'
   ],
+  [S.ACI + '_SHOW_VOICE']: [
+    '启用语音评论功能，默认为：true',
+    '啟用語音評論功能，預設為：true',
+    '啟用語言評論功能，預設為：true',
+    'Enable voice comment. Default: true.',
+    'Овоз шарҳини ёқинг. Стандарт: рост.',
+    '音声コメントを有効にするかどうか。デフォルト：true',
+    '음성 댓글 기능 활성화. 기본값: true.'
+  ],
+  [S.ACI + '_VOICE_CDN']: [
+    '语音存储服务。支持：qcloud、upyun、github',
+    '語音存儲服務。支持：qcloud、upyun、github',
+    '語言存儲服務。支持：qcloud、upyun、github',
+    'Voice storage service. Support: qcloud, upyun, github',
+    'Овоз хизматини саqlash. Қўллаб-қувватлаш: qcloud, upyun, github',
+    '音声ストレージサービス。サポート：qcloud、upyun、github',
+    '음성 저장 서비스. 지원: qcloud, upyun, github'
+  ],
+  [S.ACI + '_VOICE_CDN_TOKEN']: [
+    '语音存储服务令牌',
+    '語音存儲服務令牌',
+    '語言存儲服務令牌',
+    'Voice storage service token',
+    'Овоз хизматини саqlаш токени',
+    '音声ストレージサービストークン',
+    '음성 저장 서비스 토큰'
+  ],
+  [S.ACI + '_VOICE_CDN_SECRET']: [
+    '语音存储服务密钥',
+    '語音存儲服務密鑰',
+    '語言存儲服務密鑰',
+    'Voice storage service secret',
+    'Овоз хизматини саqlаш сирли калиди',
+    '音声ストレージサービスシークレット',
+    '음성 저장 서비스 시크릿 키'
+  ],
+  [S.ACI + '_VOICE_CDN_DOMAIN']: [
+    '语音存储服务域名',
+    '語音存儲服務域名',
+    '語言存儲服務域名',
+    'Voice storage service domain',
+    'Овоз хизматини саqlаш домени',
+    '音声ストレージサービスドメイン',
+    '음성 저장 서비스 도메인'
+  ],
+  [S.ACI + '_VOICE_CDN_REGION']: [
+    '语音存储服务区域',
+    '語音存儲服務區域',
+    '語言存儲服務區域',
+    'Voice storage service region',
+    'Овоз хизматини саqlаш ҳудуди',
+    '音声ストレージサービスリージョン',
+    '음성 저장 서비스 리전'
+  ],
+  [S.ACI + '_VOICE_CDN_BUCKET']: [
+    '语音存储服务桶名',
+    '語音存儲服務桶名',
+    '語言存儲服務桶名',
+    'Voice storage service bucket',
+    'Овоз хизматини саqlаш бўлмаси',
+    '音声ストレージサービスバケット',
+    '음성 저장 서비스 버킷'
+  ],
+  [S.ACI + '_VOICE_CDN_PATH']: [
+    '语音存储服务路径',
+    '語音存儲服務路徑',
+    '語言存儲服務路徑',
+    'Voice storage service path',
+    'Овоз хизматини саqlаш йўли',
+    '音声ストレージサービスパス',
+    '음성 저장 서비스 경로'
+  ],
   [S.ACI + '_SHOW_UA']: [
     '是否显示用户系统和浏览器，默认为：true',
     '是否顯示使用者系統和瀏覽器，預設為：true',
@@ -1307,6 +1379,15 @@ export default {
     '固定',
     '고정됨'
   ],
+  COMMENT_DELETE: [
+    '删除',
+    '刪除',
+    '移除',
+    'Delete',
+    'Ўчирмоқ',
+    '削除',
+    '삭제'
+  ],
   COMMENT_FAILED: [
     '评论失败',
     '評論失敗',
@@ -1521,5 +1602,77 @@ export default {
     'сониялар олдин',
     '秒前',
     '초 전'
+  ],
+  VOICE_RECORDING: [
+    '录音中',
+    '錄音中',
+    '錄音中',
+    'Recording',
+    'Ёзув',
+    '録音中',
+    '녹음 중'
+  ],
+  VOICE_UPLOAD_PLACEHOLDER: [
+    '语音上传中',
+    '語音上傳中',
+    '語音上傳中',
+    'Uploading voice',
+    'Овоз юклаш',
+    '音声のアップロード中',
+    '음성 업로드 중'
+  ],
+  VOICE_UPLOAD_FAILED: [
+    '语音上传失败',
+    '語音上傳失敗',
+    '語音上傳失敗',
+    'VOICE UPLOAD FAILED',
+    'ОВОЗ ЮКЛАНМАДИ',
+    '音声のアップロード失敗',
+    '음성 업로드 실패'
+  ],
+  VOICE_UPLOAD_FAILED_NO_CONF: [
+    '博主未配置语音存储服务',
+    '博主未配置語音存儲服務',
+    '博主未配置語音存儲服務',
+    'The blogger didn\'t configured any voice storage service',
+    'Муаллиф ҳеч қандай овоз хизматини созламаган',
+    '管理者が音声ストレージサービスを設定していません',
+    '블로거가 음성 저장 서비스를 설정하지 않았습니다.'
+  ],
+  VOICE_UPLOAD_PLEASE_WAIT: [
+    '语音上传中，请稍候再发送',
+    '語音上傳中，請稍候再發送',
+    '語音上傳中，請稍候再傳送',
+    'Uploading voice, please try again later',
+    'Овоз юкланмоқда, кейинроқ қайта уриниб кўринг',
+    '音声のアップロードが完了するまでお待ちください',
+    '음성 업로드 중입니다. 잠시 후 다시 시도해주세요.'
+  ],
+  VOICE_RECORDING_TIME: [
+    '录音时间：',
+    '錄音時間：',
+    '錄音時間：',
+    'Recording time: ',
+    'Ёзув вақти: ',
+    '録音時間：',
+    '녹음 시간: '
+  ],
+  VOICE_RECORD_TOO_LONG: [
+    '录音时间过长，请控制在60秒以内',
+    '錄音時間過長，請控制在60秒以內',
+    '錄音時間過長，請控制在60秒以內',
+    'Recording time is too long, please keep it within 60 seconds',
+    'Ёзув вақти жуда узун, илтимос 60 сониядан оштирманг',
+    '録音時間が長すぎます。60秒以内に収めてください',
+    '녹음 시간이 너무 깁니다. 60초 이내로 제한해주세요'
+  ],
+  VOICE_MIC_PERMISSION_DENIED: [
+    '麦克风权限被拒绝，请允许使用麦克风',
+    '麥克風權限被拒絕，請允許使用麥克風',
+    '麥克風權限被拒絕，請允許使用麥克風',
+    'Microphone permission denied, please allow microphone access',
+    'Микрофон рухсати рад этилди, илтимос микрофонга рухсат беринг',
+    'マイクのアクセス許可が拒否されました。マイクへのアクセスを許可してください',
+    '마이크 권한이 거부되었습니다. 마이크 사용을 허용해주세요'
   ]
 }

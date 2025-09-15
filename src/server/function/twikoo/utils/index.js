@@ -14,6 +14,7 @@ const md5 = getMd5()
 const sha256 = getSha256()
 const { RES_CODE } = require('./constants')
 const logger = require('./logger')
+const { uploadVoice } = require('./voice')
 
 let ipRegionSearcher
 
@@ -111,8 +112,7 @@ const fn = {
           12: 'Monterey',
           13: 'Ventura',
           14: 'Sonoma',
-          15: 'Sequoia',
-          16: 'Tahoe'
+          15: 'Sequoia'
         }[majorPlatformVersion]
       } else if (os.name === 'Android') {
         const majorPlatformVersion = os.version.split('.')[0]
@@ -305,7 +305,9 @@ const fn = {
     }
   },
   async getConfig ({ config, VERSION, isAdmin }) {
-    return {
+    console.log('DEBUG: Inside getConfig, config.SHOW_VOICE:', config.SHOW_VOICE)
+    console.log('DEBUG: Inside getConfig, config.VOICE_CDN:', config.VOICE_CDN)
+    const result = {
       code: RES_CODE.SUCCESS,
       config: {
         VERSION,
@@ -321,6 +323,14 @@ const fn = {
         LIGHTBOX: config.LIGHTBOX || 'false',
         SHOW_EMOTION: config.SHOW_EMOTION || 'true',
         EMOTION_CDN: config.EMOTION_CDN,
+        SHOW_VOICE: config.SHOW_VOICE || 'true',
+        VOICE_CDN: config.VOICE_CDN || 'qcloud',
+        VOICE_CDN_TOKEN: config.VOICE_CDN_TOKEN,
+        VOICE_CDN_SECRET: config.VOICE_CDN_SECRET,
+        VOICE_CDN_DOMAIN: config.VOICE_CDN_DOMAIN,
+        VOICE_CDN_REGION: config.VOICE_CDN_REGION,
+        VOICE_CDN_BUCKET: config.VOICE_CDN_BUCKET,
+        VOICE_CDN_PATH: config.VOICE_CDN_PATH,
         COMMENT_PLACEHOLDER: config.COMMENT_PLACEHOLDER,
         DISPLAYED_FIELDS: config.DISPLAYED_FIELDS,
         REQUIRED_FIELDS: config.REQUIRED_FIELDS,
@@ -332,6 +342,9 @@ const fn = {
         TURNSTILE_SITE_KEY: config.TURNSTILE_SITE_KEY
       }
     }
+    console.log('DEBUG: Inside getConfig, result.config.SHOW_VOICE:', result.config.SHOW_VOICE)
+    console.log('DEBUG: Inside getConfig, result.config.VOICE_CDN:', result.config.VOICE_CDN)
+    return result
   },
   async getConfigForAdmin ({ config, isAdmin }) {
     if (isAdmin) {
@@ -354,7 +367,9 @@ const fn = {
         throw new Error(`参数"${requiredParam}"不合法`)
       }
     }
-  }
+  },
+  // 语音上传
+  uploadVoice
 }
 
 module.exports = fn

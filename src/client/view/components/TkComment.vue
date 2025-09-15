@@ -24,6 +24,9 @@
             <a href="#" v-if="!comment.rid && comment.top" @click="handleTop(false, $event)">{{ t('ADMIN_COMMENT_UNTOP') }}</a>
             <a href="#" v-if="!comment.rid && !comment.top" @click="handleTop(true, $event)">{{ t('ADMIN_COMMENT_TOP') }}</a>
           </small>
+          <small class="tk-actions" v-if="showDeleteButton">
+            <a href="#" @click="handleDelete($event)">{{ t('COMMENT_DELETE') }}</a>
+          </small>
         </div>
         <tk-action :liked="liked"
             :like-count="like"
@@ -179,6 +182,28 @@ export default {
     },
     convertedLink () {
       return convertLink(this.comment.link)
+    },
+    showDeleteButton () {
+      // 检查是否在5分钟内且拥有删除令牌
+      try {
+        const deleteTokens = JSON.parse(localStorage.getItem('twikoo-delete-tokens') || '{}')
+        const hasToken = !!deleteTokens[this.comment.id]
+        const commentTime = new Date(this.comment.created).getTime()
+        const currentTime = new Date().getTime()
+        const isWithin5Minutes = (currentTime - commentTime) < 5 * 60 * 1000
+        console.log('删除按钮显示检查:', {
+          commentId: this.comment.id,
+          hasToken,
+          commentTime: new Date(commentTime).toLocaleString(),
+          currentTime: new Date(currentTime).toLocaleString(),
+          timeDiff: (currentTime - commentTime) / 1000,
+          isWithin5Minutes
+        })
+        return hasToken && isWithin5Minutes
+      } catch (e) {
+        console.error('检查删除按钮显示状态时出错:', e)
+        return false
+      }
     }
   },
   methods: {
@@ -310,6 +335,39 @@ export default {
       })
       this.loading = false
       this.$emit('load')
+    },
+    async handleDelete ($event) {
+      $event.preventDefault()
+      if (!confirm('确定要删除这条评论吗？')) return
+
+      const deleteTokens = JSON.parse(localStorage.getItem('twikoo-delete-tokens') || '{}')
+      const token = deleteTokens[this.comment.id]
+
+      if (!token) {
+        alert('没有删除权限')
+        return
+      }
+
+      try {
+        const result = await call(this.$tcb, 'COMMENT_DELETE', {
+          id: this.comment.id,
+          token: token
+        })
+
+        if (result && result.result && result.result.code === 0) {
+          // 从localStorage中删除令牌
+          delete deleteTokens[this.comment.id]
+          localStorage.setItem('twikoo-delete-tokens', JSON.stringify(deleteTokens))
+
+          // 刷新评论列表
+          this.$emit('load')
+        } else {
+          alert(result.result.message || '删除失败')
+        }
+      } catch (error) {
+        console.error('删除评论失败:', error)
+        alert('删除评论失败')
+      }
     }
   },
   mounted () {

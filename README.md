@@ -6,7 +6,6 @@
 [![](https://img.shields.io/bundlephobia/minzip/twikoo)](https://bundlephobia.com/result?p=twikoo)
 [![](https://img.shields.io/npm/dt/twikoo)](https://www.npmjs.com/package/twikoo)
 [![](https://data.jsdelivr.com/v1/package/npm/twikoo/badge)](https://www.jsdelivr.com/package/npm/twikoo)
-[![](https://app.cloudback.it/badge/twikoojs/twikoo)](https://cloudback.it)
 [![](https://img.shields.io/npm/l/twikoo)](./LICENSE)
 
 一个**简洁**、**安全**、**免费**的静态网站评论系统。<br>
@@ -117,7 +116,7 @@ A **simple**, **safe**, **free** comment system.
 如果您想在本地二次开发，可以参考以下命令：
 
 ``` sh
-yarn dev # 开发 (http://localhost:9820/demo.html)
+npm run dev # 开发 (http://localhost:9820/demo.html)
 yarn lint # 代码检查
 yarn build # 编译 (dist/twikoo.all.min.js)
 ```

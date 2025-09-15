@@ -15,18 +15,6 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js" integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
   <script type="text/javascript" src="./twikoo.all.min.js" charset="utf-8"></script>
   <script type="text/javascript">
-    function saveToLocalStorage(key) {
-      var value = document.getElementById(key).value;
-      localStorage.setItem('twikoo-demo-' + key, value);
-    }
-    function loadFromLocalStorage() {
-      ['envId', 'region', 'path', 'lang'].forEach(function(key) {
-        var value = localStorage.getItem('twikoo-demo-' + key);
-        if (value !== null) {
-          document.getElementById(key).value = value;
-        }
-      });
-    }
     function init() {
       twikoo.init({
         envId: document.getElementById('envId').value,
@@ -36,7 +24,8 @@
         lang: document.getElementById('lang').value,
         onCommentLoaded: function () {
           console.log('评论加载完成')
-        }
+        },
+
       }).then(function () {
         console.log('Twikoo 加载完成');
       });
@@ -68,25 +57,25 @@
           <div class="field">
             <label class="label">环境 ID | Environment ID: <code>envId</code></label>
             <div class="control">
-              <input class="input" id="envId" type="text" placeholder="e.g imaegoo-16fe3d" value="http://localhost:8080" oninput="saveToLocalStorage('envId')">
+              <input class="input" id="envId" type="text" placeholder="e.g imaegoo-16fe3d" value="http://localhost:8080">
             </div>
           </div>
           <div class="field">
             <label class="label">环境地域 | Region: <code>region</code></label>
             <div class="control">
-              <input class="input" id="region" type="text" placeholder="e.g ap-guangzhou" value="ap-shanghai" oninput="saveToLocalStorage('region')">
+              <input class="input" id="region" type="text" placeholder="e.g ap-guangzhou" value="ap-shanghai">
             </div>
           </div>
           <div class="field">
             <label class="label">文章路径 | Path: <code>path</code></label>
             <div class="control">
-              <input class="input" id="path" type="text" placeholder="e.g window.location.pathname" value="window.location.pathname" oninput="saveToLocalStorage('path')">
+              <input class="input" id="path" type="text" placeholder="e.g window.location.pathname" value="window.location.pathname">
             </div>
           </div>
           <div class="field">
             <label class="label">语言 | Language:  <code>lang</code></label>
             <div class="control">
-              <input class="input" id="lang" type="text" placeholder="e.g en-US" value="zh-CN" oninput="saveToLocalStorage('lang')">
+              <input class="input" id="lang" type="text" placeholder="e.g en-US" value="zh-CN">
             </div>
           </div>
           <div class="field">
@@ -123,9 +112,6 @@
       </div>
     </div>
   </footer>
-  <script type="text/javascript">
-    loadFromLocalStorage();
-  </script>
 </body>
 
 </html>

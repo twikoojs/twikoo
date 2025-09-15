@@ -64,10 +64,19 @@ export default {
   methods: {
     t,
     async initConfig () {
-      const result = await call(this.$tcb, 'GET_CONFIG')
-      if (result && result.result && result.result.config) {
-        this.config = result.result.config
-        Vue.prototype.$twikoo.serverConfig = result.result.config
+      try {
+        const result = await call(this.$tcb, 'GET_CONFIG')
+        if (result && result.result && result.result.config) {
+          // 合并服务器配置和客户端配置，客户端配置优先
+          this.config = { ...result.result.config, ...this.$twikoo.config }
+          Vue.prototype.$twikoo.serverConfig = result.result.config
+        } else {
+          // 如果没有服务器配置，使用客户端配置
+          this.config = this.$twikoo.config || {}
+        }
+      } catch (error) {
+        console.error('Error in initConfig:', error)
+        this.config = this.$twikoo.config || {}
       }
     },
     async initComments () {

@@ -8,17 +8,18 @@
 
 import { v4 as uuidv4 } from 'uuid'
 import xss from 'xss'
+import bowser from 'bowser'
 import {
   getMd5,
   getSha256,
   getXml2js,
   setCustomLibs
 } from 'twikoo-func/utils/lib'
+import { getIpRegion } from './ip2region-searcher.js'
 import {
   getFuncVersion,
   getUrlQuery,
   getUrlsQuery,
-  parseComment,
   normalizeMail,
   equalsMail,
   getMailMd5,
@@ -113,13 +114,109 @@ const md5 = getMd5()
 const sha256 = getSha256()
 const xml2js = getXml2js()
 
+// ==================== 本地实现的 parseComment（替代 twikoo-func 版本）====================
+
+/**
+ * 修复 OS 版本名称
+ */
+function fixOS(ua) {
+  const os = ua.getOS()
+  if (!os.versionName) {
+    if (os.name === 'Windows' && os.version === 'NT 11.0') {
+      os.versionName = '11'
+    } else if (os.name === 'macOS') {
+      const majorPlatformVersion = os.version?.split('.')[0]
+      os.versionName = {
+        11: 'Big Sur', 12: 'Monterey', 13: 'Ventura', 14: 'Sonoma', 15: 'Sequoia'
+      }[majorPlatformVersion]
+    } else if (os.name === 'Android') {
+      const majorPlatformVersion = os.version?.split('.')[0]
+      os.versionName = {
+        10: 'Quince Tart', 11: 'Red Velvet Cake', 12: 'Snow Cone',
+        13: 'Tiramisu', 14: 'Upside Down Cake', 15: 'Vanilla Ice Cream', 16: 'Baklava'
+      }[majorPlatformVersion]
+    } else if (ua.test(/harmony/i)) {
+      os.name = 'Harmony'
+      const match = ua.getUA().match(/harmony[\s/-](\d+(\.\d+)*)/i)
+      os.version = (match && match[1]) || ''
+      os.versionName = ''
+    }
+  }
+  return os
+}
+
+/**
+ * 获取回复人昵称
+ */
+function getRuser(pid, comments = []) {
+  const comment = comments.find((item) => item._id === pid)
+  return comment ? comment.nick : null
+}
+
+/**
+ * 将评论记录转换为前端需要的格式（使用本地 IP 归属地查询）
+ */
+function toCommentDto(comment, uid, replies = [], comments = [], cfg) {
+  let displayOs = ''
+  let displayBrowser = ''
+  if (cfg.SHOW_UA !== 'false') {
+    try {
+      const ua = bowser.getParser(comment.ua)
+      const os = fixOS(ua)
+      displayOs = [os.name, os.versionName ? os.versionName : os.version].join(' ')
+      displayBrowser = [ua.getBrowserName(), ua.getBrowserVersion()].join(' ')
+    } catch (e) {
+      logger.warn('bowser 错误：', e)
+    }
+  }
+  const showRegion = !!cfg.SHOW_REGION && cfg.SHOW_REGION !== 'false'
+  return {
+    id: comment._id.toString(),
+    nick: comment.nick,
+    avatar: comment.avatar,
+    mailMd5: getMailMd5(comment),
+    link: comment.link,
+    comment: comment.comment,
+    os: displayOs,
+    browser: displayBrowser,
+    ipRegion: showRegion ? getIpRegion(comment.ip, false) : '',
+    master: comment.master,
+    like: comment.like ? comment.like.length : 0,
+    liked: comment.like ? comment.like.findIndex((item) => item === uid) > -1 : false,
+    replies: replies,
+    rid: comment.rid,
+    pid: comment.pid,
+    ruser: getRuser(comment.pid, comments),
+    top: comment.top,
+    isSpam: comment.isSpam,
+    created: comment.created,
+    updated: comment.updated
+  }
+}
+
+/**
+ * 筛除隐私字段，拼接回复列表（本地实现，使用自己的 IP 归属地查询）
+ */
+function parseComment(comments, uid, cfg) {
+  const result = []
+  for (const comment of comments) {
+    if (!comment.rid) {
+      const replies = comments
+        .filter((item) => item.rid === comment._id.toString())
+        .map((item) => toCommentDto(item, uid, [], comments, cfg))
+        .sort((a, b) => a.created - b.created)
+      result.push(toCommentDto(comment, uid, replies, [], cfg))
+    }
+  }
+  return result
+}
+
 /**
  * 为管理后台解析评论
- * 注：EdgeOne Pages 环境不支持 ip2region，暂不提供 IP 归属地功能
  */
 function parseCommentForAdmin(comments) {
   for (const comment of comments) {
-    comment.ipRegion = ''
+    comment.ipRegion = getIpRegion(comment.ip, true)
   }
   return comments
 }

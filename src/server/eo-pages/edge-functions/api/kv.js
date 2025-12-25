@@ -150,7 +150,7 @@ function generateUUID() {
   })
 }
 
-// ==================== KV 数据库操作层 ====================
+// ==================== KV 数据库操作层（优化版） ====================
 
 function createKVDatabase() {
   if (typeof TWIKOO_KV === 'undefined') {

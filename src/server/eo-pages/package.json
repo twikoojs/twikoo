@@ -1,0 +1,26 @@
+{
+  "name": "twikoo-edgeone-pages",
+  "version": "1.6.44",
+  "description": "Twikoo comment system for EdgeOne Pages.",
+  "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
+  "license": "MIT",
+  "type": "module",
+  "main": "node-functions/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/twikoojs/twikoo.git"
+  },
+  "homepage": "https://twikoo.js.org",
+  "scripts": {
+    "dev": "edgeone pages dev",
+    "build": "node build.cjs"
+  },
+  "dependencies": {
+    "twikoo-func": "^1.6.44",
+    "uuid": "^8.3.2",
+    "xss": "^1.0.15"
+  },
+  "devDependencies": {
+    "esbuild": "^0.27.2"
+  }
+}

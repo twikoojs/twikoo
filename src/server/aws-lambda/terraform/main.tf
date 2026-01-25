@@ -17,7 +17,7 @@ module "lambda_function" {
 
   function_name = "twikoo"
   handler       = "index.handler"
-  runtime       = "nodejs20.x"
+  runtime       = "nodejs24.x"
   timeout       = 60
 
   source_path = "../src"

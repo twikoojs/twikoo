@@ -31,6 +31,13 @@
           <span :title="comment.ua">{{ comment.ipRegion }}</span>
         </div>
         <div class="tk-content" v-html="comment.comment" ref="comments"></div>
+        <div class="tk-admin-warn tk-admin-security-alert" v-if="securityAlert && securityAlert.commentId === comment._id">
+          <a class="tk-admin-close" href="#" @click.prevent="securityAlert = null" v-html="iconClose"></a>
+          <div class="tk-admin-security-alert-message">{{ securityAlert.message }}</div>
+          <div class="tk-admin-security-alert-url" v-if="securityAlert.url">
+            <code>{{ securityAlert.url }}</code>
+          </div>
+        </div>
         <div class="tk-admin-actions">
           <el-button size="mini" type="text" @click="handleView(comment)">{{ t('ADMIN_COMMENT_VIEW') }}</el-button>
           <el-button size="mini" type="text" v-if="comment.isSpam" @click="handleSpam(comment, false)">{{ t('ADMIN_COMMENT_SHOW') }}</el-button>
@@ -55,6 +62,7 @@ import { timeago, call, convertLink, renderLinks, renderMath, renderCode, t } fr
 import { version } from '../../version'
 import TkAvatar from './TkAvatar.vue'
 import TkPagination from './TkPagination.vue'
+import iconClose from '@fortawesome/fontawesome-free/svgs/solid/times.svg'
 
 const defaultPageSize = 5
 
@@ -73,7 +81,9 @@ export default {
       count: 0,
       pageSize: defaultPageSize,
       currentPage: 1,
-      filter: { keyword: '', type: '' }
+      filter: { keyword: '', type: '' },
+      securityAlert: null,
+      iconClose
     }
   },
   methods: {
@@ -145,8 +155,36 @@ export default {
       this.currentPage = e
       this.getComments()
     },
-    handleView (comment) {
-      window.open(`${comment.url}#${comment._id}`)
+    handleView(comment) {
+      const targetUrl = `${comment.url}#${comment._id}`
+      try {
+        const url = new URL(targetUrl)
+        if (url.hostname !== window.location.hostname) {
+          // 域名不同，显示提示，要求用户手动复制访问
+          this.securityAlert = {
+            commentId: comment._id,
+            message: t('ADMIN_COMMENT_SECURITY_ALERT'),
+            url: targetUrl
+          }
+          return
+        }
+        // 域名相同，允许打开
+        window.open(targetUrl)
+      } catch (e) {
+        try {
+          // 尝试将其作为相对路径解析，如果成功说明是有效的相对路径
+          new URL(targetUrl, window.location.origin)
+          // 允许打开
+          window.open(targetUrl)
+        } catch (e2) {
+          // 作为相对路径也无法解析，说明 URL 格式错误
+          this.securityAlert = {
+            commentId: comment._id,
+            message: t('ADMIN_COMMENT_PARSE_ERROR'),
+            url: comment.url
+          }
+        }
+      }
     },
     async handleDelete (comment) {
       if (!confirm(t('ADMIN_COMMENT_DELETE_CONFIRM'))) return
@@ -200,6 +238,31 @@ export default {
 }
 .tk-admin-warn {
   margin-bottom: 1em;
+}
+.tk-admin-security-alert {
+  position: relative;
+  padding-right: 2.5rem;
+  margin-bottom: 0;
+}
+.tk-admin-security-alert .tk-admin-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  float: none;
+  width: 1rem;
+  height: 1rem;
+  padding: 0.5rem;
+  margin: 0;
+}
+.tk-admin-security-alert-message {
+  margin-bottom: 0.5em;
+}
+.tk-admin-security-alert-url {
+  word-break: break-all;
+  background: rgba(0,0,0,0.2);
+  padding: 0.5em;
+  border-radius: 4px;
+  margin-bottom: 0.5em;
 }
 .tk-admin-comment-filter {
   width: 100%;

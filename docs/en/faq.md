@@ -122,7 +122,7 @@ The Tencent Cloud environment comes with cloud storage, so you can upload images
 | ---- | ---- | ---- |
 | qcloud | None | Tencent Cloud environment comes with it, can be viewed in Cloud Development - Cloud Storage |
 | 7bu | https://7bu.top | Go to No Bed, powered by 杜老师, no free packages |
-| smms | https://sm.ms | SMMS image bed, there is a free package, please register your account, `IMAGE_CDN_TOKEN` can be obtained in [Dashboard](https://sm.ms/home/apitoken) |
+| see | https://s.ee | S.EE image bed, there is a free package, please register your account, `IMAGE_CDN_TOKEN` can be obtained in [Dashboard](https://s.ee/user/developers/) |
 | [lsky-pro](https://www.lsky.pro) | Private Deployment | LankenGraphics 2.0 version, `IMAGE_CDN` please configure the URL address of the home page of the graph bed (such as `https://7bu.top`), `IMAGE_CDN_TOKEN` get way please refer to the tutorial [杜老师 said the graph bed: new version Go not to the bed Token acquisition and emptying](https://dusays.com/454/), the format of the obtained token should be `1\|1bJbwlqBfnggmOMEZqXT5XusaIwqiZjCDs7r1Ob5`) |
 
 ## Can it be deployed privately?

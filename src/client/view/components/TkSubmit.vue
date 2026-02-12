@@ -325,7 +325,7 @@ export default {
     },
     async uploadPhotoToThirdParty (fileIndex, fileName, fileType, photo) {
       try {
-        let smmsImageDuplicateCheck
+        let seeImageDuplicateCheck
         const { result: uploadResult } = await call(this.$tcb, 'UPLOAD_IMAGE', {
           fileName: `${fileIndex}.${fileType}`,
           photo: await blobToDataURL(photo)
@@ -333,9 +333,9 @@ export default {
         if (uploadResult.data) {
           this.uploadCompleted(fileIndex, fileName, fileType, uploadResult.data.url)
         } else if (uploadResult.code === 1040 && uploadResult.err &&
-          (smmsImageDuplicateCheck = uploadResult.err.match(/this image exists at: (http[^ ]+)/))) {
+          (seeImageDuplicateCheck = uploadResult.err.match(/this image exists at: (http[^ ]+)/))) {
           console.warn(uploadResult)
-          this.uploadCompleted(fileIndex, fileName, fileType, smmsImageDuplicateCheck[1])
+          this.uploadCompleted(fileIndex, fileName, fileType, seeImageDuplicateCheck[1])
         } else {
           console.error(uploadResult)
           this.uploadFailed(fileIndex, fileType, uploadResult.err)

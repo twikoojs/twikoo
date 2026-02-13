@@ -19,8 +19,8 @@ const fn = {
       // tip: qcloud 图床走前端上传，其他图床走后端上传
       if (config.IMAGE_CDN === '7bu') {
         await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: 'https://7bu.top' })
-      } else if (config.IMAGE_CDN === 'smms') {
-        await fn.uploadImageToSmms({ photo, fileName, config, res, imageCdn: 'https://smms.app/api/v2/upload' })
+      } else if (config.IMAGE_CDN === 'see') {
+        await fn.uploadImageToSee({ photo, fileName, config, res, imageCdn: 'https://s.ee/api/v1/file/upload' })
       } else if (isUrl(config.IMAGE_CDN)) {
         await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN })
       } else if (config.IMAGE_CDN === 'lskypro') {
@@ -39,8 +39,8 @@ const fn = {
     }
     return res
   },
-  async uploadImageToSmms ({ photo, fileName, config, res, imageCdn }) {
-    // SM.MS 图床 https://sm.ms
+  async uploadImageToSee ({ photo, fileName, config, res, imageCdn }) {
+    // S.EE 图床 https://s.ee (原 SM.MS)
     const formData = new FormData()
     formData.append('smfile', fn.base64UrlToReadStream(photo, fileName))
     const uploadResult = await axios.post(imageCdn, formData, {

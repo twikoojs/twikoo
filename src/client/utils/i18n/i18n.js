@@ -89,7 +89,7 @@ const highlightPlugins = [
 const imageBedServices = [
   'qcloud',
   '7bu (https://7bu.top)',
-  'smms (https://sm.ms)',
+  'see (https://s.ee)',
   'lskypro',
   'piclist',
   'easyimage'

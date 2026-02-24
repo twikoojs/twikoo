@@ -29,6 +29,8 @@ const fn = {
         await fn.uploadImageToPicList({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN_URL })
       } else if (config.IMAGE_CDN === 'easyimage') {
         await fn.uploadImageToEasyImage({ photo, fileName, config, res })
+      } else if (config.IMAGE_CDN === 'chevereto') {
+        await fn.uploadImageToChevereto({ photo, fileName, config, res })
       } else {
         throw new Error('不支持的图片上传服务')
       }
@@ -146,6 +148,35 @@ const fn = {
         errorMsg += ` | 错误类型: ${e.response.data.message || '未知'}`
       }
       throw new Error(errorMsg)
+    }
+  },
+  async uploadImageToChevereto ({ photo, fileName, config, res }) {
+    if (!config.IMAGE_CDN_URL) {
+      throw new Error('未配置 Chevereto 站点地址 (IMAGE_CDN_URL)')
+    }
+    if (!config.IMAGE_CDN_TOKEN) {
+      throw new Error('未配置 Chevereto API Key (IMAGE_CDN_TOKEN)')
+    }
+    const formData = new FormData()
+    formData.append('key', config.IMAGE_CDN_TOKEN)
+    formData.append('source', fn.base64UrlToReadStream(photo, fileName))
+    formData.append('format', 'json')
+    const apiUrl = config.IMAGE_CDN_URL.replace(/\/$/, '') + '/api/1/upload'
+    const uploadResult = await axios.post(apiUrl, formData, {
+      headers: {
+        ...formData.getHeaders()
+      }
+    })
+    const data = uploadResult.data
+    if (data.status_code === 200 && data.image && data.image.url) {
+      res.data = {
+        url: data.image.url,
+        thumb: data.image.thumb ? data.image.thumb.url : data.image.url,
+        del: data.image.delete_url
+      }
+    } else {
+      const errMsg = (data.error && data.error.message) || JSON.stringify(data)
+      throw new Error(`Chevereto 上传失败: ${errMsg}`)
     }
   },
   base64UrlToReadStream (base64Url, fileName) {

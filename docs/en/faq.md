@@ -124,6 +124,29 @@ The Tencent Cloud environment comes with cloud storage, so you can upload images
 | 7bu | https://7bu.top | Go to No Bed, powered by 杜老师, no free packages |
 | smms | https://sm.ms | SMMS image bed, there is a free package, please register your account, `IMAGE_CDN_TOKEN` can be obtained in [Dashboard](https://sm.ms/home/apitoken) |
 | [lsky-pro](https://www.lsky.pro) | Private Deployment | LankenGraphics 2.0 version, `IMAGE_CDN` please configure the URL address of the home page of the graph bed (such as `https://7bu.top`), `IMAGE_CDN_TOKEN` get way please refer to the tutorial [杜老师 said the graph bed: new version Go not to the bed Token acquisition and emptying](https://dusays.com/454/), the format of the obtained token should be `1\|1bJbwlqBfnggmOMEZqXT5XusaIwqiZjCDs7r1Ob5`) |
+| [PicList](https://piclist.cn/) | Self-hosted | Set `IMAGE_CDN_URL` to the service URL. For `IMAGE_CDN_TOKEN`, see [PicList docs: API Authentication](https://piclist.cn/advanced.html#%E6%8E%A5%E5%8F%A3%E9%89%B4%E6%9D%83) |
+| [EasyImage2.0](https://github.com/icret/EasyImages2.0) | Self-hosted | Set `IMAGE_CDN_URL` to the API URL and `IMAGE_CDN_TOKEN` to your token |
+| [Chevereto](https://chevereto.com) | Self-hosted | Set `IMAGE_CDN_URL` to your Chevereto site (e.g. `https://your-chevereto.com`) and `IMAGE_CDN_TOKEN` to your API Key (found in Dashboard → Settings → API). Requires a paid Chevereto license or a fork that supports API v1 |
+
+## Can self-hosted deployments connect to an external database?
+
+By default, Twikoo's self-hosted version uses LokiJS, a built-in database with a capacity of approximately 1 GB. No external database is required. Data is stored in a `data` directory relative to where Twikoo was started; you can back it up by simply copying that directory.
+
+If you have a MongoDB instance, you can use it as an external database by setting the environment variable `MONGODB_URI` to your connection string, for example: `mongodb://<username>:<password>@<host>/`.
+
+## Comment submission fails with error 0 and the admin panel is inaccessible?
+
+On a page with the comment box, open your browser's developer tools (F12 on Windows), go to the **Console** tab, and look for errors containing the keyword `twikoo`.
+
+**ERR_BLOCKED_BY_CLIENT** — Disable your ad blocker or whitelist the current site, then refresh.
+
+**ERR_CONNECTION_CLOSED / ERR_CONNECTION_TIMED_OUT / ERR_CONNECTION_RESET** — Check whether your network can reach the cloud function. Some regions cannot access Vercel or similar services; try a different deployment method.
+
+**`Access to XMLHttpRequest at 'https://tcb-api.tencentcloudapi.com/web?env=...' has been blocked by CORS policy`** — Make sure your frontend JS is up to date and that `envId` starts with `https://`.
+
+**`No 'Access-Control-Allow-Origin' header is present`** — Visit your `envId` URL directly to check whether the cloud function is running. If not, redeploy it carefully. If it is running, start the site on localhost, go to **Admin Panel → Configuration → General**, clear the `CORS_ALLOW_ORIGIN` field, save, and refresh.
+
+For any other error, please [open an issue](https://github.com/twikoojs/twikoo/issues/new) and include the full error message.
 
 ## Can it be deployed privately?
 

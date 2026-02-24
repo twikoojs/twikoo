@@ -92,7 +92,8 @@ const imageBedServices = [
   'smms (https://sm.ms)',
   'lskypro',
   'piclist',
-  'easyimage'
+  'easyimage',
+  'chevereto'
 ].map(s => `"${s}"`)
 
 const customImageBedServices = [

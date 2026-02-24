@@ -129,6 +129,7 @@ Akismet (Automattic Kismet) 是应用广泛的一个垃圾留言过滤系统，�
 | [lsky-pro](https://www.lsky.pro) | 私有部署 | 兰空图床 2.0 版本，`IMAGE_CDN` 请配置图床首页 URL 地址（如 `https://7bu.top`），`IMAGE_CDN_TOKEN` 获取方式请参考教程 [杜老师说图床：新版本去不图床 Token 的获取与清空](https://dusays.com/454/)，获取到的 token 格式应为 `1\|1bJbwlqBfnggmOMEZqXT5XusaIwqiZjCDs7r1Ob5`） |
 | [PicList](https://piclist.cn/)                         | 私有部署        | `IMAGE_CDN_URL` 配置图床 URL 地址，`IMAGE_CDN_TOKEN`填写参考[piclist文档：接口鉴权](https://piclist.cn/advanced.html#%E6%8E%A5%E5%8F%A3%E9%89%B4%E6%9D%83) |
 | [EasyImage2.0](https://github.com/icret/EasyImages2.0) | 私有部署        | `IMAGE_CDN_URL` 配置图床 URL 地址，`IMAGE_CDN_TOKEN`填写 TOKEN |
+| [Chevereto](https://chevereto.com) | 私有部署 | cheverto v4版本,`IMAGE_CDN_URL` 配置图床 URL 地址（如 `https://your-chevereto.com`），`IMAGE_CDN_TOKEN` 填写 API Key（在管理后台 Dashboard → Settings → API 中获取）。注意：需要支持 API v1 的 Chevereto 实例 |
 
 ## 私有部署能连接自己的数据库吗？
 

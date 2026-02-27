@@ -8,6 +8,13 @@
           <span>{{ t('COMMENTS_COUNT_SUFFIX') }}</span>
         </span>
         <span>
+          <span class="tk-comments-sort" v-if="!loading && comments.length">
+            <select v-model="currentSort" @change="onSortChange" class="tk-sort-select">
+              <option value="newest">{{ t('COMMENTS_SORT_NEWEST') }}</option>
+              <option value="oldest">{{ t('COMMENTS_SORT_OLDEST') }}</option>
+              <option value="popular">{{ t('COMMENTS_SORT_POPULAR') }}</option>
+            </select>
+          </span>
           <span class="tk-icon __comments" v-if="!loading && !loadingMore" v-html="iconRefresh" @click="refresh"
             ></span><span class="tk-icon __comments" v-if="showAdminEntry" v-html="iconSetting" @click="openAdmin"
             ></span>
@@ -57,6 +64,7 @@ export default {
       showExpand: true,
       count: 0,
       replyId: '',
+      currentSort: 'newest',
       iconSetting,
       iconRefresh
     }
@@ -73,10 +81,14 @@ export default {
     async initComments () {
       this.loading = true
       const url = getUrl(this.$twikoo.path)
-      await this.getComments({ url })
+      await this.getComments({ url, sort: this.currentSort })
       this.loading = false
     },
     refresh () {
+      this.comments = []
+      this.initComments()
+    },
+    onSortChange () {
       this.comments = []
       this.initComments()
     },
@@ -87,8 +99,8 @@ export default {
       const before = this.comments
         .filter((item) => !item.top)
         .map((item) => item.created)
-        .sort((a, b) => a - b)[0] // 最小值
-      await this.getComments({ url, before })
+        .sort((a, b) => a - b)[0]
+      await this.getComments({ url, before, sort: this.currentSort })
       this.loadingMore = false
     },
     onCommentLoaded () {
@@ -148,6 +160,24 @@ export default {
 .tk-comments-error {
   font-size: 0.75em;
   color: #ff0000;
+}
+.tk-comments-sort {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.5em;
+}
+.tk-sort-select {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 0.25rem;
+  background: white;
+  cursor: pointer;
+  color: #409eff;
+}
+.tk-sort-select:focus {
+  outline: none;
+  border-color: #409eff;
 }
 .tk-icon.__comments {
   display: inline-flex;

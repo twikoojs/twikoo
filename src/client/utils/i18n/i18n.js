@@ -1299,6 +1299,33 @@ export default {
     ' 件のコメント',
     '개의 댓글'
   ],
+  COMMENTS_SORT_NEWEST: [
+    '最新',
+    '最新',
+    '最新',
+    'Newest',
+    'Энг янги',
+    '最新',
+    '최신'
+  ],
+  COMMENTS_SORT_OLDEST: [
+    '最早',
+    '最早',
+    '最早',
+    'Oldest',
+    'Энг эски',
+    '最古',
+    '오래됨'
+  ],
+  COMMENTS_SORT_POPULAR: [
+    '热门',
+    '熱門',
+    '熱門',
+    'Popular',
+    'Машҳур',
+    '人気',
+    '인기'
+  ],
   COMMENTS_EXPAND: [
     '查看更多',
     '查看更多',

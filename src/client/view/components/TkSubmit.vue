@@ -332,7 +332,7 @@ export default {
       }
       this.parseAndUploadPhoto(photo)
     },
-    parseAndUploadPhoto (photo) {
+    async parseAndUploadPhoto (photo) {
       if (!photo || this.config.SHOW_IMAGE !== 'true') return
       const nameSplit = photo.name.split('.')
       const fileType = nameSplit.length > 1 ? nameSplit.pop() : ''
@@ -340,14 +340,18 @@ export default {
       const userId = this.getUserId()
       const fileIndex = `${Date.now()}-${userId}`
       const fileName = nameSplit.join('.')
-      this.paste(this.getImagePlaceholder(fileIndex, fileType))
+      const isGif = photo.type === 'image/gif'
+      const newFileName = isGif ? fileName : fileName + '.webp'
+      const newFileType = isGif ? fileType : 'webp'
+      this.paste(this.getImagePlaceholder(fileIndex, newFileType))
       const imageCdn = this.config.IMAGE_CDN
+      const compressedPhoto = await this.compressImage(photo)
       if (this.$tcb && (!imageCdn || imageCdn === 'qcloud')) {
-        this.uploadPhotoToQcloud(fileIndex, fileName, fileType, photo)
+        this.uploadPhotoToQcloud(fileIndex, newFileName, newFileType, compressedPhoto)
       } else if (imageCdn) {
-        this.uploadPhotoToThirdParty(fileIndex, fileName, fileType, photo)
+        this.uploadPhotoToThirdParty(fileIndex, newFileName, newFileType, compressedPhoto)
       } else {
-        this.uploadFailed(fileIndex, fileType, t('IMAGE_UPLOAD_FAILED_NO_CONF'))
+        this.uploadFailed(fileIndex, newFileType, t('IMAGE_UPLOAD_FAILED_NO_CONF'))
       }
     },
     getUserId () {
@@ -356,6 +360,43 @@ export default {
       } else {
         return localStorage.getItem('twikoo-access-token')
       }
+    },
+    async compressImage (photo) {
+      if (photo.type === 'image/gif') {
+        return photo
+      }
+      return new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          const img = new Image()
+          img.onload = () => {
+            const canvas = document.createElement('canvas')
+            let width = img.width
+            let height = img.height
+            const maxSize = 1920
+            if (width > maxSize || height > maxSize) {
+              if (width > height) {
+                height = (height * maxSize) / width
+                width = maxSize
+              } else {
+                width = (width * maxSize) / height
+                height = maxSize
+              }
+            }
+            canvas.width = width
+            canvas.height = height
+            const ctx = canvas.getContext('2d')
+            ctx.drawImage(img, 0, 0, width, height)
+            const webpType = 'image/webp'
+            const fileName = photo.name.replace(/\.[^.]+$/, '.webp')
+            canvas.toBlob((blob) => {
+              resolve(new File([blob], fileName, { type: webpType }))
+            }, webpType, 0.85)
+          }
+          img.src = e.target.result
+        }
+        reader.readAsDataURL(photo)
+      })
     },
     async uploadPhotoToQcloud (fileIndex, fileName, fileType, photo) {
       try {
@@ -376,7 +417,7 @@ export default {
     async uploadPhotoToThirdParty (fileIndex, fileName, fileType, photo) {
       try {
         const { result: uploadResult } = await call(this.$tcb, 'UPLOAD_IMAGE', {
-          fileName: `${fileIndex}.${fileType}`,
+          fileName: fileName,
           photo: await blobToDataURL(photo)
         })
         if (uploadResult.data) {

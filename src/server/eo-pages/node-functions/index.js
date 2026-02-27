@@ -412,6 +412,7 @@ async function commentGet (event, db, accessToken) {
     const uid = accessToken
     const isAdminUser = isAdmin(accessToken)
     const limit = parseInt(config.COMMENT_PAGE_SIZE) || 8
+    const sort = event.sort || 'newest'
     let more = false
 
     const urlQuery = getUrlQuery(event.url)
@@ -430,7 +431,18 @@ async function commentGet (event, db, accessToken) {
     const count = mainComments.length
 
     // 排序
-    mainComments.sort((a, b) => b.created - a.created)
+    if (sort === 'oldest') {
+      mainComments.sort((a, b) => a.created - b.created)
+    } else if (sort === 'popular') {
+      mainComments.sort((a, b) => {
+        const aUps = a.ups ? a.ups.length : 0
+        const bUps = b.ups ? b.ups.length : 0
+        if (bUps !== aUps) return bUps - aUps
+        return b.created - a.created
+      })
+    } else {
+      mainComments.sort((a, b) => b.created - a.created)
+    }
 
     // 处理置顶和分页
     let top = []
@@ -640,17 +652,35 @@ async function commentLike (event, db, accessToken) {
   const res = {}
   validate(event, ['id'])
   const uid = accessToken
+  const type = event.type || 'up'
   const comment = await db.getComment(event.id)
 
   if (comment) {
-    const likes = comment.like || []
-    const index = likes.indexOf(uid)
-    if (index === -1) {
-      likes.push(uid)
-    } else {
-      likes.splice(index, 1)
+    const ups = comment.ups || []
+    const downs = comment.downs || []
+
+    let newUps = [...ups]
+    let newDowns = [...downs]
+
+    if (type === 'up') {
+      const index = ups.indexOf(uid)
+      if (index === -1) {
+        newUps.push(uid)
+        newDowns = newDowns.filter((item) => item !== uid)
+      } else {
+        newUps.splice(index, 1)
+      }
+    } else if (type === 'down') {
+      const index = downs.indexOf(uid)
+      if (index === -1) {
+        newDowns.push(uid)
+        newUps = newUps.filter((item) => item !== uid)
+      } else {
+        newDowns.splice(index, 1)
+      }
     }
-    await db.updateComment(event.id, { like: likes })
+
+    await db.updateComment(event.id, { ups: newUps, downs: newDowns })
     res.updated = 1
   } else {
     res.updated = 0

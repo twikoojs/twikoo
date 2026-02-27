@@ -173,6 +173,7 @@ export default {
       } catch (e) {
         try {
           // 尝试将其作为相对路径解析，如果成功说明是有效的相对路径
+          // eslint-disable-next-line no-new
           new URL(targetUrl, window.location.origin)
           // 允许打开
           window.open(targetUrl)

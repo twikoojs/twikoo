@@ -26,9 +26,12 @@
           </small>
         </div>
         <tk-action :liked="liked"
-            :like-count="like"
+            :disliked="disliked"
+            :like-count="ups"
+            :dislike-count="downs"
             :replies-count="comment.replies.length"
             @like="onLike"
+            @dislike="onDislike"
             @reply="onReply" />
       </div>
       <div class="tk-content" :class="{ 'tk-content-expand': isContentExpanded || !showContentExpand }" ref="tk-content">
@@ -134,6 +137,9 @@ export default {
       pid: '',
       like: 0,
       liked: false,
+      disliked: false,
+      ups: 0,
+      downs: 0,
       likeLoading: false,
       isExpanded: false,
       hasExpand: false,
@@ -215,15 +221,35 @@ export default {
       }
     },
     async onLike () {
-      if (this.likeLoading) return // 防止连续点击
+      if (this.likeLoading) return
       this.likeLoading = true
-      await call(this.$tcb, 'COMMENT_LIKE', { id: this.comment.id })
+      await call(this.$tcb, 'COMMENT_LIKE', { id: this.comment.id, type: 'up' })
       if (this.liked) {
-        this.like--
+        this.ups--
       } else {
-        this.like++
+        this.ups++
+        if (this.disliked) {
+          this.downs--
+        }
       }
       this.liked = !this.liked
+      this.disliked = false
+      this.likeLoading = false
+    },
+    async onDislike () {
+      if (this.likeLoading) return
+      this.likeLoading = true
+      await call(this.$tcb, 'COMMENT_LIKE', { id: this.comment.id, type: 'down' })
+      if (this.disliked) {
+        this.downs--
+      } else {
+        this.downs++
+        if (this.liked) {
+          this.ups--
+        }
+      }
+      this.disliked = !this.disliked
+      this.liked = false
       this.likeLoading = false
     },
     onReply (id) {
@@ -327,7 +353,20 @@ export default {
     'comment.like': {
       handler: function (like) {
         this.like = this.comment.like
+      },
+      immediate: true
+    },
+    'comment.ups': {
+      handler: function (ups) {
+        this.ups = this.comment.ups
         this.liked = this.comment.liked
+      },
+      immediate: true
+    },
+    'comment.downs': {
+      handler: function (downs) {
+        this.downs = this.comment.downs
+        this.disliked = this.comment.disliked
       },
       immediate: true
     },

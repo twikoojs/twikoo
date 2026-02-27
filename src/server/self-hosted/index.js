@@ -275,6 +275,7 @@ async function commentGet (event) {
     const uid = event.accessToken
     const isAdminUser = isAdmin(event.accessToken)
     const limit = parseInt(config.COMMENT_PAGE_SIZE) || 8
+    const sort = event.sort || 'newest'
     let more = false
     let condition
     let query
@@ -295,11 +296,21 @@ async function commentGet (event) {
     // 不包含置顶
     condition.top = { $ne: true }
     query = getCommentQuery({ condition, uid, isAdminUser })
+
+    let sortOrder
+    if (sort === 'oldest') {
+      sortOrder = [['created', false]]
+    } else if (sort === 'popular') {
+      sortOrder = [['ups', true], ['created', true]]
+    } else {
+      sortOrder = [['created', true]]
+    }
+
     let main = db
       .getCollection('comment')
       .chain()
       .find(query)
-      .compoundsort([['created', true]])
+      .compoundsort(sortOrder)
       // 流式分页，通过多读 1 条的方式，确认是否还有更多评论
       .limit(limit + 1)
       .data()
@@ -559,30 +570,47 @@ async function bulkSaveComments (comments) {
     .insert(comments)
 }
 
-// 点赞 / 取消点赞
+// 点赞 / 反对 / 取消
 async function commentLike (event) {
   const res = {}
   validate(event, ['id'])
-  res.updated = await like(event.id, event.accessToken)
+  const type = event.type || 'up'
+  res.updated = await like(event.id, event.accessToken, type)
   return res
 }
 
-// 点赞 / 取消点赞
-async function like (id, uid) {
+// 点赞 / 反对 / 取消
+async function like (id, uid, type) {
   const record = db
     .getCollection('comment')
   const comment = await record
     .findOne({ _id: id })
-  let likes = comment && comment.like ? comment.like : []
-  if (likes.findIndex((item) => item === uid) === -1) {
-    // 赞
-    likes.push(uid)
-  } else {
-    // 取消赞
-    likes = likes.filter((item) => item !== uid)
+  const commentData = comment || {}
+  const ups = commentData.ups || []
+  const downs = commentData.downs || []
+
+  let newUps = [...ups]
+  let newDowns = [...downs]
+
+  if (type === 'up') {
+    if (ups.includes(uid)) {
+      newUps = ups.filter((item) => item !== uid)
+    } else {
+      newUps.push(uid)
+      newDowns = downs.filter((item) => item !== uid)
+    }
+  } else if (type === 'down') {
+    if (downs.includes(uid)) {
+      newDowns = downs.filter((item) => item !== uid)
+    } else {
+      newDowns.push(uid)
+      newUps = ups.filter((item) => item !== uid)
+    }
   }
+
   await record.findAndUpdate({ _id: id }, (obj) => {
-    obj.like = likes
+    obj.ups = newUps
+    obj.downs = newDowns
     return obj
   })
   return 1

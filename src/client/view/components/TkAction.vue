@@ -5,6 +5,11 @@
       <span class="tk-action-icon tk-action-icon-solid" v-html="iconLikeSolid"></span>
       <span class="tk-action-count">{{ likeCountStr }}</span>
     </a>
+    <a class="tk-action-link" :class="{ 'tk-disliked': disliked }" href="#" @click="onDislike">
+      <span class="tk-action-icon" v-html="iconDislike"></span>
+      <span class="tk-action-icon tk-action-icon-solid" v-html="iconDislikeSolid"></span>
+      <span class="tk-action-count">{{ dislikeCountStr }}</span>
+    </a>
     <a class="tk-action-link" href="#" @click="onReply">
       <span class="tk-action-icon" v-html="iconComment"></span>
       <span class="tk-action-icon tk-action-icon-solid" v-html="iconCommentSolid"></span>
@@ -18,6 +23,8 @@ import iconComment from '@fortawesome/fontawesome-free/svgs/regular/comment.svg'
 import iconCommentSolid from '@fortawesome/fontawesome-free/svgs/solid/comment.svg'
 import iconLike from '@fortawesome/fontawesome-free/svgs/regular/thumbs-up.svg'
 import iconLikeSolid from '@fortawesome/fontawesome-free/svgs/solid/thumbs-up.svg'
+import iconDislike from '@fortawesome/fontawesome-free/svgs/regular/thumbs-down.svg'
+import iconDislikeSolid from '@fortawesome/fontawesome-free/svgs/solid/thumbs-down.svg'
 
 export default {
   data () {
@@ -25,17 +32,24 @@ export default {
       iconComment,
       iconCommentSolid,
       iconLike,
-      iconLikeSolid
+      iconLikeSolid,
+      iconDislike,
+      iconDislikeSolid
     }
   },
   props: {
     liked: Boolean,
+    disliked: Boolean,
     likeCount: Number,
+    dislikeCount: Number,
     repliesCount: Number
   },
   computed: {
     likeCountStr () {
       return this.likeCount > 0 ? `${this.likeCount}` : ''
+    },
+    dislikeCountStr () {
+      return this.dislikeCount > 0 ? `${this.dislikeCount}` : ''
     },
     repliesCountStr () {
       return this.repliesCount > 0 ? `${this.repliesCount}` : ''
@@ -45,6 +59,10 @@ export default {
     onLike ($event) {
       $event.preventDefault()
       this.$emit('like')
+    },
+    onDislike ($event) {
+      $event.preventDefault()
+      this.$emit('dislike')
     },
     onReply ($event) {
       $event.preventDefault()
@@ -75,6 +93,14 @@ export default {
 }
 .tk-action-link.tk-liked .tk-action-icon-solid,
 .tk-action-link:hover .tk-action-icon-solid {
+  display: block;
+}
+.tk-action-link.tk-disliked .tk-action-icon,
+.tk-action-link.tk-disliked:hover .tk-action-icon {
+  display: none;
+}
+.tk-action-link.tk-disliked .tk-action-icon-solid,
+.tk-action-link.tk-disliked:hover .tk-action-icon-solid {
   display: block;
 }
 .tk-action-count {

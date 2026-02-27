@@ -75,6 +75,8 @@ const fn = {
       }
     }
     const showRegion = !!config.SHOW_REGION && config.SHOW_REGION !== 'false'
+    const ups = comment.ups || []
+    const downs = comment.downs || []
     return {
       id: comment._id.toString(),
       nick: comment.nick,
@@ -87,7 +89,10 @@ const fn = {
       ipRegion: showRegion ? fn.getIpRegion({ ip: comment.ip }) : '',
       master: comment.master,
       like: comment.like ? comment.like.length : 0,
-      liked: comment.like ? comment.like.findIndex((item) => item === uid) > -1 : false,
+      ups: ups.length,
+      downs: downs.length,
+      liked: ups.includes(uid),
+      disliked: downs.includes(uid),
       replies: replies,
       rid: comment.rid,
       pid: comment.pid,

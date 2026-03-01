@@ -30,6 +30,7 @@ import {
   getPasswordStatus,
   preCheckSpam,
   checkTurnstileCaptcha,
+  checkGeeTestCaptcha,
   getConfig,
   getConfigForAdmin,
   validate
@@ -823,6 +824,15 @@ async function checkCaptcha (event, ip) {
       ip: ip,
       turnstileToken: event.turnstileToken,
       turnstileTokenSecretKey: config.TURNSTILE_SECRET_KEY
+    })
+  } else if (provider === 'Geetest' && config.GEETEST_CAPTCHA_ID && config.GEETEST_CAPTCHA_KEY) {
+    await checkGeeTestCaptcha({
+      geeTestCaptchaId: config.GEETEST_CAPTCHA_ID,
+      geeTestCaptchaKey: config.GEETEST_CAPTCHA_KEY,
+      geeTestLotNumber: event.geeTestLotNumber,
+      geeTestCaptchaOutput: event.geeTestCaptchaOutput,
+      geeTestPassToken: event.geeTestPassToken,
+      geeTestGenTime: event.geeTestGenTime
     })
   }
 }

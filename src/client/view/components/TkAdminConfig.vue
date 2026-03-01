@@ -175,7 +175,7 @@ export default {
       const res = await call(this.$tcb, 'GET_CONFIG_FOR_ADMIN')
       if (res.result && !res.result.code) {
         this.serverConfig = res.result.config
-        if (!this.serverConfig.CAPTCHA_PROVIDER) {
+        if (typeof this.serverConfig.CAPTCHA_PROVIDER === 'undefined') {
           if (this.serverConfig.TURNSTILE_SITE_KEY) {
             this.serverConfig.CAPTCHA_PROVIDER = 'Turnstile'
           } else if (this.serverConfig.GEETEST_CAPTCHA_ID) {
@@ -189,8 +189,10 @@ export default {
     resetConfig () {
       for (const settingGroup of this.settings) {
         for (const setting of settingGroup.items) {
-          if (this.serverConfig[setting.key]) {
+          if (this.serverConfig[setting.key] !== undefined) {
             setting.value = this.serverConfig[setting.key]
+          } else {
+            setting.value = ''
           }
         }
       }

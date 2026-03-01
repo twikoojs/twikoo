@@ -108,7 +108,7 @@ export default {
   },
   computed: {
     captchaProvider () {
-      if (this.config.CAPTCHA_PROVIDER) return this.config.CAPTCHA_PROVIDER
+      if (typeof this.config.CAPTCHA_PROVIDER !== 'undefined') return this.config.CAPTCHA_PROVIDER
       if (this.config.TURNSTILE_SITE_KEY) return 'Turnstile'
       if (this.config.GEETEST_CAPTCHA_ID) return 'Geetest'
       return ''

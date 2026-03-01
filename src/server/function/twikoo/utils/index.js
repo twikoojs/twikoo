@@ -338,34 +338,46 @@ const fn = {
     }
   },
   async getConfig ({ config, VERSION, isAdmin }) {
+    // 构建对外配置，避免在启用某一验证码供应商时泄露另一个供应商的 key
+    const baseConfig = {
+      VERSION,
+      IS_ADMIN: isAdmin,
+      SITE_NAME: config.SITE_NAME,
+      SITE_URL: config.SITE_URL,
+      MASTER_TAG: config.MASTER_TAG,
+      COMMENT_BG_IMG: config.COMMENT_BG_IMG,
+      GRAVATAR_CDN: config.GRAVATAR_CDN,
+      DEFAULT_GRAVATAR: config.DEFAULT_GRAVATAR,
+      SHOW_IMAGE: config.SHOW_IMAGE || 'true',
+      IMAGE_CDN: config.IMAGE_CDN,
+      LIGHTBOX: config.LIGHTBOX || 'false',
+      SHOW_EMOTION: config.SHOW_EMOTION || 'true',
+      EMOTION_CDN: config.EMOTION_CDN,
+      COMMENT_PLACEHOLDER: config.COMMENT_PLACEHOLDER,
+      DISPLAYED_FIELDS: config.DISPLAYED_FIELDS,
+      REQUIRED_FIELDS: config.REQUIRED_FIELDS,
+      HIDE_ADMIN_CRYPT: config.HIDE_ADMIN_CRYPT,
+      HIGHLIGHT: config.HIGHLIGHT || 'true',
+      HIGHLIGHT_THEME: config.HIGHLIGHT_THEME,
+      HIGHLIGHT_PLUGIN: config.HIGHLIGHT_PLUGIN,
+      LIMIT_LENGTH: config.LIMIT_LENGTH,
+      CAPTCHA_PROVIDER: config.CAPTCHA_PROVIDER,
+      QQ_API_KEY: config.QQ_API_KEY
+    }
+
+    // 仅在明确指定使用 Turnstile 时下发 Turnstile 的 site key
+    if (config.CAPTCHA_PROVIDER === 'Turnstile') {
+      baseConfig.TURNSTILE_SITE_KEY = config.TURNSTILE_SITE_KEY
+    }
+
+    // 仅在明确指定使用 Geetest 时下发 Geetest 的 id
+    if (config.CAPTCHA_PROVIDER === 'Geetest') {
+      baseConfig.GEETEST_CAPTCHA_ID = config.GEETEST_CAPTCHA_ID
+    }
+
     return {
       code: RES_CODE.SUCCESS,
-      config: {
-        VERSION,
-        IS_ADMIN: isAdmin,
-        SITE_NAME: config.SITE_NAME,
-        SITE_URL: config.SITE_URL,
-        MASTER_TAG: config.MASTER_TAG,
-        COMMENT_BG_IMG: config.COMMENT_BG_IMG,
-        GRAVATAR_CDN: config.GRAVATAR_CDN,
-        DEFAULT_GRAVATAR: config.DEFAULT_GRAVATAR,
-        SHOW_IMAGE: config.SHOW_IMAGE || 'true',
-        IMAGE_CDN: config.IMAGE_CDN,
-        LIGHTBOX: config.LIGHTBOX || 'false',
-        SHOW_EMOTION: config.SHOW_EMOTION || 'true',
-        EMOTION_CDN: config.EMOTION_CDN,
-        COMMENT_PLACEHOLDER: config.COMMENT_PLACEHOLDER,
-        DISPLAYED_FIELDS: config.DISPLAYED_FIELDS,
-        REQUIRED_FIELDS: config.REQUIRED_FIELDS,
-        HIDE_ADMIN_CRYPT: config.HIDE_ADMIN_CRYPT,
-        HIGHLIGHT: config.HIGHLIGHT || 'true',
-        HIGHLIGHT_THEME: config.HIGHLIGHT_THEME,
-        HIGHLIGHT_PLUGIN: config.HIGHLIGHT_PLUGIN,
-        LIMIT_LENGTH: config.LIMIT_LENGTH,
-        TURNSTILE_SITE_KEY: config.TURNSTILE_SITE_KEY,
-        GEETEST_CAPTCHA_ID: config.GEETEST_CAPTCHA_ID,
-        QQ_API_KEY: config.QQ_API_KEY
-      }
+      config: baseConfig
     }
   },
   async getConfigForAdmin ({ config, isAdmin }) {

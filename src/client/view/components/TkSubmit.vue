@@ -41,10 +41,10 @@
           size="small"
           :disabled="!canSend"
           @click="send">{{ isSending ? t('SUBMIT_SENDING') : t('SUBMIT_SEND') }}</el-button>
-      <div class="tk-turnstile-container" ref="turnstile-container">
+      <div class="tk-turnstile-container" ref="turnstile-container" v-show="captchaProvider === 'Turnstile'">
         <div class="tk-turnstile" ref="turnstile"></div>
       </div>
-      <div class="tk-geetest-container" ref="geetest-container"></div>
+      <div class="tk-geetest-container" ref="geetest-container" v-show="captchaProvider === 'Geetest'"></div>
     </div>
     <div class="tk-preview-container" v-if="isPreviewing" v-html="commentHtml" ref="comment-preview"></div>
   </div>
@@ -107,6 +107,12 @@ export default {
     }
   },
   computed: {
+    captchaProvider () {
+      if (this.config.CAPTCHA_PROVIDER) return this.config.CAPTCHA_PROVIDER
+      if (this.config.TURNSTILE_SITE_KEY) return 'Turnstile'
+      if (this.config.GEETEST_CAPTCHA_ID) return 'Geetest'
+      return ''
+    },
     canSend () {
       return !this.isSending &&
         !!this.isMetaValid &&
@@ -152,7 +158,7 @@ export default {
       }
     },
     initTurnstile () {
-      if (!this.config.TURNSTILE_SITE_KEY) return
+      if (this.captchaProvider !== 'Turnstile' || !this.config.TURNSTILE_SITE_KEY) return
       if (window.turnstile) {
         this.turnstileLoad = Promise.resolve()
         return
@@ -182,7 +188,7 @@ export default {
       })
     },
     initGeeTest () {
-      if (!this.config.GEETEST_CAPTCHA_ID) return
+      if (this.captchaProvider !== 'Geetest' || !this.config.GEETEST_CAPTCHA_ID) return
       if (window.initGeetest4) {
         this.geeTestLoad = Promise.resolve()
         return
@@ -267,10 +273,10 @@ export default {
           pid: this.pid ? this.pid : this.replyId,
           rid: this.replyId
         }
-        if (this.config.TURNSTILE_SITE_KEY) {
+        if (this.captchaProvider === 'Turnstile' && this.config.TURNSTILE_SITE_KEY) {
           comment.turnstileToken = await this.getTurnstileToken()
         }
-        if (this.config.GEETEST_CAPTCHA_ID) {
+        if (this.captchaProvider === 'Geetest' && this.config.GEETEST_CAPTCHA_ID) {
           const geeTestResult = await this.getGeeTestToken()
           comment.geeTestLotNumber = geeTestResult.geeTestLotNumber
           comment.geeTestCaptchaOutput = geeTestResult.geeTestCaptchaOutput
@@ -484,6 +490,10 @@ export default {
       this.initTurnstile()
     },
     'config.GEETEST_CAPTCHA_ID': function () {
+      this.initGeeTest()
+    },
+    captchaProvider: function () {
+      this.initTurnstile()
       this.initGeeTest()
     }
   }

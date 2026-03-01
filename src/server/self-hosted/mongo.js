@@ -735,7 +735,8 @@ async function limitFilter (request) {
 }
 
 async function checkCaptcha (comment, request) {
-  if (config.TURNSTILE_SITE_KEY && config.TURNSTILE_SECRET_KEY) {
+  const provider = config.CAPTCHA_PROVIDER
+  if ((!provider || provider === 'Turnstile') && config.TURNSTILE_SITE_KEY && config.TURNSTILE_SECRET_KEY) {
     await checkTurnstileCaptcha({
       ip: getIp(request),
       turnstileToken: comment.turnstileToken,

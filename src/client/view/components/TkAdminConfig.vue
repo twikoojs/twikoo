@@ -8,10 +8,13 @@
     <div class="tk-admin-config-groups">
       <details class="tk-admin-config-group" v-for="settingGroup in settings" :key="settingGroup.name">
         <summary class="tk-admin-config-group-title">{{ settingGroup.name }}</summary>
-        <div class="tk-admin-config-item" v-for="setting in settingGroup.items" :key="setting.key">
+        <div class="tk-admin-config-item" v-for="setting in settingGroup.items" :key="setting.key" v-show="showSetting(setting)">
           <div class="tk-admin-config-title" :title="setting.key">{{ setting.key }}</div>
           <div class="tk-admin-config-input">
-            <el-input v-model="setting.value" :placeholder="setting.ph" size="small" :show-password="setting.secret" />
+            <el-select v-if="setting.options" v-model="setting.value" size="small" style="width: 100%" :popper-append-to-body="false">
+              <el-option v-for="opt in setting.options" :key="opt.value" :label="opt.label" :value="opt.value" />
+            </el-select>
+            <el-input v-else v-model="setting.value" :placeholder="setting.ph" size="small" :show-password="setting.secret" />
           </div>
           <div></div>
           <div class="tk-admin-config-desc">{{ setting.desc }}</div>
@@ -39,10 +42,16 @@
 </template>
 
 <script>
+import Select from 'element-ui/lib/select'
+import Option from 'element-ui/lib/option'
 import { call, logger, t } from '../../utils'
 import { version } from '../../version'
 
 export default {
+  components: {
+    'el-select': Select,
+    'el-option': Option
+  },
   data () {
     return {
       loading: true,
@@ -103,11 +112,26 @@ export default {
             { key: 'LIMIT_LENGTH', desc: t('ADMIN_CONFIG_ITEM_LIMIT_LENGTH'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}100`, value: '' },
             { key: 'FORBIDDEN_WORDS', desc: t('ADMIN_CONFIG_ITEM_FORBIDDEN_WORDS'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}快递,空包`, value: '' },
             { key: 'BLOCKED_WORDS', desc: t('ADMIN_CONFIG_ITEM_BLOCKED_WORDS'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}快递,空包`, value: '' },
-            { key: 'NOTIFY_SPAM', desc: t('ADMIN_CONFIG_ITEM_NOTIFY_SPAM'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}false`, value: '' },
-            { key: 'TURNSTILE_SITE_KEY', desc: t('ADMIN_CONFIG_ITEM_TURNSTILE_SITE_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}0x4AAAAAAAPLTtpBr_T12345`, value: '' },
-            { key: 'TURNSTILE_SECRET_KEY', desc: t('ADMIN_CONFIG_ITEM_TURNSTILE_SECRET_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}0x4AAAAAAAPLTmBm6gHmOnOqC1iwmU12345`, value: '', secret: true },
-            { key: 'GEETEST_CAPTCHA_ID', desc: t('ADMIN_CONFIG_ITEM_GEETEST_CAPTCHA_ID'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}your_captcha_id`, value: '' },
-            { key: 'GEETEST_CAPTCHA_KEY', desc: t('ADMIN_CONFIG_ITEM_GEETEST_CAPTCHA_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}your_captcha_key`, value: '', secret: true }
+            { key: 'NOTIFY_SPAM', desc: t('ADMIN_CONFIG_ITEM_NOTIFY_SPAM'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}false`, value: '' }
+          ]
+        },
+        {
+          name: t('ADMIN_CONFIG_CATEGORY_CAPTCHA'),
+          items: [
+            { 
+              key: 'CAPTCHA_PROVIDER', 
+              desc: t('ADMIN_CONFIG_ITEM_CAPTCHA_PROVIDER'), 
+              options: [
+                { value: '', label: t('ADMIN_CONFIG_CAPTCHA_NONE') },
+                { value: 'Turnstile', label: t('ADMIN_CONFIG_CAPTCHA_TURNSTILE') },
+                { value: 'Geetest', label: t('ADMIN_CONFIG_CAPTCHA_GEETEST') }
+              ],
+              value: '' 
+            },
+            { key: 'TURNSTILE_SITE_KEY', desc: t('ADMIN_CONFIG_ITEM_TURNSTILE_SITE_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}0x4AAAAAAAPLTtpBr_T12345`, value: '', showIf: (s) => s('CAPTCHA_PROVIDER') === 'Turnstile' },
+            { key: 'TURNSTILE_SECRET_KEY', desc: t('ADMIN_CONFIG_ITEM_TURNSTILE_SECRET_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}0x4AAAAAAAPLTmBm6gHmOnOqC1iwmU12345`, value: '', secret: true, showIf: (s) => s('CAPTCHA_PROVIDER') === 'Turnstile' },
+            { key: 'GEETEST_CAPTCHA_ID', desc: t('ADMIN_CONFIG_ITEM_GEETEST_CAPTCHA_ID'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}your_captcha_id`, value: '', showIf: (s) => s('CAPTCHA_PROVIDER') === 'Geetest' },
+            { key: 'GEETEST_CAPTCHA_KEY', desc: t('ADMIN_CONFIG_ITEM_GEETEST_CAPTCHA_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}your_captcha_key`, value: '', secret: true, showIf: (s) => s('CAPTCHA_PROVIDER') === 'Geetest' }
           ]
         },
         {
@@ -151,6 +175,13 @@ export default {
       const res = await call(this.$tcb, 'GET_CONFIG_FOR_ADMIN')
       if (res.result && !res.result.code) {
         this.serverConfig = res.result.config
+        if (!this.serverConfig.CAPTCHA_PROVIDER) {
+          if (this.serverConfig.TURNSTILE_SITE_KEY) {
+            this.serverConfig.CAPTCHA_PROVIDER = 'Turnstile'
+          } else if (this.serverConfig.GEETEST_CAPTCHA_ID) {
+            this.serverConfig.CAPTCHA_PROVIDER = 'Geetest'
+          }
+        }
         this.resetConfig()
       }
       this.loading = false
@@ -163,6 +194,17 @@ export default {
           }
         }
       }
+    },
+    showSetting (setting) {
+      if (typeof setting.showIf !== 'function') return true
+      const getVal = key => {
+        for (const g of this.settings) {
+          const found = g.items.find(i => i.key === key)
+          if (found) return found.value
+        }
+        return null
+      }
+      return setting.showIf(getVal)
     },
     async saveConfig () {
       this.loading = true
@@ -201,6 +243,7 @@ export default {
 .tk-admin-config-groups {
   overflow-y: auto;
   padding-right: 0.5em;
+  position: relative;
 }
 .tk-admin-config-groups .tk-admin-config-group,
 .tk-admin-config-groups .tk-admin-config-group-title {
@@ -216,6 +259,7 @@ export default {
   align-items: center;
   grid-template-columns: 30% 70%;
   margin-top: 1em;
+  position: relative;
 }
 .tk-admin-config-title {
   text-align: right;
@@ -223,6 +267,12 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.tk-admin-config-input {
+  position: relative;
+}
+.tk-admin-config-input .el-select {
+  position: relative;
 }
 .tk-admin-config-desc {
   margin-top: 0.5em;

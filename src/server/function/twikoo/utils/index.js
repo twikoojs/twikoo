@@ -249,6 +249,23 @@ const fn = {
       logger.warn('获取 QQ 头像失败：', e)
     }
   },
+  async getQQNick (qq, qqApiKey) {
+    try {
+      const qqNum = qq.replace(/@qq.com/ig, '')
+      const headers = {}
+      if (qqApiKey) {
+        headers.Authorization = `Bearer ${qqApiKey}`
+      }
+      const result = await axios.get(`https://v1.nsuuu.com/api/qqname?qq=${qqNum}`, { headers })
+      if (result.data?.code === 200 && result.data?.data?.nick) {
+        return result.data.data.nick
+      }
+      return null
+    } catch (e) {
+      logger.warn('获取 QQ 昵称失败：', e)
+      return null
+    }
+  },
   // 判断是否存在管理员密码
   async getPasswordStatus (config, version) {
     return {

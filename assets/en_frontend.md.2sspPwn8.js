@@ -1,0 +1,1 @@
+import{_ as e,o as t,c as n}from"./chunks/framework.DEuJ2jJS.js";const i=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"en/frontend.md","filePath":"en/frontend.md","lastUpdated":null}'),a={name:"en/frontend.md"};function r(o,s,d,c,f,p){return t(),n("div")}const l=e(a,[["render",r]]);export{i as __pageData,l as default};

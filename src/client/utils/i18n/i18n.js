@@ -515,13 +515,13 @@ export default {
     '환경설정 버튼을 숨깁니다. 암호를 설정하여, 닉네임 입력란에 동일한 암호를 입력해야만 환경설정 버튼이 표시됩니다. 비워두면 버튼을 숨기지 않습니다.'
   ],
   [S.ACI + '_QQ_API_KEY']: [
-    'QQ昵称API密钥，用于获取QQ昵称。前往 https://api.nsuuu.com 获取',
-    'QQ暱稱API密鑰，用於獲取QQ暱稱。前往 https://api.nsuuu.com 獲取',
-    'QQ暱稱API密鑰，用於獲取QQ暱稱。前往 https://api.nsuuu.com 獲取',
-    'QQ nickname API key for fetching QQ nickname. Get it from https://api.nsuuu.com',
-    'QQ laqab API kaliti, QQ laqabni olish uchun. https://api.nsuuu.com dan oling',
-    'QQニックネームAPIキー。QQニックネームの取得に使用します。https://api.nsuuu.com で取得',
-    'QQ 닉네임 API 키. https://api.nsuuu.com 에서 발급'
+    'QQ昵称API密钥，用于获取QQ昵称。前往 https://api.nsuuu.com/admin/key 获取',
+    'QQ暱稱API密鑰，用於獲取QQ暱稱。前往 https://api.nsuuu.com/admin/key 獲取',
+    'QQ暱稱API密鑰，用於獲取QQ暱稱。前往 https://api.nsuuu.com/admin/key 獲取',
+    'QQ nickname API key for fetching QQ nickname. Get it from https://api.nsuuu.com/admin/key',
+    'QQ laqab API kaliti, QQ laqabni olish uchun. https://api.nsuuu.com/admin/key dan oling',
+    'QQニックネームAPIキー。QQニックネームの取得に使用します。https://api.nsuuu.com/admin/key で取得',
+    'QQ 닉네임 API 키. https://api.nsuuu.com/admin/key 에서 발급'
   ],
   [S.ACI + '_HIGHLIGHT']: [
     '启用代码高亮功能。如果您的主题和代码高亮有冲突，请设为 false。默认：true',
@@ -579,13 +579,13 @@ export default {
     '이미지 호스팅 토큰. qcloud은 설정 불필요.'
   ],
   [S.ACI + '_NSFW_API_URL']: [
-    'NSFW 图片检测 API 地址，用于检测上传图片是否包含不当内容。无需附带 /classify 或 /classify-many',
-    'NSFW 圖片檢測 API 地址，用於檢測上傳圖片是否包含不當內容。無需附帶 /classify 或 /classify-many',
-    'NSFW 圖片檢測 API 地址，用於檢測上傳圖片是否包含不當內容。無需附帶 /classify 或 /classify-many',
-    'NSFW image detection API URL for detecting inappropriate content in uploaded images. No need to include /classify or /classify-many',
-    'NSFW расмни аниқлаш API URL. /classify ёки /classify-many ни қўшиш шарт эмас',
-    'NSFW画像検出API URL。/classifyや/classify-manyを含める必要はありません',
-    'NSFW 이미지 감지 API URL. /classify 또는 /classify-many를 포함할 필요 없음'
+    'NSFW 图片检测 API 地址。免费服务：nsfw.xnet.ren、nsfw.qixz.cn，项目：github.com/HG-ha/nsfwpy',
+    'NSFW 圖片檢測 API 地址。免費服務：nsfw.xnet.ren、nsfw.qixz.cn，項目：github.com/HG-ha/nsfwpy',
+    'NSFW 圖片檢測 API 地址。免費服務：nsfw.xnet.ren、nsfw.qixz.cn，項目：github.com/HG-ha/nsfwpy',
+    'NSFW image detection API URL. Free services: nsfw.xnet.ren, nsfw.qixz.cn, project: github.com/HG-ha/nsfwpy',
+    'NSFW расмни аниқлаш API URL. Бепул хизматлар: nsfw.xnet.ren, nsfw.qixz.cn, лойиҳа: github.com/HG-ha/nsfwpy',
+    'NSFW画像検出API URL。無料サービス：nsfw.xnet.ren、nsfw.qixz.cn、プロジェクト：github.com/HG-ha/nsfwpy',
+    'NSFW 이미지 감지 API URL. 무료 서비스: nsfw.xnet.ren, nsfw.qixz.cn, 프로젝트: github.com/HG-ha/nsfwpy'
   ],
   [S.ACI + '_NSFW_THRESHOLD']: [
     'NSFW 检测阈值（0-1），当检测分数高于此值时拒绝上传。默认：0.5',
@@ -705,13 +705,13 @@ export default {
     'Turnstile CAPTCHA Secret Key'
   ],
   [S.ACI + '_GEETEST_CAPTCHA_ID']: [
-    '极验验证码的 Captcha ID。申请地址: https://www.geetest.com',
-    '极验验证码的 Captcha ID。申请地址: https://www.geetest.com',
-    '极验验证码的 Captcha ID。申请地址: https://www.geetest.com',
-    'GeeTest CAPTCHA ID. Get from: https://www.geetest.com',
-    'GeeTest CAPTCHA ID. Get from: https://www.geetest.com',
-    'GeeTest CAPTCHA ID. 参照: https://www.geetest.com',
-    'GeeTest CAPTCHA ID. 발급처: https://www.geetest.com'
+    '极验验证码的 Captcha ID。申请地址: https://console.geetest.com/sensbot/management',
+    '极验验证码的 Captcha ID。申请地址: https://console.geetest.com/sensbot/management',
+    '极验验证码的 Captcha ID。申请地址: https://console.geetest.com/sensbot/management',
+    'GeeTest CAPTCHA ID. Get from: https://console.geetest.com/sensbot/management',
+    'GeeTest CAPTCHA ID. Get from: https://console.geetest.com/sensbot/management',
+    'GeeTest CAPTCHA ID. 参照: https://console.geetest.com/sensbot/management',
+    'GeeTest CAPTCHA ID. 발급처: https://console.geetest.com/sensbot/management'
   ],
   [S.ACI + '_GEETEST_CAPTCHA_KEY']: [
     '极验验证码的 Captcha Key',

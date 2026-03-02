@@ -267,15 +267,14 @@ export default {
           pid: this.pid ? this.pid : this.replyId,
           rid: this.replyId
         }
-        if (this.config.TURNSTILE_SITE_KEY) {
-          comment.turnstileToken = await this.getTurnstileToken()
-        }
         if (this.config.GEETEST_CAPTCHA_ID) {
           const geeTestResult = await this.getGeeTestToken()
           comment.geeTestLotNumber = geeTestResult.geeTestLotNumber
           comment.geeTestCaptchaOutput = geeTestResult.geeTestCaptchaOutput
           comment.geeTestPassToken = geeTestResult.geeTestPassToken
           comment.geeTestGenTime = geeTestResult.geeTestGenTime
+        } else if (this.config.TURNSTILE_SITE_KEY) {
+          comment.turnstileToken = await this.getTurnstileToken()
         }
         const sendResult = await call(this.$tcb, 'COMMENT_SUBMIT', comment)
         if (sendResult && sendResult.result && sendResult.result.id) {

@@ -26,6 +26,7 @@ const {
   isQQ,
   addQQMailSuffix,
   getQQAvatar,
+  getQQNick,
   getPasswordStatus,
   preCheckSpam,
   checkTurnstileCaptcha,
@@ -137,6 +138,9 @@ exports.main = async (event, context) => {
         break
       case 'UPLOAD_IMAGE': // >= 1.5.0
         res = await uploadImage(event, config)
+        break
+      case 'GET_QQ_NICK': // >= 1.7.0
+        res = await qqNickGet(event)
         break
       case 'COMMENT_EXPORT_FOR_ADMIN': // >= 1.6.13
         res = await commentExportForAdmin(event)
@@ -714,14 +718,10 @@ async function limitFilter () {
 }
 
 async function checkCaptcha (comment) {
-  if (config.TURNSTILE_SITE_KEY && config.TURNSTILE_SECRET_KEY) {
-    await checkTurnstileCaptcha({
-      ip: auth.getClientIP(),
-      turnstileToken: comment.turnstileToken,
-      turnstileTokenSecretKey: config.TURNSTILE_SECRET_KEY
-    })
-  }
-  if (config.GEETEST_CAPTCHA_ID && config.GEETEST_CAPTCHA_KEY) {
+  if (config.GEETEST_CAPTCHA_ID) {
+    if (!config.GEETEST_CAPTCHA_KEY) {
+      throw new Error('极验验证码配置不完整，缺少 GEETEST_CAPTCHA_KEY')
+    }
     await checkGeeTestCaptcha({
       geeTestCaptchaId: config.GEETEST_CAPTCHA_ID,
       geeTestCaptchaKey: config.GEETEST_CAPTCHA_KEY,
@@ -729,6 +729,15 @@ async function checkCaptcha (comment) {
       geeTestCaptchaOutput: comment.geeTestCaptchaOutput,
       geeTestPassToken: comment.geeTestPassToken,
       geeTestGenTime: comment.geeTestGenTime
+    })
+  } else if (config.TURNSTILE_SITE_KEY) {
+    if (!config.TURNSTILE_SECRET_KEY) {
+      throw new Error('Turnstile 验证码配置不完整，缺少 TURNSTILE_SECRET_KEY')
+    }
+    await checkTurnstileCaptcha({
+      ip: auth.getClientIP(),
+      turnstileToken: comment.turnstileToken,
+      turnstileTokenSecretKey: config.TURNSTILE_SECRET_KEY
     })
   }
 }
@@ -875,6 +884,21 @@ async function getRecentComments (event) {
   } catch (e) {
     res.message = e.message
     return res
+  }
+  return res
+}
+
+// 获取 QQ 昵称
+async function qqNickGet (event) {
+  const res = {}
+  try {
+    validate(event, ['qq'])
+    const nick = await getQQNick(event.qq, config.QQ_API_KEY)
+    res.code = RES_CODE.SUCCESS
+    res.nick = nick
+  } catch (e) {
+    res.code = RES_CODE.FAIL
+    res.message = e.message
   }
   return res
 }

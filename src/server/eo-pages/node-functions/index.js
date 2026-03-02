@@ -30,6 +30,7 @@ import {
   getPasswordStatus,
   preCheckSpam,
   checkTurnstileCaptcha,
+  checkGeeTestCaptcha,
   getConfig,
   getConfigForAdmin,
   validate
@@ -817,7 +818,22 @@ async function limitFilter (db, ip) {
 }
 
 async function checkCaptcha (event, ip) {
-  if (config.TURNSTILE_SITE_KEY && config.TURNSTILE_SECRET_KEY) {
+  if (config.GEETEST_CAPTCHA_ID) {
+    if (!config.GEETEST_CAPTCHA_KEY) {
+      throw new Error('极验验证码配置不完整，缺少 GEETEST_CAPTCHA_KEY')
+    }
+    await checkGeeTestCaptcha({
+      geeTestCaptchaId: config.GEETEST_CAPTCHA_ID,
+      geeTestCaptchaKey: config.GEETEST_CAPTCHA_KEY,
+      geeTestLotNumber: event.geeTestLotNumber,
+      geeTestCaptchaOutput: event.geeTestCaptchaOutput,
+      geeTestPassToken: event.geeTestPassToken,
+      geeTestGenTime: event.geeTestGenTime
+    })
+  } else if (config.TURNSTILE_SITE_KEY) {
+    if (!config.TURNSTILE_SECRET_KEY) {
+      throw new Error('Turnstile 验证码配置不完整，缺少 TURNSTILE_SECRET_KEY')
+    }
     await checkTurnstileCaptcha({
       ip: ip,
       turnstileToken: event.turnstileToken,

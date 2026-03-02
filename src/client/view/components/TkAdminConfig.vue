@@ -11,9 +11,9 @@
         <div class="tk-admin-config-item" v-for="setting in settingGroup.items" :key="setting.key" v-show="showSetting(setting)">
           <div class="tk-admin-config-title" :title="setting.key">{{ setting.key }}</div>
           <div class="tk-admin-config-input">
-            <el-select v-if="setting.options" v-model="setting.value" size="small" style="width: 100%" :popper-append-to-body="false">
-              <el-option v-for="opt in setting.options" :key="opt.value" :label="opt.label" :value="opt.value" />
-            </el-select>
+            <select v-if="setting.options" v-model="setting.value" class="tk-admin-config-select">
+              <option v-for="opt in setting.options" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+            </select>
             <el-input v-else v-model="setting.value" :placeholder="setting.ph" size="small" :show-password="setting.secret" />
           </div>
           <div></div>
@@ -42,16 +42,10 @@
 </template>
 
 <script>
-import Select from 'element-ui/lib/select'
-import Option from 'element-ui/lib/option'
-import { call, logger, t } from '../../utils'
-import { version } from '../../version'
+import { call, logger, t } from '../../utils';
+import { version } from '../../version';
 
 export default {
-  components: {
-    'el-select': Select,
-    'el-option': Option
-  },
   data () {
     return {
       loading: true,
@@ -273,8 +267,34 @@ export default {
 .tk-admin-config-input {
   position: relative;
 }
-.tk-admin-config-input .el-select {
-  position: relative;
+.tk-admin-config-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.762L10.825 4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  border-radius: 4px;
+  border: 1px solid rgba(144, 147, 153, 0.31);
+  box-sizing: border-box;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-block;
+  font-size: inherit;
+  height: 32px;
+  line-height: 32px;
+  outline: none;
+  padding: 0 30px 0 10px;
+  transition: border-color .2s cubic-bezier(.645,.045,.355,1);
+  width: 100%;
+}
+.tk-admin-config-select:focus {
+  border-color: rgba(255, 255, 255, 0.6);
+}
+.tk-admin-config-select option {
+  color: initial;
+  background: #333;
 }
 .tk-admin-config-desc {
   margin-top: 0.5em;

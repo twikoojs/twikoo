@@ -818,10 +818,14 @@ async function limitFilter (db, ip) {
 }
 
 async function checkCaptcha (event, ip) {
-  if (config.GEETEST_CAPTCHA_ID) {
-    if (!config.GEETEST_CAPTCHA_KEY) {
-      throw new Error('极验验证码配置不完整，缺少 GEETEST_CAPTCHA_KEY')
-    }
+  const provider = config.CAPTCHA_PROVIDER
+  if ((!provider || provider === 'Turnstile') && config.TURNSTILE_SITE_KEY && config.TURNSTILE_SECRET_KEY) {
+    await checkTurnstileCaptcha({
+      ip: ip,
+      turnstileToken: event.turnstileToken,
+      turnstileTokenSecretKey: config.TURNSTILE_SECRET_KEY
+    })
+  } else if (provider === 'Geetest' && config.GEETEST_CAPTCHA_ID && config.GEETEST_CAPTCHA_KEY) {
     await checkGeeTestCaptcha({
       geeTestCaptchaId: config.GEETEST_CAPTCHA_ID,
       geeTestCaptchaKey: config.GEETEST_CAPTCHA_KEY,
@@ -829,15 +833,6 @@ async function checkCaptcha (event, ip) {
       geeTestCaptchaOutput: event.geeTestCaptchaOutput,
       geeTestPassToken: event.geeTestPassToken,
       geeTestGenTime: event.geeTestGenTime
-    })
-  } else if (config.TURNSTILE_SITE_KEY) {
-    if (!config.TURNSTILE_SECRET_KEY) {
-      throw new Error('Turnstile 验证码配置不完整，缺少 TURNSTILE_SECRET_KEY')
-    }
-    await checkTurnstileCaptcha({
-      ip: ip,
-      turnstileToken: event.turnstileToken,
-      turnstileTokenSecretKey: config.TURNSTILE_SECRET_KEY
     })
   }
 }

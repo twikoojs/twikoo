@@ -8,10 +8,13 @@
     <div class="tk-admin-config-groups">
       <details class="tk-admin-config-group" v-for="settingGroup in settings" :key="settingGroup.name">
         <summary class="tk-admin-config-group-title">{{ settingGroup.name }}</summary>
-        <div class="tk-admin-config-item" v-for="setting in settingGroup.items" :key="setting.key">
+        <div class="tk-admin-config-item" v-for="setting in settingGroup.items" :key="setting.key" v-show="showSetting(setting)">
           <div class="tk-admin-config-title" :title="setting.key">{{ setting.key }}</div>
           <div class="tk-admin-config-input">
-            <el-input v-model="setting.value" :placeholder="setting.ph" size="small" :show-password="setting.secret" />
+            <select v-if="setting.options" v-model="setting.value" class="tk-admin-config-select">
+              <option v-for="opt in setting.options" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+            </select>
+            <el-input v-else v-model="setting.value" :placeholder="setting.ph" size="small" :show-password="setting.secret" />
           </div>
           <div></div>
           <div class="tk-admin-config-desc">{{ setting.desc }}</div>
@@ -39,8 +42,8 @@
 </template>
 
 <script>
-import { call, logger, t } from '../../utils'
-import { version } from '../../version'
+import { call, logger, t } from '../../utils';
+import { version } from '../../version';
 
 export default {
   data () {
@@ -103,11 +106,26 @@ export default {
             { key: 'LIMIT_LENGTH', desc: t('ADMIN_CONFIG_ITEM_LIMIT_LENGTH'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}100`, value: '' },
             { key: 'FORBIDDEN_WORDS', desc: t('ADMIN_CONFIG_ITEM_FORBIDDEN_WORDS'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}快递,空包`, value: '' },
             { key: 'BLOCKED_WORDS', desc: t('ADMIN_CONFIG_ITEM_BLOCKED_WORDS'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}快递,空包`, value: '' },
-            { key: 'NOTIFY_SPAM', desc: t('ADMIN_CONFIG_ITEM_NOTIFY_SPAM'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}false`, value: '' },
-            { key: 'TURNSTILE_SITE_KEY', desc: t('ADMIN_CONFIG_ITEM_TURNSTILE_SITE_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}0x4AAAAAAAPLTtpBr_T12345`, value: '' },
-            { key: 'TURNSTILE_SECRET_KEY', desc: t('ADMIN_CONFIG_ITEM_TURNSTILE_SECRET_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}0x4AAAAAAAPLTmBm6gHmOnOqC1iwmU12345`, value: '', secret: true },
-            { key: 'GEETEST_CAPTCHA_ID', desc: t('ADMIN_CONFIG_ITEM_GEETEST_CAPTCHA_ID'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}your_captcha_id`, value: '' },
-            { key: 'GEETEST_CAPTCHA_KEY', desc: t('ADMIN_CONFIG_ITEM_GEETEST_CAPTCHA_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}your_captcha_key`, value: '', secret: true }
+            { key: 'NOTIFY_SPAM', desc: t('ADMIN_CONFIG_ITEM_NOTIFY_SPAM'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}false`, value: '' }
+          ]
+        },
+        {
+          name: t('ADMIN_CONFIG_CATEGORY_CAPTCHA'),
+          items: [
+            { 
+              key: 'CAPTCHA_PROVIDER', 
+              desc: t('ADMIN_CONFIG_ITEM_CAPTCHA_PROVIDER'), 
+              options: [
+                { value: '', label: t('ADMIN_CONFIG_CAPTCHA_NONE') },
+                { value: 'Turnstile', label: t('ADMIN_CONFIG_CAPTCHA_TURNSTILE') },
+                { value: 'Geetest', label: t('ADMIN_CONFIG_CAPTCHA_GEETEST') }
+              ],
+              value: '' 
+            },
+            { key: 'TURNSTILE_SITE_KEY', desc: t('ADMIN_CONFIG_ITEM_TURNSTILE_SITE_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}0x4AAAAAAAPLTtpBr_T12345`, value: '', showIf: (s) => s('CAPTCHA_PROVIDER') === 'Turnstile' },
+            { key: 'TURNSTILE_SECRET_KEY', desc: t('ADMIN_CONFIG_ITEM_TURNSTILE_SECRET_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}0x4AAAAAAAPLTmBm6gHmOnOqC1iwmU12345`, value: '', secret: true, showIf: (s) => s('CAPTCHA_PROVIDER') === 'Turnstile' },
+            { key: 'GEETEST_CAPTCHA_ID', desc: t('ADMIN_CONFIG_ITEM_GEETEST_CAPTCHA_ID'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}your_captcha_id`, value: '', showIf: (s) => s('CAPTCHA_PROVIDER') === 'Geetest' },
+            { key: 'GEETEST_CAPTCHA_KEY', desc: t('ADMIN_CONFIG_ITEM_GEETEST_CAPTCHA_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}your_captcha_key`, value: '', secret: true, showIf: (s) => s('CAPTCHA_PROVIDER') === 'Geetest' }
           ]
         },
         {
@@ -151,6 +169,13 @@ export default {
       const res = await call(this.$tcb, 'GET_CONFIG_FOR_ADMIN')
       if (res.result && !res.result.code) {
         this.serverConfig = res.result.config
+        if (typeof this.serverConfig.CAPTCHA_PROVIDER === 'undefined') {
+          if (this.serverConfig.TURNSTILE_SITE_KEY) {
+            this.serverConfig.CAPTCHA_PROVIDER = 'Turnstile'
+          } else if (this.serverConfig.GEETEST_CAPTCHA_ID) {
+            this.serverConfig.CAPTCHA_PROVIDER = 'Geetest'
+          }
+        }
         this.resetConfig()
       }
       this.loading = false
@@ -158,11 +183,24 @@ export default {
     resetConfig () {
       for (const settingGroup of this.settings) {
         for (const setting of settingGroup.items) {
-          if (this.serverConfig[setting.key]) {
+          if (this.serverConfig[setting.key] !== undefined) {
             setting.value = this.serverConfig[setting.key]
+          } else {
+            setting.value = ''
           }
         }
       }
+    },
+    showSetting (setting) {
+      if (typeof setting.showIf !== 'function') return true
+      const getVal = key => {
+        for (const g of this.settings) {
+          const found = g.items.find(i => i.key === key)
+          if (found) return found.value
+        }
+        return null
+      }
+      return setting.showIf(getVal)
     },
     async saveConfig () {
       this.loading = true
@@ -201,6 +239,7 @@ export default {
 .tk-admin-config-groups {
   overflow-y: auto;
   padding-right: 0.5em;
+  position: relative;
 }
 .tk-admin-config-groups .tk-admin-config-group,
 .tk-admin-config-groups .tk-admin-config-group-title {
@@ -216,6 +255,7 @@ export default {
   align-items: center;
   grid-template-columns: 30% 70%;
   margin-top: 1em;
+  position: relative;
 }
 .tk-admin-config-title {
   text-align: right;
@@ -223,6 +263,38 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.tk-admin-config-input {
+  position: relative;
+}
+.tk-admin-config-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.762L10.825 4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  border-radius: 4px;
+  border: 1px solid rgba(144, 147, 153, 0.31);
+  box-sizing: border-box;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-block;
+  font-size: inherit;
+  height: 32px;
+  line-height: 32px;
+  outline: none;
+  padding: 0 30px 0 10px;
+  transition: border-color .2s cubic-bezier(.645,.045,.355,1);
+  width: 100%;
+}
+.tk-admin-config-select:focus {
+  border-color: rgba(255, 255, 255, 0.6);
+}
+.tk-admin-config-select option {
+  color: initial;
+  background: #333;
 }
 .tk-admin-config-desc {
   margin-top: 0.5em;

@@ -68,8 +68,8 @@ function getConfig ({ extractCss }) {
         watch: true
       }],
       port: 9820,
-      host: 'localhost',
-      open: true,
+      host: '0.0.0.0',
+      open: false,
       hot: true,
       compress: true
     },

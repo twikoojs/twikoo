@@ -352,6 +352,42 @@ export default {
     'スパム対策',
     '스팸 관리'
   ],
+  [S.ACC + '_CAPTCHA']: [
+    '人机验证',
+    '人機驗證',
+    '人機驗證',
+    'CAPTCHA',
+    'CAPTCHA',
+    'CAPTCHA',
+    'CAPTCHA'
+  ],
+  ADMIN_CONFIG_CAPTCHA_NONE: [
+    '无',
+    '無',
+    '無',
+    'None',
+    'Йўқ',
+    'なし',
+    '없음'
+  ],
+  ADMIN_CONFIG_CAPTCHA_TURNSTILE: [
+    'Cloudflare Turnstile',
+    'Cloudflare Turnstile',
+    'Cloudflare Turnstile',
+    'Cloudflare Turnstile',
+    'Cloudflare Turnstile',
+    'Cloudflare Turnstile',
+    'Cloudflare Turnstile'
+  ],
+  ADMIN_CONFIG_CAPTCHA_GEETEST: [
+    '极验 Geetest',
+    '極驗 Geetest',
+    '極驗 Geetest',
+    'GeeTest',
+    'GeeTest',
+    'GeeTest',
+    'GeeTest'
+  ],
   ADMIN_CONFIG_EMAIL_TEST: [
     '邮件通知测试',
     '郵件通知測試',
@@ -685,6 +721,15 @@ export default {
     'Спам шарҳлар учун билдиришномалар. Стандарт: рост.',
     'スパムコメントの通知を送信するかどうか。デフォルト：true',
     '스팸 댓글 알림 발송 여부. 기본값: true.'
+  ],
+  [S.ACI + '_CAPTCHA_PROVIDER']: [
+    '人机验证码提供商',
+    '人機驗證碼提供商',
+    '人機驗證碼提供商',
+    'CAPTCHA Provider',
+    'CAPTCHA Provider',
+    'CAPTCHAプロバイダー',
+    '캡차 제공자'
   ],
   [S.ACI + '_TURNSTILE_SITE_KEY']: [
     'Turnstile 验证码的站点密钥。申请地址: https://dash.cloudflare.com/?to=/:account/turnstile',

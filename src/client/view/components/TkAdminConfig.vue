@@ -42,8 +42,8 @@
 </template>
 
 <script>
-import { call, logger, t } from '../../utils';
-import { version } from '../../version';
+import { call, logger, t } from '../../utils'
+import { version } from '../../version'
 
 export default {
   data () {
@@ -112,15 +112,15 @@ export default {
         {
           name: t('ADMIN_CONFIG_CATEGORY_CAPTCHA'),
           items: [
-            { 
-              key: 'CAPTCHA_PROVIDER', 
-              desc: t('ADMIN_CONFIG_ITEM_CAPTCHA_PROVIDER'), 
+            {
+              key: 'CAPTCHA_PROVIDER',
+              desc: t('ADMIN_CONFIG_ITEM_CAPTCHA_PROVIDER'),
               options: [
                 { value: '', label: t('ADMIN_CONFIG_CAPTCHA_NONE') },
                 { value: 'Turnstile', label: t('ADMIN_CONFIG_CAPTCHA_TURNSTILE') },
                 { value: 'Geetest', label: t('ADMIN_CONFIG_CAPTCHA_GEETEST') }
               ],
-              value: '' 
+              value: ''
             },
             { key: 'TURNSTILE_SITE_KEY', desc: t('ADMIN_CONFIG_ITEM_TURNSTILE_SITE_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}0x4AAAAAAAPLTtpBr_T12345`, value: '', showIf: (s) => s('CAPTCHA_PROVIDER') === 'Turnstile' },
             { key: 'TURNSTILE_SECRET_KEY', desc: t('ADMIN_CONFIG_ITEM_TURNSTILE_SECRET_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}0x4AAAAAAAPLTmBm6gHmOnOqC1iwmU12345`, value: '', secret: true, showIf: (s) => s('CAPTCHA_PROVIDER') === 'Turnstile' },

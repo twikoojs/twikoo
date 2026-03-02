@@ -1,6 +1,6 @@
 {
   "name": "twikoo-edgeone-pages",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Twikoo comment system backend for Tencent EdgeOne Pages",
   "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
   "license": "MIT",
@@ -27,7 +27,7 @@
     "@imaegoo/node-ip2region": "^2.1.1",
     "bowser": "^2.13.1",
     "pako": "^2.1.0",
-    "twikoo-func": "^1.7.0",
+    "twikoo-func": "^1.7.1",
     "uuid": "^8.3.2",
     "xss": "^1.0.15"
   }

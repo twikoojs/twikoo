@@ -367,6 +367,7 @@ const fn = {
       DEFAULT_GRAVATAR: config.DEFAULT_GRAVATAR,
       SHOW_IMAGE: config.SHOW_IMAGE || 'true',
       IMAGE_CDN: config.IMAGE_CDN,
+      IMAGE_SERVICE: config.IMAGE_SERVICE,
       LIGHTBOX: config.LIGHTBOX || 'false',
       SHOW_EMOTION: config.SHOW_EMOTION || 'true',
       EMOTION_CDN: config.EMOTION_CDN,

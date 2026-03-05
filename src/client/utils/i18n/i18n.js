@@ -93,13 +93,15 @@ const imageBedServices = [
   'lskypro',
   'piclist',
   'easyimage',
-  'chevereto'
+  'chevereto',
+  'S3 / R2 / MinIO'
 ].map(s => `"${s}"`)
 
 const customImageBedServices = [
   'lskypro',
   'piclist',
-  'easyimage'
+  'easyimage',
+  's3'
 ].map(s => `"${s}"`)
 
 const defaultGravatar = [
@@ -361,6 +363,24 @@ export default {
     'CAPTCHA',
     'CAPTCHA'
   ],
+  ADMIN_CONFIG_IMAGE_CDN_NONE: [
+    '无（不启用图片上传）',
+    '無（不啟用圖片上傳）',
+    '無（不啟用圖片上傳）',
+    'None (disable image upload)',
+    'Йўқ (расм юклашни ўчириш)',
+    'なし（画像アップロードを無効にする）',
+    '없음 (이미지 업로드 비활성화)'
+  ],
+  ADMIN_CONFIG_IMAGE_SERVICE_NONE: [
+    '禁用图片上传',
+    '禁用圖片上傳',
+    '禁用圖片上傳',
+    'Disable image uploading',
+    'Расм юклашни ўчириш',
+    '画像のアップロードを無効にする',
+    '이미지 업로드 비활성화'
+  ],
   ADMIN_CONFIG_CAPTCHA_NONE: [
     '无',
     '無',
@@ -586,6 +606,24 @@ export default {
     `コード・ハイライト・プラグイン。オプション: ${highlightPlugins.join(',')}, それぞれ: コード言語の表示、コード・コピー・ボタンの表示。複数のオプションを同時に設定できますが、コード・ハイライト・プラグインを追加したくない場合は、noneに設定してください。`,
     `코드 하이라이트 추가 기능. 선택 가능: ${highlightPlugins.join(', ')}. (코드 언어 표시, 복사 버튼) 여러 기능을 동시에 설정할 수 있으며, 추가하지 않으려면 none으로 설정하세요. 기본값: none.`
   ],
+  [S.ACI + '_IMAGE_SERVICE']: [
+    `插入图片所使用的图床，目前支持：${imageBedServices.join('、')}`,
+    `插入圖片所使用的圖床，目前支持：${imageBedServices.join('、')}`,
+    `插入圖片所使用的圖床，目前支援：${imageBedServices.join('、')}`,
+    `The image bed for image uploading. Select from: ${imageBedServices.join(', ')}`,
+    `Расм юклаш учун расм тўшаги. Қуйидагилардан танланг: ${imageBedServices.join(', ')}`,
+    `画像のアップロードに使用する画像ホスティングサービス。次のうちから選択してください：${imageBedServices.join('、')}`,
+    `댓글 이미지 업로드 기능에 사용될 호스팅 서비스. 사용 가능 목록: ${imageBedServices.join(', ')}`
+  ],
+  [S.ACI + '_IMAGE_SERVICE_NONE']: [
+    '禁用图片上传',
+    '禁用圖片上傳',
+    '禁用圖片上傳',
+    'Disable image uploading',
+    'Расм юклашни ўчириш',
+    '画像のアップロードを無効にする',
+    '이미지 업로드 비활성화'
+  ],
   [S.ACI + '_IMAGE_CDN']: [
     `插入图片所使用的图床，目前支持：${imageBedServices.join('、')}`,
     `插入圖片所使用的圖床，目前支持：${imageBedServices.join('、')}`,
@@ -631,6 +669,69 @@ export default {
     'NSFW аниқлаш чегараси (0-1). Баҳо бу қийматдан ошса юклаш рад қилинади. Стандарт: 0.5',
     'NSFW検出しきい値（0-1）。スコアがこの値を超えるとアップロードが拒否されます。デフォルト：0.5',
     'NSFW 감지 임계값 (0-1). 점수가 이 값을 초과하면 업로드가 거부됩니다. 기본값: 0.5'
+  ],
+  [S.ACI + '_S3_REGION']: [
+    'S3 存储区域，例如 us-east-1。使用兼容 S3 的服务（如 Cloudflare R2、MinIO）时可填任意值',
+    'S3 儲存區域，例如 us-east-1。使用相容 S3 的服務（如 Cloudflare R2、MinIO）時可填任意值',
+    'S3 儲存區域，例如 us-east-1。使用相容 S3 的服務（如 Cloudflare R2、MinIO）時可填任意值',
+    'S3 region, e.g. us-east-1. Can be any value when using S3-compatible services (e.g. Cloudflare R2, MinIO)',
+    'S3 минтақаси, масалан us-east-1. S3 мос хизматлар учун (Cloudflare R2, MinIO) ихтиёрий қийматни киритиш мумкин',
+    'S3リージョン（例：us-east-1）。Cloudflare R2やMinIOなどのS3互換サービスを使用する場合は任意の値を入力できます',
+    'S3 리전 (예: us-east-1). Cloudflare R2, MinIO 등 S3 호환 서비스 사용 시 임의 값 입력 가능'
+  ],
+  [S.ACI + '_S3_BUCKET']: [
+    'S3 存储桶名称',
+    'S3 儲存桶名稱',
+    'S3 儲存桶名稱',
+    'S3 bucket name',
+    'S3 bucket nomi',
+    'S3バケット名',
+    'S3 버킷 이름'
+  ],
+  [S.ACI + '_S3_ACCESS_KEY_ID']: [
+    'S3 Access Key ID',
+    'S3 Access Key ID',
+    'S3 Access Key ID',
+    'S3 Access Key ID',
+    'S3 Access Key ID',
+    'S3 Access Key ID',
+    'S3 Access Key ID'
+  ],
+  [S.ACI + '_S3_SECRET_ACCESS_KEY']: [
+    'S3 Secret Access Key',
+    'S3 Secret Access Key',
+    'S3 Secret Access Key',
+    'S3 Secret Access Key',
+    'S3 Secret Access Key',
+    'S3 Secret Access Key',
+    'S3 Secret Access Key'
+  ],
+  [S.ACI + '_S3_ENDPOINT']: [
+    'S3 自定义 Endpoint，使用 Cloudflare R2、MinIO 等兼容 S3 的服务时填写',
+    'S3 自訂 Endpoint，使用 Cloudflare R2、MinIO 等相容 S3 的服務時填寫',
+    'S3 自訂 Endpoint，使用 Cloudflare R2、MinIO 等相容 S3 的服務時填寫',
+    'S3 custom endpoint. Required when using S3-compatible services like Cloudflare R2 or MinIO',
+    'S3 maxsus endpoint. Cloudflare R2 yoki MinIO kabi S3 mos xizmatlardan foydalanishda talab qilinadi',
+    'S3カスタムエンドポイント。Cloudflare R2やMinIOなどのS3互換サービスを使用する場合に必要です',
+    'S3 커스텀 엔드포인트. Cloudflare R2, MinIO 등 S3 호환 서비스 사용 시 필요'
+  ],
+  [S.ACI + '_S3_CDN_URL']: [
+    'S3 图片访问域名（CDN 域名），留空则使用默认 S3/Endpoint URL',
+    'S3 圖片存取網域（CDN 網域），留空則使用預設 S3/Endpoint URL',
+    'S3 圖片存取網域（CDN 網域），留空則使用預設 S3/Endpoint URL',
+    'S3 image access domain (CDN domain). Leave empty to use default S3/Endpoint URL',
+    'S3 rasm kirish domeni (CDN domeni). Standart S3/Endpoint URL dan foydalanish uchun bo\'sh qoldiring',
+    'S3画像アクセスドメイン（CDNドメイン）。空白の場合はデフォルトのS3/Endpoint URLを使用します',
+    'S3 이미지 접근 도메인 (CDN 도메인). 비워두면 기본 S3/Endpoint URL 사용'
+  ],
+  [S.ACI + '_S3_PATH_PREFIX']: [
+    'S3 图片存储路径前缀，例如 images/twikoo，留空则存储在根目录',
+    'S3 圖片儲存路徑前綴，例如 images/twikoo，留空則儲存在根目錄',
+    'S3 圖片儲存路徑前綴，例如 images/twikoo，留空則儲存在根目錄',
+    'S3 image storage path prefix, e.g. images/twikoo. Leave empty to store in root',
+    'S3 rasm saqlash yo\'l prefiksi, masalan images/twikoo. Ildizda saqlash uchun bo\'sh qoldiring',
+    'S3画像保存パスプレフィックス（例：images/twikoo）。空白の場合はルートに保存されます',
+    'S3 이미지 저장 경로 접두사 (예: images/twikoo). 비워두면 루트에 저장'
   ],
   [S.ACI + '_LIGHTBOX']: [
     '使用简易图片点击放大效果。默认：false',

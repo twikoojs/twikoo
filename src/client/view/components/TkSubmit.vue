@@ -52,13 +52,13 @@
 
 <script>
 import iconMarkdown from '@fortawesome/fontawesome-free/svgs/brands/markdown.svg'
-import iconEmotion from '@fortawesome/fontawesome-free/svgs/regular/laugh.svg'
 import iconImage from '@fortawesome/fontawesome-free/svgs/regular/image.svg'
+import iconEmotion from '@fortawesome/fontawesome-free/svgs/regular/laugh.svg'
 import Clickoutside from 'element-ui/src/utils/clickoutside'
+import OwO from '../../lib/owo'
+import { blobToDataURL, call, getHref, getUrl, getUserAgent, initMarkedOwo, initOwoEmotions, logger, marked, renderCode, renderLinks, renderMath, t } from '../../utils'
 import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
-import { marked, call, logger, renderLinks, renderMath, renderCode, initOwoEmotions, initMarkedOwo, t, getUrl, getHref, blobToDataURL, getUserAgent } from '../../utils'
-import OwO from '../../lib/owo'
 
 const imageTypes = [
   'apng',
@@ -182,7 +182,13 @@ export default {
                 window.turnstile.remove(widgetId)
               }, 5000)
             },
-            'error-callback': reject
+            'error-callback': reject,
+            'expired-callback': () => {
+              reject(new Error('验证码已过期，请重试'))
+            },
+            'timeout-callback': () => {
+              reject(new Error('验证码超时，请重试'))
+            }
           })
         })
       })
@@ -222,6 +228,8 @@ export default {
               })
             }).onError((e) => {
               reject(e)
+            }).onClose(() => {
+              reject(new Error('验证已取消'))
             })
           })
         })

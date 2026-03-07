@@ -765,8 +765,7 @@ async function checkCaptcha (comment, request) {
       turnstileToken: comment.turnstileToken,
       turnstileTokenSecretKey: config.TURNSTILE_SECRET_KEY
     })
-  }
-  if ((!provider || provider === 'Geetest') && config.GEETEST_CAPTCHA_ID && config.GEETEST_CAPTCHA_KEY) {
+  } else if ((!provider || provider === 'Geetest') && config.GEETEST_CAPTCHA_ID && config.GEETEST_CAPTCHA_KEY) {
     await checkGeeTestCaptcha({
       geeTestCaptchaId: config.GEETEST_CAPTCHA_ID,
       geeTestCaptchaKey: config.GEETEST_CAPTCHA_KEY,
@@ -774,15 +773,6 @@ async function checkCaptcha (comment, request) {
       geeTestCaptchaOutput: comment.geeTestCaptchaOutput,
       geeTestPassToken: comment.geeTestPassToken,
       geeTestGenTime: comment.geeTestGenTime
-    })
-  } else if (config.TURNSTILE_SITE_KEY) {
-    if (!config.TURNSTILE_SECRET_KEY) {
-      throw new Error('Turnstile 验证码配置不完整，缺少 TURNSTILE_SECRET_KEY')
-    }
-    await checkTurnstileCaptcha({
-      ip: getIp(request),
-      turnstileToken: comment.turnstileToken,
-      turnstileTokenSecretKey: config.TURNSTILE_SECRET_KEY
     })
   }
 }

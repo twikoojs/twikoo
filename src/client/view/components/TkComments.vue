@@ -39,12 +39,13 @@
 </template>
 
 <script>
-import { call, getUrl, t } from '../../utils'
-import TkSubmit from './TkSubmit.vue'
-import TkComment from './TkComment.vue'
 import iconSetting from '@fortawesome/fontawesome-free/svgs/solid/cog.svg'
 import iconRefresh from '@fortawesome/fontawesome-free/svgs/solid/sync.svg'
 import Vue from 'vue'
+import { call, getUrl, t } from '../../utils'
+import { app } from '../index'
+import TkComment from './TkComment.vue'
+import TkSubmit from './TkSubmit.vue'
 
 export default {
   components: {
@@ -129,6 +130,8 @@ export default {
   mounted () {
     this.initConfig()
     this.initComments()
+    // Re-fetch config when admin saves settings (e.g. captcha provider change)
+    app.$on('configUpdated', this.initConfig)
   }
 }
 </script>

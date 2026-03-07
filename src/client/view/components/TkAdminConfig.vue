@@ -42,8 +42,9 @@
 </template>
 
 <script>
-import { call, logger, t } from '../../utils'
-import { version } from '../../version'
+import { call, logger, t } from '../../utils';
+import { version } from '../../version';
+import { app } from '../index';
 
 export default {
   data () {
@@ -218,6 +219,8 @@ export default {
       logger.log('保存配置', config)
       await call(this.$tcb, 'SET_CONFIG', { config })
       await this.readConfig()
+      // Notify other components (e.g. TkComments) to refresh config
+      app.$emit('configUpdated')
       this.message = '保存成功'
       this.loading = false
     },

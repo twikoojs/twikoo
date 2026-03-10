@@ -42,9 +42,9 @@
 </template>
 
 <script>
-import { call, logger, t } from '../../utils';
-import { version } from '../../version';
-import { app } from '../index';
+import { call, logger, t } from '../../utils'
+import { version } from '../../version'
+import { app } from '../index'
 
 export default {
   data () {
@@ -65,6 +65,8 @@ export default {
             { key: 'GRAVATAR_CDN', desc: t('ADMIN_CONFIG_ITEM_GRAVATAR_CDN'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}sdn.geekzu.org`, value: '' },
             { key: 'DEFAULT_GRAVATAR', desc: t('ADMIN_CONFIG_ITEM_DEFAULT_GRAVATAR'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}mp`, value: '' },
             { key: 'COMMENT_PLACEHOLDER', desc: t('ADMIN_CONFIG_ITEM_COMMENT_PLACEHOLDER'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}`, value: '' },
+            { key: 'SHOW_ORDER', desc: t('ADMIN_CONFIG_ITEM_SHOW_ORDER'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}true`, value: '' },
+            { key: 'SHOW_DISLIKE', desc: t('ADMIN_CONFIG_ITEM_SHOW_DISLIKE'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}true`, value: '' },
             { key: 'DISPLAYED_FIELDS', desc: t('ADMIN_CONFIG_ITEM_DISPLAYED_FIELDS'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}nick,mail,link`, value: '' },
             { key: 'REQUIRED_FIELDS', desc: t('ADMIN_CONFIG_ITEM_REQUIRED_FIELDS'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}nick,mail,link`, value: '' },
             { key: 'HIDE_ADMIN_CRYPT', desc: t('ADMIN_CONFIG_ITEM_HIDE_ADMIN_CRYPT'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}admin`, value: '' },

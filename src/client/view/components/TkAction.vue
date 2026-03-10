@@ -5,7 +5,7 @@
       <span class="tk-action-icon tk-action-icon-solid" v-html="iconLikeSolid"></span>
       <span class="tk-action-count">{{ likeCountStr }}</span>
     </a>
-    <a class="tk-action-link" :class="{ 'tk-disliked': disliked }" href="#" @click="onDislike">
+    <a class="tk-action-link" :class="{ 'tk-disliked': disliked }" href="#" @click="onDislike" v-if="showDislike">
       <span class="tk-action-icon" v-html="iconDislike"></span>
       <span class="tk-action-icon tk-action-icon-solid" v-html="iconDislikeSolid"></span>
       <span class="tk-action-count">{{ dislikeCountStr }}</span>
@@ -42,7 +42,8 @@ export default {
     disliked: Boolean,
     likeCount: Number,
     dislikeCount: Number,
-    repliesCount: Number
+    repliesCount: Number,
+    showDislike: Boolean
   },
   computed: {
     likeCountStr () {

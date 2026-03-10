@@ -37,3 +37,9 @@ yarn dev
 ```
 
 Open <http://localhost:9820> in browser.
+
+## Code check and fix
+
+```
+yarn lint --fix
+```

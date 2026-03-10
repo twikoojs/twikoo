@@ -30,6 +30,7 @@
             :like-count="ups"
             :dislike-count="downs"
             :replies-count="comment.replies.length"
+            :show-dislike="config.SHOW_DISLIKE !== 'false'"
             @like="onLike"
             @dislike="onDislike"
             @reply="onReply" />

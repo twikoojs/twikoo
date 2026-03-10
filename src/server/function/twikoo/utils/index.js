@@ -372,6 +372,8 @@ const fn = {
       SHOW_EMOTION: config.SHOW_EMOTION || 'true',
       EMOTION_CDN: config.EMOTION_CDN,
       COMMENT_PLACEHOLDER: config.COMMENT_PLACEHOLDER,
+      SHOW_ORDER: config.SHOW_ORDER || 'true',
+      SHOW_DISLIKE: config.SHOW_DISLIKE || 'true',
       DISPLAYED_FIELDS: config.DISPLAYED_FIELDS,
       REQUIRED_FIELDS: config.REQUIRED_FIELDS,
       HIDE_ADMIN_CRYPT: config.HIDE_ADMIN_CRYPT,

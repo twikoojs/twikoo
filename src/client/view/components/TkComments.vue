@@ -8,7 +8,7 @@
           <span>{{ t('COMMENTS_COUNT_SUFFIX') }}</span>
         </span>
         <span>
-          <span class="tk-comments-sort" v-if="!loading && comments.length">
+          <span class="tk-comments-sort" v-if="!loading && comments.length && config.SHOW_ORDER !== 'false'">
             <select v-model="currentSort" @change="onSortChange" class="tk-sort-select">
               <option value="newest">{{ t('COMMENTS_SORT_NEWEST') }}</option>
               <option value="oldest">{{ t('COMMENTS_SORT_OLDEST') }}</option>

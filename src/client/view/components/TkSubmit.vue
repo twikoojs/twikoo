@@ -188,7 +188,13 @@ export default {
                 window.turnstile.remove(widgetId)
               }, 5000)
             },
-            'error-callback': reject
+            'error-callback': reject,
+            'expired-callback': () => {
+              reject(new Error('验证码已过期，请重试'))
+            },
+            'timeout-callback': () => {
+              reject(new Error('验证码超时，请重试'))
+            }
           })
         })
       })
@@ -228,6 +234,8 @@ export default {
               })
             }).onError((e) => {
               reject(e)
+            }).onClose(() => {
+              reject(new Error('验证已取消'))
             })
           })
         })
@@ -288,8 +296,6 @@ export default {
           comment.geeTestCaptchaOutput = geeTestResult.geeTestCaptchaOutput
           comment.geeTestPassToken = geeTestResult.geeTestPassToken
           comment.geeTestGenTime = geeTestResult.geeTestGenTime
-        } else if (this.config.TURNSTILE_SITE_KEY) {
-          comment.turnstileToken = await this.getTurnstileToken()
         }
         const sendResult = await call(this.$tcb, 'COMMENT_SUBMIT', comment)
         if (sendResult && sendResult.result && sendResult.result.id) {

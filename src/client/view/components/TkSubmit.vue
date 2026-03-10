@@ -19,7 +19,7 @@
     <div class="tk-row actions">
       <div class="tk-row-actions-start">
         <div class="tk-submit-action-icon OwO" v-show="config.SHOW_EMOTION === 'true'" v-html="iconEmotion" v-clickoutside="closeOwo" ref="owo"></div>
-        <div class="tk-submit-action-icon" v-show="config.SHOW_IMAGE === 'true'" v-html="iconImage" @click="openSelectImage"></div>
+        <div class="tk-submit-action-icon" v-show="showImage" v-html="iconImage" @click="openSelectImage"></div>
         <input class="tk-input-image" type="file" accept="image/*" value="" ref="inputFile" @change="onSelectImage" />
         <div class="tk-error-message">{{ errorMessage }}</div>
       </div>
@@ -112,6 +112,12 @@ export default {
       if (this.config.TURNSTILE_SITE_KEY) return 'Turnstile'
       if (this.config.GEETEST_CAPTCHA_ID) return 'Geetest'
       return ''
+    },
+    showImage () {
+      if (typeof this.config.IMAGE_SERVICE !== 'undefined') {
+        return !!this.config.IMAGE_SERVICE
+      }
+      return this.config.SHOW_IMAGE === 'true'
     },
     canSend () {
       return !this.isSending &&
@@ -347,7 +353,7 @@ export default {
       this.parseAndUploadPhoto(photo)
     },
     async parseAndUploadPhoto (photo) {
-      if (!photo || this.config.SHOW_IMAGE !== 'true') return
+      if (!photo || !this.showImage) return
       const nameSplit = photo.name.split('.')
       const fileType = nameSplit.length > 1 ? nameSplit.pop() : ''
       if (imageTypes.indexOf(fileType.toLowerCase()) === -1) return
@@ -358,7 +364,7 @@ export default {
       const newFileName = isGif ? fileName : fileName + '.webp'
       const newFileType = isGif ? fileType : 'webp'
       this.paste(this.getImagePlaceholder(fileIndex, newFileType))
-      const imageCdn = this.config.IMAGE_CDN
+      const imageCdn = this.config.IMAGE_SERVICE || this.config.IMAGE_CDN
       const compressedPhoto = await this.compressImage(photo)
       if (this.$tcb && (!imageCdn || imageCdn === 'qcloud')) {
         this.uploadPhotoToQcloud(fileIndex, newFileName, newFileType, compressedPhoto)

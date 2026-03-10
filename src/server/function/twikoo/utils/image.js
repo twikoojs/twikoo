@@ -12,8 +12,14 @@ const fn = {
   async uploadImage (event, config) {
     const { photo, fileName } = event
     const res = {}
+    const imageService = config.IMAGE_SERVICE || config.IMAGE_CDN
     try {
-      if (!config.IMAGE_CDN || !config.IMAGE_CDN_TOKEN) {
+      if (imageService === 's3') {
+        // S3 图床只需要配置相关 S3 参数，不需要 IMAGE_CDN_TOKEN
+        if (!config.S3_BUCKET || !config.S3_ACCESS_KEY_ID || !config.S3_SECRET_ACCESS_KEY) {
+          throw new Error('未配置 S3 图床参数（S3_BUCKET、S3_ACCESS_KEY_ID、S3_SECRET_ACCESS_KEY）')
+        }
+      } else if (!imageService || !config.IMAGE_CDN_TOKEN) {
         throw new Error('未配置图片上传服务')
       }
       if (config.NSFW_API_URL) {
@@ -25,20 +31,22 @@ const fn = {
         }
       }
       // tip: qcloud 图床走前端上传，其他图床走后端上传
-      if (config.IMAGE_CDN === '7bu') {
+      if (imageService === '7bu') {
         await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: 'https://7bu.top' })
-      } else if (config.IMAGE_CDN === 'see') {
+      } else if (imageService === 'see') {
         await fn.uploadImageToSee({ photo, fileName, config, res, imageCdn: 'https://s.ee/api/v1/file/upload' })
-      } else if (isUrl(config.IMAGE_CDN)) {
-        await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN })
-      } else if (config.IMAGE_CDN === 'lskypro') {
+      } else if (isUrl(imageService)) {
+        await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: imageService })
+      } else if (imageService === 'lskypro') {
         await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN_URL })
-      } else if (config.IMAGE_CDN === 'piclist') {
+      } else if (imageService === 'piclist') {
         await fn.uploadImageToPicList({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN_URL })
-      } else if (config.IMAGE_CDN === 'easyimage') {
+      } else if (imageService === 'easyimage') {
         await fn.uploadImageToEasyImage({ photo, fileName, config, res })
-      } else if (config.IMAGE_CDN === 'chevereto') {
+      } else if (imageService === 'chevereto') {
         await fn.uploadImageToChevereto({ photo, fileName, config, res })
+      } else if (imageService === 's3') {
+        await fn.uploadImageToS3({ photo, fileName, config, res })
       } else {
         throw new Error('不支持的图片上传服务')
       }
@@ -213,6 +221,96 @@ const fn = {
       const errMsg = (data.error && data.error.message) || JSON.stringify(data)
       throw new Error(`Chevereto 上传失败: ${errMsg}`)
     }
+  },
+  async uploadImageToS3 ({ photo, fileName, config, res }) {
+    // 使用原生 crypto + axios 实现 AWS Signature V4，无需引入 SDK
+    if (!config.S3_BUCKET) {
+      throw new Error('未配置 S3 存储桶名称 (S3_BUCKET)')
+    }
+    if (!config.S3_ACCESS_KEY_ID) {
+      throw new Error('未配置 S3 Access Key ID (S3_ACCESS_KEY_ID)')
+    }
+    if (!config.S3_SECRET_ACCESS_KEY) {
+      throw new Error('未配置 S3 Secret Access Key (S3_SECRET_ACCESS_KEY)')
+    }
+    const crypto = require('crypto')
+    const region = config.S3_REGION || 'us-east-1'
+    // 解析 base64 图片数据
+    const base64 = photo.split(';base64,').pop()
+    const mimeType = photo.split(';base64,')[0].replace('data:', '') || 'image/webp'
+    const body = Buffer.from(base64, 'base64')
+    // 构建对象 key
+    const prefix = config.S3_PATH_PREFIX ? config.S3_PATH_PREFIX.replace(/\/$/, '') + '/' : ''
+    const key = `${prefix}${Date.now()}-${fileName}`
+    let endpoint
+    if (config.S3_ENDPOINT) {
+      // 兼容 R2
+      endpoint = `${config.S3_ENDPOINT.replace(/\/$/, '')}/${config.S3_BUCKET}/${key}`
+    } else {
+      // 标准 AWS S3：virtual-hosted-style URL
+      endpoint = `https://${config.S3_BUCKET}.s3.${region}.amazonaws.com/${key}`
+    }
+    const endpointUrl = new URL(endpoint)
+    const host = endpointUrl.host
+    const pathname = endpointUrl.pathname
+    const now = new Date()
+    const dateStamp = now.toISOString().slice(0, 10).replace(/-/g, '')
+    const amzDate = now.toISOString().replace(/[:-]/g, '').slice(0, 15) + 'Z'
+    const payloadHash = crypto.createHash('sha256').update(body).digest('hex')
+    const signedHeaders = 'content-type;host;x-amz-content-sha256;x-amz-date'
+    const canonicalHeaders = [
+      `content-type:${mimeType}`,
+      `host:${host}`,
+      `x-amz-content-sha256:${payloadHash}`,
+      `x-amz-date:${amzDate}`
+    ].join('\n') + '\n'
+    const canonicalRequest = [
+      'PUT',
+      pathname,
+      '', // query string
+      canonicalHeaders,
+      signedHeaders,
+      payloadHash
+    ].join('\n')
+    const credentialScope = `${dateStamp}/${region}/s3/aws4_request`
+    const stringToSign = [
+      'AWS4-HMAC-SHA256',
+      amzDate,
+      credentialScope,
+      crypto.createHash('sha256').update(canonicalRequest).digest('hex')
+    ].join('\n')
+    const hmac = (key, data) => crypto.createHmac('sha256', key).update(data).digest()
+    const signingKey = hmac(
+      hmac(
+        hmac(
+          hmac(Buffer.from('AWS4' + config.S3_SECRET_ACCESS_KEY), dateStamp),
+          region
+        ),
+        's3'
+      ),
+      'aws4_request'
+    )
+    const signature = crypto.createHmac('sha256', signingKey).update(stringToSign).digest('hex')
+    const authorization = `AWS4-HMAC-SHA256 Credential=${config.S3_ACCESS_KEY_ID}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`
+    await axios.put(endpoint, body, {
+      headers: {
+        'Content-Type': mimeType,
+        'x-amz-content-sha256': payloadHash,
+        'x-amz-date': amzDate,
+        Authorization: authorization
+      },
+      maxBodyLength: Infinity
+    })
+    // 构建访问 URL
+    let fileUrl
+    if (config.S3_CDN_URL) {
+      fileUrl = `${config.S3_CDN_URL.replace(/\/$/, '')}/${key}`
+    } else if (config.S3_ENDPOINT) {
+      fileUrl = `${config.S3_ENDPOINT.replace(/\/$/, '')}/${config.S3_BUCKET}/${key}`
+    } else {
+      fileUrl = `https://${config.S3_BUCKET}.s3.${region}.amazonaws.com/${key}`
+    }
+    res.data = { url: fileUrl }
   },
   base64UrlToReadStream (base64Url, fileName) {
     const base64 = base64Url.split(';base64,').pop()

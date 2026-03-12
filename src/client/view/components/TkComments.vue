@@ -9,11 +9,21 @@
         </span>
         <span>
           <span class="tk-comments-sort" v-if="!loading && comments.length && config.SHOW_ORDER !== 'false'">
-            <select v-model="currentSort" @change="onSortChange" class="tk-sort-select">
-              <option value="newest">{{ t('COMMENTS_SORT_NEWEST') }}</option>
-              <option value="oldest">{{ t('COMMENTS_SORT_OLDEST') }}</option>
-              <option value="popular">{{ t('COMMENTS_SORT_POPULAR') }}</option>
-            </select>
+            <button
+              class="tk-sort-item"
+              type="button"
+              :class="{ __active: currentSort === 'newest' }"
+              @click="setSort('newest')">{{ t('COMMENTS_SORT_NEWEST') }}</button>
+            <button
+              class="tk-sort-item"
+              type="button"
+              :class="{ __active: currentSort === 'oldest' }"
+              @click="setSort('oldest')">{{ t('COMMENTS_SORT_OLDEST') }}</button>
+            <button
+              class="tk-sort-item"
+              type="button"
+              :class="{ __active: currentSort === 'popular' }"
+              @click="setSort('popular')">{{ t('COMMENTS_SORT_POPULAR') }}</button>
           </span>
           <span class="tk-icon __comments" v-if="!loading && !loadingMore" v-html="iconRefresh" @click="refresh"
             ></span><span class="tk-icon __comments" v-if="showAdminEntry" v-html="iconSetting" @click="openAdmin"
@@ -89,7 +99,9 @@ export default {
       this.comments = []
       this.initComments()
     },
-    onSortChange () {
+    setSort (sort) {
+      if (this.currentSort === sort) return
+      this.currentSort = sort
       this.comments = []
       this.initComments()
     },
@@ -167,20 +179,23 @@ export default {
 .tk-comments-sort {
   display: inline-flex;
   align-items: center;
+  gap: 0.75em;
   margin-right: 0.5em;
 }
-.tk-sort-select {
+.tk-sort-item {
   font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 0.25rem;
-  background: white;
+  padding: 0;
+  border: 0;
+  background: transparent;
   cursor: pointer;
+  color: rgba(64, 158, 255, 0.6);
+}
+.tk-sort-item.__active {
   color: #409eff;
 }
-.tk-sort-select:focus {
+.tk-sort-item:focus {
   outline: none;
-  border-color: #409eff;
+  color: #409eff;
 }
 .tk-icon.__comments {
   display: inline-flex;

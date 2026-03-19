@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsdown';
+import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   entry: ['./index.js'],
@@ -25,4 +25,4 @@ export default defineConfig({
       }
     }
   }
-});
+})

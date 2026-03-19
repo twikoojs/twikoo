@@ -3,7 +3,7 @@
 ## 打包命令
 
 ```sh
-npm run build
+npm run build:exe
 ```
 
 ## 可执行文件下载地址

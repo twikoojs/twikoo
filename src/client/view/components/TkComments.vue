@@ -169,6 +169,7 @@ export default {
 .tk-comments-actions {
   display: flex;
   align-items: center;
+  gap: 0.5em;
   white-space: nowrap;
 }
 .tk-comments-container {
@@ -216,13 +217,18 @@ export default {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  vertical-align: sub;
-  margin-left: 0.5em;
-  height: 0.75em;
-  width: 0.75em;
+  vertical-align: middle;
+  height: 0.75rem;
+  width: 0.75rem;
   line-height: 0;
+  flex-shrink: 0;
   cursor: pointer;
   color: #409eff;
+}
+.tk-icon.__comments svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 .twikoo div.code-toolbar {
   position: relative;

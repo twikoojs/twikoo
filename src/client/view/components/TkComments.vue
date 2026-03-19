@@ -7,7 +7,7 @@
           <span>{{ count }}</span>
           <span>{{ t('COMMENTS_COUNT_SUFFIX') }}</span>
         </span>
-        <span>
+        <span class="tk-comments-actions">
           <span class="tk-comments-sort" v-if="!loading && comments.length && config.SHOW_ORDER !== 'false'">
             <button
               class="tk-sort-item"
@@ -152,13 +152,24 @@ export default {
 .tk-comments-title {
   font-size: 1.25rem;
   font-weight: bold;
+  line-height: 1;
   margin-bottom: 1rem;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
+  gap: 0.75rem;
 }
 .tk-comments-count.__hidden {
   visibility: hidden;
+}
+.tk-comments-count {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.tk-comments-actions {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
 }
 .tk-comments-container {
   min-height: 10rem;
@@ -177,13 +188,17 @@ export default {
   color: #ff0000;
 }
 .tk-comments-sort {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 0.75em;
   margin-right: 0.5em;
+  line-height: 1;
 }
 .tk-sort-item {
+  display: inline-flex;
+  align-items: center;
   font-size: 0.75rem;
+  line-height: 1;
   padding: 0;
   border: 0;
   background: transparent;

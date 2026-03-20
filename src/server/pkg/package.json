@@ -9,7 +9,7 @@
   "dependencies": {
     "commander": "^14.0.3",
     "dotenv": "^17.3.1",
-    "tkserver": "1.7.3"
+    "tkserver": "1.7.4"
   },
   "engines": {
     "node": "^25.8.0"

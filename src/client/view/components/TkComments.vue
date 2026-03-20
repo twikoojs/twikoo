@@ -7,7 +7,7 @@
           <span>{{ count }}</span>
           <span>{{ t('COMMENTS_COUNT_SUFFIX') }}</span>
         </span>
-        <span>
+        <span class="tk-comments-actions">
           <span class="tk-comments-sort" v-if="!loading && comments.length && config.SHOW_ORDER !== 'false'">
             <button
               class="tk-sort-item"
@@ -152,13 +152,25 @@ export default {
 .tk-comments-title {
   font-size: 1.25rem;
   font-weight: bold;
+  line-height: 1;
   margin-bottom: 1rem;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
+  gap: 0.75rem;
 }
 .tk-comments-count.__hidden {
   visibility: hidden;
+}
+.tk-comments-count {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.tk-comments-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  white-space: nowrap;
 }
 .tk-comments-container {
   min-height: 10rem;
@@ -177,13 +189,17 @@ export default {
   color: #ff0000;
 }
 .tk-comments-sort {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 0.75em;
   margin-right: 0.5em;
+  line-height: 1;
 }
 .tk-sort-item {
+  display: inline-flex;
+  align-items: center;
   font-size: 0.75rem;
+  line-height: 1;
   padding: 0;
   border: 0;
   background: transparent;
@@ -201,13 +217,18 @@ export default {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  vertical-align: sub;
-  margin-left: 0.5em;
-  height: 0.75em;
-  width: 0.75em;
+  vertical-align: middle;
+  height: 0.75rem;
+  width: 0.75rem;
   line-height: 0;
+  flex-shrink: 0;
   cursor: pointer;
   color: #409eff;
+}
+.tk-icon.__comments svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 .twikoo div.code-toolbar {
   position: relative;

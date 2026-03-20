@@ -1,5 +1,9 @@
 name: Publish
 
+permissions:
+  contents: write
+  discussions: write
+
 on:
   release:
     types: [published]
@@ -99,3 +103,31 @@ jobs:
             imaegoo/twikoo:arm32v7
             imaegoo/twikoo:${{ env.TWIKOO_LATEST_VERSION }}-arm32v7
           build-args: NODE_IMAGE=arm32v7/node
+
+  publish-pkg:
+    needs: publish-npm
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 25.8.1
+          registry-url: https://registry.npmjs.org/
+
+      - name: get tkserver version
+        run: |
+          echo "TKSERVER_VERSION=$(npm view tkserver@latest version)" >> "$GITHUB_ENV"
+
+      - if: '!github.event.release.prerelease'
+        run: |
+          cd src/server/pkg
+          npm i
+          npm i tkserver@${{ env.TKSERVER_VERSION }}
+          npm run build:exe
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: '!github.event.release.prerelease'
+        with:
+          files: |
+            src/server/pkg/dist/*

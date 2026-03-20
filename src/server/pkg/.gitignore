@@ -23,3 +23,9 @@ data
 *.njsproj
 *.sln
 *.sw?
+
+
+build/
+sea-config.json
+sea-prep.blob
+yarn.lock

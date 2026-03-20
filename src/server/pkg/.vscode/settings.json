@@ -1,5 +1,10 @@
 {
   "files.associations": {
     "*.config": "xml",
+    ".env": "env"
+  },
+  "[env]": {
+    "editor.defaultFormatter": "IronGeek.vscode-env",
+    "editor.formatOnSave": true
   }
 }

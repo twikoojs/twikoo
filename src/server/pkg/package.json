@@ -1,37 +1,22 @@
 {
-  "name": "twikoo",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "twikoo-pkg",
   "license": "MIT",
-  "bin": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "postinstall": "patch-package",
-    "diff":"patch-package tkserver",
-    "build": "rimraf ./dist && pkg . -C GZip --no-bytecode --public-packages \"*\" --public"
-  },
-  "pkg": {
-    "scripts": [],
-    "assets": [
-      "./node_modules/axios/dist/node/axios.cjs",
-      "./node_modules/@imaegoo/node-ip2region/data/ip2region.db",
-      "./web.config",
-      "./.env"
-    ],
-    "targets": [
-      "node18-win-x64",
-      "node18-linux-x64",
-      "node18-macos-x64"
-    ],
-    "outputPath": "dist"
+    "build:exe": "rimraf ./dist && npm run build:ncc && cp tsdown.config.mjs ./build/tsdown.config.mjs && cd build && tsdown && cd .. && cp -r build/dist ./dist && rimraf ./dist/index.cjs",
+    "build:ncc": "rimraf ./build && ncc build index.js -m -o build -a",
+    "start": "node index.js"
   },
   "dependencies": {
-    "commander": "^11.1.0",
-    "dotenv": "^16.4.1",
+    "commander": "^14.0.3",
+    "dotenv": "^17.3.1",
     "tkserver": "1.7.3"
   },
+  "engines": {
+    "node": "^25.8.0"
+  },
   "devDependencies": {
-    "patch-package": "^8.0.0",
-    "pkg": "5.8.1"
+    "@tsdown/exe": "^0.21.4",
+    "@vercel/ncc": "^0.38.4",
+    "tsdown": "^0.21.4"
   }
 }

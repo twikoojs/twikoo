@@ -720,13 +720,13 @@ async function limitFilter () {
 
 async function checkCaptcha (comment) {
   const provider = config.CAPTCHA_PROVIDER
-  if ((!provider || provider === 'Turnstile') && config.TURNSTILE_SITE_KEY && config.TURNSTILE_SECRET_KEY) {
+  if (provider === 'Turnstile' && config.TURNSTILE_SITE_KEY && config.TURNSTILE_SECRET_KEY) {
     await checkTurnstileCaptcha({
       ip: auth.getClientIP(),
       turnstileToken: comment.turnstileToken,
       turnstileTokenSecretKey: config.TURNSTILE_SECRET_KEY
     })
-  } else if ((!provider || provider === 'Geetest') && config.GEETEST_CAPTCHA_ID && config.GEETEST_CAPTCHA_KEY) {
+  } else if (provider === 'Geetest' && config.GEETEST_CAPTCHA_ID && config.GEETEST_CAPTCHA_KEY) {
     await checkGeeTestCaptcha({
       geeTestCaptchaId: config.GEETEST_CAPTCHA_ID,
       geeTestCaptchaKey: config.GEETEST_CAPTCHA_KEY,

@@ -186,7 +186,7 @@ export default {
               resolve(token)
               setTimeout(() => {
                 window.turnstile.remove(widgetId)
-              }, 5000)
+              }, 1000)
             },
             'error-callback': reject,
             'expired-callback': () => {
@@ -249,7 +249,7 @@ export default {
       }
       this.capLoad = new Promise((resolve, reject) => {
         const scriptEl = document.createElement('script')
-        scriptEl.src = 'https://cdn.jsdelivr.net/gh/tiagozip/cap@main/widget/src/cap.min.js'
+        scriptEl.src = 'https://cdn.jsdmirror.com/npm/@cap.js/widget'
         scriptEl.onload = resolve
         scriptEl.onerror = reject
         this.$refs['cap-container'].appendChild(scriptEl)

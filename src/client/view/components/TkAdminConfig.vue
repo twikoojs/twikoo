@@ -206,8 +206,6 @@ export default {
         if (typeof this.serverConfig.IMAGE_CDN === 'undefined') {
           if (this.serverConfig.SHOW_IMAGE === 'false') {
             this.serverConfig.IMAGE_CDN = ''
-          } else if (this.serverConfig.IMAGE_CDN) {
-            this.serverConfig.IMAGE_CDN = this.serverConfig.IMAGE_CDN
           } else {
             this.serverConfig.IMAGE_CDN = ''
           }

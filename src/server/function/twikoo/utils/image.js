@@ -12,7 +12,7 @@ const fn = {
   async uploadImage (event, config) {
     const { photo, fileName } = event
     const res = {}
-    const imageService = config.IMAGE_SERVICE || config.IMAGE_CDN
+    const imageService = config.IMAGE_CDN
     try {
       if (imageService === 's3') {
         // S3 图床只需要配置相关 S3 参数，不需要 IMAGE_CDN_TOKEN

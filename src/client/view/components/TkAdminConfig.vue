@@ -77,10 +77,10 @@ export default {
           name: t('ADMIN_CONFIG_CATEGORY_PLUGIN'),
           items: [
             {
-              key: 'IMAGE_SERVICE',
-              desc: t('ADMIN_CONFIG_ITEM_IMAGE_SERVICE'),
+              key: 'IMAGE_CDN',
+              desc: t('ADMIN_CONFIG_ITEM_IMAGE_CDN'),
               options: [
-                { value: '', label: t('ADMIN_CONFIG_IMAGE_SERVICE_NONE') },
+                { value: '', label: t('ADMIN_CONFIG_IMAGE_CDN_NONE') },
                 { value: 'qcloud', label: 'qcloud' },
                 { value: '7bu', label: '7bu (https://7bu.top)' },
                 { value: 'see', label: 'see (https://s.ee)' },
@@ -92,15 +92,15 @@ export default {
               ],
               value: ''
             },
-            { key: 'IMAGE_CDN_URL', desc: t('ADMIN_CONFIG_ITEM_IMAGE_CDN_URL'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}https://piclist.example.com`, value: '', showIf: (s) => ['lskypro', 'piclist', 'easyimage'].includes(s('IMAGE_SERVICE')) },
-            { key: 'IMAGE_CDN_TOKEN', desc: t('ADMIN_CONFIG_ITEM_IMAGE_CDN_TOKEN'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}example`, value: '', showIf: (s) => s('IMAGE_SERVICE') && s('IMAGE_SERVICE') !== 's3' },
-            { key: 'S3_REGION', desc: t('ADMIN_CONFIG_ITEM_S3_REGION'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}us-east-1`, value: '', showIf: (s) => s('IMAGE_SERVICE') === 's3' },
-            { key: 'S3_BUCKET', desc: t('ADMIN_CONFIG_ITEM_S3_BUCKET'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}my-bucket`, value: '', showIf: (s) => s('IMAGE_SERVICE') === 's3' },
-            { key: 'S3_ACCESS_KEY_ID', desc: t('ADMIN_CONFIG_ITEM_S3_ACCESS_KEY_ID'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}AKIAIOSFODNN7EXAMPLE`, value: '', showIf: (s) => s('IMAGE_SERVICE') === 's3' },
-            { key: 'S3_SECRET_ACCESS_KEY', desc: t('ADMIN_CONFIG_ITEM_S3_SECRET_ACCESS_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY`, value: '', secret: true, showIf: (s) => s('IMAGE_SERVICE') === 's3' },
-            { key: 'S3_ENDPOINT', desc: t('ADMIN_CONFIG_ITEM_S3_ENDPOINT'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}https://xxx.r2.cloudflarestorage.com`, value: '', showIf: (s) => s('IMAGE_SERVICE') === 's3' },
-            { key: 'S3_CDN_URL', desc: t('ADMIN_CONFIG_ITEM_S3_CDN_URL'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}https://cdn.example.com`, value: '', showIf: (s) => s('IMAGE_SERVICE') === 's3' },
-            { key: 'S3_PATH_PREFIX', desc: t('ADMIN_CONFIG_ITEM_S3_PATH_PREFIX'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}images/twikoo`, value: '', showIf: (s) => s('IMAGE_SERVICE') === 's3' },
+            { key: 'IMAGE_CDN_URL', desc: t('ADMIN_CONFIG_ITEM_IMAGE_CDN_URL'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}https://piclist.example.com`, value: '', showIf: (s) => ['lskypro', 'piclist', 'easyimage'].includes(s('IMAGE_CDN')) },
+            { key: 'IMAGE_CDN_TOKEN', desc: t('ADMIN_CONFIG_ITEM_IMAGE_CDN_TOKEN'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}example`, value: '', showIf: (s) => s('IMAGE_CDN') && s('IMAGE_CDN') !== 's3' },
+            { key: 'S3_REGION', desc: t('ADMIN_CONFIG_ITEM_S3_REGION'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}us-east-1`, value: '', showIf: (s) => s('IMAGE_CDN') === 's3' },
+            { key: 'S3_BUCKET', desc: t('ADMIN_CONFIG_ITEM_S3_BUCKET'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}my-bucket`, value: '', showIf: (s) => s('IMAGE_CDN') === 's3' },
+            { key: 'S3_ACCESS_KEY_ID', desc: t('ADMIN_CONFIG_ITEM_S3_ACCESS_KEY_ID'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}AKIAIOSFODNN7EXAMPLE`, value: '', showIf: (s) => s('IMAGE_CDN') === 's3' },
+            { key: 'S3_SECRET_ACCESS_KEY', desc: t('ADMIN_CONFIG_ITEM_S3_SECRET_ACCESS_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY`, value: '', secret: true, showIf: (s) => s('IMAGE_CDN') === 's3' },
+            { key: 'S3_ENDPOINT', desc: t('ADMIN_CONFIG_ITEM_S3_ENDPOINT'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}https://xxx.r2.cloudflarestorage.com`, value: '', showIf: (s) => s('IMAGE_CDN') === 's3' },
+            { key: 'S3_CDN_URL', desc: t('ADMIN_CONFIG_ITEM_S3_CDN_URL'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}https://cdn.example.com`, value: '', showIf: (s) => s('IMAGE_CDN') === 's3' },
+            { key: 'S3_PATH_PREFIX', desc: t('ADMIN_CONFIG_ITEM_S3_PATH_PREFIX'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}images/twikoo`, value: '', showIf: (s) => s('IMAGE_CDN') === 's3' },
             { key: 'NSFW_API_URL', desc: t('ADMIN_CONFIG_ITEM_NSFW_API_URL'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}https://nsfw.example.com`, value: '' },
             { key: 'NSFW_THRESHOLD', desc: t('ADMIN_CONFIG_ITEM_NSFW_THRESHOLD'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}0.5`, value: '' },
             { key: 'SHOW_EMOTION', desc: t('ADMIN_CONFIG_ITEM_SHOW_EMOTION'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}false`, value: '' },
@@ -142,14 +142,17 @@ export default {
               options: [
                 { value: '', label: t('ADMIN_CONFIG_CAPTCHA_NONE') },
                 { value: 'Turnstile', label: t('ADMIN_CONFIG_CAPTCHA_TURNSTILE') },
-                { value: 'Geetest', label: t('ADMIN_CONFIG_CAPTCHA_GEETEST') }
+                { value: 'Geetest', label: t('ADMIN_CONFIG_CAPTCHA_GEETEST') },
+                { value: 'Cap', label: t('ADMIN_CONFIG_CAPTCHA_CAP') }
               ],
               value: ''
             },
             { key: 'TURNSTILE_SITE_KEY', desc: t('ADMIN_CONFIG_ITEM_TURNSTILE_SITE_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}0x4AAAAAAAPLTtpBr_T12345`, value: '', showIf: (s) => s('CAPTCHA_PROVIDER') === 'Turnstile' },
             { key: 'TURNSTILE_SECRET_KEY', desc: t('ADMIN_CONFIG_ITEM_TURNSTILE_SECRET_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}0x4AAAAAAAPLTmBm6gHmOnOqC1iwmU12345`, value: '', secret: true, showIf: (s) => s('CAPTCHA_PROVIDER') === 'Turnstile' },
             { key: 'GEETEST_CAPTCHA_ID', desc: t('ADMIN_CONFIG_ITEM_GEETEST_CAPTCHA_ID'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}your_captcha_id`, value: '', showIf: (s) => s('CAPTCHA_PROVIDER') === 'Geetest' },
-            { key: 'GEETEST_CAPTCHA_KEY', desc: t('ADMIN_CONFIG_ITEM_GEETEST_CAPTCHA_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}your_captcha_key`, value: '', secret: true, showIf: (s) => s('CAPTCHA_PROVIDER') === 'Geetest' }
+            { key: 'GEETEST_CAPTCHA_KEY', desc: t('ADMIN_CONFIG_ITEM_GEETEST_CAPTCHA_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}your_captcha_key`, value: '', secret: true, showIf: (s) => s('CAPTCHA_PROVIDER') === 'Geetest' },
+            { key: 'CAP_API_ENDPOINT', desc: t('ADMIN_CONFIG_ITEM_CAP_API_ENDPOINT'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}https://cap.example.com/d9256640cb53/`, value: '', showIf: (s) => s('CAPTCHA_PROVIDER') === 'Cap' },
+            { key: 'CAP_SECRET_KEY', desc: t('ADMIN_CONFIG_ITEM_CAP_SECRET_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}your_cap_secret_key`, value: '', secret: true, showIf: (s) => s('CAPTCHA_PROVIDER') === 'Cap' }
           ]
         },
         {
@@ -200,14 +203,11 @@ export default {
             this.serverConfig.CAPTCHA_PROVIDER = 'Geetest'
           }
         }
-        if (typeof this.serverConfig.IMAGE_SERVICE === 'undefined') {
+        if (typeof this.serverConfig.IMAGE_CDN === 'undefined') {
           if (this.serverConfig.SHOW_IMAGE === 'false') {
-            this.serverConfig.IMAGE_SERVICE = ''
-          } else if (this.serverConfig.IMAGE_CDN) {
-            this.serverConfig.IMAGE_SERVICE = this.serverConfig.IMAGE_CDN
+            this.serverConfig.IMAGE_CDN = ''
           } else {
-            // 旧逻辑中，SHOW_IMAGE 默认为 true。没有 IMAGE_SERVICE 字段。所以兼容旧版，这里保持比较好 ⊙.⊙
-            this.serverConfig.IMAGE_SERVICE = ''
+            this.serverConfig.IMAGE_CDN = ''
           }
         }
         this.resetConfig()
@@ -249,10 +249,8 @@ export default {
           }
         }
       }
-      // 兼容旧版：同步 IMAGE_SERVICE 到 IMAGE_CDN 和 SHOW_IMAGE
-      if (config.IMAGE_SERVICE !== undefined) {
-        config.IMAGE_CDN = config.IMAGE_SERVICE
-        config.SHOW_IMAGE = config.IMAGE_SERVICE ? 'true' : 'false'
+      if (config.IMAGE_CDN !== undefined) {
+        config.SHOW_IMAGE = config.IMAGE_CDN ? 'true' : 'false'
       }
       logger.log('保存配置', config)
       await call(this.$tcb, 'SET_CONFIG', { config })
@@ -334,7 +332,7 @@ export default {
   border-color: rgba(255, 255, 255, 0.6);
 }
 .tk-admin-config-select option {
-  color: initial;
+  color: #fff;
   background: #333;
 }
 .tk-admin-config-desc {

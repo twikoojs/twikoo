@@ -372,15 +372,6 @@ export default {
     'なし（画像アップロードを無効にする）',
     '없음 (이미지 업로드 비활성화)'
   ],
-  ADMIN_CONFIG_IMAGE_SERVICE_NONE: [
-    '禁用图片上传',
-    '禁用圖片上傳',
-    '禁用圖片上傳',
-    'Disable image uploading',
-    'Расм юклашни ўчириш',
-    '画像のアップロードを無効にする',
-    '이미지 업로드 비활성화'
-  ],
   ADMIN_CONFIG_CAPTCHA_NONE: [
     '无',
     '無',
@@ -407,6 +398,15 @@ export default {
     'GeeTest',
     'GeeTest',
     'GeeTest'
+  ],
+  ADMIN_CONFIG_CAPTCHA_CAP: [
+    'Cap',
+    'Cap',
+    'Cap',
+    'Cap',
+    'Cap',
+    'Cap',
+    'Cap'
   ],
   ADMIN_CONFIG_EMAIL_TEST: [
     '邮件通知测试',
@@ -605,24 +605,6 @@ export default {
     `Плагин подсветки кода, опционально: ${highlightPlugins.join(',')}, соответственно: показывать язык кода, показывать кнопку копирования кода. Вы можете установить несколько опций одновременно, если вы хотите не добавлять плагин подсветки кода, установите значение none. по умолчанию: none.`,
     `コード・ハイライト・プラグイン。オプション: ${highlightPlugins.join(',')}, それぞれ: コード言語の表示、コード・コピー・ボタンの表示。複数のオプションを同時に設定できますが、コード・ハイライト・プラグインを追加したくない場合は、noneに設定してください。`,
     `코드 하이라이트 추가 기능. 선택 가능: ${highlightPlugins.join(', ')}. (코드 언어 표시, 복사 버튼) 여러 기능을 동시에 설정할 수 있으며, 추가하지 않으려면 none으로 설정하세요. 기본값: none.`
-  ],
-  [S.ACI + '_IMAGE_SERVICE']: [
-    `插入图片所使用的图床，目前支持：${imageBedServices.join('、')}`,
-    `插入圖片所使用的圖床，目前支持：${imageBedServices.join('、')}`,
-    `插入圖片所使用的圖床，目前支援：${imageBedServices.join('、')}`,
-    `The image bed for image uploading. Select from: ${imageBedServices.join(', ')}`,
-    `Расм юклаш учун расм тўшаги. Қуйидагилардан танланг: ${imageBedServices.join(', ')}`,
-    `画像のアップロードに使用する画像ホスティングサービス。次のうちから選択してください：${imageBedServices.join('、')}`,
-    `댓글 이미지 업로드 기능에 사용될 호스팅 서비스. 사용 가능 목록: ${imageBedServices.join(', ')}`
-  ],
-  [S.ACI + '_IMAGE_SERVICE_NONE']: [
-    '禁用图片上传',
-    '禁用圖片上傳',
-    '禁用圖片上傳',
-    'Disable image uploading',
-    'Расм юклашни ўчириш',
-    '画像のアップロードを無効にする',
-    '이미지 업로드 비활성화'
   ],
   [S.ACI + '_IMAGE_CDN']: [
     `插入图片所使用的图床，目前支持：${imageBedServices.join('、')}`,
@@ -867,6 +849,24 @@ export default {
     'GeeTest CAPTCHA Key',
     'GeeTest CAPTCHA Key',
     'GeeTest CAPTCHA Key'
+  ],
+  [S.ACI + '_CAP_API_ENDPOINT']: [
+    'Cap 验证码 API 端点（格式：https://<实例地址>/<site_key>/）',
+    'Cap 验证码 API 端点（格式：https://<实例地址>/<site_key>/）',
+    'Cap 验证码 API 端点（格式：https://<实例地址>/<site_key>/）',
+    'Cap CAPTCHA API Endpoint (format: https://<instance_url>/<site_key>/)',
+    'Cap CAPTCHA API Endpoint (format: https://<instance_url>/<site_key>/)',
+    'Cap CAPTCHA API Endpoint (format: https://<instance_url>/<site_key>/)',
+    'Cap CAPTCHA API Endpoint (format: https://<instance_url>/<site_key>/)'
+  ],
+  [S.ACI + '_CAP_SECRET_KEY']: [
+    'Cap 验证码的 Secret Key',
+    'Cap 验证码的 Secret Key',
+    'Cap 验证码的 Secret Key',
+    'Cap CAPTCHA Secret Key',
+    'Cap CAPTCHA Secret Key',
+    'Cap CAPTCHA Secret Key',
+    'Cap CAPTCHA Secret Key'
   ],
   [S.ACI + '_QCLOUD_SECRET_ID']: [
     '腾讯云 secret id，用于垃圾评论检测。同时设置腾讯云和 Akismet 时，只有腾讯云会生效。注册：https://twikoo.js.org/cms.html',

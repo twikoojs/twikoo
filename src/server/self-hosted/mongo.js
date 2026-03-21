@@ -33,6 +33,7 @@ const {
   preCheckSpam,
   checkTurnstileCaptcha,
   checkGeeTestCaptcha,
+  checkCapCaptcha,
   getConfig,
   getConfigForAdmin,
   validate
@@ -751,6 +752,12 @@ async function checkCaptcha (comment, request) {
       geeTestCaptchaOutput: comment.geeTestCaptchaOutput,
       geeTestPassToken: comment.geeTestPassToken,
       geeTestGenTime: comment.geeTestGenTime
+    })
+  } else if (provider === 'Cap' && config.CAP_API_ENDPOINT && config.CAP_SECRET_KEY) {
+    await checkCapCaptcha({
+      capToken: comment.capToken,
+      capSecretKey: config.CAP_SECRET_KEY,
+      capApiEndpoint: config.CAP_API_ENDPOINT
     })
   }
 }

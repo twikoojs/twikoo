@@ -45,6 +45,7 @@
         <div class="tk-turnstile" ref="turnstile"></div>
       </div>
       <div class="tk-geetest-container" ref="geetest-container" v-show="captchaProvider === 'Geetest'"></div>
+      <div class="tk-cap-container" ref="cap-container" v-show="captchaProvider === 'Cap'"></div>
     </div>
     <div class="tk-preview-container" v-if="isPreviewing" v-html="commentHtml" ref="comment-preview"></div>
   </div>
@@ -101,6 +102,7 @@ export default {
       turnstileLoad: null,
       geeTestLoad: null,
       geeTestCaptchaObj: null,
+      capLoad: null,
       iconMarkdown,
       iconEmotion,
       iconImage
@@ -111,13 +113,11 @@ export default {
       if (typeof this.config.CAPTCHA_PROVIDER !== 'undefined') return this.config.CAPTCHA_PROVIDER
       if (this.config.TURNSTILE_SITE_KEY) return 'Turnstile'
       if (this.config.GEETEST_CAPTCHA_ID) return 'Geetest'
+      if (this.config.CAP_API_ENDPOINT) return 'Cap'
       return ''
     },
     showImage () {
-      if (typeof this.config.IMAGE_SERVICE !== 'undefined') {
-        return !!this.config.IMAGE_SERVICE
-      }
-      return this.config.SHOW_IMAGE === 'true'
+      return !!this.config.IMAGE_CDN
     },
     canSend () {
       return !this.isSending &&
@@ -186,7 +186,7 @@ export default {
               resolve(token)
               setTimeout(() => {
                 window.turnstile.remove(widgetId)
-              }, 5000)
+              }, 1000)
             },
             'error-callback': reject,
             'expired-callback': () => {
@@ -237,6 +237,46 @@ export default {
             }).onClose(() => {
               reject(new Error('验证已取消'))
             })
+          })
+        })
+      })
+    },
+    initCap () {
+      if (this.captchaProvider !== 'Cap' || !this.config.CAP_API_ENDPOINT || !this.config.CAP_SITE_KEY) return
+      if (window.Cap) {
+        this.capLoad = Promise.resolve()
+        return
+      }
+      this.capLoad = new Promise((resolve, reject) => {
+        const scriptEl = document.createElement('script')
+        scriptEl.src = 'https://cdn.jsdmirror.com/npm/@cap.js/widget'
+        scriptEl.onload = resolve
+        scriptEl.onerror = reject
+        this.$refs['cap-container'].appendChild(scriptEl)
+      })
+    },
+    getCapToken () {
+      return new Promise((resolve, reject) => {
+        this.capLoad.then(() => {
+          const capWidget = document.createElement('cap-widget')
+          capWidget.setAttribute('id', 'cap-widget')
+          capWidget.setAttribute('data-cap-api-endpoint', this.config.CAP_API_ENDPOINT)
+          this.$refs['cap-container'].appendChild(capWidget)
+          const cleanup = () => {
+            if (capWidget && capWidget.parentNode) {
+              capWidget.parentNode.removeChild(capWidget)
+            }
+          }
+          capWidget.solve().then((result) => {
+            cleanup()
+            if (result.success) {
+              resolve(result.token)
+            } else {
+              reject(new Error('Cap验证失败'))
+            }
+          }).catch((e) => {
+            cleanup()
+            reject(e)
           })
         })
       })
@@ -296,6 +336,9 @@ export default {
           comment.geeTestCaptchaOutput = geeTestResult.geeTestCaptchaOutput
           comment.geeTestPassToken = geeTestResult.geeTestPassToken
           comment.geeTestGenTime = geeTestResult.geeTestGenTime
+        }
+        if (this.captchaProvider === 'Cap' && this.config.CAP_API_ENDPOINT && this.config.CAP_SITE_KEY) {
+          comment.capToken = await this.getCapToken()
         }
         const sendResult = await call(this.$tcb, 'COMMENT_SUBMIT', comment)
         if (sendResult && sendResult.result && sendResult.result.id) {
@@ -364,7 +407,7 @@ export default {
       const newFileName = isGif ? fileName : fileName + '.webp'
       const newFileType = isGif ? fileType : 'webp'
       this.paste(this.getImagePlaceholder(fileIndex, newFileType))
-      const imageCdn = this.config.IMAGE_SERVICE || this.config.IMAGE_CDN
+      const imageCdn = this.config.IMAGE_CDN
       const compressedPhoto = await this.compressImage(photo)
       if (this.$tcb && (!imageCdn || imageCdn === 'qcloud')) {
         this.uploadPhotoToQcloud(fileIndex, newFileName, newFileType, compressedPhoto)
@@ -492,6 +535,7 @@ export default {
     this.onBgImgChange()
     this.initTurnstile()
     this.initGeeTest()
+    this.initCap()
   },
   watch: {
     'config.SHOW_EMOTION': function () {
@@ -506,9 +550,13 @@ export default {
     'config.GEETEST_CAPTCHA_ID': function () {
       this.initGeeTest()
     },
+    'config.CAP_API_ENDPOINT': function () {
+      this.initCap()
+    },
     captchaProvider: function () {
       this.initTurnstile()
       this.initGeeTest()
+      this.initCap()
     }
   }
 }
@@ -586,6 +634,12 @@ export default {
   flex-direction: column;
 }
 .tk-geetest-container {
+  position: absolute;
+  right: 0;
+  bottom: -75px;
+  z-index: 1;
+}
+.tk-cap-container {
   position: absolute;
   right: 0;
   bottom: -75px;

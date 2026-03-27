@@ -36,6 +36,7 @@ const {
   preCheckSpam,
   checkTurnstileCaptcha,
   checkGeeTestCaptcha,
+  checkCapCaptcha,
   getConfig,
   getConfigForAdmin,
   validate
@@ -756,16 +757,17 @@ async function checkCaptcha (comment, request) {
     CAPTCHA_PROVIDER: config.CAPTCHA_PROVIDER,
     TURNSTILE_SITE_KEY: config.TURNSTILE_SITE_KEY,
     GEETEST_CAPTCHA_ID: config.GEETEST_CAPTCHA_ID,
-    GEETEST_CAPTCHA_KEY: config.GEETEST_CAPTCHA_KEY ? '***' : undefined
+    GEETEST_CAPTCHA_KEY: config.GEETEST_CAPTCHA_KEY ? '***' : undefined,
+    CAP_API_ENDPOINT: config.CAP_API_ENDPOINT
   })
   const provider = config.CAPTCHA_PROVIDER
-  if ((!provider || provider === 'Turnstile') && config.TURNSTILE_SITE_KEY && config.TURNSTILE_SECRET_KEY) {
+  if (provider === 'Turnstile' && config.TURNSTILE_SITE_KEY && config.TURNSTILE_SECRET_KEY) {
     await checkTurnstileCaptcha({
       ip: getIp(request),
       turnstileToken: comment.turnstileToken,
       turnstileTokenSecretKey: config.TURNSTILE_SECRET_KEY
     })
-  } else if ((!provider || provider === 'Geetest') && config.GEETEST_CAPTCHA_ID && config.GEETEST_CAPTCHA_KEY) {
+  } else if (provider === 'Geetest' && config.GEETEST_CAPTCHA_ID && config.GEETEST_CAPTCHA_KEY) {
     await checkGeeTestCaptcha({
       geeTestCaptchaId: config.GEETEST_CAPTCHA_ID,
       geeTestCaptchaKey: config.GEETEST_CAPTCHA_KEY,
@@ -773,6 +775,12 @@ async function checkCaptcha (comment, request) {
       geeTestCaptchaOutput: comment.geeTestCaptchaOutput,
       geeTestPassToken: comment.geeTestPassToken,
       geeTestGenTime: comment.geeTestGenTime
+    })
+  } else if (provider === 'Cap' && config.CAP_API_ENDPOINT && config.CAP_SECRET_KEY) {
+    await checkCapCaptcha({
+      capToken: comment.capToken,
+      capSecretKey: config.CAP_SECRET_KEY,
+      capApiEndpoint: config.CAP_API_ENDPOINT
     })
   }
 }

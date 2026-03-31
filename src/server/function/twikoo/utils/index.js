@@ -356,12 +356,17 @@ const fn = {
   },
   async checkCapCaptcha ({ capToken, capSecretKey, capApiEndpoint }) {
     try {
-      const params = new URLSearchParams()
-      params.append('response', capToken)
-      params.append('secret', capSecretKey)
-      const url = `${capApiEndpoint}/siteverify`
-      const { data } = await axios.post(url, params.toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      // 移除末尾的斜杠，避免双斜杠
+      const endpoint = capApiEndpoint.replace(/\/$/, '')
+      // Cap 的 siteverify 端点
+      const url = `${endpoint}/siteverify`
+      logger.log('Cap验证码验证URL:', url)
+      logger.log('Cap验证码验证参数:', { secret: capSecretKey ? '***' : undefined, response: capToken.substring(0, 20) + '...' })
+      const { data } = await axios.post(url, {
+        secret: capSecretKey,
+        response: capToken
+      }, {
+        headers: { 'Content-Type': 'application/json' }
       })
       logger.log('Cap验证码检测结果', data)
       if (!data.success) throw new Error(data.error || '验证码错误')

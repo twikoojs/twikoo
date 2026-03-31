@@ -408,6 +408,17 @@ export default {
   display: none;
   margin-left: 1em;
 }
+.tk-actions button {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  text-decoration: none;
+  display: inline;
+  color: #409eff;
+  cursor: pointer;
+}
 .tk-comment:hover .tk-actions {
   display: inline;
 }

@@ -264,6 +264,12 @@ export default {
   visibility: visible;
 }
 .tk-admin-close {
+  appearance: none;
+  background: none;
+  border: none;
+  margin: 0;
+  text-decoration: none;
+  cursor: pointer;
   position: sticky;
   float: right;
   display: block;

@@ -76,6 +76,12 @@ export default {
   align-items: center;
 }
 .tk-action-link {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  margin: 0;
   margin-left: 0.5rem;
   color: #409eff;
   text-decoration: none;

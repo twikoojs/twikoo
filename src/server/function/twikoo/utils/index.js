@@ -409,10 +409,9 @@ const fn = {
       baseConfig.GEETEST_CAPTCHA_ID = config.GEETEST_CAPTCHA_ID
     }
 
-    // 仅在明确指定使用 Cap 时下发 Cap 的 api endpoint 和 site key
+    // 仅在明确指定使用 Cap 时下发 Cap 的 api endpoint
     if (config.CAPTCHA_PROVIDER === 'Cap') {
       baseConfig.CAP_API_ENDPOINT = config.CAP_API_ENDPOINT
-      baseConfig.CAP_SITE_KEY = config.CAP_SITE_KEY
     }
 
     return {

@@ -242,7 +242,7 @@ export default {
       })
     },
     initCap () {
-      if (this.captchaProvider !== 'Cap' || !this.config.CAP_API_ENDPOINT || !this.config.CAP_SITE_KEY) return
+      if (this.captchaProvider !== 'Cap' || !this.config.CAP_API_ENDPOINT) return
       if (window.Cap) {
         this.capLoad = Promise.resolve()
         return
@@ -337,7 +337,7 @@ export default {
           comment.geeTestPassToken = geeTestResult.geeTestPassToken
           comment.geeTestGenTime = geeTestResult.geeTestGenTime
         }
-        if (this.captchaProvider === 'Cap' && this.config.CAP_API_ENDPOINT && this.config.CAP_SITE_KEY) {
+        if (this.captchaProvider === 'Cap' && this.config.CAP_API_ENDPOINT) {
           comment.capToken = await this.getCapToken()
         }
         const sendResult = await call(this.$tcb, 'COMMENT_SUBMIT', comment)

@@ -33,6 +33,7 @@ const {
   preCheckSpam,
   checkTurnstileCaptcha,
   checkGeeTestCaptcha,
+  checkCapCaptcha,
   getConfig,
   getConfigForAdmin,
   validate
@@ -737,7 +738,7 @@ async function limitFilter (request) {
 
 async function checkCaptcha (comment, request) {
   const provider = config.CAPTCHA_PROVIDER
-  if ((!provider || provider === 'Turnstile') && config.TURNSTILE_SITE_KEY && config.TURNSTILE_SECRET_KEY) {
+  if (provider === 'Turnstile' && config.TURNSTILE_SITE_KEY && config.TURNSTILE_SECRET_KEY) {
     await checkTurnstileCaptcha({
       ip: getIp(request),
       turnstileToken: comment.turnstileToken,
@@ -751,6 +752,12 @@ async function checkCaptcha (comment, request) {
       geeTestCaptchaOutput: comment.geeTestCaptchaOutput,
       geeTestPassToken: comment.geeTestPassToken,
       geeTestGenTime: comment.geeTestGenTime
+    })
+  } else if (provider === 'Cap' && config.CAP_API_ENDPOINT && config.CAP_SECRET_KEY) {
+    await checkCapCaptcha({
+      capToken: comment.capToken,
+      capSecretKey: config.CAP_SECRET_KEY,
+      capApiEndpoint: config.CAP_API_ENDPOINT
     })
   }
 }

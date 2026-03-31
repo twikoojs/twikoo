@@ -354,6 +354,21 @@ const fn = {
       throw new Error('极验验证码检测失败: ' + e.message)
     }
   },
+  async checkCapCaptcha ({ capToken, capSecretKey, capApiEndpoint }) {
+    try {
+      const params = new URLSearchParams()
+      params.append('response', capToken)
+      params.append('secret', capSecretKey)
+      const url = `${capApiEndpoint}/siteverify`
+      const { data } = await axios.post(url, params.toString(), {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      })
+      logger.log('Cap验证码检测结果', data)
+      if (!data.success) throw new Error(data.error || '验证码错误')
+    } catch (e) {
+      throw new Error('Cap验证码检测失败: ' + e.message)
+    }
+  },
   async getConfig ({ config, VERSION, isAdmin }) {
     // 构建对外配置，避免在启用某一验证码供应商时泄露另一个供应商的 key
     const baseConfig = {
@@ -367,7 +382,6 @@ const fn = {
       DEFAULT_GRAVATAR: config.DEFAULT_GRAVATAR,
       SHOW_IMAGE: config.SHOW_IMAGE || 'true',
       IMAGE_CDN: config.IMAGE_CDN,
-      IMAGE_SERVICE: config.IMAGE_SERVICE,
       LIGHTBOX: config.LIGHTBOX || 'false',
       SHOW_EMOTION: config.SHOW_EMOTION || 'true',
       EMOTION_CDN: config.EMOTION_CDN,
@@ -393,6 +407,12 @@ const fn = {
     // 仅在明确指定使用 Geetest 时下发 Geetest 的 id
     if (config.CAPTCHA_PROVIDER === 'Geetest') {
       baseConfig.GEETEST_CAPTCHA_ID = config.GEETEST_CAPTCHA_ID
+    }
+
+    // 仅在明确指定使用 Cap 时下发 Cap 的 api endpoint 和 site key
+    if (config.CAPTCHA_PROVIDER === 'Cap') {
+      baseConfig.CAP_API_ENDPOINT = config.CAP_API_ENDPOINT
+      baseConfig.CAP_SITE_KEY = config.CAP_SITE_KEY
     }
 
     return {

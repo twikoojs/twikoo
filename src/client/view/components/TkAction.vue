@@ -1,20 +1,20 @@
 <template>
   <div class="tk-action">
-    <a class="tk-action-link" :class="{ 'tk-liked': liked }" href="#" @click="onLike">
+    <button class="tk-action-link" :class="{ 'tk-liked': liked }" @click="onLike">
       <span class="tk-action-icon" v-html="iconLike"></span>
       <span class="tk-action-icon tk-action-icon-solid" v-html="iconLikeSolid"></span>
       <span class="tk-action-count">{{ likeCountStr }}</span>
-    </a>
-    <a class="tk-action-link" :class="{ 'tk-disliked': disliked }" href="#" @click="onDislike" v-if="showDislike">
+    </button>
+    <button class="tk-action-link" :class="{ 'tk-disliked': disliked }" @click="onDislike" v-if="showDislike">
       <span class="tk-action-icon" v-html="iconDislike"></span>
       <span class="tk-action-icon tk-action-icon-solid" v-html="iconDislikeSolid"></span>
       <span class="tk-action-count">{{ dislikeCountStr }}</span>
-    </a>
-    <a class="tk-action-link" href="#" @click="onReply">
+    </button>
+    <button class="tk-action-link" @click="onReply">
       <span class="tk-action-icon" v-html="iconComment"></span>
       <span class="tk-action-icon tk-action-icon-solid" v-html="iconCommentSolid"></span>
       <span class="tk-action-count">{{ repliesCountStr }}</span>
-    </a>
+    </button>
   </div>
 </template>
 
@@ -57,16 +57,13 @@ export default {
     }
   },
   methods: {
-    onLike ($event) {
-      $event.preventDefault()
+    onLike () {
       this.$emit('like')
     },
-    onDislike ($event) {
-      $event.preventDefault()
+    onDislike () {
       this.$emit('dislike')
     },
-    onReply ($event) {
-      $event.preventDefault()
+    onReply () {
       this.$emit('reply')
     }
   }

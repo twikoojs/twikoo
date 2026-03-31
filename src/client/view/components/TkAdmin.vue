@@ -1,7 +1,7 @@
 <template>
   <div class="tk-admin-container">
     <div class="tk-admin" :class="{ '__show': show }" v-loading="loading">
-      <a class="tk-admin-close" href="#" @click="onClose" v-html="iconClose"></a>
+      <button class="tk-admin-close" @click="onClose" v-html="iconClose"></button>
       <div class="tk-login-title" v-if="needUpdate">
         <div>{{ t('ADMIN_NEED_UPDATE') }}</div>
         <a href="https://twikoo.js.org/update.html" target="_blank">https://twikoo.js.org/update.html</a>
@@ -212,8 +212,7 @@ export default {
         throw e
       }
     },
-    onClose ($event) {
-      $event.preventDefault()
+    onClose () {
       this.$emit('close')
     }
   },

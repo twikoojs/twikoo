@@ -19,10 +19,10 @@
             <time :datetime="jsonTimestamp" :title="localeTime">{{ displayCreated }}</time>
           </small>
           <small class="tk-actions" v-if="isLogin">
-            <a href="#" v-if="comment.isSpam" @click="handleSpam(false, $event)">{{ t('ADMIN_COMMENT_SHOW') }}</a>
-            <a href="#" v-if="!comment.isSpam" @click="handleSpam(true, $event)">{{ t('ADMIN_COMMENT_HIDE') }}</a>
-            <a href="#" v-if="!comment.rid && comment.top" @click="handleTop(false, $event)">{{ t('ADMIN_COMMENT_UNTOP') }}</a>
-            <a href="#" v-if="!comment.rid && !comment.top" @click="handleTop(true, $event)">{{ t('ADMIN_COMMENT_TOP') }}</a>
+            <button v-if="comment.isSpam" @click="handleSpam(false)">{{ t('ADMIN_COMMENT_SHOW') }}</button>
+            <button v-if="!comment.isSpam" @click="handleSpam(true)">{{ t('ADMIN_COMMENT_HIDE') }}</button>
+            <button v-if="!comment.rid && comment.top" @click="handleTop(false)">{{ t('ADMIN_COMMENT_UNTOP') }}</button>
+            <button v-if="!comment.rid && !comment.top" @click="handleTop(true)">{{ t('ADMIN_COMMENT_TOP') }}</button>
           </small>
         </div>
         <tk-action :liked="liked"
@@ -305,12 +305,10 @@ export default {
         this.isLogin = this.$twikoo.serverConfig && this.$twikoo.serverConfig.IS_ADMIN
       }
     },
-    handleSpam (isSpam, $event) {
-      $event.preventDefault()
+    handleSpam (isSpam) {
       this.setComment({ isSpam })
     },
-    handleTop (top, $event) {
-      $event.preventDefault()
+    handleTop (top) {
       this.setComment({ top })
     },
     popupLightbox (event) {

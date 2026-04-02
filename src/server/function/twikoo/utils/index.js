@@ -356,12 +356,17 @@ const fn = {
   },
   async checkCapCaptcha ({ capToken, capSecretKey, capApiEndpoint }) {
     try {
-      const params = new URLSearchParams()
-      params.append('response', capToken)
-      params.append('secret', capSecretKey)
-      const url = `${capApiEndpoint}/siteverify`
-      const { data } = await axios.post(url, params.toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      // 移除末尾的斜杠，避免双斜杠
+      const endpoint = capApiEndpoint.replace(/\/$/, '')
+      // Cap 的 siteverify 端点
+      const url = `${endpoint}/siteverify`
+      logger.log('Cap验证码验证URL:', url)
+      logger.log('Cap验证码验证参数:', { secret: capSecretKey ? '***' : undefined, response: capToken.substring(0, 20) + '...' })
+      const { data } = await axios.post(url, {
+        secret: capSecretKey,
+        response: capToken
+      }, {
+        headers: { 'Content-Type': 'application/json' }
       })
       logger.log('Cap验证码检测结果', data)
       if (!data.success) throw new Error(data.error || '验证码错误')
@@ -409,10 +414,9 @@ const fn = {
       baseConfig.GEETEST_CAPTCHA_ID = config.GEETEST_CAPTCHA_ID
     }
 
-    // 仅在明确指定使用 Cap 时下发 Cap 的 api endpoint 和 site key
+    // 仅在明确指定使用 Cap 时下发 Cap 的 api endpoint
     if (config.CAPTCHA_PROVIDER === 'Cap') {
       baseConfig.CAP_API_ENDPOINT = config.CAP_API_ENDPOINT
-      baseConfig.CAP_SITE_KEY = config.CAP_SITE_KEY
     }
 
     return {

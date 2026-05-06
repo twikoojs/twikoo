@@ -53,7 +53,7 @@
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.1",
-    "eslint-plugin-standard": "^4.1.0",
+    "eslint-plugin-standard": "^5.0.0",
     "eslint-plugin-vue": "^9.33.0",
     "js-sha256": "^0.11.0",
     "marked": "^4.0.12",

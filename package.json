@@ -40,7 +40,7 @@
     "@babel/preset-env": "^7.16.0",
     "@babel/runtime": "^7.16.3",
     "@cloudbase/cli": "^3.3.0",
-    "@cloudbase/js-sdk": "^1.7.1",
+    "@cloudbase/js-sdk": "^2.28.3",
     "@fortawesome/fontawesome-free": "^5.15.4",
     "babel-loader": "^8.2.3",
     "blueimp-md5": "^2.19.0",

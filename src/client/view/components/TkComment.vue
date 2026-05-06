@@ -31,9 +31,11 @@
             :dislike-count="downs"
             :replies-count="comment.replies.length"
             :show-dislike="config.SHOW_DISLIKE !== 'false'"
+            :show-delete="comment.isOwner"
             @like="onLike"
             @dislike="onDislike"
-            @reply="onReply" />
+            @reply="onReply"
+            @delete="onDelete" />
       </div>
       <div class="tk-content" :class="{ 'tk-content-expand': isContentExpanded || !showContentExpand }" ref="tk-content">
         <span v-if="comment.pid">{{ t('COMMENT_REPLIED') }} <a class="tk-ruser" :href="`#${comment.pid}`">@{{ comment.ruser }}</a> :</span>
@@ -256,6 +258,15 @@ export default {
     onReply (id) {
       this.pid = id
       this.$emit('reply', this.comment.id)
+    },
+    async onDelete () {
+      if (!confirm(t('ADMIN_COMMENT_DELETE_CONFIRM'))) return
+      const result = await call(this.$tcb, 'COMMENT_DELETE_FOR_USER', {
+        id: this.comment.id
+      })
+      if (!result.code) {
+        this.$emit('load')
+      }
     },
     onReplyReply (id) {
       // 楼中楼回复

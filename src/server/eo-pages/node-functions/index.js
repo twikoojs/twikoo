@@ -562,6 +562,33 @@ async function commentDeleteForAdmin (event, db, accessToken) {
   return res
 }
 
+// 用户删除自己的评论
+async function commentDeleteForUser (event, db, accessToken) {
+  const res = {}
+  try {
+    validate(event, ['id'])
+    const uid = accessToken
+    const comment = await db.getComment(event.id)
+    if (!comment) {
+      res.code = RES_CODE.FAIL
+      res.message = '评论不存在'
+      return res
+    }
+    if (comment.uid !== uid) {
+      res.code = RES_CODE.FAIL
+      res.message = '只能删除自己的评论'
+      return res
+    }
+    await db.deleteComment(event.id)
+    res.code = RES_CODE.SUCCESS
+    res.deleted = 1
+  } catch (e) {
+    res.code = RES_CODE.FAIL
+    res.message = e.message
+  }
+  return res
+}
+
 async function commentImportForAdmin (event, db, accessToken) {
   const res = {}
   let logText = ''
@@ -1105,6 +1132,9 @@ async function handlePost (req, res) {
         break
       case 'COMMENT_DELETE_FOR_ADMIN':
         result = await commentDeleteForAdmin(event, db, accessToken)
+        break
+      case 'COMMENT_DELETE_FOR_USER':
+        result = await commentDeleteForUser(event, db, accessToken)
         break
       case 'COMMENT_IMPORT_FOR_ADMIN':
         result = await commentImportForAdmin(event, db, accessToken)

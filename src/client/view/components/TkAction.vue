@@ -15,6 +15,10 @@
       <span class="tk-action-icon tk-action-icon-solid" v-html="iconCommentSolid"></span>
       <span class="tk-action-count">{{ repliesCountStr }}</span>
     </button>
+    <button class="tk-action-link" @click="onDelete" v-if="showDelete">
+      <span class="tk-action-icon" v-html="iconDelete"></span>
+      <span class="tk-action-icon tk-action-icon-solid" v-html="iconDeleteSolid"></span>
+    </button>
   </div>
 </template>
 
@@ -25,6 +29,8 @@ import iconLike from '@fortawesome/fontawesome-free/svgs/regular/thumbs-up.svg'
 import iconLikeSolid from '@fortawesome/fontawesome-free/svgs/solid/thumbs-up.svg'
 import iconDislike from '@fortawesome/fontawesome-free/svgs/regular/thumbs-down.svg'
 import iconDislikeSolid from '@fortawesome/fontawesome-free/svgs/solid/thumbs-down.svg'
+import iconDelete from '@fortawesome/fontawesome-free/svgs/regular/trash-alt.svg'
+import iconDeleteSolid from '@fortawesome/fontawesome-free/svgs/solid/trash-alt.svg'
 
 export default {
   data () {
@@ -34,7 +40,9 @@ export default {
       iconLike,
       iconLikeSolid,
       iconDislike,
-      iconDislikeSolid
+      iconDislikeSolid,
+      iconDelete,
+      iconDeleteSolid
     }
   },
   props: {
@@ -43,7 +51,8 @@ export default {
     likeCount: Number,
     dislikeCount: Number,
     repliesCount: Number,
-    showDislike: Boolean
+    showDislike: Boolean,
+    showDelete: Boolean
   },
   computed: {
     likeCountStr () {
@@ -65,6 +74,9 @@ export default {
     },
     onReply () {
       this.$emit('reply')
+    },
+    onDelete () {
+      this.$emit('delete')
     }
   }
 }

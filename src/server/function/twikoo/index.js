@@ -146,6 +146,9 @@ exports.main = async (event, context) => {
       case 'COMMENT_EXPORT_FOR_ADMIN': // >= 1.6.13
         res = await commentExportForAdmin(event)
         break
+      case 'COMMENT_DELETE_FOR_USER':
+        res = await commentDeleteForUser(event)
+        break
       default:
         if (event.event) {
           res.code = RES_CODE.EVENT_NOT_EXIST
@@ -424,6 +427,34 @@ async function commentDeleteForAdmin (event) {
   } else {
     res.code = RES_CODE.NEED_LOGIN
     res.message = '请先登录'
+  }
+  return res
+}
+
+// 用户删除自己的评论
+async function commentDeleteForUser (event) {
+  const res = {}
+  try {
+    validate(event, ['id'])
+    const uid = await getUid()
+    const doc = await db.collection('comment').doc(event.id).get()
+    if (!doc.data || doc.data.length === 0) {
+      res.code = RES_CODE.FAIL
+      res.message = '评论不存在'
+      return res
+    }
+    const comment = doc.data[0]
+    if (comment.uid !== uid) {
+      res.code = RES_CODE.FAIL
+      res.message = '只能删除自己的评论'
+      return res
+    }
+    const data = await db.collection('comment').doc(event.id).delete()
+    res.code = RES_CODE.SUCCESS
+    res.deleted = data.deleted
+  } catch (e) {
+    res.code = RES_CODE.FAIL
+    res.message = e.message
   }
   return res
 }

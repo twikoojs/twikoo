@@ -103,6 +103,9 @@ module.exports = async (request, response) => {
       case 'COMMENT_DELETE_FOR_ADMIN':
         res = await commentDeleteForAdmin(event)
         break
+      case 'COMMENT_DELETE_FOR_USER':
+        res = await commentDeleteForUser(event)
+        break
       case 'COMMENT_IMPORT_FOR_ADMIN':
         res = await commentImportForAdmin(event)
         break
@@ -470,6 +473,37 @@ async function commentDeleteForAdmin (event) {
   } else {
     res.code = RES_CODE.NEED_LOGIN
     res.message = '请先登录'
+  }
+  return res
+}
+
+// 用户删除自己的评论
+async function commentDeleteForUser (event) {
+  const res = {}
+  try {
+    validate(event, ['id'])
+    const uid = event.accessToken
+    const comment = db
+      .getCollection('comment')
+      .findOne({ _id: event.id })
+    if (!comment) {
+      res.code = RES_CODE.FAIL
+      res.message = '评论不存在'
+      return res
+    }
+    if (comment.uid !== uid) {
+      res.code = RES_CODE.FAIL
+      res.message = '只能删除自己的评论'
+      return res
+    }
+    db
+      .getCollection('comment')
+      .findAndRemove({ _id: event.id })
+    res.code = RES_CODE.SUCCESS
+    res.deleted = 1
+  } catch (e) {
+    res.code = RES_CODE.FAIL
+    res.message = e.message
   }
   return res
 }

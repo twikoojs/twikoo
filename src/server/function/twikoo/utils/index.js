@@ -99,6 +99,7 @@ const fn = {
       ruser: fn.ruser(comment.pid, comments),
       top: comment.top,
       isSpam: comment.isSpam,
+      isOwner: comment.uid === uid,
       created: comment.created,
       updated: comment.updated
     }

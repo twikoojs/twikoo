@@ -39,7 +39,7 @@
     "@babel/plugin-transform-runtime": "^7.16.0",
     "@babel/preset-env": "^7.16.0",
     "@babel/runtime": "^7.16.3",
-    "@cloudbase/cli": "^1.9.5",
+    "@cloudbase/cli": "^3.3.0",
     "@cloudbase/js-sdk": "^1.7.1",
     "@fortawesome/fontawesome-free": "^5.15.4",
     "babel-loader": "^8.2.3",

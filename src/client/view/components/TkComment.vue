@@ -260,11 +260,13 @@ export default {
       this.$emit('reply', this.comment.id)
     },
     async onDelete () {
-      if (!confirm(t('ADMIN_COMMENT_DELETE_CONFIRM'))) return
+      if (!confirm(t('COMMENT_DELETE_CONFIRM'))) return
       const result = await call(this.$tcb, 'COMMENT_DELETE_FOR_USER', {
         id: this.comment.id
       })
-      if (!result.code) {
+      if (result.code) {
+        alert(result.message)
+      } else {
         this.$emit('load')
       }
     },

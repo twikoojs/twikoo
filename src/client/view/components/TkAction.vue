@@ -1,5 +1,9 @@
 <template>
   <div class="tk-action">
+    <button class="tk-action-link" @click="onDelete" v-if="showDelete">
+      <span class="tk-action-icon" v-html="iconDelete"></span>
+      <span class="tk-action-icon tk-action-icon-solid" v-html="iconDeleteSolid"></span>
+    </button>
     <button class="tk-action-link" :class="{ 'tk-liked': liked }" @click="onLike">
       <span class="tk-action-icon" v-html="iconLike"></span>
       <span class="tk-action-icon tk-action-icon-solid" v-html="iconLikeSolid"></span>
@@ -14,10 +18,6 @@
       <span class="tk-action-icon" v-html="iconComment"></span>
       <span class="tk-action-icon tk-action-icon-solid" v-html="iconCommentSolid"></span>
       <span class="tk-action-count">{{ repliesCountStr }}</span>
-    </button>
-    <button class="tk-action-link" @click="onDelete" v-if="showDelete">
-      <span class="tk-action-icon" v-html="iconDelete"></span>
-      <span class="tk-action-icon tk-action-icon-solid" v-html="iconDeleteSolid"></span>
     </button>
   </div>
 </template>

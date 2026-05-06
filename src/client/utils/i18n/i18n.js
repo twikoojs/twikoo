@@ -1544,6 +1544,15 @@ export default {
     '返信',
     '답글'
   ],
+  COMMENT_DELETE_CONFIRM: [
+    '确认删除你的评论？',
+    '確認刪除你的評論？',
+    '確認刪除你的評論？',
+    'Delete your comment?',
+    'Izohingizni o\'chirasizmi?',
+    'あなたのコメントを削除しますか？',
+    '댓글을 삭제하시겠습니까?'
+  ],
   COMMENT_REVIEWING_TAG: [
     '审核中',
     '審核中',

@@ -38,7 +38,8 @@ const {
   checkCapCaptcha,
   getConfig,
   getConfigForAdmin,
-  validate
+  validate,
+  checkCommentOwnership
 } = require('twikoo-func/utils')
 const {
   jsonParse,
@@ -477,24 +478,11 @@ async function commentDeleteForAdmin (event) {
 async function commentDeleteForUser (event) {
   const res = {}
   try {
-    validate(event, ['id'])
     const uid = getUid()
-    const comment = await db
-      .collection('comment')
-      .findOne({ _id: event.id })
-    if (!comment) {
-      res.code = RES_CODE.FAIL
-      res.message = '评论不存在'
-      return res
-    }
-    if (comment.uid !== uid) {
-      res.code = RES_CODE.FAIL
-      res.message = '只能删除自己的评论'
-      return res
-    }
-    const data = await db
-      .collection('comment')
-      .deleteOne({ _id: event.id })
+    await checkCommentOwnership(event.id, uid, async (id) => {
+      return db.collection('comment').findOne({ _id: id })
+    })
+    const data = await db.collection('comment').deleteOne({ _id: event.id })
     res.code = RES_CODE.SUCCESS
     res.deleted = data.deletedCount
   } catch (e) {

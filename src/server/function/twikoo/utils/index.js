@@ -446,6 +446,18 @@ const fn = {
         throw new Error(`参数"${requiredParam}"不合法`)
       }
     }
+  },
+  // 校验评论归属：确认评论存在且属于当前用户
+  async checkCommentOwnership (id, uid, getComment) {
+    fn.validate({ id }, ['id'])
+    const comment = await getComment(id)
+    if (!comment) {
+      throw new Error('评论不存在')
+    }
+    if (comment.uid !== uid) {
+      throw new Error('只能删除自己的评论')
+    }
+    return comment
   }
 }
 

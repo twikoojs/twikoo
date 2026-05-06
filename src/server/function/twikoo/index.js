@@ -34,7 +34,8 @@ const {
   checkCapCaptcha,
   getConfig,
   getConfigForAdmin,
-  validate
+  validate,
+  checkCommentOwnership
 } = require('./utils')
 const {
   jsonParse,
@@ -435,20 +436,11 @@ async function commentDeleteForAdmin (event) {
 async function commentDeleteForUser (event) {
   const res = {}
   try {
-    validate(event, ['id'])
     const uid = await getUid()
-    const doc = await db.collection('comment').doc(event.id).get()
-    if (!doc.data || doc.data.length === 0) {
-      res.code = RES_CODE.FAIL
-      res.message = '评论不存在'
-      return res
-    }
-    const comment = doc.data[0]
-    if (comment.uid !== uid) {
-      res.code = RES_CODE.FAIL
-      res.message = '只能删除自己的评论'
-      return res
-    }
+    await checkCommentOwnership(event.id, uid, async (id) => {
+      const doc = await db.collection('comment').doc(id).get()
+      return doc.data && doc.data.length > 0 ? doc.data[0] : null
+    })
     const data = await db.collection('comment').doc(event.id).delete()
     res.code = RES_CODE.SUCCESS
     res.deleted = data.deleted

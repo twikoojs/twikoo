@@ -261,7 +261,7 @@ export default {
     },
     async onDelete () {
       if (!confirm(t('COMMENT_DELETE_CONFIRM'))) return
-      const result = await call(this.$tcb, 'COMMENT_DELETE_FOR_USER', {
+      const { result } = await call(this.$tcb, 'COMMENT_DELETE_FOR_USER', {
         id: this.comment.id
       })
       if (result.code) {

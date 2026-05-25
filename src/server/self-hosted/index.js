@@ -332,14 +332,15 @@ async function commentGet (event) {
     let top = []
     if (!config.TOP_DISABLED && !event.before) {
       // 查询置顶评论
-      query = {
-        ...condition,
+      const topCondition = {
+        url: condition.url,
+        rid: condition.rid,
         top: true
       }
       top = db
         .getCollection('comment')
         .chain()
-        .find(query)
+        .find(getCommentQuery({ condition: topCondition, uid, isAdminUser }))
         .compoundsort([['created', true]])
         .data()
       // 合并置顶评论和非置顶评论

@@ -1,7 +1,7 @@
 <template>
   <div class="tk-submit tk-fade-in" ref="tk-submit">
     <div class="tk-row">
-      <tk-avatar :config="config" :mail="mail" :nick="nick" />
+      <tk-avatar :config="config" :mail="mail" :nick="nick" :avatar="avatar" />
       <div class="tk-col">
         <tk-meta-input :nick="nick" :mail="mail" :link="link" @update="onMetaUpdate" :config="config" />
         <el-input class="tk-input"
@@ -99,6 +99,7 @@ export default {
       nick: '',
       mail: '',
       link: '',
+      avatar: '',
       turnstileLoad: null,
       geeTestLoad: null,
       geeTestCaptchaObj: null,
@@ -285,6 +286,7 @@ export default {
       this.nick = updates.meta.nick
       this.mail = updates.meta.mail
       this.link = updates.meta.link
+      if (updates.meta.avatar) this.avatar = updates.meta.avatar
       this.isMetaValid = updates.valid
     },
     cancel () {

@@ -38,7 +38,8 @@ export default {
       metaData: {
         nick: '',
         mail: '',
-        link: ''
+        link: '',
+        avatar: ''
       }
     }
   },
@@ -65,6 +66,14 @@ export default {
   },
   methods: {
     t,
+    applyPrefill () {
+      const prefill = this.$twikoo?.prefill
+      if (!prefill || typeof prefill !== 'object') return
+      if (prefill.nick) this.metaData.nick = prefill.nick
+      if (prefill.mail) this.metaData.mail = prefill.mail
+      if (prefill.link) this.metaData.link = prefill.link
+      if (prefill.avatar) this.metaData.avatar = prefill.avatar
+    },
     initMeta () {
       const mStr = localStorage.getItem('twikoo')
       if (mStr) {
@@ -72,8 +81,10 @@ export default {
         this.metaData.nick = metaData.nick
         this.metaData.mail = metaData.mail
         this.metaData.link = metaData.link
+        if (metaData.avatar) this.metaData.avatar = metaData.avatar
       }
-      this.updateMeta()
+      this.applyPrefill()
+      this.onMetaChange()
     },
     updateMeta () {
       localStorage.setItem('twikoo', JSON.stringify(this.metaData))

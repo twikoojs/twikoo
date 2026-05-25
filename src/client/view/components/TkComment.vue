@@ -347,7 +347,7 @@ export default {
         set
       })
       this.loading = false
-      this.$emit('load')
+      Object.assign(this.comment, set)
     }
   },
   mounted () {

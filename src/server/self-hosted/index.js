@@ -283,7 +283,14 @@ async function commentGet (event) {
     validate(event, ['url'])
     const uid = event.accessToken
     const isAdminUser = isAdmin(event.accessToken)
-    const limit = parseInt(config.COMMENT_PAGE_SIZE) || 8
+    const defaultLimit = parseInt(config.COMMENT_PAGE_SIZE) || 8
+    let limit = defaultLimit
+    if (event.pageSize != null) {
+      const parsed = parseInt(event.pageSize)
+      if (!Number.isNaN(parsed)) {
+        limit = Math.min(Math.max(parsed, 1), 100)
+      }
+    }
     const sort = event.sort || 'newest'
     let more = false
     let condition

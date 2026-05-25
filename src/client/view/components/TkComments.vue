@@ -121,7 +121,9 @@ export default {
     },
     async getComments (event) {
       try {
-        const comments = await call(this.$tcb, 'COMMENT_GET', event)
+        const { pageSize } = this.$twikoo
+        const payload = pageSize != null ? { ...event, pageSize } : event
+        const comments = await call(this.$tcb, 'COMMENT_GET', payload)
         if (comments && comments.result && comments.result.data) {
           this.comments = event.before ? this.comments.concat(comments.result.data) : comments.result.data
           this.showExpand = comments.result.more

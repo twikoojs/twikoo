@@ -1,7 +1,7 @@
 import { version } from './version'
 import { install } from './utils/tcb'
 import { render } from './view'
-import { setLanguage, logger, isUrl, getCommentsCountApi, getRecentCommentsApi } from './utils'
+import { setLanguage, logger, isUrl, getCommentsCountApi, getRecentCommentsApi, updateVisitorsCount } from './utils'
 
 async function initTcb (options) {
   if (typeof cloudbase === 'undefined') {
@@ -16,6 +16,7 @@ async function init (options = {}) {
   const tcb = isUrl(options.envId) ? null : await initTcb(options)
   setLanguage(options)
   render(tcb, options)
+  await updateVisitorsCount(tcb, options)
 }
 
 async function getCommentsCount (options = {}) {
@@ -28,10 +29,16 @@ async function getRecentComments (options = {}) {
   return await getRecentCommentsApi(tcb, options)
 }
 
+async function getVisitorsCount (options = {}) {
+  const tcb = isUrl(options.envId) ? null : await initTcb(options)
+  return await getVisitorsCountApi(tcb, options)
+}
+
 export default init
 export {
   version,
   init,
   getCommentsCount,
-  getRecentComments
+  getRecentComments,
+  getVisitorsCount
 }

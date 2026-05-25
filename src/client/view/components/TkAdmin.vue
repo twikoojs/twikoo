@@ -244,7 +244,8 @@ export default {
   overflow-y: auto;
   pointer-events: all;
   color: #ffffff;
-  background-color: rgba(0,0,0,0.60);
+  background-color: rgba(0, 0, 0, 0.85);
+  -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
   transition: all 0.5s ease;
   visibility: hidden;
@@ -271,10 +272,9 @@ export default {
   text-decoration: none;
   cursor: pointer;
   position: sticky;
-  float: right;
   display: block;
-  top: 0;
-  right: 0;
+  top: 1rem;
+  left: calc(100% - 3rem);
   width: 1rem;
   height: 1rem;
   padding: 1rem;

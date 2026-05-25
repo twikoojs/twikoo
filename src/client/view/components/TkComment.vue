@@ -38,7 +38,7 @@
             @delete="onDelete" />
       </div>
       <div class="tk-content" :class="{ 'tk-content-expand': isContentExpanded || !showContentExpand }" ref="tk-content">
-        <span v-if="comment.pid">{{ t('COMMENT_REPLIED') }} <a class="tk-ruser" :href="`#${comment.pid}`">@{{ comment.ruser }}</a> :</span>
+        <span v-if="comment.pid">{{ t('COMMENT_REPLIED') }} <a class="tk-ruser" href="#" @click.prevent="scrollToPid(comment.pid)">@{{ comment.ruser }}</a> :</span>
         <span v-html="comment.comment" ref="comment" @click="popupLightbox"></span>
       </div>
       <div class="tk-expand-wrap" v-if="showContentExpand">
@@ -221,6 +221,15 @@ export default {
           behavior: 'smooth'
         })
         this.$emit('expand')
+      }
+    },
+    scrollToPid (pid) {
+      const el = document.getElementById(pid)
+      if (el) {
+        el.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        })
       }
     },
     async onLike () {

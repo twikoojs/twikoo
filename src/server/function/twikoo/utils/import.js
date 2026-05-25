@@ -3,6 +3,41 @@ const { getMarked, getDomPurify, getMd5 } = require('./lib')
 const marked = getMarked()
 const md5 = getMd5()
 
+const ARRAY_FIELDS = ['like', 'ups', 'downs']
+
+const parseJsonArrayField = (value) => {
+  if (Array.isArray(value)) return value
+  if (typeof value !== 'string') return value
+  const trimmed = value.trim()
+  if (!trimmed.startsWith('[')) return value
+  try {
+    const parsed = JSON.parse(trimmed)
+    return Array.isArray(parsed) ? parsed : value
+  } catch (e) {
+    return value
+  }
+}
+
+const normalizeTwikooComment = (comment) => {
+  const parsed = { ...comment }
+  if (comment._id && comment._id.$oid) {
+    // 解决 id 历史数据问题
+    parsed._id = comment._id.$oid
+  }
+  if (comment.pid === null) {
+    delete parsed.pid
+  }
+  if (comment.rid === null) {
+    delete parsed.rid
+  }
+  for (const field of ARRAY_FIELDS) {
+    if (field in parsed) {
+      parsed[field] = parseJsonArrayField(parsed[field])
+    }
+  }
+  return parsed
+}
+
 const fn = {
   // 兼容 Leancloud 两种 JSON 导出格式
   jsonParse (content) {
@@ -240,17 +275,7 @@ const fn = {
     log(`共 ${arr.length} 条评论`)
     for (const comment of arr) {
       try {
-        const parsed = comment
-        if (comment._id.$oid) {
-          // 解决 id 历史数据问题
-          parsed._id = comment._id.$oid
-        }
-        if (comment.pid === null) {
-          delete comment.pid
-        }
-        if (comment.rid === null) {
-          delete comment.rid
-        }
+        const parsed = normalizeTwikooComment(comment)
         comments.push(parsed)
         log(`${comment._id} 解析成功`)
       } catch (e) {

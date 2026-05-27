@@ -1068,17 +1068,20 @@ function getIp (request) {
 
 async function closeDatabase () {
   if (!db) return
-  await new Promise((resolve, reject) => {
-    db.saveDatabase((err) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve()
-      }
+  try {
+    await new Promise((resolve, reject) => {
+      db.saveDatabase((err) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve()
+        }
+      })
     })
-  })
-  db.close()
-  db = null
+  } finally {
+    db.close()
+    db = null
+  }
 }
 
 async function shutdown () {

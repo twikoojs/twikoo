@@ -43,7 +43,7 @@
         <div class="tk-panel" v-if="isLogin">
           <div class="tk-panel-title">
             <div>{{ t('ADMIN_TITLE') }}</div>
-            <a class="tk-panel-logout" href="#" @click="onLogout">{{ t('ADMIN_LOGOUT') }}</a>
+            <a class="tk-panel-logout" href="#" @click.prevent="onLogout">{{ t('ADMIN_LOGOUT') }}</a>
           </div>
           <div class="tk-tabs">
             <div class="tk-tab" :class="{ __active: activeTabName === 'comment' }" @click="activeTabName = 'comment'">{{ t('ADMIN_COMMENT') }}</div>

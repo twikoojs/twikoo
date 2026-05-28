@@ -13,4 +13,15 @@ marked.setOptions({
   smartypants: true
 })
 
+// Comment UIs rarely use indented (4-space) code blocks, but users often
+// prefix lines with spaces for visual indentation — which Markdown would
+// otherwise render as a code block (#855).
+marked.use({
+  tokenizer: {
+    code () {
+      return undefined
+    }
+  }
+})
+
 export default marked

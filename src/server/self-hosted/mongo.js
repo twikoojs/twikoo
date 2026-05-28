@@ -66,6 +66,8 @@ const TWIKOO_REQ_TIMES_CLEAR_TIME = parseInt(process.env.TWIKOO_REQ_TIMES_CLEAR_
 let db = null
 let config
 let requestTimes = {}
+let client = null
+let requestTimesTimer = null
 
 module.exports = async (request, response) => {
   let accessToken
@@ -225,7 +227,7 @@ async function connectToDatabase (uri) {
   if (!uri) throw new Error('未设置环境变量 MONGODB_URI | MONGO_URL')
   // If no connection is cached, create a new one
   logger.info('Connecting to database...')
-  const client = await MongoClient.connect(uri, {})
+  client = await MongoClient.connect(uri, {})
   // Select the database through the connection,
   // using the database path of the connection string
   const dbName = (new URL(uri)).pathname.substring(1) || 'twikoo'
@@ -1037,8 +1039,22 @@ function getIp (request) {
   return getUserIP(request)
 }
 
+async function shutdown () {
+  if (requestTimesTimer) {
+    clearInterval(requestTimesTimer)
+    requestTimesTimer = null
+  }
+  if (client) {
+    await client.close()
+    client = null
+    db = null
+  }
+}
+
 function clearRequestTimes () {
   requestTimes = {}
 }
 
-setInterval(clearRequestTimes, TWIKOO_REQ_TIMES_CLEAR_TIME)
+requestTimesTimer = setInterval(clearRequestTimes, TWIKOO_REQ_TIMES_CLEAR_TIME)
+
+module.exports.shutdown = shutdown

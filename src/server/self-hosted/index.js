@@ -69,6 +69,7 @@ const TWIKOO_REQ_TIMES_CLEAR_TIME = parseInt(process.env.TWIKOO_REQ_TIMES_CLEAR_
 let db = null
 let config
 let requestTimes = {}
+let requestTimesTimer = null
 
 connectToDatabase()
 
@@ -1065,8 +1066,36 @@ function getIp (request) {
   return getUserIP(request)
 }
 
+async function closeDatabase () {
+  if (!db) return
+  try {
+    await new Promise((resolve, reject) => {
+      db.saveDatabase((err) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve()
+        }
+      })
+    })
+  } finally {
+    db.close()
+    db = null
+  }
+}
+
+async function shutdown () {
+  if (requestTimesTimer) {
+    clearInterval(requestTimesTimer)
+    requestTimesTimer = null
+  }
+  await closeDatabase()
+}
+
 function clearRequestTimes () {
   requestTimes = {}
 }
 
-setInterval(clearRequestTimes, TWIKOO_REQ_TIMES_CLEAR_TIME)
+requestTimesTimer = setInterval(clearRequestTimes, TWIKOO_REQ_TIMES_CLEAR_TIME)
+
+module.exports.shutdown = shutdown

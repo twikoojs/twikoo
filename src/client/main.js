@@ -1,7 +1,7 @@
 import { version } from './version'
 import { install } from './utils/tcb'
 import { render } from './view'
-import { setLanguage, logger, isUrl, getCommentsCountApi, getRecentCommentsApi, updateVisitorsCount } from './utils'
+import { setLanguage, logger, isUrl, getCommentsCountApi, getRecentCommentsApi, getVisitorsCountApi, updateVisitorsCount } from './utils'
 
 async function initTcb (options) {
   if (typeof cloudbase === 'undefined') {

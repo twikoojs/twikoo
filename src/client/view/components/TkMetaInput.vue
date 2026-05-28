@@ -102,15 +102,24 @@ export default {
         this.getQQNick(qqNum)
       }
     },
+    clearNickIfFromQQInput () {
+      if (isQQ(this.metaData.nick)) {
+        this.metaData.nick = ''
+        this.updateMeta()
+      }
+    },
     async getQQNick (qqNum) {
       try {
         const { result } = await call(null, 'GET_QQ_NICK', { qq: qqNum })
         if (result && result.nick) {
           this.metaData.nick = result.nick
           this.updateMeta()
+        } else {
+          this.clearNickIfFromQQInput()
         }
       } catch (e) {
         console.warn('获取 QQ 昵称失败：', e)
+        this.clearNickIfFromQQInput()
       }
     },
     checkAdminCrypt () {

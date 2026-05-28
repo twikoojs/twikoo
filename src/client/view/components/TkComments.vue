@@ -234,6 +234,16 @@ export default {
   position: relative;
   border-radius: .3em
 }
+.twikoo .tk-content pre,
+.twikoo .tk-preview-container pre {
+  overflow-x: auto;
+  max-width: 100%;
+}
+.twikoo .tk-content pre code,
+.twikoo .tk-preview-container pre code {
+  white-space: pre;
+  word-break: normal;
+}
 .twikoo div.code-toolbar>.toolbar {
   position: absolute;
   right: 4px;

@@ -121,10 +121,9 @@ const getUrl = (path) => {
 const getHref = (href) => {
   return window.TWIKOO_MAGIC_HREF ?? href ?? window.location.href
 }
+const LOCALHOST_HOSTNAMES = new Set(['localhost', '127.0.0.1', '0.0.0.0', '::1'])
 
-const isLocalhost = () => {
-  return ['localhost', '127.0.0.1', '0.0.0.0'].indexOf(window.location.hostname) !== -1
-}
+const isLocalhost = () => LOCALHOST_HOSTNAMES.has(window.location.hostname)
 
 const getVisitorsCountApi = async (tcb, options = {}) => {
   const result = await call(tcb, 'COUNTER_GET', {

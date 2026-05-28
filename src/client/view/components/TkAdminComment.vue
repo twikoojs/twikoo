@@ -269,7 +269,7 @@ export default {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
 }
 .tk-admin-comment-filter-keyword {
   flex: 1;
@@ -279,7 +279,7 @@ export default {
   margin: 0 0.5em;
   padding: 0 0.5em;
   color: #ffffff;
-  background: none;
+  background-color: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(144,147,153,0.31);
   border-radius: 4px;
   position: relative;

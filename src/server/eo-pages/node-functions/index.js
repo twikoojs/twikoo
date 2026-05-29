@@ -53,7 +53,7 @@ import logger from 'twikoo-func/utils/logger'
 import constants from 'twikoo-func/utils/constants'
 
 const { RES_CODE, MAX_REQUEST_TIMES } = constants
-const VERSION = '1.7.10'
+const VERSION = '1.7.11'
 
 // 注入自定义依赖（对标 Cloudflare 版本）
 setCustomLibs({

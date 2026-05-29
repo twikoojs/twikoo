@@ -12,7 +12,7 @@
  * - counter:{url}   - 页面访问计数
  */
 
-const VERSION = '1.7.10'
+const VERSION = '1.7.11'
 
 // 响应码
 const RES_CODE = {

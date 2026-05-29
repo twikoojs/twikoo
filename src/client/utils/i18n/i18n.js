@@ -564,8 +564,8 @@ export default {
     `Avatar placeholder. Default (when empty): "initials". Choose from: ${defaultGravatar.join(', ')}`,
     `Аватар тўлдирувчиси. Стандарт (агар бўш қолдирилса): «идентификатор». Қуйидагилардан танланг: ${defaultGravatar.join(', ')}`,
     `デフォルトのプロフィール画像表示。デフォルト（空欄時）は "initials" で、選択肢は：${defaultGravatar.join('、')} です`,
-    `프로필 기본 이미지. 기본값(비워둘 경우): "initials". 사용 가능 스타일: ${defaultGravatar.join(', ')}`
-    `Ảnh đại diện mặc định. Mặc định (để trống): "initials".`
+    `프로필 기본 이미지. 기본값(비워둘 경우): "initials". 사용 가능 스타일: ${defaultGravatar.join(', ')}`,
+    'Ảnh đại diện mặc định. Mặc định (để trống): "initials".'
   ],
   [S.ACI + '_EMOTION_CDN']: [
     '表情 CDN，英文逗号分隔。默认为：https://owo.imaegoo.com/owo.json',
@@ -644,8 +644,8 @@ export default {
     `Code highlighting theme. Select from: ${highlightThemes.join(', ')}. Visit https://prismjs.com for preview. If your theme conflicts with code highlighting, please set it to none. Default: none.`,
     `Кодни таъкидлаш мавзуси. Қуйидагилардан танланг: ${highlightThemes.join(', ')}. Олдиндан кўриш учун https://prismjs.com сайтига ташриф буюринг. Агар мавзуингиз кодни ажратиб кўрсатишга зид бўлса, уни «Ҳеч» га ўрнатинг. Стандарт: йўқ.`,
     `コードハイライトのテーマ。選択肢：${highlightThemes.join('、')}、テーマの効果をプレビューするには https://prismjs.com を訪問してください。テーマとコードハイライトに競合がある場合、noneに設定してください。デフォルト：none`,
-    `코드 하이라이팅 테마. 사용 가능 테마: ${highlightThemes.join(', ')}. https://prismjs.com 에서 미리보기를 확인하세요. 테마와 코드 하이라이팅이 충돌하면 none으로 설정하세요. 기본값: none.`
-    `Theme tô sáng code. Truy cập https://prismjs.com để xem trước. Mặc định: none.`
+    `코드 하이라이팅 테마. 사용 가능 테마: ${highlightThemes.join(', ')}. https://prismjs.com 에서 미리보기를 확인하세요. 테마와 코드 하이라이팅이 충돌하면 none으로 설정하세요. 기본값: none.`,
+    'Theme tô sáng code. Truy cập https://prismjs.com để xem trước. Mặc định: none.'
   ],
   [S.ACI + '_HIGHLIGHT_PLUGIN']: [
     `代码高亮插件，可选：${highlightPlugins.join('、')}，分别表示：展示代码语言、展示代码拷贝按钮。可以同时设置多个选项，如果想要不添加任何代码高亮插件，请设为 none。默认：none。`,
@@ -654,8 +654,8 @@ export default {
     `Code highlight plug-in, optional: ${highlightPlugins.join(', ')}, respectively: show code language, show code copy button. Multiple options can be set at the same time, if you want to add no code highlighting plug-ins, please set it to none. Default: none. `,
     `Плагин подсветки кода, опционально: ${highlightPlugins.join(',')}, соответственно: показывать язык кода, показывать кнопку копирования кода. Вы можете установить несколько опций одновременно, если вы хотите не добавлять плагин подсветки кода, установите значение none. по умолчанию: none.`,
     `コード・ハイライト・プラグイン。オプション: ${highlightPlugins.join(',')}, それぞれ: コード言語の表示、コード・コピー・ボタンの表示。複数のオプションを同時に設定できますが、コード・ハイライト・プラグインを追加したくない場合は、noneに設定してください。`,
-    `코드 하이라이트 추가 기능. 선택 가능: ${highlightPlugins.join(', ')}. (코드 언어 표시, 복사 버튼) 여러 기능을 동시에 설정할 수 있으며, 추가하지 않으려면 none으로 설정하세요. 기본값: none.`
-    `Plugin tô sáng code. Để không dùng plugin, đặt thành none. Mặc định: none.`
+    `코드 하이라이트 추가 기능. 선택 가능: ${highlightPlugins.join(', ')}. (코드 언어 표시, 복사 버튼) 여러 기능을 동시에 설정할 수 있으며, 추가하지 않으려면 none으로 설정하세요. 기본값: none.`,
+    'Plugin tô sáng code. Để không dùng plugin, đặt thành none. Mặc định: none.'
   ],
   [S.ACI + '_IMAGE_CDN']: [
     `插入图片所使用的图床，目前支持：${imageBedServices.join('、')}`,
@@ -664,8 +664,8 @@ export default {
     `The image bed for image uploading. Select from: ${imageBedServices.join(', ')}`,
     `Расм юклаш учун расм тўшаги. Қуйидагилардан танланг: ${imageBedServices.join(', ')}`,
     `画像のアップロードに使用する画像ホスティングサービス。次のうちから選択してください：${imageBedServices.join('、')}`,
-    `댓글 이미지 업로드 기능에 사용될 호스팅 서비스. 사용 가능 목록: ${imageBedServices.join(', ')}`
-    `Dịch vụ lưu trữ ảnh khi tải lên bình luận.`
+    `댓글 이미지 업로드 기능에 사용될 호스팅 서비스. 사용 가능 목록: ${imageBedServices.join(', ')}`,
+    'Dịch vụ lưu trữ ảnh khi tải lên bình luận.'
   ],
   // 翻译来自 Deepseek
   [S.ACI + '_IMAGE_CDN_URL']: [
@@ -983,8 +983,8 @@ export default {
     `IM notification push channel. Support: ${pushooChannels.join(', ')}`,
     `ИМ билдиришномаси суриш канали. Қўллаб-қувватлаш: ${pushooChannels.join(', ')}`,
     `即時メッセージプッシュプラットフォームの名前。${pushooChannels.join('、')} などに対応しています。`,
-    `실시간 알림을 받을 서비스 설정. 지원: ${pushooChannels.join(', ')}`
-    `Kênh gửi thông báo IM tức thì.`
+    `실시간 알림을 받을 서비스 설정. 지원: ${pushooChannels.join(', ')}`,
+    'Kênh gửi thông báo IM tức thì.'
   ],
   [S.ACI + '_PUSHOO_TOKEN']: [
     '即时消息推送 token。请参考 https://pushoo.js.org 里的详细说明配置',
@@ -1174,8 +1174,8 @@ export default {
     `Email service provider for Email notification. Support: ${smtpServices.join(', ')}`,
     `Электрон почта хабарномаси учун электрон почта хизмати провайдери. Қўллаб-қувватлаш: ${smtpServices.join(', ')}`,
     `メール通知メールボックスサービスプロバイダ。サポート: ${smtpServices.join(',')}.`,
-    `알림 발송 이메일 서비스 선택. 지원 목록: ${smtpServices.join(', ')}`
-    `Nhà cung cấp dịch vụ email gửi thông báo.`
+    `알림 발송 이메일 서비스 선택. 지원 목록: ${smtpServices.join(', ')}`,
+    'Nhà cung cấp dịch vụ email gửi thông báo.'
   ],
   [S.ACI + '_SMTP_USER']: [
     '邮件通知邮箱用户名。',

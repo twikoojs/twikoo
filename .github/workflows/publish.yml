@@ -22,25 +22,25 @@ jobs:
       - run: yarn install
       - run: yarn build
       - if: "github.event.release.prerelease"
-        run: yarn publish --tag beta
+        run: npm publish --provenance --tag beta
       - if: "github.event.release.prerelease"
-        run: cd src/server/function/twikoo && yarn publish --tag beta
+        run: cd src/server/function/twikoo && npm publish --provenance --tag beta
       - if: "github.event.release.prerelease"
-        run: cd src/server/vercel && yarn publish --tag beta
+        run: cd src/server/vercel && npm publish --provenance --tag beta
       - if: "github.event.release.prerelease"
-        run: cd src/server/self-hosted && yarn publish --tag beta
+        run: cd src/server/self-hosted && npm publish --provenance --tag beta
       - if: "github.event.release.prerelease"
-        run: cd src/server/netlify && yarn publish --tag beta
+        run: cd src/server/netlify && npm publish --provenance --tag beta
       - if: "!github.event.release.prerelease"
-        run: yarn publish
+        run: npm publish --provenance
       - if: "!github.event.release.prerelease"
-        run: cd src/server/function/twikoo && yarn publish
+        run: cd src/server/function/twikoo && npm publish --provenance
       - if: "!github.event.release.prerelease"
-        run: cd src/server/vercel && yarn publish
+        run: cd src/server/vercel && npm publish --provenance
       - if: "!github.event.release.prerelease"
-        run: cd src/server/self-hosted && yarn publish
+        run: cd src/server/self-hosted && npm publish --provenance
       - if: "!github.event.release.prerelease"
-        run: cd src/server/netlify && yarn publish
+        run: cd src/server/netlify && npm publish --provenance
 
   publish-docker:
     needs: publish-npm

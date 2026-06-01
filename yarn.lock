@@ -865,65 +865,65 @@
     "@cloudbase/adapter-interface" "^0.7.0"
     web-streams-polyfill "^4.0.0"
 
-"@cloudbase/ai@3.3.10":
-  version "3.3.10"
-  resolved "https://registry.yarnpkg.com/@cloudbase/ai/-/ai-3.3.10.tgz#c5325dc7a1a330a3a6f77c0a51f5e9026857436c"
-  integrity sha512-BNoFidczXwcVPK6ZtiQGwxyDbKSsk3STKSWqNQCRzeYRCGuE9p/RxX5/PPoYGiuTS3xTVWchASzOULIjZoDe1w==
+"@cloudbase/ai@3.3.13":
+  version "3.3.13"
+  resolved "https://registry.yarnpkg.com/@cloudbase/ai/-/ai-3.3.13.tgz#c496f60a26da1967cd861a64318cb19713db7a54"
+  integrity sha512-6mYxLw8XVOPh1tIugqAlJstibE5VL2BO62BQBtz6lzc/bicva3xnaz9T6f6h9t43hbmT+8XIO9flBzADw2Vgow==
   dependencies:
-    "@cloudbase/types" "3.3.10"
-    "@cloudbase/utilities" "3.3.10"
+    "@cloudbase/types" "3.3.13"
+    "@cloudbase/utilities" "3.3.13"
     "@mattiasbuelens/web-streams-adapter" "^0.1.0"
     text-encoding-shim "^1.0.5"
     web-streams-polyfill "^4.0.0"
 
-"@cloudbase/analytics@3.3.10":
-  version "3.3.10"
-  resolved "https://registry.yarnpkg.com/@cloudbase/analytics/-/analytics-3.3.10.tgz#6b774cf96940b9eb145b4ca82aaa0e3d04536ba4"
-  integrity sha512-qppx0gM8yp+hgdehSj+8OzJXf//PXfP0aDfLg6GudO7snw63j4m8ixPEg2HH6EhzuKbc5vTugkf2/6dA8mx0Pw==
+"@cloudbase/analytics@3.3.13":
+  version "3.3.13"
+  resolved "https://registry.yarnpkg.com/@cloudbase/analytics/-/analytics-3.3.13.tgz#4988560438525ddde8c68d2a6471a17b64904d3b"
+  integrity sha512-TpMuyMp1doXeRyLBnW92abZTFoRDAfzguZStUkonzM4iIhEbOtgLjj2U6GO2obk4gnl4VzFZXOECyQ3XNlDPWw==
   dependencies:
-    "@cloudbase/types" "3.3.10"
-    "@cloudbase/utilities" "3.3.10"
+    "@cloudbase/types" "3.3.13"
+    "@cloudbase/utilities" "3.3.13"
 
-"@cloudbase/apis@3.3.10":
-  version "3.3.10"
-  resolved "https://registry.yarnpkg.com/@cloudbase/apis/-/apis-3.3.10.tgz#24495c855e9c1b6cd47d9ae994288918e6901aff"
-  integrity sha512-0Z69Om8fldfxnQvptl4K1BsMhcYZLe6pFAKZMwE8S95zuNPSPkM4KkmJtJ9BaGicO3jhSG1Vf52IpXOxUy/xQw==
+"@cloudbase/apis@3.3.13":
+  version "3.3.13"
+  resolved "https://registry.yarnpkg.com/@cloudbase/apis/-/apis-3.3.13.tgz#4f503f257ce2a44ccefa97b53920bce6914006c1"
+  integrity sha512-jkpr99ywF7PS8M/PB9phDHs5WHkz4KHaO0+QDrG2z6ySltyxWyWT6bjTHeqlncL5xgHgBgTTU7z32qOG/yRlZg==
   dependencies:
-    "@cloudbase/types" "3.3.10"
-    "@cloudbase/utilities" "3.3.10"
+    "@cloudbase/types" "3.3.13"
+    "@cloudbase/utilities" "3.3.13"
 
-"@cloudbase/app@3.3.10":
-  version "3.3.10"
-  resolved "https://registry.yarnpkg.com/@cloudbase/app/-/app-3.3.10.tgz#d775302b5dd1969f54200d0d9b28a48f15b40be7"
-  integrity sha512-44znofm4h0xwR2LuQdR76j0AMc9gAcDGheT7SCekddE5niAgNg0i/Peo9N5mdFHvZhwm8ltvnHjLh3/x2XRS3Q==
+"@cloudbase/app@3.3.13":
+  version "3.3.13"
+  resolved "https://registry.yarnpkg.com/@cloudbase/app/-/app-3.3.13.tgz#9d7117d017d83bfa4d4eea4c029e6710425a7510"
+  integrity sha512-MbzkBaOyL2ptehJGub691YV2VJdPwtigaoSlj25lnu9G1y3QmPe+KPugwugSTK9ZaU5aamb7wJabcan6NGiN0Q==
   dependencies:
     "@cloudbase/adapter-interface" "^0.7.1"
     "@cloudbase/adapter-wx_mp" "^1.3.1"
-    "@cloudbase/types" "3.3.10"
-    "@cloudbase/utilities" "3.3.10"
+    "@cloudbase/types" "3.3.13"
+    "@cloudbase/utilities" "3.3.13"
 
-"@cloudbase/auth@3.3.10":
-  version "3.3.10"
-  resolved "https://registry.yarnpkg.com/@cloudbase/auth/-/auth-3.3.10.tgz#68a57ed7a31328172344187ab8492adb2379ea4f"
-  integrity sha512-xc184YkB21N9zekoNgFo1HURDZ441pbO3f4aT9p8ehVcKeaEf/8C5p2l8K2/aLp5wPvO2LKWeMnnQY3s6pODsg==
+"@cloudbase/auth@3.3.13":
+  version "3.3.13"
+  resolved "https://registry.yarnpkg.com/@cloudbase/auth/-/auth-3.3.13.tgz#dbade7457ca0d3f717af2ddaf7bbf5e891421c09"
+  integrity sha512-y9WNCAo74EIpHAwB6hO+o30qGkD4Gx/BDDOQOqcUoNenhcHU1lzYDMsvfLZxIWv7jHE61BGqE04tx2HOTOwNaQ==
   dependencies:
     "@cloudbase/adapter-wx_mp" "^1.3.1"
-    "@cloudbase/oauth" "3.3.10"
-    "@cloudbase/utilities" "3.3.10"
+    "@cloudbase/oauth" "3.3.13"
+    "@cloudbase/utilities" "3.3.13"
 
 "@cloudbase/cli@^3.3.0":
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/@cloudbase/cli/-/cli-3.4.0.tgz#a3861d9ba80cb182fca83cacd50892445c117bd5"
   integrity sha512-2z3zZ8nhD1SAEp8LFaGBA/NQsTUwTaPT87UAT3OKdthZWVgTdV+6Udr6jSmjsgnvyvOPW8wXb9KDlokjyuoerQ==
 
-"@cloudbase/cloudrun@3.3.10":
-  version "3.3.10"
-  resolved "https://registry.yarnpkg.com/@cloudbase/cloudrun/-/cloudrun-3.3.10.tgz#ef3e8eb600b4a0f41c8da685e50db484c2f74d31"
-  integrity sha512-zplUrkHX1dRCX8gkwsSVRMqP3TSTEEgEUpfOOgUR1KfhmHInzgJQKcDVF9D5AxbtGVijASmq8wRyWYZ4aWZAvQ==
+"@cloudbase/cloudrun@3.3.13":
+  version "3.3.13"
+  resolved "https://registry.yarnpkg.com/@cloudbase/cloudrun/-/cloudrun-3.3.13.tgz#f8db054f54223ab757a60643170dd36662cddcfe"
+  integrity sha512-M+qx28G5TNiXuh3PklDYAi4lvgg5H9soyzdISAA3AVA/BxHJXuWtSLL5W0L0ap7g+zEhn0iLD/ilOgtsDEB8sA==
   dependencies:
     "@cloudbase/adapter-interface" "^0.7.1"
-    "@cloudbase/types" "3.3.10"
-    "@cloudbase/utilities" "3.3.10"
+    "@cloudbase/types" "3.3.13"
+    "@cloudbase/utilities" "3.3.13"
 
 "@cloudbase/database@0.12.1":
   version "0.12.1"
@@ -932,77 +932,77 @@
   dependencies:
     bson "^7.1.1"
 
-"@cloudbase/functions@3.3.10":
-  version "3.3.10"
-  resolved "https://registry.yarnpkg.com/@cloudbase/functions/-/functions-3.3.10.tgz#629af11026107193dd93eebcf9143a7a6a2ac0a4"
-  integrity sha512-9LvShXfsjtWHH+iKX5TTxk14QqyknuhpZrVj4OFto41oUGETcunlcO5W0W6QGMIBNjndLi2vtQgOSt54wIputw==
+"@cloudbase/functions@3.3.13":
+  version "3.3.13"
+  resolved "https://registry.yarnpkg.com/@cloudbase/functions/-/functions-3.3.13.tgz#f0e458538ecdcbe024ec13da46acaff8ce9aa922"
+  integrity sha512-/dXLZYOXcKOJn4WK3i3LujH3auw8+jrO+7PMrFa/1YsyoVUa+iY0OOZreSiVTNfSQkaaHiDt4KEy28HzMnxlGg==
   dependencies:
     "@cloudbase/adapter-interface" "^0.7.1"
-    "@cloudbase/cloudrun" "3.3.10"
-    "@cloudbase/types" "3.3.10"
-    "@cloudbase/utilities" "3.3.10"
+    "@cloudbase/cloudrun" "3.3.13"
+    "@cloudbase/types" "3.3.13"
+    "@cloudbase/utilities" "3.3.13"
 
 "@cloudbase/js-sdk@^3.3.10":
-  version "3.3.10"
-  resolved "https://registry.yarnpkg.com/@cloudbase/js-sdk/-/js-sdk-3.3.10.tgz#d6272c845c5fe8d95075aa3a969da5b415d4d203"
-  integrity sha512-VhcGO4kvShDSQxtSq+sfbk7aghsiQkxHPxzRgn0Z6oDGV68lEE0xxieXrIPaQ3vdi4O6KrE7wob60ILIfHycGA==
+  version "3.3.13"
+  resolved "https://registry.yarnpkg.com/@cloudbase/js-sdk/-/js-sdk-3.3.13.tgz#17e6a037593a0b9fa6f7c8b6a1d64fd2c21f22ab"
+  integrity sha512-LAEXcRl1apY+jWManRHFjSDhcjv18Q6xxlT7dSx8xcMmbsNIM91703X0ByxG3zNtSelauy9bqdlt9Rp4KqogZg==
   dependencies:
     "@cloudbase/adapter-interface" "^0.7.1"
-    "@cloudbase/ai" "3.3.10"
-    "@cloudbase/analytics" "3.3.10"
-    "@cloudbase/apis" "3.3.10"
-    "@cloudbase/app" "3.3.10"
-    "@cloudbase/auth" "3.3.10"
-    "@cloudbase/cloudrun" "3.3.10"
+    "@cloudbase/ai" "3.3.13"
+    "@cloudbase/analytics" "3.3.13"
+    "@cloudbase/apis" "3.3.13"
+    "@cloudbase/app" "3.3.13"
+    "@cloudbase/auth" "3.3.13"
+    "@cloudbase/cloudrun" "3.3.13"
     "@cloudbase/database" "0.12.1"
-    "@cloudbase/functions" "3.3.10"
-    "@cloudbase/model" "3.3.10"
-    "@cloudbase/mysql" "3.3.10"
-    "@cloudbase/realtime" "3.3.10"
-    "@cloudbase/storage" "3.3.10"
-    "@cloudbase/types" "3.3.10"
-    "@cloudbase/utilities" "3.3.10"
+    "@cloudbase/functions" "3.3.13"
+    "@cloudbase/model" "3.3.13"
+    "@cloudbase/mysql" "3.3.13"
+    "@cloudbase/realtime" "3.3.13"
+    "@cloudbase/storage" "3.3.13"
+    "@cloudbase/types" "3.3.13"
+    "@cloudbase/utilities" "3.3.13"
 
-"@cloudbase/model@3.3.10":
-  version "3.3.10"
-  resolved "https://registry.yarnpkg.com/@cloudbase/model/-/model-3.3.10.tgz#9737315e198b3ef940deecb177da90e4e153659b"
-  integrity sha512-f2F0x1/FgRZk88RymgZ9OQmISXN64Oq4LVVEt9WKdy9PrtE93FuHDCS99ev+kmuQXuJ3ntkJfpzHZbj8G+INiw==
+"@cloudbase/model@3.3.13":
+  version "3.3.13"
+  resolved "https://registry.yarnpkg.com/@cloudbase/model/-/model-3.3.13.tgz#2e9e789314d29323ae1aad21599950cdc7229736"
+  integrity sha512-awHGqseiUwMe/FnMxJTDBkuz9Uj9r7LMh8w7YIKpp/4JmtDSqTsLATM/a9rDzpEKEOuvqCdlCoAG0IJWejnYfw==
   dependencies:
-    "@cloudbase/types" "3.3.10"
-    "@cloudbase/utilities" "3.3.10"
+    "@cloudbase/types" "3.3.13"
+    "@cloudbase/utilities" "3.3.13"
     "@cloudbase/wx-cloud-client-sdk" "^1.8.8"
 
-"@cloudbase/mysql@3.3.10":
-  version "3.3.10"
-  resolved "https://registry.yarnpkg.com/@cloudbase/mysql/-/mysql-3.3.10.tgz#dc3ab73edd7cfce2f2aa3a85d1fcf952edf256d6"
-  integrity sha512-9astscRi2OOmhX0msqQ1Gj2Qph35hVDKhu3hH6TLayymbkM3Zjk7B8PjtGMsgNf8RP/HscncxBY4z5SfVXaGlg==
+"@cloudbase/mysql@3.3.13":
+  version "3.3.13"
+  resolved "https://registry.yarnpkg.com/@cloudbase/mysql/-/mysql-3.3.13.tgz#ddd08b7af9bb10bec00fefcec18bc3c53ae3b658"
+  integrity sha512-TiDNXy41XsalWeJESSLer36QLn/s73rUw6gEudvZUnlUDWZWw5gqK/w+xGULLsdfX8pGb3pmVudEAmRgBrK2Gg==
   dependencies:
     "@cloudbase/types" "2.20.3"
     "@cloudbase/utilities" "2.20.3"
     "@cloudbase/wx-cloud-client-sdk" "1.8.6-beta.1"
 
-"@cloudbase/oauth@3.3.10":
-  version "3.3.10"
-  resolved "https://registry.yarnpkg.com/@cloudbase/oauth/-/oauth-3.3.10.tgz#6f85b951f30c183b3d7cdaf9dd9b46f8f3af9fc0"
-  integrity sha512-5RYU57GfIRQ/jupLLr0DLyzIRnQLJfYvzX4lgRZGqcS08cqDNNz+wCkJTHqpwxAR2BrerQDOA7mMjyuDJfDSFw==
+"@cloudbase/oauth@3.3.13":
+  version "3.3.13"
+  resolved "https://registry.yarnpkg.com/@cloudbase/oauth/-/oauth-3.3.13.tgz#400fbcfed78eb286cf3a0fbaf9c93991040c3ee0"
+  integrity sha512-x8FsIl1HNITj3D9REuEtpwhdpXnUfoapWiOECrW6Mp8sgKO2+zdCB6uF/oqfLp4Q3r5hlXHqsKl51eQg5mMDNg==
   dependencies:
-    "@cloudbase/utilities" "3.3.10"
+    "@cloudbase/utilities" "3.3.13"
 
-"@cloudbase/realtime@3.3.10":
-  version "3.3.10"
-  resolved "https://registry.yarnpkg.com/@cloudbase/realtime/-/realtime-3.3.10.tgz#fd3285bf76b39d51a90b9625c2c45e51af1b0a6b"
-  integrity sha512-7WmFGyDt9RE5Eh0KPstrcEwQN83v3PBQXdUVSDvsT7IfwQ7CnrScpaeA5H91c7PsP+Tsk92oDQzSYMpZ+nw+yw==
+"@cloudbase/realtime@3.3.13":
+  version "3.3.13"
+  resolved "https://registry.yarnpkg.com/@cloudbase/realtime/-/realtime-3.3.13.tgz#5c4f1637a515855a78e9e442e8ad16305d2e7db5"
+  integrity sha512-KXvi2TphLqW8eJbowa1SmdZBWWK4d8I88VxRftRx2qVWawpwGKZTup37m4h+zaOJY0RlaW4AkZ+9VFXW5FpjsQ==
   dependencies:
-    "@cloudbase/types" "3.3.10"
+    "@cloudbase/types" "3.3.13"
     lodash "^4.17.21"
 
-"@cloudbase/storage@3.3.10":
-  version "3.3.10"
-  resolved "https://registry.yarnpkg.com/@cloudbase/storage/-/storage-3.3.10.tgz#8b9a05a33533d8e41c19bf0f7f4d9ea9933cdee1"
-  integrity sha512-jJv4GFkB2wfo9DU6Ui/QoB+DVBpteaYYOrYwa50uXuXFKv7hRaVcVYrrSIrGN9WczYhPCTB7BPD/QWdzNBWRrw==
+"@cloudbase/storage@3.3.13":
+  version "3.3.13"
+  resolved "https://registry.yarnpkg.com/@cloudbase/storage/-/storage-3.3.13.tgz#9cb6b5db968cdae7afac3ebceec5f7a33189791d"
+  integrity sha512-BFx1mAub/Vdm4Eb8BDYHuYEoU8PxY8J/DXIfIn0YUgV7SFFnQSVLOh/vn2yylAgtHOODsYJJxTPmOe25yUsh2Q==
   dependencies:
-    "@cloudbase/types" "3.3.10"
-    "@cloudbase/utilities" "3.3.10"
+    "@cloudbase/types" "3.3.13"
+    "@cloudbase/utilities" "3.3.13"
 
 "@cloudbase/types@2.20.3":
   version "2.20.3"
@@ -1011,10 +1011,10 @@
   dependencies:
     "@cloudbase/adapter-interface" "^0.7.1"
 
-"@cloudbase/types@3.3.10":
-  version "3.3.10"
-  resolved "https://registry.yarnpkg.com/@cloudbase/types/-/types-3.3.10.tgz#51f6392db4fca8452872d02e38213cc3e364c58f"
-  integrity sha512-ZWVf+lS/Jrt24fhrKTnRYDhQ9Vi6UZe56CK8TyI2oxDFTfG/BMuUIDGI0uw2v8/52DbR1aWZYqx/ykQS5wffaA==
+"@cloudbase/types@3.3.13":
+  version "3.3.13"
+  resolved "https://registry.yarnpkg.com/@cloudbase/types/-/types-3.3.13.tgz#8cb7302bd5dc8052c7c5917271a0a7a7c0674f66"
+  integrity sha512-AJ/qoiKZTwfJzl8KssZjqDkOF6YNGzNBNuCYe/NmEe+XOOdd7b1K6yB933ORJXvqOph4umk+POcLCiOKXG1Fow==
   dependencies:
     "@cloudbase/adapter-interface" "^0.7.1"
 
@@ -1027,13 +1027,13 @@
     "@cloudbase/types" "2.20.3"
     jwt-decode "^3.1.2"
 
-"@cloudbase/utilities@3.3.10":
-  version "3.3.10"
-  resolved "https://registry.yarnpkg.com/@cloudbase/utilities/-/utilities-3.3.10.tgz#829bab77550cd9f472524fec1c9d720695e74089"
-  integrity sha512-otjmDivZtlHqHx2tp6KYZa2R7YuZOnpruV0Tywy/axfg/RFdzDdEHm49QMD0axu/OL11F+lzCHwtyZb1/UvHVw==
+"@cloudbase/utilities@3.3.13":
+  version "3.3.13"
+  resolved "https://registry.yarnpkg.com/@cloudbase/utilities/-/utilities-3.3.13.tgz#58ab88af536f29f5d2fa04cac61edd08bab1ed68"
+  integrity sha512-cf+8Kg0SZG+IllnGyt+R7LyopClSKp6iNPYkfJGoWkSuBwaFc1ZRFgb8C1gMfVlZrxjyRATKuu7CWIZq2zrtPQ==
   dependencies:
     "@cloudbase/adapter-interface" "^0.7.1"
-    "@cloudbase/types" "3.3.10"
+    "@cloudbase/types" "3.3.13"
     jwt-decode "^3.1.2"
 
 "@cloudbase/wx-cloud-client-sdk@1.8.6-beta.1":

@@ -3,9 +3,10 @@
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  *
- * 使用 twikoo-func 实现核心逻辑，通过 Edge Function 操作 KV 数据库
+ * 使用 twikoo-func 实现核心逻辑，通过 Cloud Function 操作 Blob 数据库
  */
 
+import { getStore } from '@edgeone/pages-blob'
 import { v4 as uuidv4 } from 'uuid'
 import xss from 'xss'
 import bowser from 'bowser'
@@ -277,91 +278,144 @@ setInterval(() => {
   Object.keys(requestTimes).forEach(key => delete requestTimes[key])
 }, 10 * 60 * 1000)
 
-// ==================== KV 代理层 ====================
+// ==================== 评论过滤函数（原本在 KV 内，移除 KV 后迁移到 Blob 数据库层） ====================
 
-function createKVProxy (req) {
-  // 使用 eo-pages-host（EdgeOne Pages 提供的原始域名）
-  const host = req.headers['eo-pages-host'] || req.headers['x-forwarded-host'] || req.headers.host || 'localhost'
-  const protocol = req.headers['x-forwarded-proto'] || 'https'
-  const baseUrl = `${protocol}://${host}`
-
-  async function callKV (action, data) {
-    const kvUrl = `${baseUrl}/api/kv`
-
-    try {
-      const response = await fetch(kvUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Twikoo-Internal': 'true'
-        },
-        body: JSON.stringify({ action, data })
-      })
-
-      const text = await response.text()
-
-      let result
-      try {
-        result = JSON.parse(text)
-      } catch (e) {
-        logger.error('[KV] JSON 解析失败:', text.substring(0, 200))
-        throw new Error(`KV API 返回非 JSON: ${text.substring(0, 200)}`)
+function filterComments (comments, query) {
+  if (!Object.keys(query).length) return comments
+  return comments.filter(comment => {
+    for (const [key, value] of Object.entries(query)) {
+      if (key === '$or') {
+        const orMatch = value.some(cond =>
+          Object.entries(cond).every(([k, v]) => matchCondition(comment, k, v))
+        )
+        if (!orMatch) return false
+      } else if (!matchCondition(comment, key, value)) {
+        return false
       }
-
-      if (result.code !== 0) {
-        throw new Error(result.message || 'KV 操作失败')
-      }
-
-      return result.data
-    } catch (e) {
-      logger.error('[KV] 调用异常:', e.message)
-      throw e
     }
+    return true
+  })
+}
+
+function matchCondition (comment, key, value) {
+  const cv = comment[key]
+  if (value === null || value === undefined) return cv === null || cv === undefined
+  if (typeof value === 'object') {
+    if ('$in' in value) return value.$in.includes(cv)
+    if ('$ne' in value) return cv !== value.$ne
+    if ('$exists' in value) {
+      return value.$exists
+        ? (cv !== undefined && cv !== null && cv !== '')
+        : (cv === undefined || cv === null || cv === '')
+    }
+    if ('$gt' in value) return cv > value.$gt
+    if ('$lt' in value) return cv < value.$lt
+    if ('$regex' in value) return new RegExp(value.$regex, value.$options || '').test(cv)
   }
+  return cv === value
+}
+
+// ==================== Blob 数据库层 ====================
+
+const COMMENTS_KEY = 'comments:all'
+
+function createBlobDatabase () {
+  const store = getStore({ name: 'twikoo', consistency: 'strong' })
+  let commentsCache = null
 
   return {
+    async getAllComments () {
+      if (commentsCache !== null) return commentsCache
+      commentsCache = await store.get(COMMENTS_KEY, { type: 'json' }) ?? []
+      return commentsCache
+    },
+    async saveAllComments (comments) {
+      commentsCache = comments
+      await store.setJSON(COMMENTS_KEY, comments)
+    },
     async getComments (query = {}) {
-      return callKV('getComments', { query })
+      const all = await this.getAllComments()
+      return filterComments(all, query)
     },
     async countComments (query = {}) {
-      const comments = await this.getComments(query)
-      return comments.length
+      return (await this.getComments(query)).length
     },
     async addComment (comment) {
-      return callKV('addComment', { comment })
+      const id = comment._id || uuidv4().replace(/-/g, '')
+      comment._id = id
+      comment.id = id
+      const comments = await this.getAllComments()
+      comments.push(comment)
+      await this.saveAllComments(comments)
+      return { id }
     },
     async updateComment (id, updates) {
-      return callKV('updateComment', { id, updates })
+      const comments = await this.getAllComments()
+      const index = comments.findIndex(c => c._id === id)
+      if (index !== -1) {
+        Object.assign(comments[index], updates)
+        await this.saveAllComments(comments)
+        return { updated: 1 }
+      }
+      return { updated: 0 }
     },
     async deleteComment (id) {
-      return callKV('deleteComment', { id })
+      const comments = await this.getAllComments()
+      const index = comments.findIndex(c => c._id === id)
+      if (index !== -1) {
+        comments.splice(index, 1)
+        await this.saveAllComments(comments)
+        return { deleted: 1 }
+      }
+      return { deleted: 0 }
     },
     async getComment (id) {
-      return callKV('getComment', { id })
+      const comments = await this.getAllComments()
+      return comments.find(c => c._id === id) || null
     },
-    async bulkAddComments (comments) {
-      return callKV('bulkAddComments', { comments })
+    async bulkAddComments (newComments) {
+      const comments = await this.getAllComments()
+      for (const comment of newComments) {
+        const id = comment._id || uuidv4().replace(/-/g, '')
+        comment._id = id
+        comment.id = id
+        comments.push(comment)
+      }
+      await this.saveAllComments(comments)
+      return newComments.length
     },
     async getConfig () {
-      return callKV('getConfig', {})
+      return await store.get('config:main', { type: 'json' }) ?? {}
     },
     async saveConfig (newConfig) {
-      return callKV('saveConfig', { config: newConfig })
+      const current = await this.getConfig()
+      await store.setJSON('config:main', { ...current, ...newConfig })
+      return { updated: 1 }
     },
     async getCounter (url) {
-      return callKV('getCounter', { url })
+      return await store.get(`counter:${encodeURIComponent(url)}`, { type: 'json' })
     },
     async incCounter (url, title) {
-      return callKV('incCounter', { url, title })
+      const key = `counter:${encodeURIComponent(url)}`
+      let counter = await store.get(key, { type: 'json' })
+      if (counter) {
+        counter.time = (counter.time || 0) + 1
+        counter.title = title
+        counter.updated = Date.now()
+      } else {
+        counter = { url, title, time: 1, created: Date.now(), updated: Date.now() }
+      }
+      await store.setJSON(key, counter)
+      return 1
     }
   }
 }
 
 // ==================== 配置管理 ====================
 
-async function readConfig (req) {
+async function readConfig () {
   try {
-    const db = createKVProxy(req)
+    const db = createBlobDatabase()
     config = await db.getConfig()
   } catch (e) {
     logger.error('读取配置失败:', e.message)
@@ -1104,10 +1158,10 @@ async function handlePost (req, res) {
     accessToken = event.accessToken || uuidv4().replace(/-/g, '')
 
     // 读取配置
-    await readConfig(req)
+    await readConfig()
 
     // 创建数据库操作对象
-    const db = createKVProxy(req)
+    const db = createBlobDatabase()
 
     switch (event.event) {
       case 'GET_FUNC_VERSION':

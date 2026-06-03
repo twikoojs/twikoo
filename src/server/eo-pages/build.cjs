@@ -100,6 +100,7 @@ console.log('')
 console.log('步骤 2: 检查项目文件...')
 const requiredFiles = [
   'cloud-functions/index.js',
+  'cloud-functions/smtp.go',
   'cloud-functions/ip2region-searcher.js',
   'cloud-functions/ip2region-data.js',
   'package.json'
@@ -122,6 +123,7 @@ if (allFilesExist) {
   console.log('')
   console.log('项目结构：')
   console.log('  cloud-functions/index.js            - Node Function 主入口（含 Blob 数据库层）')
+  console.log('  cloud-functions/smtp.go             - Go SMTP Bridge（自定义 SMTP 发信）')
   console.log('  cloud-functions/ip2region-searcher.js - IP 归属地查询器')
   console.log('  cloud-functions/ip2region-data.js   - IP 数据库（自动生成）')
   console.log('')

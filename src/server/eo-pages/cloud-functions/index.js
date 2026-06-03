@@ -55,6 +55,89 @@ import constants from 'twikoo-func/utils/constants'
 
 const { RES_CODE, MAX_REQUEST_TIMES } = constants
 const VERSION = '1.7.11'
+const EO_SMTP_BRIDGE_PATH = '/smtp'
+
+// ==================== SMTP Bridge ====================
+
+let mailBridgeContext = null
+
+async function withMailBridgeContext (context, fn) {
+  const previous = mailBridgeContext
+  mailBridgeContext = context
+  try {
+    return await fn()
+  } finally {
+    mailBridgeContext = previous
+  }
+}
+
+function getMailService (mailConfig) {
+  return (mailConfig.service || '').toLowerCase()
+}
+
+function isHttpMailService (mailConfig) {
+  const service = getMailService(mailConfig)
+  return service === 'sendgrid' || service === 'mailchannels'
+}
+
+function validateMailAuth (mailConfig) {
+  if (!mailConfig.auth || !mailConfig.auth.user) {
+    throw new Error('需要在 SMTP_USER 中配置账户名，如果邮件服务不需要可随意填写。')
+  }
+  if (!mailConfig.auth || !mailConfig.auth.pass) {
+    throw new Error('需要在 SMTP_PASS 中配置密码或 API 令牌。')
+  }
+}
+
+async function requestSmtpBridge (action, mailConfig, mail = {}) {
+  const context = mailBridgeContext || {}
+  if (!context.url) {
+    throw new Error('EdgeOne Pages SMTP Bridge 未初始化。')
+  }
+  if (!context.token) {
+    throw new Error('使用自定义 SMTP 需要配置 TWIKOO_SMTP_BRIDGE_TOKEN 环境变量。')
+  }
+
+  const response = await fetch(context.url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${context.token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      action,
+      host: mailConfig.host,
+      port: mailConfig.port,
+      secure: mailConfig.secure,
+      user: mailConfig.auth.user,
+      pass: mailConfig.auth.pass,
+      from: mail.from,
+      to: mail.to,
+      subject: mail.subject,
+      html: mail.html
+    })
+  })
+
+  let result
+  try {
+    result = await response.json()
+  } catch (e) {
+    throw new Error(`SMTP Bridge 返回异常：HTTP ${response.status}`)
+  }
+
+  if (!response.ok || !result.ok) {
+    throw new Error(result.message || `SMTP Bridge 请求失败：HTTP ${response.status}`)
+  }
+  return result
+}
+
+function createMailBridgeContext (req) {
+  const runtimeEnv = globalThis.process?.env || {}
+  const env = { ...runtimeEnv, ...(req.env || {}) }
+  const origin = req.origin || `${req.protocol}://${req.get('host')}`
+  const token = env.TWIKOO_SMTP_BRIDGE_TOKEN
+  return { url: `${origin}${EO_SMTP_BRIDGE_PATH}`, token }
+}
 
 // 注入自定义依赖（对标 Cloudflare 版本）
 setCustomLibs({
@@ -66,20 +149,26 @@ setCustomLibs({
   nodemailer: {
     createTransport (mailConfig) {
       return {
-        verify () {
-          if (!mailConfig.service || (mailConfig.service.toLowerCase() !== 'sendgrid' && mailConfig.service.toLowerCase() !== 'mailchannels')) {
-            throw new Error('仅支持 SendGrid 和 MailChannels 邮件服务。')
+        async verify () {
+          validateMailAuth(mailConfig)
+          if (isHttpMailService(mailConfig)) return true
+          if (mailConfig.host) {
+            await requestSmtpBridge('verify', mailConfig)
+            return true
           }
-          if (!mailConfig.auth || !mailConfig.auth.user) {
-            throw new Error('需要在 SMTP_USER 中配置账户名，如果邮件服务不需要可随意填写。')
-          }
-          if (!mailConfig.auth || !mailConfig.auth.pass) {
-            throw new Error('需要在 SMTP_PASS 中配置 API 令牌。')
-          }
-          return true
+          throw new Error('EdgeOne Pages 仅支持 SendGrid、MailChannels，或通过 SMTP_HOST 使用 Go SMTP Bridge。')
         },
-        sendMail ({ from, to, subject, html }) {
-          if (mailConfig.service.toLowerCase() === 'sendgrid') {
+        async sendMail ({ from, to, subject, html }) {
+          validateMailAuth(mailConfig)
+          const service = getMailService(mailConfig)
+          if (mailConfig.host) {
+            return requestSmtpBridge('send', mailConfig, { from, to, subject, html })
+          }
+          if (!isHttpMailService(mailConfig)) {
+            throw new Error('EdgeOne Pages 仅支持 SendGrid、MailChannels，或通过 SMTP_HOST 使用 Go SMTP Bridge。')
+          }
+
+          if (service === 'sendgrid') {
             return fetch('https://api.sendgrid.com/v3/mail/send', {
               method: 'POST',
               headers: {
@@ -93,7 +182,7 @@ setCustomLibs({
                 content: [{ type: 'text/html', value: html }]
               })
             })
-          } else if (mailConfig.service.toLowerCase() === 'mailchannels') {
+          } else if (service === 'mailchannels') {
             return fetch('https://api.mailchannels.net/tx/v1/send', {
               method: 'POST',
               headers: {
@@ -788,7 +877,7 @@ async function commentSubmit (event, req, db, accessToken) {
   res.id = result.id
 
   // 异步处理垃圾检测和通知
-  postSubmit(data, db).catch(e => {
+  postSubmit(data, db, createMailBridgeContext(req)).catch(e => {
     logger.error('POST_SUBMIT 失败', e.message)
   })
 
@@ -840,7 +929,7 @@ async function parseCommentData (event, req, accessToken, ip) {
   return commentDo
 }
 
-async function postSubmit (comment, db) {
+async function postSubmit (comment, db, mailContext) {
   try {
     logger.log('POST_SUBMIT')
 
@@ -860,7 +949,7 @@ async function postSubmit (comment, db) {
     }
 
     // 发送通知
-    await sendNotice(comment, config, getParentComment)
+    await withMailBridgeContext(mailContext, () => sendNotice(comment, config, getParentComment))
   } catch (e) {
     logger.warn('POST_SUBMIT 失败', e)
   }
@@ -1047,6 +1136,8 @@ export async function onRequest (context) {
         path: url.pathname,
         headers,
         body,
+        env: context.env || {},
+        origin: url.origin,
         ip: headers['x-real-ip'] || headers['x-forwarded-for']?.split(',')[0]?.trim() || 'unknown',
         protocol: url.protocol.replace(':', ''),
         get: (name) => headers[name.toLowerCase()]
@@ -1219,7 +1310,10 @@ async function handlePost (req, res) {
         result = await getRecentComments(event, db)
         break
       case 'EMAIL_TEST':
-        result = await emailTest(event, config, isAdmin(accessToken))
+        result = await withMailBridgeContext(
+          createMailBridgeContext(req),
+          () => emailTest(event, config, isAdmin(accessToken))
+        )
         break
       case 'UPLOAD_IMAGE':
         result = await uploadImage(event, config)

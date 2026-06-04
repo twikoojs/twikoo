@@ -2,8 +2,11 @@ package handler
 
 import (
 	"context"
+	"crypto/hmac"
+	"crypto/sha256"
 	"crypto/subtle"
 	"crypto/tls"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -35,12 +38,15 @@ type smtpBridgeRequest struct {
 	To             string `json:"to"`
 	Subject        string `json:"subject"`
 	HTML           string `json:"html"`
+	Nonce          string `json:"nonce"`
 	TimeoutSeconds int    `json:"timeoutSeconds"`
 }
 
 type smtpBridgeResponse struct {
-	OK      bool   `json:"ok"`
-	Message string `json:"message,omitempty"`
+	OK         bool   `json:"ok"`
+	Message    string `json:"message,omitempty"`
+	Signature  string `json:"signature,omitempty"`
+	BridgeHost string `json:"bridgeHost,omitempty"`
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {
@@ -56,14 +62,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		respondJSON(w, http.StatusMethodNotAllowed, smtpBridgeResponse{OK: false, Message: "method not allowed"})
 		return
 	}
-	if err := authorizeSMTPBridge(r); err != nil {
-		status := http.StatusUnauthorized
-		if errors.Is(err, errBridgeTokenNotConfigured) {
-			status = http.StatusInternalServerError
-		}
-		respondJSON(w, status, smtpBridgeResponse{OK: false, Message: err.Error()})
-		return
-	}
 
 	defer r.Body.Close()
 	body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, maxSMTPBodyBytes))
@@ -77,6 +75,21 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		respondJSON(w, http.StatusBadRequest, smtpBridgeResponse{OK: false, Message: "invalid json body"})
 		return
 	}
+	req.Action = strings.ToLower(strings.TrimSpace(req.Action))
+	if req.Action == "probe" {
+		respondSMTPBridgeProbe(w, r, req)
+		return
+	}
+
+	if err := authorizeSMTPBridge(r); err != nil {
+		status := http.StatusUnauthorized
+		if errors.Is(err, errBridgeTokenNotConfigured) {
+			status = http.StatusInternalServerError
+		}
+		respondJSON(w, status, smtpBridgeResponse{OK: false, Message: err.Error()})
+		return
+	}
+
 	if err := req.normalize(); err != nil {
 		respondJSON(w, http.StatusBadRequest, smtpBridgeResponse{OK: false, Message: err.Error()})
 		return
@@ -384,6 +397,46 @@ func normalizeCRLF(value string) string {
 func respondJSON(w http.ResponseWriter, status int, payload smtpBridgeResponse) {
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func respondSMTPBridgeProbe(w http.ResponseWriter, r *http.Request, req smtpBridgeRequest) {
+	token := os.Getenv("TWIKOO_SMTP_BRIDGE_TOKEN")
+	if token == "" {
+		respondJSON(w, http.StatusInternalServerError, smtpBridgeResponse{OK: false, Message: errBridgeTokenNotConfigured.Error()})
+		return
+	}
+
+	nonce := strings.TrimSpace(req.Nonce)
+	if len(nonce) < 16 || len(nonce) > 256 {
+		respondJSON(w, http.StatusBadRequest, smtpBridgeResponse{OK: false, Message: "invalid probe nonce"})
+		return
+	}
+
+	host := canonicalBridgeHost(r.Host)
+	if host == "" {
+		respondJSON(w, http.StatusBadRequest, smtpBridgeResponse{OK: false, Message: "missing bridge host"})
+		return
+	}
+
+	respondJSON(w, http.StatusOK, smtpBridgeResponse{
+		OK:         true,
+		Message:    "ok",
+		Signature:  signSMTPBridgeProbe(token, nonce, host),
+		BridgeHost: host,
+	})
+}
+
+func signSMTPBridgeProbe(token string, nonce string, host string) string {
+	mac := hmac.New(sha256.New, []byte(token))
+	mac.Write([]byte(nonce))
+	mac.Write([]byte("\n"))
+	mac.Write([]byte(host))
+	return hex.EncodeToString(mac.Sum(nil))
+}
+
+func canonicalBridgeHost(host string) string {
+	host = strings.ToLower(strings.TrimSpace(host))
+	return strings.TrimSuffix(host, ".")
 }
 
 func authorizeSMTPBridge(r *http.Request) error {

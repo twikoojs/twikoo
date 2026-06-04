@@ -10,6 +10,7 @@ import { getStore } from '@edgeone/pages-blob'
 import { v4 as uuidv4 } from 'uuid'
 import xss from 'xss'
 import bowser from 'bowser'
+import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto'
 import {
   getMd5,
   getSha256,
@@ -89,16 +90,131 @@ function validateMailAuth (mailConfig) {
   }
 }
 
+function getFirstHeader (req, names) {
+  for (const name of names) {
+    const value = req.get(name)
+    if (value) return String(value).split(',')[0].trim()
+  }
+  return ''
+}
+
+function getForwardedHost (req) {
+  const forwarded = getFirstHeader(req, ['forwarded'])
+  const match = /(?:^|;)\s*host=([^;]+)/i.exec(forwarded)
+  return match ? match[1].replace(/^"|"$/g, '') : ''
+}
+
+function getHeaderOrigin (req, name) {
+  const value = req.get(name)
+  if (!value) return ''
+  try {
+    return new URL(value).origin
+  } catch (e) {
+    return ''
+  }
+}
+
+function normalizeSmtpBridgeUrl (url) {
+  url = String(url || '').trim().replace(/\/+$/, '')
+  if (!url) return ''
+  if (!/^https?:\/\//i.test(url)) return ''
+  return url.endsWith(EO_SMTP_BRIDGE_PATH) ? url : `${url}${EO_SMTP_BRIDGE_PATH}`
+}
+
+function addSmtpBridgeCandidate (candidates, value, protocol) {
+  value = String(value || '').trim()
+  if (!value) return
+
+  const url = normalizeSmtpBridgeUrl(
+    /^https?:\/\//i.test(value)
+      ? value
+      : `${protocol || 'https'}://${value}`
+  )
+  if (url && !candidates.includes(url)) {
+    candidates.push(url)
+  }
+}
+
+function getSmtpBridgeCandidateHost (url) {
+  try {
+    return new URL(url).host.toLowerCase().replace(/\.$/, '')
+  } catch (e) {
+    return ''
+  }
+}
+
+function signSmtpBridgeProbe (token, nonce, host) {
+  return createHmac('sha256', token)
+    .update(nonce)
+    .update('\n')
+    .update(host)
+    .digest('hex')
+}
+
+function timingSafeEqualHex (a, b) {
+  try {
+    const left = Buffer.from(String(a || ''), 'hex')
+    const right = Buffer.from(String(b || ''), 'hex')
+    return left.length === right.length && timingSafeEqual(left, right)
+  } catch (e) {
+    return false
+  }
+}
+
+async function verifySmtpBridgeUrl (url, token) {
+  const host = getSmtpBridgeCandidateHost(url)
+  if (!host) return false
+
+  const nonce = randomBytes(16).toString('hex')
+  let response
+  try {
+    response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'probe', nonce })
+    })
+  } catch (e) {
+    return false
+  }
+
+  let result
+  try {
+    result = await response.json()
+  } catch (e) {
+    return false
+  }
+
+  const expected = signSmtpBridgeProbe(token, nonce, host)
+  return response.ok &&
+    result.ok &&
+    result.bridgeHost === host &&
+    timingSafeEqualHex(result.signature, expected)
+}
+
+async function getSmtpBridgeUrl (context) {
+  if (context.url) return context.url
+
+  for (const url of context.urls || []) {
+    if (await verifySmtpBridgeUrl(url, context.token)) {
+      context.url = url
+      return url
+    }
+  }
+
+  const candidates = context.urls && context.urls.length
+    ? context.urls.join(', ')
+    : '无'
+  throw new Error(`EdgeOne Pages SMTP Bridge 自动发现失败，未找到可校验的 /smtp 地址。候选地址：${candidates}`)
+}
+
 async function requestSmtpBridge (action, mailConfig, mail = {}) {
   const context = mailBridgeContext || {}
-  if (!context.url) {
-    throw new Error('EdgeOne Pages SMTP Bridge 未初始化。')
-  }
   if (!context.token) {
     throw new Error('使用自定义 SMTP 需要配置 TWIKOO_SMTP_BRIDGE_TOKEN 环境变量。')
   }
+  const bridgeUrl = await getSmtpBridgeUrl(context)
 
-  const response = await fetch(context.url, {
+  const response = await fetch(bridgeUrl, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${context.token}`,
@@ -126,7 +242,7 @@ async function requestSmtpBridge (action, mailConfig, mail = {}) {
   }
 
   if (!response.ok || !result.ok) {
-    throw new Error(result.message || `SMTP Bridge 请求失败：${context.url} HTTP ${response.status}`)
+    throw new Error(result.message || `SMTP Bridge 请求失败：${bridgeUrl} HTTP ${response.status}`)
   }
   return result
 }
@@ -134,10 +250,19 @@ async function requestSmtpBridge (action, mailConfig, mail = {}) {
 function createMailBridgeContext (req) {
   const runtimeEnv = globalThis.process?.env || {}
   const env = { ...runtimeEnv, ...(req.env || {}) }
-  const host = req.get('host')
-  const origin = host ? `${req.protocol}://${host}` : req.origin
   const token = env.TWIKOO_SMTP_BRIDGE_TOKEN
-  return { url: `${origin}${EO_SMTP_BRIDGE_PATH}`, token }
+  const protocol = getFirstHeader(req, ['x-forwarded-proto']) || req.protocol
+  const candidates = []
+
+  addSmtpBridgeCandidate(candidates, req.origin)
+  addSmtpBridgeCandidate(candidates, getFirstHeader(req, ['host']), protocol)
+  addSmtpBridgeCandidate(candidates, getFirstHeader(req, ['x-forwarded-host']), protocol)
+  addSmtpBridgeCandidate(candidates, getForwardedHost(req), protocol)
+  addSmtpBridgeCandidate(candidates, getFirstHeader(req, ['x-original-host']), protocol)
+  addSmtpBridgeCandidate(candidates, getHeaderOrigin(req, 'origin'))
+  addSmtpBridgeCandidate(candidates, getHeaderOrigin(req, 'referer'))
+
+  return { urls: candidates, token }
 }
 
 // 注入自定义依赖（对标 Cloudflare 版本）

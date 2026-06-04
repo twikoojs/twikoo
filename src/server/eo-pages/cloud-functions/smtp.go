@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io"
 	"mime"
+	"mime/quotedprintable"
 	"net"
 	"net/http"
 	"net/mail"
@@ -343,6 +344,10 @@ func buildMessage(from string, to string, subject string, html string) ([]byte, 
 	if err != nil {
 		return nil, err
 	}
+	body, err := encodeQuotedPrintable(html)
+	if err != nil {
+		return nil, err
+	}
 
 	var builder strings.Builder
 	writeHeader(&builder, "From", fromHeader)
@@ -350,9 +355,9 @@ func buildMessage(from string, to string, subject string, html string) ([]byte, 
 	writeHeader(&builder, "Subject", mime.QEncoding.Encode("UTF-8", cleanHeader(subject)))
 	writeHeader(&builder, "MIME-Version", "1.0")
 	writeHeader(&builder, "Content-Type", "text/html; charset=UTF-8")
-	writeHeader(&builder, "Content-Transfer-Encoding", "8bit")
+	writeHeader(&builder, "Content-Transfer-Encoding", "quoted-printable")
 	builder.WriteString("\r\n")
-	builder.WriteString(normalizeCRLF(html))
+	builder.WriteString(body)
 	return []byte(builder.String()), nil
 }
 
@@ -395,6 +400,19 @@ func normalizeCRLF(value string) string {
 	return strings.ReplaceAll(value, "\n", "\r\n")
 }
 
+func encodeQuotedPrintable(value string) (string, error) {
+	var builder strings.Builder
+	writer := quotedprintable.NewWriter(&builder)
+	if _, err := writer.Write([]byte(normalizeCRLF(value))); err != nil {
+		_ = writer.Close()
+		return "", err
+	}
+	if err := writer.Close(); err != nil {
+		return "", err
+	}
+	return builder.String(), nil
+}
+
 func respondJSON(w http.ResponseWriter, status int, payload smtpBridgeResponse) {
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(payload)
@@ -413,9 +431,9 @@ func respondSMTPBridgeProbe(w http.ResponseWriter, r *http.Request, req smtpBrid
 		return
 	}
 
-	host := canonicalBridgeHost(req.BridgeHost)
-	if host == "" {
-		host = canonicalBridgeHost(r.Host)
+	host := canonicalBridgeHost(r.Host)
+	if isLocalBridgeHost(host) && isLocalBridgeHost(req.BridgeHost) {
+		host = canonicalBridgeHost(req.BridgeHost)
 	}
 	if host == "" {
 		respondJSON(w, http.StatusBadRequest, smtpBridgeResponse{OK: false, Message: "missing bridge host"})
@@ -441,6 +459,22 @@ func signSMTPBridgeProbe(token string, nonce string, host string) string {
 func canonicalBridgeHost(host string) string {
 	host = strings.ToLower(strings.TrimSpace(host))
 	return strings.TrimSuffix(host, ".")
+}
+
+func isLocalBridgeHost(host string) bool {
+	host = canonicalBridgeHost(host)
+	if host == "" {
+		return false
+	}
+	hostName, _, err := net.SplitHostPort(host)
+	if err == nil {
+		host = strings.Trim(hostName, "[]")
+	}
+	if strings.EqualFold(host, "localhost") {
+		return true
+	}
+	ip := net.ParseIP(host)
+	return ip != nil && ip.IsLoopback()
 }
 
 func authorizeSMTPBridge(r *http.Request) error {

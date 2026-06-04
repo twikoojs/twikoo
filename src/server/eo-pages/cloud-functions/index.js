@@ -140,6 +140,17 @@ function getSmtpBridgeCandidateHost (url) {
   }
 }
 
+function formatSmtpBridgeUrlForError (url) {
+  try {
+    const parsedUrl = new URL(url)
+    parsedUrl.search = ''
+    parsedUrl.hash = ''
+    return parsedUrl.toString()
+  } catch (e) {
+    return String(url || '')
+  }
+}
+
 function signSmtpBridgeProbe (token, nonce, host) {
   return createHmac('sha256', token)
     .update(nonce)
@@ -199,7 +210,7 @@ async function getSmtpBridgeUrl (context) {
   }
 
   const candidates = context.urls && context.urls.length
-    ? context.urls.join(', ')
+    ? context.urls.map(formatSmtpBridgeUrlForError).join(', ')
     : '无'
   throw new Error(`EdgeOne Pages SMTP Bridge 自动发现失败，未找到可校验的 /smtp 地址。候选地址：${candidates}`)
 }
@@ -239,7 +250,7 @@ async function requestSmtpBridge (action, mailConfig, mail = {}) {
   }
 
   if (!response.ok || !result.ok) {
-    throw new Error(result.message || `SMTP Bridge 请求失败：${bridgeUrl} HTTP ${response.status}`)
+    throw new Error(result.message || `SMTP Bridge 请求失败：${formatSmtpBridgeUrlForError(bridgeUrl)} HTTP ${response.status}`)
   }
   return result
 }

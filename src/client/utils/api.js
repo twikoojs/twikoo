@@ -60,7 +60,7 @@ const call = async (tcb, event, data = {}) => {
         }
         xhr.open('POST', _envId)
         xhr.setRequestHeader('Content-Type', 'application/json')
-        xhr.send(JSON.stringify({ event, accessToken, ...data }))
+        xhr.send(JSON.stringify({ event, accessToken, envId: _envId, ...data }))
       } catch (e) {
         reject(e)
       }

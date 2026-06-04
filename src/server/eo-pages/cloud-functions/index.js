@@ -104,21 +104,18 @@ function getForwardedHost (req) {
   return match ? match[1].replace(/^"|"$/g, '') : ''
 }
 
-function getHeaderOrigin (req, name) {
-  const value = req.get(name)
-  if (!value) return ''
+function normalizeSmtpBridgeUrl (url) {
   try {
-    return new URL(value).origin
+    const parsedUrl = new URL(String(url || '').trim())
+    if (!/^https?:$/i.test(parsedUrl.protocol)) return ''
+    if (parsedUrl.pathname.replace(/\/+$/, '') !== EO_SMTP_BRIDGE_PATH) {
+      parsedUrl.pathname = EO_SMTP_BRIDGE_PATH
+    }
+    parsedUrl.hash = ''
+    return parsedUrl.toString()
   } catch (e) {
     return ''
   }
-}
-
-function normalizeSmtpBridgeUrl (url) {
-  url = String(url || '').trim().replace(/\/+$/, '')
-  if (!url) return ''
-  if (!/^https?:\/\//i.test(url)) return ''
-  return url.endsWith(EO_SMTP_BRIDGE_PATH) ? url : `${url}${EO_SMTP_BRIDGE_PATH}`
 }
 
 function addSmtpBridgeCandidate (candidates, value, protocol) {
@@ -171,7 +168,7 @@ async function verifySmtpBridgeUrl (url, token) {
     response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'probe', nonce })
+      body: JSON.stringify({ action: 'probe', nonce, bridgeHost: host })
     })
   } catch (e) {
     return false
@@ -254,13 +251,12 @@ function createMailBridgeContext (req) {
   const protocol = getFirstHeader(req, ['x-forwarded-proto']) || req.protocol
   const candidates = []
 
+  addSmtpBridgeCandidate(candidates, req.body?.envId)
   addSmtpBridgeCandidate(candidates, req.origin)
   addSmtpBridgeCandidate(candidates, getFirstHeader(req, ['host']), protocol)
   addSmtpBridgeCandidate(candidates, getFirstHeader(req, ['x-forwarded-host']), protocol)
   addSmtpBridgeCandidate(candidates, getForwardedHost(req), protocol)
   addSmtpBridgeCandidate(candidates, getFirstHeader(req, ['x-original-host']), protocol)
-  addSmtpBridgeCandidate(candidates, getHeaderOrigin(req, 'origin'))
-  addSmtpBridgeCandidate(candidates, getHeaderOrigin(req, 'referer'))
 
   return { urls: candidates, token }
 }

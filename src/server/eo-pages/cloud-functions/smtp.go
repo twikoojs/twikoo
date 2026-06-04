@@ -39,6 +39,7 @@ type smtpBridgeRequest struct {
 	Subject        string `json:"subject"`
 	HTML           string `json:"html"`
 	Nonce          string `json:"nonce"`
+	BridgeHost     string `json:"bridgeHost"`
 	TimeoutSeconds int    `json:"timeoutSeconds"`
 }
 
@@ -412,7 +413,10 @@ func respondSMTPBridgeProbe(w http.ResponseWriter, r *http.Request, req smtpBrid
 		return
 	}
 
-	host := canonicalBridgeHost(r.Host)
+	host := canonicalBridgeHost(req.BridgeHost)
+	if host == "" {
+		host = canonicalBridgeHost(r.Host)
+	}
 	if host == "" {
 		respondJSON(w, http.StatusBadRequest, smtpBridgeResponse{OK: false, Message: "missing bridge host"})
 		return

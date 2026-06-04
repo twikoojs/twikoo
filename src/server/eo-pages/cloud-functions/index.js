@@ -10,6 +10,7 @@ import { getStore } from '@edgeone/pages-blob'
 import { v4 as uuidv4 } from 'uuid'
 import xss from 'xss'
 import bowser from 'bowser'
+import { AsyncLocalStorage } from 'node:async_hooks'
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto'
 import {
   getMd5,
@@ -60,16 +61,10 @@ const EO_SMTP_BRIDGE_PATH = '/smtp'
 
 // ==================== SMTP Bridge ====================
 
-let mailBridgeContext = null
+const mailBridgeContextStorage = new AsyncLocalStorage()
 
 async function withMailBridgeContext (context, fn) {
-  const previous = mailBridgeContext
-  mailBridgeContext = context
-  try {
-    return await fn()
-  } finally {
-    mailBridgeContext = previous
-  }
+  return mailBridgeContextStorage.run(context, fn)
 }
 
 function getMailService (mailConfig) {
@@ -96,12 +91,6 @@ function getFirstHeader (req, names) {
     if (value) return String(value).split(',')[0].trim()
   }
   return ''
-}
-
-function getForwardedHost (req) {
-  const forwarded = getFirstHeader(req, ['forwarded'])
-  const match = /(?:^|;)\s*host=([^;]+)/i.exec(forwarded)
-  return match ? match[1].replace(/^"|"$/g, '') : ''
 }
 
 function normalizeSmtpBridgeUrl (url) {
@@ -216,7 +205,7 @@ async function getSmtpBridgeUrl (context) {
 }
 
 async function requestSmtpBridge (action, mailConfig, mail = {}) {
-  const context = mailBridgeContext || {}
+  const context = mailBridgeContextStorage.getStore() || {}
   if (!context.token) {
     throw new Error('使用自定义 SMTP 需要配置 TWIKOO_SMTP_BRIDGE_TOKEN 环境变量。')
   }
@@ -265,9 +254,6 @@ function createMailBridgeContext (req) {
   addSmtpBridgeCandidate(candidates, req.body?.envId)
   addSmtpBridgeCandidate(candidates, req.origin)
   addSmtpBridgeCandidate(candidates, getFirstHeader(req, ['host']), protocol)
-  addSmtpBridgeCandidate(candidates, getFirstHeader(req, ['x-forwarded-host']), protocol)
-  addSmtpBridgeCandidate(candidates, getForwardedHost(req), protocol)
-  addSmtpBridgeCandidate(candidates, getFirstHeader(req, ['x-original-host']), protocol)
 
   return { urls: candidates, token }
 }

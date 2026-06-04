@@ -29,19 +29,18 @@ const (
 )
 
 type smtpBridgeRequest struct {
-	Action         string `json:"action"`
-	Host           string `json:"host"`
-	Port           int    `json:"port"`
-	Secure         bool   `json:"secure"`
-	User           string `json:"user"`
-	Pass           string `json:"pass"`
-	From           string `json:"from"`
-	To             string `json:"to"`
-	Subject        string `json:"subject"`
-	HTML           string `json:"html"`
-	Nonce          string `json:"nonce"`
-	BridgeHost     string `json:"bridgeHost"`
-	TimeoutSeconds int    `json:"timeoutSeconds"`
+	Action     string `json:"action"`
+	Host       string `json:"host"`
+	Port       int    `json:"port"`
+	Secure     bool   `json:"secure"`
+	User       string `json:"user"`
+	Pass       string `json:"pass"`
+	From       string `json:"from"`
+	To         string `json:"to"`
+	Subject    string `json:"subject"`
+	HTML       string `json:"html"`
+	Nonce      string `json:"nonce"`
+	BridgeHost string `json:"bridgeHost"`
 }
 
 type smtpBridgeResponse struct {
@@ -146,13 +145,6 @@ func (req *smtpBridgeRequest) normalize() error {
 	return nil
 }
 
-func (req smtpBridgeRequest) timeout() time.Duration {
-	if req.TimeoutSeconds <= 0 || req.TimeoutSeconds > 60 {
-		return defaultSMTPTimeout
-	}
-	return time.Duration(req.TimeoutSeconds) * time.Second
-}
-
 func verifySMTP(req smtpBridgeRequest) error {
 	client, err := openSMTPClient(req)
 	if err != nil {
@@ -210,7 +202,7 @@ func sendSMTP(req smtpBridgeRequest) error {
 }
 
 func openSMTPClient(req smtpBridgeRequest) (*smtp.Client, error) {
-	timeout := req.timeout()
+	timeout := defaultSMTPTimeout
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
@@ -431,9 +423,9 @@ func respondSMTPBridgeProbe(w http.ResponseWriter, r *http.Request, req smtpBrid
 		return
 	}
 
-	host := canonicalBridgeHost(r.Host)
-	if isLocalBridgeHost(host) && isLocalBridgeHost(req.BridgeHost) {
-		host = canonicalBridgeHost(req.BridgeHost)
+	host := canonicalBridgeHost(req.BridgeHost)
+	if host == "" {
+		host = canonicalBridgeHost(r.Host)
 	}
 	if host == "" {
 		respondJSON(w, http.StatusBadRequest, smtpBridgeResponse{OK: false, Message: "missing bridge host"})
@@ -459,22 +451,6 @@ func signSMTPBridgeProbe(token string, nonce string, host string) string {
 func canonicalBridgeHost(host string) string {
 	host = strings.ToLower(strings.TrimSpace(host))
 	return strings.TrimSuffix(host, ".")
-}
-
-func isLocalBridgeHost(host string) bool {
-	host = canonicalBridgeHost(host)
-	if host == "" {
-		return false
-	}
-	hostName, _, err := net.SplitHostPort(host)
-	if err == nil {
-		host = strings.Trim(hostName, "[]")
-	}
-	if strings.EqualFold(host, "localhost") {
-		return true
-	}
-	ip := net.ParseIP(host)
-	return ip != nil && ip.IsLoopback()
 }
 
 func authorizeSMTPBridge(r *http.Request) error {

@@ -126,7 +126,7 @@ async function requestSmtpBridge (action, mailConfig, mail = {}) {
   }
 
   if (!response.ok || !result.ok) {
-    throw new Error(result.message || `SMTP Bridge 请求失败：HTTP ${response.status}`)
+    throw new Error(result.message || `SMTP Bridge 请求失败：${context.url} HTTP ${response.status}`)
   }
   return result
 }
@@ -134,7 +134,8 @@ async function requestSmtpBridge (action, mailConfig, mail = {}) {
 function createMailBridgeContext (req) {
   const runtimeEnv = globalThis.process?.env || {}
   const env = { ...runtimeEnv, ...(req.env || {}) }
-  const origin = req.origin || `${req.protocol}://${req.get('host')}`
+  const host = req.get('host')
+  const origin = host ? `${req.protocol}://${host}` : req.origin
   const token = env.TWIKOO_SMTP_BRIDGE_TOKEN
   return { url: `${origin}${EO_SMTP_BRIDGE_PATH}`, token }
 }

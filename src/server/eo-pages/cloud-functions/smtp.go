@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"crypto/subtle"
 	"crypto/tls"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -105,7 +106,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		err = fmt.Errorf("unsupported action: %s", req.Action)
 	}
 	if err != nil {
-		respondJSON(w, http.StatusBadGateway, smtpBridgeResponse{OK: false, Message: err.Error()})
+		respondJSON(w, http.StatusBadGateway, smtpBridgeResponse{OK: false, Message: sanitizeSMTPBridgeError(err)})
 		return
 	}
 	respondJSON(w, http.StatusOK, smtpBridgeResponse{OK: true, Message: "ok"})
@@ -216,7 +217,8 @@ func openSMTPClient(req smtpBridgeRequest) (*smtp.Client, error) {
 	var conn net.Conn
 	var err error
 	if req.Secure {
-		conn, err = tls.DialWithDialer(dialer, "tcp", addr, tlsConfig)
+		tlsDialer := &tls.Dialer{NetDialer: dialer, Config: tlsConfig}
+		conn, err = tlsDialer.DialContext(ctx, "tcp", addr)
 	} else {
 		conn, err = dialer.DialContext(ctx, "tcp", addr)
 	}
@@ -261,7 +263,7 @@ func authenticateSMTP(client *smtp.Client, req smtpBridgeRequest) error {
 				}
 				return nil
 			case "LOGIN":
-				if err := client.Auth(loginAuth{username: req.User, password: req.Pass}); err != nil {
+				if err := client.Auth(&loginAuth{username: req.User, password: req.Pass}); err != nil {
 					return fmt.Errorf("SMTP auth failed: %w", err)
 				}
 				return nil
@@ -275,6 +277,7 @@ func authenticateSMTP(client *smtp.Client, req smtpBridgeRequest) error {
 type loginAuth struct {
 	username string
 	password string
+	step     int
 }
 
 func (auth loginAuth) Start(server *smtp.ServerInfo) (string, []byte, error) {
@@ -284,18 +287,37 @@ func (auth loginAuth) Start(server *smtp.ServerInfo) (string, []byte, error) {
 	return "LOGIN", nil, nil
 }
 
-func (auth loginAuth) Next(fromServer []byte, more bool) ([]byte, error) {
+func (auth *loginAuth) Next(fromServer []byte, more bool) ([]byte, error) {
 	if !more {
 		return nil, nil
 	}
-	challenge := strings.ToLower(strings.TrimSpace(string(fromServer)))
+	auth.step++
+
+	challenge := strings.ToLower(decodeSMTPChallenge(fromServer))
 	if strings.Contains(challenge, "user") {
 		return []byte(auth.username), nil
 	}
 	if strings.Contains(challenge, "pass") {
 		return []byte(auth.password), nil
 	}
+
+	switch auth.step {
+	case 1:
+		return []byte(auth.username), nil
+	case 2:
+		return []byte(auth.password), nil
+	}
 	return nil, fmt.Errorf("unknown SMTP LOGIN challenge: %s", string(fromServer))
+}
+
+func decodeSMTPChallenge(challenge []byte) string {
+	value := strings.TrimSpace(string(challenge))
+	if decoded, err := base64.StdEncoding.DecodeString(value); err == nil {
+		if decodedValue := strings.TrimSpace(string(decoded)); decodedValue != "" {
+			return decodedValue
+		}
+	}
+	return value
 }
 
 func isLocalSMTPServer(name string) bool {
@@ -408,6 +430,41 @@ func encodeQuotedPrintable(value string) (string, error) {
 func respondJSON(w http.ResponseWriter, status int, payload smtpBridgeResponse) {
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func sanitizeSMTPBridgeError(err error) string {
+	if err == nil {
+		return ""
+	}
+	message := err.Error()
+	switch {
+	case strings.Contains(message, "invalid mail address"):
+		return "invalid mail address"
+	case strings.Contains(message, "invalid recipient address"):
+		return "invalid recipient address"
+	case strings.Contains(message, "unsupported action"):
+		return "unsupported action"
+	case strings.Contains(message, "SMTP auth failed"):
+		return "SMTP auth failed"
+	case strings.Contains(message, "connect "):
+		return "SMTP connection failed"
+	case strings.Contains(message, "SMTP greeting failed"):
+		return "SMTP greeting failed"
+	case strings.Contains(message, "SMTP STARTTLS failed"):
+		return "SMTP STARTTLS failed"
+	case strings.Contains(message, "SMTP NOOP failed"):
+		return "SMTP verify failed"
+	case strings.Contains(message, "SMTP MAIL FROM failed"):
+		return "SMTP sender rejected"
+	case strings.Contains(message, "SMTP RCPT TO failed"):
+		return "SMTP recipient rejected"
+	case strings.Contains(message, "SMTP DATA failed"),
+		strings.Contains(message, "SMTP write failed"),
+		strings.Contains(message, "SMTP message close failed"):
+		return "SMTP send failed"
+	default:
+		return "SMTP request failed"
+	}
 }
 
 func respondSMTPBridgeProbe(w http.ResponseWriter, r *http.Request, req smtpBridgeRequest) {

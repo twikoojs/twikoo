@@ -58,6 +58,7 @@ import constants from 'twikoo-func/utils/constants'
 const { RES_CODE, MAX_REQUEST_TIMES } = constants
 const VERSION = '1.7.11'
 const EO_SMTP_BRIDGE_PATH = '/smtp'
+const SMTP_BRIDGE_PROBE_TIMEOUT_MS = 5000
 
 // ==================== SMTP Bridge ====================
 
@@ -164,14 +165,22 @@ async function verifySmtpBridgeUrl (url, token) {
 
   const nonce = randomBytes(16).toString('hex')
   let response
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => {
+    controller.abort()
+  }, SMTP_BRIDGE_PROBE_TIMEOUT_MS)
+
   try {
     response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'probe', nonce, bridgeHost: host })
+      body: JSON.stringify({ action: 'probe', nonce, bridgeHost: host }),
+      signal: controller.signal
     })
   } catch (e) {
     return false
+  } finally {
+    clearTimeout(timeoutId)
   }
 
   let result

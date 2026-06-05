@@ -10,6 +10,8 @@ import { getStore } from '@edgeone/pages-blob'
 import { v4 as uuidv4 } from 'uuid'
 import xss from 'xss'
 import bowser from 'bowser'
+import { AsyncLocalStorage } from 'node:async_hooks'
+import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto'
 import {
   getMd5,
   getSha256,
@@ -55,6 +57,215 @@ import constants from 'twikoo-func/utils/constants'
 
 const { RES_CODE, MAX_REQUEST_TIMES } = constants
 const VERSION = '1.7.11'
+const EO_SMTP_BRIDGE_PATH = '/smtp'
+const SMTP_BRIDGE_PROBE_TIMEOUT_MS = 5000
+
+// ==================== SMTP Bridge ====================
+
+const mailBridgeContextStorage = new AsyncLocalStorage()
+
+async function withMailBridgeContext (context, fn) {
+  return mailBridgeContextStorage.run(context, fn)
+}
+
+function getMailService (mailConfig) {
+  return (mailConfig.service || '').toLowerCase()
+}
+
+function isHttpMailService (mailConfig) {
+  const service = getMailService(mailConfig)
+  return service === 'sendgrid' || service === 'mailchannels'
+}
+
+function validateMailAuth (mailConfig) {
+  if (!mailConfig.auth || !mailConfig.auth.user) {
+    throw new Error('需要在 SMTP_USER 中配置账户名，如果邮件服务不需要可随意填写。')
+  }
+  if (!mailConfig.auth || !mailConfig.auth.pass) {
+    throw new Error('需要在 SMTP_PASS 中配置密码或 API 令牌。')
+  }
+}
+
+function getFirstHeader (req, names) {
+  for (const name of names) {
+    const value = req.get(name)
+    if (value) return String(value).split(',')[0].trim()
+  }
+  return ''
+}
+
+function normalizeSmtpBridgeUrl (url) {
+  try {
+    const parsedUrl = new URL(String(url || '').trim())
+    if (!/^https?:$/i.test(parsedUrl.protocol)) return ''
+    if (parsedUrl.pathname.replace(/\/+$/, '') !== EO_SMTP_BRIDGE_PATH) {
+      parsedUrl.pathname = EO_SMTP_BRIDGE_PATH
+    }
+    parsedUrl.hash = ''
+    return parsedUrl.toString()
+  } catch (e) {
+    return ''
+  }
+}
+
+function addSmtpBridgeCandidate (candidates, value, protocol) {
+  value = String(value || '').trim()
+  if (!value) return
+
+  const url = normalizeSmtpBridgeUrl(
+    /^https?:\/\//i.test(value)
+      ? value
+      : `${protocol || 'https'}://${value}`
+  )
+  if (url && !candidates.includes(url)) {
+    candidates.push(url)
+  }
+}
+
+function getSmtpBridgeCandidateHost (url) {
+  try {
+    return new URL(url).host.toLowerCase().replace(/\.$/, '')
+  } catch (e) {
+    return ''
+  }
+}
+
+function formatSmtpBridgeUrlForError (url) {
+  try {
+    const parsedUrl = new URL(url)
+    parsedUrl.search = ''
+    parsedUrl.hash = ''
+    return parsedUrl.toString()
+  } catch (e) {
+    return String(url || '')
+  }
+}
+
+function signSmtpBridgeProbe (token, nonce, host) {
+  return createHmac('sha256', token)
+    .update(nonce)
+    .update('\n')
+    .update(host)
+    .digest('hex')
+}
+
+function timingSafeEqualHex (a, b) {
+  try {
+    const left = Buffer.from(String(a || ''), 'hex')
+    const right = Buffer.from(String(b || ''), 'hex')
+    return left.length === right.length && timingSafeEqual(left, right)
+  } catch (e) {
+    return false
+  }
+}
+
+async function verifySmtpBridgeUrl (url, token) {
+  const host = getSmtpBridgeCandidateHost(url)
+  if (!host) return false
+
+  const nonce = randomBytes(16).toString('hex')
+  let response
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => {
+    controller.abort()
+  }, SMTP_BRIDGE_PROBE_TIMEOUT_MS)
+
+  try {
+    response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'probe', nonce, bridgeHost: host }),
+      signal: controller.signal
+    })
+  } catch (e) {
+    return false
+  } finally {
+    clearTimeout(timeoutId)
+  }
+
+  let result
+  try {
+    result = await response.json()
+  } catch (e) {
+    return false
+  }
+
+  const expected = signSmtpBridgeProbe(token, nonce, host)
+  return response.ok &&
+    result.ok &&
+    result.bridgeHost === host &&
+    timingSafeEqualHex(result.signature, expected)
+}
+
+async function getSmtpBridgeUrl (context) {
+  if (context.url) return context.url
+
+  for (const url of context.urls || []) {
+    if (await verifySmtpBridgeUrl(url, context.token)) {
+      context.url = url
+      return url
+    }
+  }
+
+  const candidates = context.urls && context.urls.length
+    ? context.urls.map(formatSmtpBridgeUrlForError).join(', ')
+    : '无'
+  throw new Error(`EdgeOne Pages SMTP Bridge 自动发现失败，未找到可校验的 /smtp 地址。候选地址：${candidates}`)
+}
+
+async function requestSmtpBridge (action, mailConfig, mail = {}) {
+  const context = mailBridgeContextStorage.getStore() || {}
+  if (!context.token) {
+    throw new Error('使用自定义 SMTP 需要配置 TWIKOO_SMTP_BRIDGE_TOKEN 环境变量。')
+  }
+  const bridgeUrl = await getSmtpBridgeUrl(context)
+
+  const response = await fetch(bridgeUrl, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${context.token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      action,
+      host: mailConfig.host,
+      port: mailConfig.port,
+      secure: mailConfig.secure,
+      user: mailConfig.auth.user,
+      pass: mailConfig.auth.pass,
+      from: mail.from,
+      to: mail.to,
+      subject: mail.subject,
+      html: mail.html
+    })
+  })
+
+  let result
+  try {
+    result = await response.json()
+  } catch (e) {
+    throw new Error(`SMTP Bridge 返回异常：HTTP ${response.status}`)
+  }
+
+  if (!response.ok || !result.ok) {
+    throw new Error(result.message || `SMTP Bridge 请求失败：${formatSmtpBridgeUrlForError(bridgeUrl)} HTTP ${response.status}`)
+  }
+  return result
+}
+
+function createMailBridgeContext (req) {
+  const runtimeEnv = globalThis.process?.env || {}
+  const env = { ...runtimeEnv, ...(req.env || {}) }
+  const token = env.TWIKOO_SMTP_BRIDGE_TOKEN
+  const protocol = getFirstHeader(req, ['x-forwarded-proto']) || req.protocol
+  const candidates = []
+
+  addSmtpBridgeCandidate(candidates, req.body?.envId)
+  addSmtpBridgeCandidate(candidates, req.origin)
+  addSmtpBridgeCandidate(candidates, getFirstHeader(req, ['host']), protocol)
+
+  return { urls: candidates, token }
+}
 
 // 注入自定义依赖（对标 Cloudflare 版本）
 setCustomLibs({
@@ -66,20 +277,26 @@ setCustomLibs({
   nodemailer: {
     createTransport (mailConfig) {
       return {
-        verify () {
-          if (!mailConfig.service || (mailConfig.service.toLowerCase() !== 'sendgrid' && mailConfig.service.toLowerCase() !== 'mailchannels')) {
-            throw new Error('仅支持 SendGrid 和 MailChannels 邮件服务。')
+        async verify () {
+          validateMailAuth(mailConfig)
+          if (isHttpMailService(mailConfig)) return true
+          if (mailConfig.host) {
+            await requestSmtpBridge('verify', mailConfig)
+            return true
           }
-          if (!mailConfig.auth || !mailConfig.auth.user) {
-            throw new Error('需要在 SMTP_USER 中配置账户名，如果邮件服务不需要可随意填写。')
-          }
-          if (!mailConfig.auth || !mailConfig.auth.pass) {
-            throw new Error('需要在 SMTP_PASS 中配置 API 令牌。')
-          }
-          return true
+          throw new Error('EdgeOne Pages 仅支持 SendGrid、MailChannels，或通过 SMTP_HOST 使用 Go SMTP Bridge。')
         },
-        sendMail ({ from, to, subject, html }) {
-          if (mailConfig.service.toLowerCase() === 'sendgrid') {
+        async sendMail ({ from, to, subject, html }) {
+          validateMailAuth(mailConfig)
+          const service = getMailService(mailConfig)
+          if (mailConfig.host) {
+            return requestSmtpBridge('send', mailConfig, { from, to, subject, html })
+          }
+          if (!isHttpMailService(mailConfig)) {
+            throw new Error('EdgeOne Pages 仅支持 SendGrid、MailChannels，或通过 SMTP_HOST 使用 Go SMTP Bridge。')
+          }
+
+          if (service === 'sendgrid') {
             return fetch('https://api.sendgrid.com/v3/mail/send', {
               method: 'POST',
               headers: {
@@ -93,7 +310,7 @@ setCustomLibs({
                 content: [{ type: 'text/html', value: html }]
               })
             })
-          } else if (mailConfig.service.toLowerCase() === 'mailchannels') {
+          } else if (service === 'mailchannels') {
             return fetch('https://api.mailchannels.net/tx/v1/send', {
               method: 'POST',
               headers: {
@@ -788,7 +1005,7 @@ async function commentSubmit (event, req, db, accessToken) {
   res.id = result.id
 
   // 异步处理垃圾检测和通知
-  postSubmit(data, db).catch(e => {
+  postSubmit(data, db, createMailBridgeContext(req)).catch(e => {
     logger.error('POST_SUBMIT 失败', e.message)
   })
 
@@ -840,7 +1057,7 @@ async function parseCommentData (event, req, accessToken, ip) {
   return commentDo
 }
 
-async function postSubmit (comment, db) {
+async function postSubmit (comment, db, mailContext) {
   try {
     logger.log('POST_SUBMIT')
 
@@ -860,7 +1077,7 @@ async function postSubmit (comment, db) {
     }
 
     // 发送通知
-    await sendNotice(comment, config, getParentComment)
+    await withMailBridgeContext(mailContext, () => sendNotice(comment, config, getParentComment))
   } catch (e) {
     logger.warn('POST_SUBMIT 失败', e)
   }
@@ -1047,6 +1264,8 @@ export async function onRequest (context) {
         path: url.pathname,
         headers,
         body,
+        env: context.env || {},
+        origin: url.origin,
         ip: headers['x-real-ip'] || headers['x-forwarded-for']?.split(',')[0]?.trim() || 'unknown',
         protocol: url.protocol.replace(':', ''),
         get: (name) => headers[name.toLowerCase()]
@@ -1219,7 +1438,10 @@ async function handlePost (req, res) {
         result = await getRecentComments(event, db)
         break
       case 'EMAIL_TEST':
-        result = await emailTest(event, config, isAdmin(accessToken))
+        result = await withMailBridgeContext(
+          createMailBridgeContext(req),
+          () => emailTest(event, config, isAdmin(accessToken))
+        )
         break
       case 'UPLOAD_IMAGE':
         result = await uploadImage(event, config)

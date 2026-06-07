@@ -48,7 +48,7 @@
     "cross-env": "^10.1.0",
     "css-loader": "^7.1.4",
     "element-ui": "^2.15.6",
-    "eslint": "^8.2.0",
+    "eslint": "^9.8.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-node": "^11.1.0",

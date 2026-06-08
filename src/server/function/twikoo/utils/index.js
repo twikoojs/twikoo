@@ -93,7 +93,7 @@ const fn = {
       downs: downs.length,
       liked: ups.includes(uid),
       disliked: downs.includes(uid),
-      replies: replies,
+      replies,
       rid: comment.rid,
       pid: comment.pid,
       ruser: fn.ruser(comment.pid, comments),

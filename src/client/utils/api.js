@@ -34,7 +34,7 @@ const call = async (tcb, event, data = {}) => {
       if (oldFuncName) {
         return await _tcb.app.callFunction({
           name: oldFuncName,
-          data: data
+          data
         })
       } else {
         throw new Error('请升级 Twikoo 云函数版本再试，如果仍无法解决，请删除并重新创建 Twikoo 云函数 - https://twikoo.js.org')

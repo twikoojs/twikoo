@@ -4,8 +4,7 @@
 .babelrc
 .editorconfig
 .env
-.eslintignore
-.eslintrc.js
+eslint.config.js
 .github
 .gitignore
 .npmignore

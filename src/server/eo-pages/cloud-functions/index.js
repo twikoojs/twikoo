@@ -56,7 +56,7 @@ import { uploadImage } from 'twikoo-func/utils/image'
 import logger from 'twikoo-func/utils/logger'
 import constants from 'twikoo-func/utils/constants'
 
-const { RES_CODE, MAX_REQUEST_TIMES } = constants
+const { RES_CODE,1.7.12EQUEST_TIMES } = constants
 const VERSION = '1.7.11'
 const EO_SMTP_BRIDGE_PATH = '/smtp'
 const SMTP_BRIDGE_PROBE_TIMEOUT_MS = 5000

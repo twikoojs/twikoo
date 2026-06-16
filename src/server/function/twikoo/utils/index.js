@@ -232,6 +232,17 @@ const fn = {
   isUrl (s) {
     return /^http(s)?:\/\//.test(s)
   },
+  isValidEmail (mail) {
+    if (!mail || typeof mail !== 'string') return false
+    const trimmed = mail.trim()
+    if (!trimmed) return false
+    // Reject emails with characters that could trigger nodemailer addressparser group parsing (CVE-2025-14874)
+    if (trimmed.indexOf(':') !== -1) return false
+    if (trimmed.indexOf(' ') !== -1) return false
+    if (trimmed.indexOf(';') !== -1) return false
+    // Basic email format validation
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)
+  },
   isQQ (mail) {
     return /^[1-9][0-9]{4,10}$/.test(mail) ||
       /^[1-9][0-9]{4,10}@qq.com$/i.test(mail)

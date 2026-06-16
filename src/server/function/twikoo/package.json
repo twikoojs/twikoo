@@ -24,7 +24,7 @@
     "form-data": "^4.0.0",
     "jsdom": "^16.4.0",
     "marked": "^4.0.12",
-    "nodemailer": "^6.4.17",
+    "nodemailer": "^7.0.11",
     "pushoo": "latest",
     "tencentcloud-sdk-nodejs": "^4.0.65",
     "xml2js": "^0.6.0"

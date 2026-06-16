@@ -1,4 +1,4 @@
-const { equalsMail, getAvatar } = require('.')
+const { equalsMail, getAvatar, isValidEmail } = require('.')
 const {
   getCheerio,
   getNodemailer,
@@ -115,11 +115,16 @@ const fn = {
           <p>您可以点击<a style="text-decoration:none; color:#12addb" href="${POST_URL}" target="_blank">查看回复的完整內容</a><br></p>
         </div>`
     }
+    const toMail = config.BLOGGER_EMAIL || config.SENDER_EMAIL
+    if (!isValidEmail(toMail)) {
+      logger.warn('博主邮箱格式不合法，跳过发送博主通知：', toMail)
+      return
+    }
     let sendResult
     try {
       sendResult = await transporter.sendMail({
         from: `"${config.SENDER_NAME}" <${config.SENDER_EMAIL}>`,
-        to: config.BLOGGER_EMAIL || config.SENDER_EMAIL,
+        to: toMail,
         subject: emailSubject,
         html: emailContent
       })
@@ -234,6 +239,10 @@ const fn = {
           </div>
         </div>`
     }
+    if (!isValidEmail(parentComment.mail)) {
+      logger.warn('回复通知邮箱格式不合法，跳过发送回复通知：', parentComment.mail)
+      return
+    }
     let sendResult
     try {
       sendResult = await transporter.sendMail({
@@ -262,9 +271,14 @@ const fn = {
         // 邮件测试前清除 transporter，保证读取的是最新的配置
         transporter = null
         await fn.initMailer({ config, throwErr: true })
+        const toMail = event.mail || config.BLOGGER_EMAIL || config.SENDER_EMAIL
+        if (!isValidEmail(toMail)) {
+          res.message = '邮箱格式不合法'
+          return res
+        }
         const sendResult = await transporter.sendMail({
           from: config.SENDER_EMAIL,
-          to: event.mail || config.BLOGGER_EMAIL || config.SENDER_EMAIL,
+          to: toMail,
           subject: 'Twikoo 邮件通知测试邮件',
           html: '如果您收到这封邮件，说明 Twikoo 邮件功能配置正确'
         })

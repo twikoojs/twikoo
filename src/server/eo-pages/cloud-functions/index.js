@@ -39,7 +39,8 @@ import {
   getConfig,
   getConfigForAdmin,
   validate,
-  checkCommentOwnership
+  checkCommentOwnership,
+  isValidEmail
 } from 'twikoo-func/utils'
 import {
   jsonParse,
@@ -1019,6 +1020,10 @@ async function parseCommentData (event, req, accessToken, ip) {
 
   if (isBloggerMail && !isAdminUser) {
     throw new Error('请先登录管理面板，再使用博主身份发送评论')
+  }
+
+  if (event.mail && !isValidEmail(event.mail)) {
+    throw new Error('邮箱格式不合法')
   }
 
   const hashMethod = config.GRAVATAR_CDN === 'cravatar.cn' ? md5 : sha256

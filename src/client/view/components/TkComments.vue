@@ -40,7 +40,7 @@
         :replying="replyId === comment.id"
         :config="config"
         @reply="onReply"
-        @load="initComments" />
+        @load="refreshPreservingState" />
       <div class="tk-expand-wrap" v-if="showExpand && !loading">
         <div class="tk-expand" @click="onExpand" v-loading="loadingMore">{{ t('COMMENTS_EXPAND') }}</div>
       </div>
@@ -75,6 +75,7 @@ export default {
       showExpand: true,
       count: 0,
       replyId: '',
+      loadedPages: 1,
       currentSort: 'newest',
       iconSetting,
       iconRefresh
@@ -97,17 +98,34 @@ export default {
     },
     refresh () {
       this.comments = []
+      this.loadedPages = 1
       this.initComments()
+    },
+    async refreshPreservingState () {
+      this.loading = true
+      const url = getUrl(this.$twikoo.path)
+      await this.getComments({ url, sort: this.currentSort })
+      for (let i = 1; i < this.loadedPages; i++) {
+        const before = this.comments
+          .filter((item) => !item.top)
+          .map((item) => item.created)
+          .sort((a, b) => a - b)[0]
+        await this.getComments({ url, before, sort: this.currentSort })
+      }
+      this.loading = false
+      this.$emit('refreshed')
     },
     setSort (sort) {
       if (this.currentSort === sort) return
       this.currentSort = sort
       this.comments = []
+      this.loadedPages = 1
       this.initComments()
     },
     async onExpand () {
       if (this.loadingMore) return
       this.loadingMore = true
+      this.loadedPages++
       const url = getUrl(this.$twikoo.path)
       const before = this.comments
         .filter((item) => !item.top)

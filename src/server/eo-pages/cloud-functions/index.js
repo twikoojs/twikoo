@@ -411,6 +411,8 @@ function toCommentDto (comment, uid, replies = [], comments = [], cfg) {
     browser: displayBrowser,
     ipRegion: showRegion ? getIpRegion(comment.ip, false) : '',
     master: comment.master,
+    // Keep the legacy like field for backward compatibility.
+    // New reaction counts and user state are derived from ups/downs.
     like: comment.like ? comment.like.length : 0,
     liked: Boolean(uid && ups.includes(uid)),
     disliked: Boolean(uid && downs.includes(uid)),

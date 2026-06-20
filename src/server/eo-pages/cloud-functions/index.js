@@ -398,6 +398,8 @@ function toCommentDto (comment, uid, replies = [], comments = [], cfg) {
     }
   }
   const showRegion = !!cfg.SHOW_REGION && cfg.SHOW_REGION !== 'false'
+  const ups = comment.ups || []
+  const downs = comment.downs || []
   return {
     id: comment._id.toString(),
     nick: comment.nick,
@@ -409,14 +411,20 @@ function toCommentDto (comment, uid, replies = [], comments = [], cfg) {
     browser: displayBrowser,
     ipRegion: showRegion ? getIpRegion(comment.ip, false) : '',
     master: comment.master,
+    // Keep the legacy like field for backward compatibility.
+    // New reaction counts and user state are derived from ups/downs.
     like: comment.like ? comment.like.length : 0,
-    liked: comment.like ? comment.like.findIndex((item) => item === uid) > -1 : false,
-    replies: replies,
+    liked: Boolean(uid && ups.includes(uid)),
+    disliked: Boolean(uid && downs.includes(uid)),
+    ups: ups.length,
+    downs: downs.length,
+    replies,
     rid: comment.rid,
     pid: comment.pid,
     ruser: getRuser(comment.pid, comments),
     top: comment.top,
     isSpam: comment.isSpam,
+    isOwner: Boolean(uid && comment.uid === uid),
     created: comment.created,
     updated: comment.updated
   }
@@ -1036,7 +1044,7 @@ async function parseCommentData (event, req, accessToken, ip) {
     mailMd5: event.mail ? hashMethod(normalizeMail(event.mail)) : '',
     link: event.link ? event.link : '',
     ua: event.ua,
-    ip: ip,
+    ip,
     master: isBloggerMail,
     url: event.url,
     href: event.href,
@@ -1118,7 +1126,7 @@ async function checkCaptcha (event, ip) {
   const provider = config.CAPTCHA_PROVIDER
   if (provider === 'Turnstile' && config.TURNSTILE_SITE_KEY && config.TURNSTILE_SECRET_KEY) {
     await checkTurnstileCaptcha({
-      ip: ip,
+      ip,
       turnstileToken: event.turnstileToken,
       turnstileTokenSecretKey: config.TURNSTILE_SECRET_KEY
     })

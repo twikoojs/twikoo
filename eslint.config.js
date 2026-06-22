@@ -19,7 +19,9 @@ module.exports = [
       'src/server/pkg/dist/**',
       'src/server/pkg/patches/**',
       'src/server/pkg/web.config',
-      'src/server/eo-pages/cloud-functions/**'
+      'src/server/eo-pages/cloud-functions/ip2region-data.js',
+      'src/server/eo-pages/cloud-functions/smtp.go',
+      'src/server/eo-pages/.edgeone/**'
     ]
   },
   ...neostandard({

@@ -14,14 +14,16 @@ on:
 jobs:
   publish-docs:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         # VuePress 需要完整提交历史来生成贡献者信息
         with:
           fetch-depth: 0
       - uses: imaegoo/vuepress-deploy@master
         env:
-          ACCESS_TOKEN: ${{ secrets.TWIKOO_TOKEN }}
+          ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TARGET_REPO: twikoojs/twikoo
           TARGET_BRANCH: gh-pages
           BUILD_SCRIPT: cd docs && yarn && yarn docs:build

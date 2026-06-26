@@ -46,7 +46,7 @@ yarn deploy -e 您的环境id
 
 ## 针对 Netlify 部署的更新方式
 
-1. 登录 Github，找到部署时 fork 到自己账号下的名为 twikoo-netlify 的仓库
+1. 登录 GitHub，找到部署时 fork 到自己账号下的名为 twikoo-netlify 的仓库
 2. 编辑 package.json，由于 `twikoo-netlify` 复用了 `twikoo-vercel` 的实现，请同时更新它们的版本号（将下面的 `new version` 改为最新版本号）：
 
 ```json

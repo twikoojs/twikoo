@@ -46,9 +46,19 @@ yarn deploy -e 您的环境id
 
 ## 针对 Netlify 部署的更新方式
 
-1. 登录 Github，找到部署时 fork 到自己账号下的名为 twikoo-netlify 的仓库
-2. 打开 package.json，点击编辑
-3. 将 `"twikoo-netlify": "latest"` 其中的 `latest` 修改为最新版本号。点击 Commit changes
+1. 登录 GitHub，找到部署时 fork 到自己账号下的名为 twikoo-netlify 的仓库
+2. 编辑 package.json，由于 `twikoo-netlify` 复用了 `twikoo-vercel` 的实现，请同时更新它们的版本号（将下面的 `new version` 改为最新版本号）：
+
+```json
+{
+  "dependencies": {
+    "twikoo-netlify": "new version",
+    "twikoo-vercel": "new version"
+  }
+}
+```
+
+3. 点击 Commit changes
 4. 部署会自动触发
 
 ## 针对 Hugging Face 部署的更新方式

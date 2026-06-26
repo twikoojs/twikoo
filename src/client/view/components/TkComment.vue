@@ -78,7 +78,8 @@
             :config="config"
             @expand="onExpand"
             @load="onLoad"
-            @reply="onReplyReply" />
+            @reply="onReplyReply"
+            @refreshed="onRefreshed" />
       </div>
       <div class="tk-expand-wrap" v-if="showExpand && !replying">
         <div class="tk-expand" @click="onExpand">{{ t('COMMENT_EXPAND') }}</div>
@@ -295,16 +296,21 @@ export default {
       this.$emit('reply', '')
     },
     onLoad () {
-      if (this.comment.replies.length > 0) {
-        this.$refs['tk-replies'].lastElementChild.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        })
-      }
       this.pid = ''
       this.$emit('reply', '')
       this.$emit('load')
       this.onExpand()
+    },
+    onRefreshed () {
+      this.$emit('refreshed')
+      this.$nextTick(() => {
+        if (this.comment.replies && this.comment.replies.length > 0 && this.$refs['tk-replies']) {
+          this.$refs['tk-replies'].lastElementChild.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+          })
+        }
+      })
     },
     onExpand () {
       this.isExpanded = true

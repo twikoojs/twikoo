@@ -127,6 +127,7 @@ The Tencent Cloud environment comes with cloud storage, so you can upload images
 | [PicList](https://piclist.cn/) | Self-hosted | Set `IMAGE_CDN_URL` to the service URL. For `IMAGE_CDN_TOKEN`, see [PicList docs: API Authentication](https://piclist.cn/advanced.html#%E6%8E%A5%E5%8F%A3%E9%89%B4%E6%9D%83) |
 | [EasyImage2.0](https://github.com/icret/EasyImages2.0) | Self-hosted | Set `IMAGE_CDN_URL` to the API URL and `IMAGE_CDN_TOKEN` to your token |
 | [Chevereto](https://chevereto.com) | Self-hosted | Set `IMAGE_CDN_URL` to your Chevereto site (e.g. `https://your-chevereto.com`) and `IMAGE_CDN_TOKEN` to your API Key (found in Dashboard → Settings → API). Requires a paid Chevereto license or a fork that supports API v1 |
+| S3 / R2 / MinIO | S3-compatible service | Set `IMAGE_CDN` to `s3`, then configure `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, and related options; configure `S3_FORCE_PATH_STYLE` according to endpoint type: keep it empty or `true` for Cloudflare R2, MinIO, and other path-style endpoints, and set it to `false` for bucket-bound custom domains, such as Tencent Cloud COS custom domains |
 
 ## Can self-hosted deployments connect to an external database?
 

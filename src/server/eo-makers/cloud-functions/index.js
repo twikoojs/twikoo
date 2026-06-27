@@ -1,5 +1,5 @@
 /*!
- * Twikoo EdgeOne Pages Node Function
+ * Twikoo EdgeOne Makers Node Function
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  *
@@ -211,7 +211,7 @@ async function getSmtpBridgeUrl (context) {
   const candidates = context.urls && context.urls.length
     ? context.urls.map(formatSmtpBridgeUrlForError).join(', ')
     : '无'
-  throw new Error(`EdgeOne Pages SMTP Bridge 自动发现失败，未找到可校验的 /smtp 地址。候选地址：${candidates}`)
+  throw new Error(`EdgeOne Makers SMTP Bridge 自动发现失败，未找到可校验的 /smtp 地址。候选地址：${candidates}`)
 }
 
 async function requestSmtpBridge (action, mailConfig, mail = {}) {
@@ -285,7 +285,7 @@ setCustomLibs({
             await requestSmtpBridge('verify', mailConfig)
             return true
           }
-          throw new Error('EdgeOne Pages 仅支持 SendGrid、MailChannels，或通过 SMTP_HOST 使用 Go SMTP Bridge。')
+          throw new Error('EdgeOne Makers 仅支持 SendGrid、MailChannels，或通过 SMTP_HOST 使用 Go SMTP Bridge。')
         },
         async sendMail ({ from, to, subject, html }) {
           validateMailAuth(mailConfig)
@@ -294,7 +294,7 @@ setCustomLibs({
             return requestSmtpBridge('send', mailConfig, { from, to, subject, html })
           }
           if (!isHttpMailService(mailConfig)) {
-            throw new Error('EdgeOne Pages 仅支持 SendGrid、MailChannels，或通过 SMTP_HOST 使用 Go SMTP Bridge。')
+            throw new Error('EdgeOne Makers 仅支持 SendGrid、MailChannels，或通过 SMTP_HOST 使用 Go SMTP Bridge。')
           }
 
           if (service === 'sendgrid') {
@@ -1245,7 +1245,7 @@ async function getRecentComments (event, db) {
   return res
 }
 
-// EdgeOne Pages Node Function 入口
+// EdgeOne Makers Node Function 入口
 export async function onRequest (context) {
   const { request } = context
 

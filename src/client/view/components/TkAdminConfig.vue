@@ -101,6 +101,7 @@ export default {
             { key: 'S3_ACCESS_KEY_ID', desc: t('ADMIN_CONFIG_ITEM_S3_ACCESS_KEY_ID'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}AKIAIOSFODNN7EXAMPLE`, value: '', showIf: (s) => s('IMAGE_CDN') === 's3' },
             { key: 'S3_SECRET_ACCESS_KEY', desc: t('ADMIN_CONFIG_ITEM_S3_SECRET_ACCESS_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY`, value: '', secret: true, showIf: (s) => s('IMAGE_CDN') === 's3' },
             { key: 'S3_ENDPOINT', desc: t('ADMIN_CONFIG_ITEM_S3_ENDPOINT'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}https://xxx.r2.cloudflarestorage.com`, value: '', showIf: (s) => s('IMAGE_CDN') === 's3' },
+            { key: 'S3_FORCE_PATH_STYLE', desc: t('ADMIN_CONFIG_ITEM_S3_FORCE_PATH_STYLE'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}true`, value: '', showIf: (s) => s('IMAGE_CDN') === 's3' },
             { key: 'S3_CDN_URL', desc: t('ADMIN_CONFIG_ITEM_S3_CDN_URL'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}https://cdn.example.com`, value: '', showIf: (s) => s('IMAGE_CDN') === 's3' },
             { key: 'S3_PATH_PREFIX', desc: t('ADMIN_CONFIG_ITEM_S3_PATH_PREFIX'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}images/twikoo`, value: '', showIf: (s) => s('IMAGE_CDN') === 's3' },
             { key: 'NSFW_API_URL', desc: t('ADMIN_CONFIG_ITEM_NSFW_API_URL'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}https://nsfw.example.com`, value: '' },

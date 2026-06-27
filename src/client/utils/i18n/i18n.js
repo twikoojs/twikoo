@@ -756,6 +756,16 @@ export default {
     'S3 커스텀 엔드포인트. Cloudflare R2, MinIO 등 S3 호환 서비스 사용 시 필요',
     'Endpoint S3 tùy chỉnh. Bắt buộc khi dùng Cloudflare R2 hoặc MinIO'
   ],
+  [S.ACI + '_S3_FORCE_PATH_STYLE']: [
+    '设置 S3_ENDPOINT 时，是否将 S3_BUCKET 拼入上传地址路径。默认为 true，适用于 Cloudflare R2、MinIO 等 path-style S3 兼容端点；使用已绑定存储桶的自定义域名时设为 false，例如腾讯云 COS 自定义域名',
+    '設定 S3_ENDPOINT 時，是否將 S3_BUCKET 拼入上傳位址路徑。預設為 true，適用於 Cloudflare R2、MinIO 等 path-style S3 相容端點；使用已綁定儲存桶的自訂網域時設為 false，例如騰訊雲 COS 自訂網域',
+    '設定 S3_ENDPOINT 時，是否將 S3_BUCKET 加入上傳位址路徑。預設為 true，適用於 Cloudflare R2、MinIO 等 path-style S3 相容端點；使用已綁定儲存桶的自訂網域時設為 false，例如騰訊雲 COS 自訂網域',
+    'When S3_ENDPOINT is set, whether to append S3_BUCKET to the upload URL path. Default: true. Use true for Cloudflare R2, MinIO, and other path-style S3-compatible endpoints; set false for bucket-bound custom domains, such as Tencent Cloud COS custom domains.',
+    'S3_ENDPOINT sozlanganda S3_BUCKET ni yuklash URL yo\'liga qo\'shish-qo\'shmaslik. Standart: true. Cloudflare R2, MinIO va boshqa path-style S3 mos endpointlar uchun true ishlating; bucketga bog\'langan maxsus domenlar, masalan Tencent Cloud COS maxsus domenlari uchun false qiling.',
+    'S3_ENDPOINT 設定時、アップロード URL のパスに S3_BUCKET を追加するかどうか。デフォルト: true。Cloudflare R2、MinIO などの path-style S3 互換エンドポイントでは true を使用し、Tencent Cloud COS カスタムドメインなど、バケットに紐づくカスタムドメインでは false に設定します。',
+    'S3_ENDPOINT 설정 시 업로드 URL 경로에 S3_BUCKET을 추가할지 여부입니다. 기본값: true. Cloudflare R2, MinIO 등 path-style S3 호환 엔드포인트는 true를 사용하고, Tencent Cloud COS 커스텀 도메인처럼 버킷에 연결된 커스텀 도메인은 false로 설정하세요.',
+    'Khi đặt S3_ENDPOINT, xác định có thêm S3_BUCKET vào đường dẫn URL tải lên hay không. Mặc định: true. Dùng true cho Cloudflare R2, MinIO và endpoint tương thích S3 dạng path-style; đặt false cho tên miền tùy chỉnh đã gắn với bucket, ví dụ tên miền tùy chỉnh Tencent Cloud COS.'
+  ],
   [S.ACI + '_S3_CDN_URL']: [
     'S3 图片访问域名（CDN 域名），留空则使用默认 S3/Endpoint URL',
     'S3 圖片存取網域（CDN 網域），留空則使用預設 S3/Endpoint URL',

@@ -1,7 +1,7 @@
 {
-  "name": "twikoo-edgeone-pages",
+  "name": "twikoo-edgeone-makers",
   "version": "1.7.13",
-  "description": "Twikoo comment system backend for Tencent EdgeOne Pages",
+  "description": "Twikoo comment system backend for Tencent EdgeOne Makers",
   "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
   "license": "MIT",
   "type": "module",
@@ -19,7 +19,7 @@
     "edge-computing"
   ],
   "scripts": {
-    "dev": "edgeone pages dev",
+    "dev": "edgeone makers dev",
     "build": "node build.cjs",
     "postinstall": "node build.cjs"
   },

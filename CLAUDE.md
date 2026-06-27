@@ -40,7 +40,7 @@ Vue 2 + Element UI 组件，Webpack 5 构建为 UMD 库。两个入口：
 | CloudBase | `twikoo-func` | 腾讯云开发数据库 | 主后端，入口 `exports.main` |
 | Self-hosted | `tkserver` | LokiJS（默认）/ MongoDB | Node.js HTTP 服务器，入口 `server.js` |
 | Vercel | `twikoo-vercel` | MongoDB | Serverless 函数，入口 `api/index.js` |
-| EdgeOne Pages | `twikoo-edgeone-pages` | EdgeOne KV | Node Function + Edge Function 混合架构 |
+| EdgeOne Makers | `twikoo-edgeone-makers` | EdgeOne Blob | Cloud Functions（Node.js + Go） |
 | Netlify / AWS Lambda / Deta | — | MongoDB | 均通过 `twikoo-vercel` 适配 |
 
 **重要**：修改后端共用逻辑时，需同时确保所有后端变体都能正常工作。各后端的 `handlePost` switch 语句应保持一致的事件处理分支（如 `GET_QQ_NICK`、`EMAIL_TEST` 等）。

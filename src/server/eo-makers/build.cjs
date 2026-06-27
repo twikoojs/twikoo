@@ -1,5 +1,5 @@
 /**
- * Twikoo EdgeOne Pages 构建脚本
+ * Twikoo EdgeOne Makers 构建脚本
  *
  * 处理不兼容包的覆写，类似 Cloudflare 版本的处理方式
  */
@@ -10,7 +10,7 @@ const zlib = require('zlib')
 
 const srcDir = __dirname
 
-console.log('Twikoo EdgeOne Pages 构建脚本')
+console.log('Twikoo EdgeOne Makers 构建脚本')
 console.log('==============================')
 console.log('')
 
@@ -86,7 +86,7 @@ for (const pkg of packagesToOverwrite) {
       fs.copyFileSync(filePath, backupPath)
     }
     // 覆写为空模块
-    fs.writeFileSync(filePath, '// Overwritten for EdgeOne Pages compatibility\nmodule.exports = {};\n')
+    fs.writeFileSync(filePath, '// Overwritten for EdgeOne Makers compatibility\nmodule.exports = {};\n')
     console.log(`  ✓ 已覆写: ${pkg}`)
     overwriteCount++
   } else {
@@ -128,7 +128,7 @@ if (allFilesExist) {
   console.log('  cloud-functions/ip2region-data.js   - IP 数据库（自动生成）')
   console.log('')
   console.log('部署说明：')
-  console.log('  1. 在 EdgeOne Pages 控制台创建项目')
+  console.log('  1. 在 EdgeOne Makers 控制台创建项目')
   console.log('  2. 推送代码触发部署（Blob 存储自动初始化，无需额外配置）')
 } else {
   console.log('错误：部分必要文件缺失，请检查项目结构')

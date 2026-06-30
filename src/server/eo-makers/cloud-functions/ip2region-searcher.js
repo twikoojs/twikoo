@@ -1,7 +1,7 @@
 /**
  * ip2region 纯内存查询器
  * (c) 2025-present Mintimate
- * 不依赖 fs 模块，适用于 EdgeOne Pages Node Function
+ * 不依赖 fs 模块，适用于 EdgeOne Makers Node Function
  *
  * 基于 @imaegoo/node-ip2region 的 memorySearchSync 方法改写
  */

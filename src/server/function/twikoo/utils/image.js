@@ -242,13 +242,18 @@ const fn = {
     // 构建对象 key
     const prefix = config.S3_PATH_PREFIX ? config.S3_PATH_PREFIX.replace(/\/$/, '') + '/' : ''
     const key = `${prefix}${Date.now()}-${fileName}`
+    const forcePathStyle = String(config.S3_FORCE_PATH_STYLE).trim().toLowerCase() !== 'false'
     let endpoint
+    let s3Base
     if (config.S3_ENDPOINT) {
-      // 兼容 R2
-      endpoint = `${config.S3_ENDPOINT.replace(/\/$/, '')}/${config.S3_BUCKET}/${key}`
+      // 自定义 S3 Endpoint
+      const endpointBase = config.S3_ENDPOINT.replace(/\/$/, '')
+      s3Base = forcePathStyle ? `${endpointBase}/${config.S3_BUCKET}` : endpointBase
+      endpoint = `${s3Base}/${key}`
     } else {
       // 标准 AWS S3：virtual-hosted-style URL
-      endpoint = `https://${config.S3_BUCKET}.s3.${region}.amazonaws.com/${key}`
+      s3Base = `https://${config.S3_BUCKET}.s3.${region}.amazonaws.com`
+      endpoint = `${s3Base}/${key}`
     }
     const endpointUrl = new URL(endpoint)
     const host = endpointUrl.host
@@ -305,10 +310,8 @@ const fn = {
     let fileUrl
     if (config.S3_CDN_URL) {
       fileUrl = `${config.S3_CDN_URL.replace(/\/$/, '')}/${key}`
-    } else if (config.S3_ENDPOINT) {
-      fileUrl = `${config.S3_ENDPOINT.replace(/\/$/, '')}/${config.S3_BUCKET}/${key}`
     } else {
-      fileUrl = `https://${config.S3_BUCKET}.s3.${region}.amazonaws.com/${key}`
+      fileUrl = `${s3Base}/${key}`
     }
     res.data = { url: fileUrl }
   },

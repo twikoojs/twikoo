@@ -1,4 +1,4 @@
-import i18n from './i18n'
+import i18n, { idI18n } from './i18n'
 
 // ISO Language Code Table http://www.lingoes.net/en/translator/langcode.htm
 // RSS Language Code Table https://www.rssboard.org/rss-language-codes
@@ -47,11 +47,6 @@ const setLanguage = (options = {}) => {
 }
 
 const translate = (key, language) => {
-  // Prioritas:
-  // 1. Parameter translate(key, language)
-  // 2. Parameter twikoo.init({ lang })
-  // 3. Bahasa browser
-  // 4. Bahasa default
   const lang = (
     language ||
     twikooLangOption ||
@@ -63,7 +58,11 @@ const translate = (key, language) => {
     ? langs[lang]
     : langs[defaultLanguage]
 
-  return i18n[key]?.[langIndex] || ''
+  if (langIndex === langs.id && Object.prototype.hasOwnProperty.call(idI18n, key)) {
+    return idI18n[key]
+  }
+
+  return i18n[key]?.[langIndex] || i18n[key]?.[langs.en] || ''
 }
 
 export default translate

@@ -31,7 +31,7 @@ const langs = {
   indonesian: 8
 }
 
-const defaultLanguage = 'id'
+const defaultLanguage = 'zh-cn'
 let twikooLangOption = ''
 
 const hasLang = (lang) => {

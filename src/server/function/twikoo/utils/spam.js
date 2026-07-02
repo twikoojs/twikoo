@@ -52,7 +52,7 @@ Strictly follow these rules:
     const OpenAI = getOpenAI()
     const openai = new OpenAI({
       apiKey: config.LLM_API_KEY,
-      baseURL: config.LLM_API_ENDPOINT || 'https://api.openai.com/v1'
+      baseURL: config.LLM_API_ENDPOINT || 'https://api.deepseek.com'
     })
     const content = config.LLM_SPAM_PROMPT
       ? config.LLM_SPAM_PROMPT
@@ -60,15 +60,15 @@ Strictly follow these rules:
           .replace('{{nick}}', comment.nick || '')
           .replace('{{link}}', comment.link || '')
       : defaultPrompt(comment)
-    
-    console.log(`提示词是：\n${content}\n模型是: ${config.LLM_MODEL}`)
 
     const chatCompletion = await openai.chat.completions.create({
-      model: config.LLM_MODEL || 'gpt-3.5-turbo',
+      model: config.LLM_MODEL || 'deepseek-v4-pro',
       messages: [{ role: 'user', content }]
     })
     const answer = (chatCompletion.choices[0].message.content || '').trim().toUpperCase()
-    console.log(`判断的结果是：${answer}`)
+    if (answer.includes('SPAM')) {
+      logger.info(`LLM 判定为 SPAM: id="${comment.id}" nick="${comment.nick}"`)
+    }
     return answer.includes('SPAM')
   } catch (error) {
     logger.error('LLM 垃圾评论检测失败，错误信息:', error)

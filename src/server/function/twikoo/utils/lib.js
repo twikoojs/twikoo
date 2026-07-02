@@ -71,5 +71,9 @@ module.exports = {
   getXml2js () {
     const xml2js = require('xml2js') // XML 解析
     return xml2js
+  },
+  getOpenAI () {
+    const OpenAI = require('openai') // OpenAI 的 SDK，用于反垃圾
+    return OpenAI
   }
 }

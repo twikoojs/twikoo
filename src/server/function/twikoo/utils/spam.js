@@ -1,7 +1,8 @@
 const {
   getAkismetClient,
   getCryptoJS,
-  getTencentcloud
+  getTencentcloud,
+  getOpenAI
 } = require('./lib')
 const {
   equalsMail
@@ -22,6 +23,57 @@ function getTencentCloud () {
     }
   }
   return tencentcloud
+}
+
+async function checkByLLM (comment, config) {
+  const defaultPrompt = (c) => `You are a blog comment moderation assistant. Analyze ALL fields below and determine if this submission is spam or ham.
+
+Spam includes ANY of the following in ANY field:
+- Commercial ads, promotions, or buying/selling offers (e.g., "代开发票", "加微信", "兼职", "办证").
+- Meaningless gibberish or spammy repetition (e.g., "顶顶顶", "111111", "asdfgh", "好" repeated).
+- Abusive language, insults, or offensive Chinese slang.
+- Suspicious links or SEO spam in the website field.
+- Bot-like automated greetings.
+
+Ham includes:
+- Genuine questions, constructive feedback, technical discussions, or normal greetings in Chinese/English.
+
+---
+Comment: ${c.comment}
+Nickname: ${c.nick || ''}
+Website: ${c.link || ''}
+---
+
+Strictly follow these rules:
+1. If ANY field contains spam content, output exactly "SPAM".
+2. If ALL fields are legitimate, output exactly "HAM".
+3. Do not include any explanations, introduction, punctuation, or extra spaces. Output only ONE word.`
+  try {
+    const OpenAI = getOpenAI()
+    const openai = new OpenAI({
+      apiKey: config.LLM_API_KEY,
+      baseURL: config.LLM_API_ENDPOINT || 'https://api.openai.com/v1'
+    })
+    const content = config.LLM_SPAM_PROMPT
+      ? config.LLM_SPAM_PROMPT
+          .replace('{{comment}}', comment.comment)
+          .replace('{{nick}}', comment.nick || '')
+          .replace('{{link}}', comment.link || '')
+      : defaultPrompt(comment)
+    
+    console.log(`提示词是：\n${content}\n模型是: ${config.LLM_MODEL}`)
+
+    const chatCompletion = await openai.chat.completions.create({
+      model: config.LLM_MODEL || 'gpt-3.5-turbo',
+      messages: [{ role: 'user', content }]
+    })
+    const answer = (chatCompletion.choices[0].message.content || '').trim().toUpperCase()
+    console.log(`判断的结果是：${answer}`)
+    return answer.includes('SPAM')
+  } catch (error) {
+    logger.error('LLM 垃圾评论检测失败，错误信息:', error)
+    return false
+  }
 }
 
 const fn = {
@@ -77,6 +129,9 @@ const fn = {
           comment_author_url: comment.link,
           comment_content: comment.comment
         })
+      } else if (config.LLM_API_KEY) {
+        // 大语言模型检测
+        isSpam = await checkByLLM(comment, config)
       }
       logger.log('垃圾评论检测结果：', isSpam)
       return isSpam

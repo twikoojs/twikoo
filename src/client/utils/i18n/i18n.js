@@ -141,8 +141,8 @@ export default {
   '클라이언트 버전: ',
   'Phiên bản client: ',
   'Versi klien: '
-],
-ADMIN_SERVER_VERSION: [
+  ],
+  ADMIN_SERVER_VERSION: [
   '云函数版本：',
   '云函數版本：',
   '雲端函式版本：',
@@ -152,7 +152,7 @@ ADMIN_SERVER_VERSION: [
   '서버 버전: ',
   'Phiên bản cloud function: ',
   'Versi server: '
-],
+  ],
     [S.AC]: [
     '评论管理',
     '評論管理',

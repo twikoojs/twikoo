@@ -2104,7 +2104,7 @@ ADMIN_SERVER_VERSION: [
     '画像のアップロードが完了するまでお待ちください',
     '이미지 업로드 중입니다. 잠시 후 다시 시도해주세요.',
     'Đang tải ảnh lên, vui lòng chờ rồi thử lại',
-    'Gambar sedang diunggah, coba lagi nanti'
+    'Gambar sedang diunggah, tunggu sebentar'
   ],
   SUBMIT_SENDING: [
     '发送中',

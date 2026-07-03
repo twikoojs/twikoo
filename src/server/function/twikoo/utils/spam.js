@@ -56,9 +56,9 @@ Strictly follow these rules:
     })
     const content = config.LLM_SPAM_PROMPT
       ? config.LLM_SPAM_PROMPT
-          .replace('{{comment}}', comment.comment)
-          .replace('{{nick}}', comment.nick || '')
-          .replace('{{link}}', comment.link || '')
+        .replace('{{comment}}', comment.comment)
+        .replace('{{nick}}', comment.nick || '')
+        .replace('{{link}}', comment.link || '')
       : defaultPrompt(comment)
 
     const chatCompletion = await openai.chat.completions.create({

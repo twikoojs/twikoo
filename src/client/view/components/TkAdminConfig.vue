@@ -135,7 +135,7 @@ export default {
             { key: 'BLOCKED_WORDS', desc: t('ADMIN_CONFIG_ITEM_BLOCKED_WORDS'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}快递,空包`, value: '' },
             { key: 'NOTIFY_SPAM', desc: t('ADMIN_CONFIG_ITEM_NOTIFY_SPAM'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}false`, value: '' },
             { key: 'LLM_API_KEY', desc: 'LLM API Key, used for AI spam comment detection. Takes precedence over Akismet and Tencent Cloud when configured.', ph: 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', value: '', secret: true },
-            { key: 'LLM_API_ENDPOINT', desc: 'LLM API endpoint URL, defaults to OpenAI', ph: 'https://api.deepseek.com', value: '' },
+            { key: 'LLM_API_ENDPOINT', desc: 'LLM API endpoint URL, defaults to DeepSeek', ph: 'https://api.deepseek.com', value: '' },
             { key: 'LLM_MODEL', desc: 'LLM model name', ph: 'deepseek-v4-flash', value: '' },
             { key: 'LLM_SPAM_PROMPT', desc: 'LLM spam detection prompt (optional, uses default if left empty)', ph: '', value: '' }          ]
         },

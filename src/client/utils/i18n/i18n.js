@@ -2059,7 +2059,7 @@ ADMIN_SERVER_VERSION: [
     'Расм юклаш',
     '画像のアップロード中',
     '이미지 업로드 중',
-    'Đang tải ảnh lên'.
+    'Đang tải ảnh lên',
     'Mengunggah gambar'
   ],
   IMAGE_UPLOAD_FAILED: [
@@ -2169,7 +2169,7 @@ ADMIN_SERVER_VERSION: [
     'сониялар олдин',
     '秒前',
     '초 전',
-    'giây trước'
+    'giây trước',
     'detik lalu'
   ]
 }

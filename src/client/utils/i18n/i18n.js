@@ -132,28 +132,28 @@ const defaultGravatar = [
  */
 export default {
   ADMIN_CLIENT_VERSION: [
-  '前端版本：',
-  '前端版本：',
-  '前端版本：',
-  'Client version: ',
-  'Клиент версияси: ',
-  'クライアントバージョン：',
-  '클라이언트 버전: ',
-  'Phiên bản client: ',
-  'Versi klien: '
+    '前端版本：',
+    '前端版本：',
+    '前端版本：',
+    'Client version: ',
+    'Клиент версияси: ',
+    'クライアントバージョン：',
+    '클라이언트 버전: ',
+    'Phiên bản client: ',
+    'Versi klien: '
   ],
   ADMIN_SERVER_VERSION: [
-  '云函数版本：',
-  '云函數版本：',
-  '雲端函式版本：',
-  'Server version: ',
-  'Сервернинг версияси: ',
-  'サーバーサイドバージョン: ',
-  '서버 버전: ',
-  'Phiên bản cloud function: ',
-  'Versi server: '
+    '云函数版本：',
+    '云函數版本：',
+    '雲端函式版本：',
+    'Server version: ',
+    'Сервернинг версияси: ',
+    'サーバーサイドバージョン: ',
+    '서버 버전: ',
+    'Phiên bản cloud function: ',
+    'Versi server: '
   ],
-    [S.AC]: [
+  [S.AC]: [
     '评论管理',
     '評論管理',
     '留言管理',
@@ -241,7 +241,7 @@ export default {
     ' (Đã ẩn)',
     ' (Tersembunyi)'
   ],
-    [S.AC + '_SEARCH']: [
+  [S.AC + '_SEARCH']: [
     '搜索',
     '搜索',
     '搜尋',
@@ -329,7 +329,7 @@ export default {
     'Không thể phân tích liên kết bình luận. Hãy kiểm tra và sao chép thủ công URL sau:',
     'Tidak dapat mengurai tautan komentar. Silakan periksa dan salin manual URL berikut:'
   ],
-    ADMIN_CONFIG: [
+  ADMIN_CONFIG: [
     '配置管理',
     '配置管理',
     '設定值管理',
@@ -428,7 +428,7 @@ export default {
     'Không (tắt tải ảnh)',
     'Tidak Ada (nonaktifkan unggahan gambar)'
   ],
-    ADMIN_CONFIG_CAPTCHA_NONE: [
+  ADMIN_CONFIG_CAPTCHA_NONE: [
     '无',
     '無',
     '無',
@@ -524,7 +524,7 @@ export default {
     'Ví dụ: ',
     'Contoh: '
   ],
-    [S.ACI + '_AKISMET_KEY']: [
+  [S.ACI + '_AKISMET_KEY']: [
     'Akismet 反垃圾评论，用于垃圾评论检测，设为 "MANUAL_REVIEW" 开启人工审核，留空不使用反垃圾。注册：https://akismet.com',
     'Akismet 反垃圾評論，用於垃圾評論檢測，設為 "MANUAL_REVIEW" 開啟人工審核，留空不使用反垃圾。註冊：https://akismet.com',
     'Akismet 防垃圾留言，用於垃圾留言檢測，設為 "MANUAL_REVIEW" 以開啟人工審核，留空則不使用防垃圾。註冊：https://akismet.com',
@@ -601,7 +601,7 @@ export default {
     'Tên miền cho phép CORS. Lưu ý: cấu hình sai có thể gây lỗi tải. Mặc định: trống. Định dạng: https://blog.example.com; Nhiều tên miền dùng dấu phẩy.',
     'Asal izin CORS, catatan: pengaturan yang salah dapat menyebabkan kegagalan memuat. Bawaan: kosong, format: https://blog.example.com; Jika perlu menambahkan beberapa nama domain, pisahkan dengan koma.'
   ],
-    [S.ACI + '_DEFAULT_GRAVATAR']: [
+  [S.ACI + '_DEFAULT_GRAVATAR']: [
     `默认的头像显示。默认值（留空）为 "initials"，可选：${defaultGravatar.join('、')}`,
     `預設的頭像顯示。預設值（留空）為 "initials"，可選：${defaultGravatar.join('、')}`,
     `預設的大頭貼照圖示。預設值（留空）為 "initials"，選項：${defaultGravatar.join('、')}`,
@@ -711,7 +711,7 @@ export default {
     'Plugin tô sáng code. Để không dùng plugin, đặt thành none. Mặc định: none.',
     `Plugin penyorotan kode. Pilihan: ${highlightPlugins.join(', ')}, masing-masing: tampilkan bahasa kode, tampilkan tombol salin kode. Dapat mengatur beberapa opsi sekaligus. Jika tidak ingin plugin penyorotan kode, atur ke none. Bawaan: none.`
   ],
-    [S.ACI + '_IMAGE_CDN']: [
+  [S.ACI + '_IMAGE_CDN']: [
     `插入图片所使用的图床，目前支持：${imageBedServices.join('、')}`,
     `插入圖片所使用的圖床，目前支持：${imageBedServices.join('、')}`,
     `插入圖片所使用的圖床，目前支援：${imageBedServices.join('、')}`,
@@ -767,7 +767,7 @@ export default {
     'Ngưỡng phát hiện NSFW (0-1). Tải lên bị từ chối nếu điểm vượt ngưỡng. Mặc định: 0.5',
     'Ambang deteksi NSFW (0-1). Unggahan akan ditolak jika skor melebihi nilai ini. Bawaan: 0.5'
   ],
-    [S.ACI + '_S3_REGION']: [
+  [S.ACI + '_S3_REGION']: [
     'S3 存储区域，例如 us-east-1。使用兼容 S3 的服务（如 Cloudflare R2、MinIO）时可填任意值',
     'S3 儲存區域，例如 us-east-1。使用相容 S3 的服務（如 Cloudflare R2、MinIO）時可填任意值',
     'S3 儲存區域，例如 us-east-1。使用相容 S3 的服務（如 Cloudflare R2、MinIO）時可填任意值',
@@ -853,7 +853,7 @@ export default {
     'Tiền tố đường dẫn lưu trữ ảnh S3, ví dụ images/twikoo. Để trống để lưu ở thư mục gốc',
     'Awalan path penyimpanan gambar S3, misal images/twikoo. Kosongkan untuk menyimpan di root'
   ],
-    [S.ACI + '_LIGHTBOX']: [
+  [S.ACI + '_LIGHTBOX']: [
     '使用简易图片点击放大效果。默认：false',
     '使用簡易圖片點擊放大效果。預設：false',
     '使用簡易圖片點擊放大效果。預設：false',
@@ -941,7 +941,7 @@ export default {
     'Mẫu email thông báo cho quản trị viên tùy chỉnh. Để trống để dùng mẫu mặc định.',
     'Template notifikasi email admin kustom. Kosongkan untuk menggunakan template bawaan. Kolom yang dapat disertakan: ${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IP}, ${MAIL}, ${IMG}'
   ],
-    [S.ACI + '_MASTER_TAG']: [
+  [S.ACI + '_MASTER_TAG']: [
     '博主标识自定义文字，默认为 “博主”。',
     '博主標識自定義文字，預設為 “博主”。',
     '站長認證自訂文字，預設為「博主」。',
@@ -1029,7 +1029,7 @@ export default {
     'Cap CAPTCHA API Endpoint (định dạng: https://<instance_url>/<site_key>/)',
     'Endpoint API Cap CAPTCHA (format: https://<alamat_instansi>/<site_key>/)'
   ],
-    [S.ACI + '_CAP_SECRET_KEY']: [
+  [S.ACI + '_CAP_SECRET_KEY']: [
     'Cap 验证码的 Secret Key',
     'Cap 验证码的 Secret Key',
     'Cap 验证码的 Secret Key',
@@ -1095,7 +1095,7 @@ export default {
     'Token gửi thông báo IM. Xem https://pushoo.js.org để biết chi tiết',
     'Token push notifikasi IM. Lihat https://pushoo.js.org untuk detailnya'
   ],
-    [S.ACI + '_DISPLAYED_FIELDS']: [
+  [S.ACI + '_DISPLAYED_FIELDS']: [
     '界面上展示的输入框，默认：nick,mail,link',
     '界面上顯示的輸入框，預設：nick,mail,link',
     '界面上顯示的輸入框，預設：nick,mail,link',
@@ -1150,7 +1150,7 @@ export default {
     'Tiêu đề thông báo email.',
     'Judul notifikasi email.'
   ],
-    [S.ACI + '_SHOW_EMOTION']: [
+  [S.ACI + '_SHOW_EMOTION']: [
     '启用插入表情功能，默认为：true',
     '啟用插入表情功能，預設為：true',
     '啟用插入表情功能，預設為：true',
@@ -1216,7 +1216,7 @@ export default {
     'Hiển thị vùng IP người dùng (cấp tỉnh). Có thể không chính xác, không hỗ trợ IPv6. Mặc định: false.',
     'Tampilkan wilayah IP pengguna (provinsi). Mungkin tidak akurat, tidak mendukung IPv6. Bawaan: false'
   ],
-    [S.ACI + '_SITE_NAME']: [
+  [S.ACI + '_SITE_NAME']: [
     '网站名称',
     '網站名稱',
     '網站名稱',
@@ -1305,7 +1305,7 @@ export default {
     'Tên đăng nhập hòm thư gửi thông báo.',
     'Nama pengguna kotak email notifikasi.'
   ],
-    ADMIN_CONFIG_RESET: [
+  ADMIN_CONFIG_RESET: [
     '重置',
     '重置',
     '還原',
@@ -1371,7 +1371,7 @@ export default {
     'Quên mật khẩu',
     'Lupa kata sandi'
   ],
-    ADMIN_EXPORT: [
+  ADMIN_EXPORT: [
     '导出',
     '匯出',
     '匯出',
@@ -1470,7 +1470,7 @@ export default {
     'Nhật ký',
     'Log'
   ],
-    [S.AI + '_SELECT']: [
+  [S.AI + '_SELECT']: [
     '请选择',
     '請選擇',
     '請選擇',
@@ -1558,7 +1558,7 @@ export default {
     'Hãy tải lên file xuất Disqus định dạng XML. Tên file thường là [tên-website]-[thời-gian]-all.xml',
     'Silakan unggah file ekspor Disqus dalam format XML, nama file biasanya [nama situs]-[waktu ekspor]-all.xml'
   ],
-    [S.AI + '_TIP_VALINE']: [
+  [S.AI + '_TIP_VALINE']: [
     '请上传 JSON 格式的 Valine 导出文件，文件名通常为 Comment.json',
     '請上傳 JSON 格式的 Valine 導出文件，文件名通常為 Comment.json',
     '請上傳 JSON 格式的 Valine 匯出檔案，檔名通常為 Comment.json',
@@ -1602,7 +1602,7 @@ export default {
     'Hỗ trợ nhập bình luận từ file sao lưu hệ thống khác.\nDữ liệu an toàn, chức năng nhập thực hiện hoàn toàn trên môi trường cloud của bạn.\nNên sao lưu cơ sở dữ liệu bình luận trước khi nhập.',
     'Mendukung impor komentar dari file cadangan sistem komentar lain.\nData aman, fungsi impor sepenuhnya dilakukan di lingkungan cloud Anda.\nDisarankan untuk mencadangkan basis data komentar sebelum mengimpor.'
   ],
-    ADMIN_LOGIN: [
+  ADMIN_LOGIN: [
     '登录',
     '登入',
     '登入',
@@ -1756,7 +1756,7 @@ export default {
     'Twikoo Bảng quản trị',
     'Panel Manajemen Twikoo'
   ],
-   COMMENTS_COUNT_SUFFIX: [
+  COMMENTS_COUNT_SUFFIX: [
     ' 条评论',
     ' 條評論',
     ' 則留言',
@@ -1910,7 +1910,7 @@ export default {
     'Gửi bình luận thất bại',
     'Komentar gagal'
   ],
-   META_INPUT_LINK: [
+  META_INPUT_LINK: [
     '网址',
     '網址',
     '網址',

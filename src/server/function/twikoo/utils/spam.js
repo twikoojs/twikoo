@@ -25,11 +25,49 @@ function getTencentCloud () {
   return tencentcloud
 }
 
-async function checkByLLM (comment, config) {
-  const defaultPrompt = (c) => `You are a blog comment moderation assistant. Analyze ALL fields below and determine if this submission is spam or ham.
+// 提取json结构的函数
+function extractJson (rawText) {
+  if (!rawText) return ''
+  const trimmed = rawText.trim()
+  const match = trimmed.match(/\{[\s\S]*\}/)
+  return match ? match[0] : trimmed
+}
+
+// 移除多余的字符
+function repairJson (jsonStr) {
+  if (!jsonStr) return ''
+  let cleaned = jsonStr.trim()
+  cleaned = cleaned.replace(/,\s*([}\]])/g, '$1')
+  return cleaned
+}
+
+// validateJson 返回的 error 信息会被拼接进 prompt
+function validateJson (jsonStr) {
+  try {
+    const obj = JSON.parse(jsonStr)
+    if (typeof obj !== 'object' || obj === null) {
+      return { valid: false, error: 'Parsed JSON is not an object' }
+    }
+    if (!('spam' in obj)) {
+      return { valid: false, error: 'Missing required key "spam"' }
+    }
+    if (typeof obj.spam !== 'boolean') {
+      return { valid: false, error: 'Key "spam" must be a boolean value' }
+    }
+    return { valid: true, data: obj }
+  } catch (err) {
+    return { valid: false, error: `JSON Parse failed: ${err.message}` }
+  }
+}
+
+// 生成提示词的函数，errorMsg 用于重试，customPrompt 替代默认的用户消息
+function buildMessages (commentData, errorMsg = '', customPrompt = '') {
+  // 1. system指令（固定不变）
+  const systemContent = `You are a blog comment moderation assistant. Analyze ALL fields below and determine if this submission is spam or ham.
 
 Spam includes ANY of the following in ANY field:
-- Commercial ads, promotions, or buying/selling offers (e.g., "代开发票", "加微信", "兼职", "办证").
+- Commercial ads, promotions, or buying/selling offers (e.g., "代开发票", "加微信", "兼职", "办证", "AI中转站").
+- Special case: If the comment text is harmless, but the nickname is suspicious (e.g., contains ads or promotions) AND a website link is provided, treat it as SPAM.
 - Meaningless gibberish or spammy repetition (e.g., "顶顶顶", "111111", "asdfgh", "好" repeated).
 - Abusive language, insults, or offensive Chinese slang.
 - Suspicious links or SEO spam in the website field.
@@ -38,42 +76,92 @@ Spam includes ANY of the following in ANY field:
 Ham includes:
 - Genuine questions, constructive feedback, technical discussions, or normal greetings in Chinese/English.
 
----
-Comment: ${c.comment}
-Nickname: ${c.nick || ''}
-Website: ${c.link || ''}
----
-
 Strictly follow these rules:
-1. If ANY field contains spam content, output exactly "SPAM".
-2. If ALL fields are legitimate, output exactly "HAM".
-3. Do not include any explanations, introduction, punctuation, or extra spaces. Output only ONE word.`
-  try {
-    const OpenAI = getOpenAI()
-    const openai = new OpenAI({
-      apiKey: config.LLM_API_KEY,
-      baseURL: config.LLM_API_ENDPOINT || 'https://api.deepseek.com'
-    })
-    const content = config.LLM_SPAM_PROMPT
-      ? config.LLM_SPAM_PROMPT
-        .replace('{{comment}}', comment.comment)
-        .replace('{{nick}}', comment.nick || '')
-        .replace('{{link}}', comment.link || '')
-      : defaultPrompt(comment)
+1. If ANY field contains spam content, output exactly {"spam": true}.
+2. If ALL fields are legitimate, output exactly {"spam": false}.
+3. Do not include any explanations, introduction, punctuation, or extra spaces. Output only the JSON object.
 
-    const chatCompletion = await openai.chat.completions.create({
-      model: config.LLM_MODEL || 'deepseek-v4-pro',
-      messages: [{ role: 'user', content }]
-    })
-    const answer = (chatCompletion.choices[0].message.content || '').trim().toUpperCase()
-    if (answer.includes('SPAM')) {
-      logger.info(`LLM 判定为 SPAM: id="${comment.id}" nick="${comment.nick}"`)
-    }
-    return answer.includes('SPAM')
-  } catch (error) {
-    logger.error('LLM 垃圾评论检测失败，错误信息:', error)
-    return false
+Your response MUST be a single valid JSON object, like:
+{"spam": true} or {"spam": false}`
+
+  // 2. 用户数据（动态变化）
+  let userContent = customPrompt || `Comment: ${commentData.comment}
+Nickname: ${commentData.nick || ''}
+Website: ${commentData.link || ''}`
+
+  // 3. 如果有错误信息，追加到用户消息末尾
+  if (errorMsg) {
+    userContent += `\n\n[ERROR FROM PREVIOUS ATTEMPT]: Your last response failed verification with error: "${errorMsg}". Please correct your output format and make sure to return exactly valid JSON.`
   }
+
+  // 4. 返回 messages 数组
+  return [
+    { role: 'system', content: systemContent },
+    { role: 'user', content: userContent }
+  ]
+}
+
+async function checkByLLM (comment, config) {
+  const maxRetries = 3
+  let lastError = ''
+
+  const OpenAI = getOpenAI()
+  const openai = new OpenAI({
+    apiKey: config.LLM_API_KEY,
+    baseURL: config.LLM_API_ENDPOINT || 'https://api.deepseek.com'
+  })
+
+  // 网络/Provider 异常或者格式校验不通过会进入重试逻辑
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    if (attempt > 1) {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+    }
+    try {
+      let messages
+      // 自定义提示词和内置提示词的 message 构建逻辑全交给 buildMessages 函数
+      if (config.LLM_SPAM_PROMPT) {
+        const customPrompt = config.LLM_SPAM_PROMPT
+          .replace('{{comment}}', comment.comment)
+          .replace('{{nick}}', comment.nick || '')
+          .replace('{{link}}', comment.link || '')
+        messages = buildMessages(comment, lastError, customPrompt)
+      } else {
+        messages = buildMessages(comment, lastError)
+      }
+
+      const chatCompletion = await openai.chat.completions.create({
+        model: config.LLM_MODEL || 'deepseek-v4-pro',
+        response_format: { type: 'json_object' },
+        messages
+      })
+
+      const rawText = chatCompletion.choices[0].message.content || ''
+
+      const extracted = extractJson(rawText)
+      const repaired = repairJson(extracted)
+      const validation = validateJson(repaired)
+
+      // 校验通过返回，不通过继续循环
+      if (validation.valid) {
+        const isSpam = validation.data.spam
+        if (isSpam) {
+          logger.info(`LLM 判定为 SPAM (尝试第 ${attempt} 次): id="${comment.id}" nick="${comment.nick}"`)
+        } else {
+          logger.log(`LLM 判定为 HAM (尝试第 ${attempt} 次): id="${comment.id}" nick="${comment.nick}"`)
+        }
+        return isSpam
+      } else {
+        lastError = validation.error
+        logger.warn(`LLM 返回校验失败 (尝试第 ${attempt}/${maxRetries} 次), 错误: ${lastError}. 原始返回: "${rawText}"`)
+      }
+    } catch (error) {
+      lastError = error.message
+      logger.error(`LLM 请求异常 (尝试第 ${attempt}/${maxRetries} 次), 错误: ${lastError}`)
+    }
+  }
+
+  logger.error(`LLM 垃圾评论检测历经 ${maxRetries} 次尝试均失败，执行终极放行兜底（返回 false）`)
+  return false
 }
 
 const fn = {

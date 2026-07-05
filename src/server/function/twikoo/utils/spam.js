@@ -2,7 +2,7 @@ const {
   getAkismetClient,
   getCryptoJS,
   getTencentcloud,
-  getOpenAI
+  getOpenAIClient
 } = require('./lib')
 const {
   equalsMail
@@ -13,6 +13,9 @@ const CryptoJS = getCryptoJS()
 const logger = require('./logger')
 
 let tencentcloud
+let openai
+let _openaiApiKey
+let _openaiEndpoint
 
 function getTencentCloud () {
   if (!tencentcloud) {
@@ -23,6 +26,21 @@ function getTencentCloud () {
     }
   }
   return tencentcloud
+}
+
+function getOpenAI (config) {
+  if (isConfigChanged(config)) {
+    _openaiApiKey = config.LLM_API_KEY || ''
+    _openaiEndpoint = config.LLM_API_ENDPOINT || ''
+    openai = getOpenAIClient(config)
+  }
+  return openai
+}
+
+function isConfigChanged (config) {
+  return !openai ||
+    _openaiApiKey !== (config.LLM_API_KEY || '') ||
+    _openaiEndpoint !== (config.LLM_API_ENDPOINT || '')
 }
 
 // 提取json结构的函数
@@ -60,10 +78,11 @@ function validateJson (jsonStr) {
   }
 }
 
-// 生成提示词的函数，errorMsg 用于重试，customPrompt 替代默认的用户消息
+// 生成提示词的函数: system 为管理员指令，user 为待审核的评论数据
+// errorMsg 用于重试，customPrompt 替代默认的 system 指令
 function buildMessages (commentData, errorMsg = '', customPrompt = '') {
-  // 1. system指令（固定不变）
-  const systemContent = `You are a blog comment moderation assistant. Analyze ALL fields below and determine if this submission is spam or ham.
+  // 1. system 指令（管理员自定义或内置默认）
+  const systemContent = customPrompt || `You are a blog comment moderation assistant. Analyze ALL fields below and determine if this submission is spam or ham.
 
 Spam includes ANY of the following in ANY field:
 - Commercial ads, promotions, or buying/selling offers (e.g., "代开发票", "加微信", "兼职", "办证", "AI中转站").
@@ -84,8 +103,8 @@ Strictly follow these rules:
 Your response MUST be a single valid JSON object, like:
 {"spam": true} or {"spam": false}`
 
-  // 2. 用户数据（动态变化）
-  let userContent = customPrompt || `Comment: ${commentData.comment}
+  // 2. user 数据（始终是待审核的评论内容）
+  let userContent = `Comment: ${commentData.comment}
 Nickname: ${commentData.nick || ''}
 Website: ${commentData.link || ''}`
 
@@ -95,21 +114,19 @@ Website: ${commentData.link || ''}`
   }
 
   // 4. 返回 messages 数组
-  return [
+  const finalPrompt = [
     { role: 'system', content: systemContent },
     { role: 'user', content: userContent }
   ]
+  logger.log('提示词是：', finalPrompt)
+  return finalPrompt
 }
 
 async function checkByLLM (comment, config) {
   const maxRetries = 3
   let lastError = ''
 
-  const OpenAI = getOpenAI()
-  const openai = new OpenAI({
-    apiKey: config.LLM_API_KEY,
-    baseURL: config.LLM_API_ENDPOINT || 'https://api.deepseek.com'
-  })
+  const openai = getOpenAI(config)
 
   // 网络/Provider 异常或者格式校验不通过会进入重试逻辑
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -120,11 +137,7 @@ async function checkByLLM (comment, config) {
       let messages
       // 自定义提示词和内置提示词的 message 构建逻辑全交给 buildMessages 函数
       if (config.LLM_SPAM_PROMPT) {
-        const customPrompt = config.LLM_SPAM_PROMPT
-          .replace('{{comment}}', comment.comment)
-          .replace('{{nick}}', comment.nick || '')
-          .replace('{{link}}', comment.link || '')
-        messages = buildMessages(comment, lastError, customPrompt)
+        messages = buildMessages(comment, lastError, config.LLM_SPAM_PROMPT)
       } else {
         messages = buildMessages(comment, lastError)
       }

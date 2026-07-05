@@ -110,6 +110,7 @@ Use [OpenAI SDK](https://www.npmjs.com/package/openai) compatible API services (
 - `LLM_API_KEY`: Enter your API key.
 - `LLM_API_ENDPOINT`: Enter the API endpoint URL (default `https://api.deepseek.com`).
 - `LLM_MODEL`: Enter the model name (default `deepseek-v4-pro`).
+- `LLM_MAX_RETRIES`: Maximum retries for LLM detection (default 3).
 
 **(Optional)** Configure `LLM_SPAM_PROMPT`: Customize the prompt.
 

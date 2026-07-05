@@ -1026,6 +1026,16 @@ export default {
     'LLM 스팸 감지 프롬프트 (옵션, 비워두면 기본값 사용)',
     'Prompt phát hiện spam LLM (tùy chọn, để trống dùng mặc định)'
   ],
+  [S.ACI + '_LLM_MAX_RETRIES']: [
+    'LLM 检测最大重试次数（默认 3 次）',
+    'LLM 檢測最大重試次數（預設 3 次）',
+    'LLM 檢測最大重試次數（預設 3 次）',
+    'LLM detection maximum retries (default 3)',
+    'LLM aniqlash uchun maksimal qayta urinishlar soni (standart 3)',
+    'LLM検出最大リトライ回数（デフォルト3回）',
+    'LLM 감지 최대 재시도 횟수 (기본 3회)',
+    'Số lần thử lại tối đa của LLM (mặc định 3)'
+  ],
   [S.ACI + '_PUSHOO_CHANNEL']: [
     `即时消息推送平台名称，支持：${pushooChannels.join('、')} 等`,
     `即時消息推送平台名称，支持：${pushooChannels.join('、')} 等`,

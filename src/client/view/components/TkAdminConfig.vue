@@ -138,7 +138,9 @@ export default {
             { key: 'LLM_API_KEY', desc: t('ADMIN_CONFIG_ITEM_LLM_API_KEY'), ph: 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', value: '', secret: true },
             { key: 'LLM_API_ENDPOINT', desc: t('ADMIN_CONFIG_ITEM_LLM_API_ENDPOINT'), ph: 'https://api.deepseek.com', value: '' },
             { key: 'LLM_MODEL', desc: t('ADMIN_CONFIG_ITEM_LLM_MODEL'), ph: 'deepseek-v4-pro', value: '' },
-            { key: 'LLM_SPAM_PROMPT', desc: t('ADMIN_CONFIG_ITEM_LLM_SPAM_PROMPT'), ph: '', value: '', type: 'textarea' }]
+            { key: 'LLM_SPAM_PROMPT', desc: t('ADMIN_CONFIG_ITEM_LLM_SPAM_PROMPT'), ph: '', value: '', type: 'textarea' },
+            { key: 'LLM_MAX_RETRIES', desc: t('ADMIN_CONFIG_ITEM_LLM_MAX_RETRIES'), ph: '3', value: '' }
+          ]
         },
         {
           name: t('ADMIN_CONFIG_CATEGORY_CAPTCHA'),

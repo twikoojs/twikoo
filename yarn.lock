@@ -824,9 +824,9 @@
     web-streams-polyfill "^4.0.0"
 
 "@cloudbase/cli@^3.3.0":
-  version "3.5.8"
-  resolved "https://registry.yarnpkg.com/@cloudbase/cli/-/cli-3.5.8.tgz#c615433c6aa305e4a0ef05dfb7b822a337c97f2a"
-  integrity sha512-6QUlOtF1U/cyrAvlJf0xLDh0fjxKv/dzaWTWomNCtHJsVc10uwFXZnwW9E41hS/FwtNoEdJfWlkDY0Hc4oxZUA==
+  version "3.5.9"
+  resolved "https://registry.yarnpkg.com/@cloudbase/cli/-/cli-3.5.9.tgz#32ebf5574fd1b40e879bea740f80e73072c42802"
+  integrity sha512-x91+3xA48b+pLFOWdnt6L8PZOThVXPkMI6qV6MbMGmS3bCLj+5UKbMr8NvIOHq/Yxh1HwbqPKtKV3ww7U64RyQ==
 
 "@cloudbase/js-sdk@^3.3.10":
   version "3.5.4"
@@ -5249,7 +5249,7 @@ vue-loader@^15.9.8:
     vue-hot-reload-api "^2.3.0"
     vue-style-loader "^4.1.0"
 
-vue-style-loader@^4.1.0:
+vue-style-loader@^4.1.0, vue-style-loader@^4.1.3:
   version "4.1.3"
   resolved "https://registry.npmmirror.com/vue-style-loader/-/vue-style-loader-4.1.3.tgz"
   integrity sha512-sFuh0xfbtpRlKfm39ss/ikqs9AbKCoXZBpHeVZ8Tx650o0k0q/YCM7FRvigtxpACezfq6af+a7JeqVTWvncqDg==

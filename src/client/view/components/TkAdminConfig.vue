@@ -15,6 +15,7 @@
             <select v-if="setting.options" v-model="setting.value" class="tk-admin-config-select">
               <option v-for="opt in setting.options" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
             </select>
+            <el-input v-else-if="setting.type === 'textarea'" v-model="setting.value" type="textarea" :rows="5" :placeholder="setting.ph" size="small" />
             <el-input v-else v-model="setting.value" :placeholder="setting.ph" size="small" :show-password="setting.secret" />
           </div>
           <div></div>
@@ -137,7 +138,7 @@ export default {
             { key: 'LLM_API_KEY', desc: 'LLM API Key, used for AI spam comment detection. Takes precedence over Akismet and Tencent Cloud when configured.', ph: 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', value: '', secret: true },
             { key: 'LLM_API_ENDPOINT', desc: 'LLM API endpoint URL, defaults to DeepSeek', ph: 'https://api.deepseek.com', value: '' },
             { key: 'LLM_MODEL', desc: 'LLM model name', ph: 'deepseek-v4-pro', value: '' },
-            { key: 'LLM_SPAM_PROMPT', desc: 'LLM spam detection prompt (optional, uses default if left empty)', ph: '', value: '' }]
+            { key: 'LLM_SPAM_PROMPT', desc: 'LLM spam detection prompt (optional, uses default if left empty)', ph: '', value: '', type: 'textarea' }]
         },
         {
           name: t('ADMIN_CONFIG_CATEGORY_CAPTCHA'),
@@ -181,9 +182,9 @@ export default {
             { key: 'SMTP_USER', desc: t('ADMIN_CONFIG_ITEM_SMTP_USER'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}blog@imaegoo.com`, value: '' },
             { key: 'SMTP_PASS', desc: t('ADMIN_CONFIG_ITEM_SMTP_PASS'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}password`, value: '', secret: true },
             { key: 'MAIL_SUBJECT', desc: t('ADMIN_CONFIG_ITEM_MAIL_SUBJECT'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}您在虹墨空间站上的评论收到了回复`, value: '' },
-            { key: 'MAIL_TEMPLATE', desc: t('ADMIN_CONFIG_ITEM_MAIL_TEMPLATE'), ph: '', value: '' },
+            { key: 'MAIL_TEMPLATE', desc: t('ADMIN_CONFIG_ITEM_MAIL_TEMPLATE'), ph: '', value: '', type: 'textarea' },
             { key: 'MAIL_SUBJECT_ADMIN', desc: t('ADMIN_CONFIG_ITEM_MAIL_SUBJECT_ADMIN'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}虹墨空间站上有新评论了`, value: '' },
-            { key: 'MAIL_TEMPLATE_ADMIN', desc: t('ADMIN_CONFIG_ITEM_MAIL_TEMPLATE_ADMIN'), ph: '', value: '' }
+            { key: 'MAIL_TEMPLATE_ADMIN', desc: t('ADMIN_CONFIG_ITEM_MAIL_TEMPLATE_ADMIN'), ph: '', value: '', type: 'textarea' }
           ]
         }
       ],

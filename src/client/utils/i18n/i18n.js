@@ -986,6 +986,46 @@ export default {
     'Tencent Cloud Secret Key.',
     'Tencent Cloud Secret Key.'
   ],
+  [S.ACI + '_LLM_API_KEY']: [
+    'LLM API Key，用于 AI 垃圾评论检测。仅在未配置腾讯云和 Akismet 时生效。',
+    'LLM API Key，用於 AI 垃圾評論檢測。僅在未配置騰訊雲和 Akismet 時生效。',
+    'LLM API Key，用於 AI 垃圾留言檢測。僅在未配置騰訊雲和 Akismet 時生效。',
+    'LLM API Key, used for AI spam comment detection. Only takes effect when Tencent Cloud and Akismet are not configured.',
+    'LLM API kaliti, spamni aniqlash uchun. Faqat Tencent Cloud va Akismet sozlangan bo\'lmasa ishlaydi.',
+    'LLM APIキー。AIスパムコメント検出に使用されます。Tencent CloudとAkismetが設定されていない場合のみ有効になります。',
+    'LLM API 키. AI 스팸 댓글 감지에 사용됩니다. Tencent Cloud 및 Akismet이 설정되지 않은 경우에만 작동합니다.',
+    'LLM API Key, dùng để phát hiện spam bằng AI. Chỉ có hiệu lực khi Tencent Cloud và Akismet không được cấu hình.'
+  ],
+  [S.ACI + '_LLM_API_ENDPOINT']: [
+    'LLM API 接口地址，默认：https://api.deepseek.com',
+    'LLM API 接口地址，預設：https://api.deepseek.com',
+    'LLM API 接口地址，預設：https://api.deepseek.com',
+    'LLM API endpoint URL, defaults to https://api.deepseek.com',
+    'LLM API endpoint manzili, standart: https://api.deepseek.com',
+    'LLM APIエンドポイントURL。デフォルト：https://api.deepseek.com',
+    'LLM API 엔드포인트 URL. 기본값: https://api.deepseek.com',
+    'Địa chỉ LLM API endpoint, mặc định: https://api.deepseek.com'
+  ],
+  [S.ACI + '_LLM_MODEL']: [
+    'LLM 模型名称，默认：deepseek-v4-pro',
+    'LLM 模型名稱，預設：deepseek-v4-pro',
+    'LLM 模型名稱，預設：deepseek-v4-pro',
+    'LLM model name, default: deepseek-v4-pro',
+    'LLM model nomi, standart: deepseek-v4-pro',
+    'LLMモデル名。デフォルト：deepseek-v4-pro',
+    'LLM 모델 이름. 기본값: deepseek-v4-pro',
+    'Tên mô hình LLM, mặc định: deepseek-v4-pro'
+  ],
+  [S.ACI + '_LLM_SPAM_PROMPT']: [
+    'LLM 垃圾检测提示词（可选，留空则使用默认提示词）',
+    'LLM 垃圾檢測提示詞（可選，留空則使用預設提示詞）',
+    'LLM 垃圾檢測提示詞（可選，留白則使用預設提示詞）',
+    'LLM spam detection prompt (optional, uses default if left empty)',
+    'LLM spam prompt (ixtiyoriy, bo\'sh qolsa standart ishlatiladi)',
+    'LLMスパム検出プロンプト（オプション。空の場合はデフォルトが使用されます）',
+    'LLM 스팸 감지 프롬프트 (옵션, 비워두면 기본값 사용)',
+    'Prompt phát hiện spam LLM (tùy chọn, để trống dùng mặc định)'
+  ],
   [S.ACI + '_PUSHOO_CHANNEL']: [
     `即时消息推送平台名称，支持：${pushooChannels.join('、')} 等`,
     `即時消息推送平台名称，支持：${pushooChannels.join('、')} 等`,

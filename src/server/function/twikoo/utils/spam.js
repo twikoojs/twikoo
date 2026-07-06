@@ -123,7 +123,7 @@ Website: ${commentData.link || ''}`
 }
 
 async function checkByLLM (comment, config) {
-  const maxRetries = config.LLM_MAX_RETRIES || 3
+  const maxRetries = Number(config.LLM_MAX_RETRIES) || 3
   let lastError = ''
 
   const openai = getOpenAI(config)

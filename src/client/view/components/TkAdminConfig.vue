@@ -15,6 +15,7 @@
             <select v-if="setting.options" v-model="setting.value" class="tk-admin-config-select">
               <option v-for="opt in setting.options" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
             </select>
+            <el-input v-else-if="setting.type === 'textarea'" v-model="setting.value" type="textarea" :rows="5" :placeholder="setting.ph" size="small" />
             <el-input v-else v-model="setting.value" :placeholder="setting.ph" size="small" :show-password="setting.secret" />
           </div>
           <div></div>
@@ -133,7 +134,12 @@ export default {
             { key: 'LIMIT_LENGTH', desc: t('ADMIN_CONFIG_ITEM_LIMIT_LENGTH'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}100`, value: '' },
             { key: 'FORBIDDEN_WORDS', desc: t('ADMIN_CONFIG_ITEM_FORBIDDEN_WORDS'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}快递,空包`, value: '' },
             { key: 'BLOCKED_WORDS', desc: t('ADMIN_CONFIG_ITEM_BLOCKED_WORDS'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}快递,空包`, value: '' },
-            { key: 'NOTIFY_SPAM', desc: t('ADMIN_CONFIG_ITEM_NOTIFY_SPAM'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}false`, value: '' }
+            { key: 'NOTIFY_SPAM', desc: t('ADMIN_CONFIG_ITEM_NOTIFY_SPAM'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}false`, value: '' },
+            { key: 'LLM_API_KEY', desc: t('ADMIN_CONFIG_ITEM_LLM_API_KEY'), ph: 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', value: '', secret: true },
+            { key: 'LLM_API_ENDPOINT', desc: t('ADMIN_CONFIG_ITEM_LLM_API_ENDPOINT'), ph: 'https://api.deepseek.com', value: '' },
+            { key: 'LLM_MODEL', desc: t('ADMIN_CONFIG_ITEM_LLM_MODEL'), ph: 'deepseek-v4-pro', value: '' },
+            { key: 'LLM_SPAM_PROMPT', desc: t('ADMIN_CONFIG_ITEM_LLM_SPAM_PROMPT'), ph: '', value: '', type: 'textarea' },
+            { key: 'LLM_MAX_RETRIES', desc: t('ADMIN_CONFIG_ITEM_LLM_MAX_RETRIES'), ph: '3', value: '' }
           ]
         },
         {
@@ -178,9 +184,9 @@ export default {
             { key: 'SMTP_USER', desc: t('ADMIN_CONFIG_ITEM_SMTP_USER'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}blog@imaegoo.com`, value: '' },
             { key: 'SMTP_PASS', desc: t('ADMIN_CONFIG_ITEM_SMTP_PASS'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}password`, value: '', secret: true },
             { key: 'MAIL_SUBJECT', desc: t('ADMIN_CONFIG_ITEM_MAIL_SUBJECT'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}您在虹墨空间站上的评论收到了回复`, value: '' },
-            { key: 'MAIL_TEMPLATE', desc: t('ADMIN_CONFIG_ITEM_MAIL_TEMPLATE'), ph: '', value: '' },
+            { key: 'MAIL_TEMPLATE', desc: t('ADMIN_CONFIG_ITEM_MAIL_TEMPLATE'), ph: '', value: '', type: 'textarea' },
             { key: 'MAIL_SUBJECT_ADMIN', desc: t('ADMIN_CONFIG_ITEM_MAIL_SUBJECT_ADMIN'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}虹墨空间站上有新评论了`, value: '' },
-            { key: 'MAIL_TEMPLATE_ADMIN', desc: t('ADMIN_CONFIG_ITEM_MAIL_TEMPLATE_ADMIN'), ph: '', value: '' }
+            { key: 'MAIL_TEMPLATE_ADMIN', desc: t('ADMIN_CONFIG_ITEM_MAIL_TEMPLATE_ADMIN'), ph: '', value: '', type: 'textarea' }
           ]
         }
       ],

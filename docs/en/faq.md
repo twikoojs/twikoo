@@ -103,6 +103,17 @@ Akismet (Automattic Kismet) is a widely used spam filtering system by Matt Mulle
 1. Register [akismet.com](https://akismet.com)
 2. Select Akismet Personal subscription, copy the Akismet API Key and configure it in the Twikoo admin panel "Anti-Spam" module
 
+### Configure LLM Anti-Spam Service
+
+Use [OpenAI SDK](https://www.npmjs.com/package/openai) compatible API services (such as DeepSeek, OpenAI, etc.) to implement more intelligent spam comment detection. Administrators can customize the prompt to flexibly define what constitutes "spam comments."
+
+- `LLM_API_KEY`: Enter your API key.
+- `LLM_API_ENDPOINT`: Enter the API endpoint URL (default `https://api.deepseek.com`).
+- `LLM_MODEL`: Enter the model name (default `deepseek-v4-pro`).
+- `LLM_MAX_RETRIES`: Maximum retries for LLM detection (default 3).
+
+**(Optional)** Configure `LLM_SPAM_PROMPT`: Customize the prompt.
+
 ## Error encountered in login administration panel AUTH_INVALID_CUSTOM_LOGIN_TICKET
 
 Generally, after configuring the login private key, the login private key is downloaded again, which causes the previously configured login private key to be invalid.<br>

@@ -71,5 +71,13 @@ module.exports = {
   getXml2js () {
     const xml2js = require('xml2js') // XML 解析
     return xml2js
+  },
+  getOpenAIClient (config) {
+    const OpenAI = require('openai') // OpenAI 的 SDK，用于反垃圾
+    const openaiClient = new OpenAI({
+      apiKey: config.LLM_API_KEY,
+      baseURL: config.LLM_API_ENDPOINT || 'https://api.deepseek.com'
+    })
+    return openaiClient
   }
 }

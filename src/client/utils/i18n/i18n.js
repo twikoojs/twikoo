@@ -697,7 +697,7 @@ export default {
     `Кодни таъкидлаш мавзуси. Қуйидагилардан танланг: ${highlightThemes.join(', ')}. Олдиндан кўриш учун https://prismjs.com сайтига ташриф буюринг. Агар мавзуингиз кодни ажратиб кўрсатишга зид бўлса, уни «Ҳеч» га ўрнатинг. Стандарт: йўқ.`,
     `コードハイライトのテーマ。選択肢：${highlightThemes.join('、')}、テーマの効果をプレビューするには https://prismjs.com を訪問してください。テーマとコードハイライトに競合がある場合、noneに設定してください。デフォルト：none`,
     `코드 하이라이팅 테마. 사용 가능 테마: ${highlightThemes.join(', ')}. https://prismjs.com 에서 미리보기를 확인하세요. 테마와 코드 하이라이팅이 충돌하면 none으로 설정하세요. 기본값: none.`,
-    'Theme tô sáng code. Truy cập https://prismjs.com để xem trước. Mặc định: none.',
+    'Theme tô sáng code. Truy cập ${highlightThemes.join(', ')}. https://prismjs.com để xem trước. Mặc định: none.',
     `Tema penyorotan kode. Pilih dari: ${highlightThemes.join(', ')}. Kunjungi https://prismjs.com untuk pratinjau. Jika tema Anda bertentangan dengan penyorotan kode, atur ke none. Bawaan: none.`
   ],
   [S.ACI + '_HIGHLIGHT_PLUGIN']: [
@@ -708,7 +708,7 @@ export default {
     `Плагин подсветки кода, опционально: ${highlightPlugins.join(',')}, соответственно: показывать язык кода, показывать кнопку копирования кода. Вы можете установить несколько опций одновременно, если вы хотите не добавлять плагин подсветки кода, установите значение none. по умолчанию: none.`,
     `コード・ハイライト・プラグイン。オプション: ${highlightPlugins.join(',')}, それぞれ: コード言語の表示、コード・コピー・ボタンの表示。複数のオプションを同時に設定できますが、コード・ハイライト・プラグインを追加したくない場合は、noneに設定してください。`,
     `코드 하이라이트 추가 기능. 선택 가능: ${highlightPlugins.join(', ')}. (코드 언어 표시, 복사 버튼) 여러 기능을 동시에 설정할 수 있으며, 추가하지 않으려면 none으로 설정하세요. 기본값: none.`,
-    'Plugin tô sáng code. Để không dùng plugin, đặt thành none. Mặc định: none.',
+    'Plugin tô sáng code. Để không dùng plugin ${highlightPlugins.join(', ')}, đặt thành none. Mặc định: none.',
     `Plugin penyorotan kode. Pilihan: ${highlightPlugins.join(', ')}, masing-masing: tampilkan bahasa kode, tampilkan tombol salin kode. Dapat mengatur beberapa opsi sekaligus. Jika tidak ingin plugin penyorotan kode, atur ke none. Bawaan: none.`
   ],
   [S.ACI + '_IMAGE_CDN']: [
@@ -719,7 +719,7 @@ export default {
     `Расм юклаш учун расм тўшаги. Қуйидагилардан танланг: ${imageBedServices.join(', ')}`,
     `画像のアップロードに使用する画像ホスティングサービス。次のうちから選択してください：${imageBedServices.join('、')}`,
     `댓글 이미지 업로드 기능에 사용될 호스팅 서비스. 사용 가능 목록: ${imageBedServices.join(', ')}`,
-    'Dịch vụ lưu trữ ảnh khi tải lên bình luận.',
+    'Dịch vụ lưu trữ ảnh khi tải lên bình luận. ${imageBedServices.join(', ')}',
     `Penyedia hosting gambar untuk unggahan gambar. Pilih dari: ${imageBedServices.join(', ')}`
   ],
   // 翻译来自 Deepseek
@@ -731,7 +731,7 @@ export default {
     `IMAGE_CDN томонидан белгиланган расм тўшаги URL. Агар сизнинг IMAGE_CDN шулардан бири бўлса: ${customImageBedServices.join(', ')}`, // 乌兹别克语
     `IMAGE_CDNで設定した画像ホスティングサービスのURL。IMAGE_CDNが以下のいずれかの場合は入力が必要です：${customImageBedServices.join('、')}`, // 日语
     `이미지 저장소 URL. IMAGE_CDN 설정이 다음 중 하나인 경우 필요합니다: ${customImageBedServices.join(', ')}`,
-    'URL của dịch vụ lưu trữ ảnh. Bắt buộc nếu IMAGE_CDN là một trong các giá trị tùy chỉnh.',
+    'URL của dịch vụ lưu trữ ảnh. Bắt buộc nếu IMAGE_CDN là một trong các giá trị tùy chỉnh. ${customImageBedServices.join(', ')}',
     `URL hosting gambar. Wajib diisi jika IMAGE_CDN Anda adalah salah satu dari: ${customImageBedServices.join(', ')}`
   ],
   [S.ACI + '_IMAGE_CDN_TOKEN']: [
@@ -927,7 +927,7 @@ export default {
     'Махсус электрон почта хабарномаси шаблони. Стандарт шаблонни ишлатиш учун уни бўш қолдиринг. Қўшилиши мумкин бўлган майдонлар:  ${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IMG}, ${PARENT_IMG}',
     'カスタム通知メールテンプレート。空白の場合はデフォルトテンプレートを使用します。使用可能なフィールド：${SITE_URL}、${SITE_NAME}、${PARENT_NICK}、${PARENT_COMMENT}、${NICK}、${COMMENT}、${POST_URL}、${IMG}、${PARENT_IMG}',
     '댓글 알림 이메일 템플릿 설정. 비워두면 기본 템플릿 사용. 다음 변수를 사용하면 해당 값으로 자동 치환됩니다: ${SITE_URL}, ${SITE_NAME}, ${PARENT_NICK}, ${PARENT_COMMENT}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IMG}, ${PARENT_IMG}',
-    'Mẫu email thông báo tùy chỉnh. Để trống để dùng mẫu mặc định.',
+    'Mẫu email thông báo tùy chỉnh. Để trống để dùng mẫu mặc định. : ${SITE_URL}, ${SITE_NAME}, ${PARENT_NICK}, ${PARENT_COMMENT}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IMG}, ${PARENT_IMG}',
     'Template notifikasi email kustom. Kosongkan untuk menggunakan template bawaan. Kolom yang dapat disertakan: ${SITE_URL}, ${SITE_NAME}, ${PARENT_NICK}, ${PARENT_COMMENT}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IMG}, ${PARENT_IMG}'
   ],
   [S.ACI + '_MAIL_TEMPLATE_ADMIN']: [
@@ -938,7 +938,7 @@ export default {
     'Махсус администратор электрон почта хабарномаси шаблони. Стандарт шаблонни ишлатиш учун уни бўш қолдиринг. Қўшилиши мумкин бўлган майдонлар:  ${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IMG}, ${PARENT_IMG}',
     '管理者へのカスタム通知メールテンプレート。空白の場合はデフォルトテンプレートを使用します。使用可能なフィールド：${SITE_URL}、${SITE_NAME}、${NICK}、${COMMENT}、${POST_URL}、${IP}、${MAIL}、${IMG}',
     '관리자 알림 이메일 템플릿 설정. 비워두면 기본 템플릿 사용. 다음 변수를 사용하면 해당 값으로 자동 치환됩니다: ${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IP}, ${MAIL}, ${IMG}',
-    'Mẫu email thông báo cho quản trị viên tùy chỉnh. Để trống để dùng mẫu mặc định.',
+    'Mẫu email thông báo cho quản trị viên tùy chỉnh. Để trống để dùng mẫu mặc định. : ${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IP}, ${MAIL}, ${IMG}',
     'Template notifikasi email admin kustom. Kosongkan untuk menggunakan template bawaan. Kolom yang dapat disertakan: ${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IP}, ${MAIL}, ${IMG}'
   ],
   [S.ACI + '_MASTER_TAG']: [
@@ -1136,7 +1136,7 @@ export default {
     `ИМ билдиришномаси суриш канали. Қўллаб-қувватлаш: ${pushooChannels.join(', ')}`,
     `即時メッセージプッシュプラットフォームの名前。${pushooChannels.join('、')} などに対応しています。`,
     `실시간 알림을 받을 서비스 설정. 지원: ${pushooChannels.join(', ')}`,
-    'Kênh gửi thông báo IM tức thì.',
+    'Kênh gửi thông báo IM tức thì. ${pushooChannels.join(', ')}',
     `Saluran push notifikasi IM. Mendukung: ${pushooChannels.join(', ')}`
   ],
   [S.ACI + '_PUSHOO_TOKEN']: [
@@ -1346,7 +1346,7 @@ export default {
     `Электрон почта хабарномаси учун электрон почта хизмати провайдери. Қўллаб-қувватлаш: ${smtpServices.join(', ')}`,
     `メール通知メールボックスサービスプロバイダ。サポート: ${smtpServices.join(',')}.`,
     `알림 발송 이메일 서비스 선택. 지원 목록: ${smtpServices.join(', ')}`,
-    'Nhà cung cấp dịch vụ email gửi thông báo.',
+    'Nhà cung cấp dịch vụ email gửi thông báo. : ${smtpServices.join(', ')}',
     `Penyedia layanan email untuk notifikasi. Mendukung: ${smtpServices.join(', ')}`
   ],
   [S.ACI + '_SMTP_USER']: [
@@ -2029,7 +2029,7 @@ export default {
     '合計 ',
     '총 ',
     'Tổng ',
-    ''
+    'Total '
   ],
   PAGINATION_COUNT_SUFFIX: [
     ' 条',
@@ -2060,7 +2060,9 @@ export default {
     '',
     'ページ',
     '',
-    ''
+    '',
+    '',
+    'Halaman'
   ],
   PAGINATION_PAGESIZE: [
     '条/页',

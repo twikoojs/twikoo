@@ -144,7 +144,7 @@ async function checkByLLM (comment, config) {
 
       const { generateText } = require('xsai')
       const chatCompletion = await generateText({
-        model: openai.chat(config.LLM_MODEL || 'deepseek-chat'),
+        model: config.LLM_MODEL || 'deepseek-chat',
         responseFormat: { type: 'json_object' },
         messages
       })

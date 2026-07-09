@@ -73,10 +73,10 @@ module.exports = {
     return xml2js
   },
   getOpenAIClient (config) {
-    const OpenAI = require('openai') // OpenAI 的 SDK，用于反垃圾
-    const openaiClient = new OpenAI({
+    const { createXSClient } = require('xsai') // xsai SDK
+    const openaiClient = createXSClient({
       apiKey: config.LLM_API_KEY,
-      baseURL: config.LLM_API_ENDPOINT || 'https://api.deepseek.com'
+      baseURL: config.LLM_API_ENDPOINT || 'https://api.deepseek.com/v1'
     })
     return openaiClient
   }

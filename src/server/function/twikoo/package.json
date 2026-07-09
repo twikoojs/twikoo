@@ -25,9 +25,9 @@
     "jsdom": "^16.4.0",
     "marked": "^4.0.12",
     "nodemailer": "^7.0.11",
-    "openai": "^6.45.0",
     "pushoo": "latest",
     "tencentcloud-sdk-nodejs": "^4.0.65",
-    "xml2js": "^0.6.0"
+    "xml2js": "^0.6.0",
+    "xsai": "^0.2.2"
   }
 }

@@ -142,13 +142,14 @@ async function checkByLLM (comment, config) {
         messages = buildMessages(comment, lastError)
       }
 
-      const chatCompletion = await openai.chat.completions.create({
-        model: config.LLM_MODEL || 'deepseek-v4-pro',
-        response_format: { type: 'json_object' },
+      const { generateText } = require('xsai')
+      const chatCompletion = await generateText({
+        model: openai.chat(config.LLM_MODEL || 'deepseek-chat'),
+        responseFormat: { type: 'json_object' },
         messages
       })
 
-      const rawText = chatCompletion.choices[0].message.content || ''
+      const rawText = chatCompletion.text || ''
 
       const extracted = extractJson(rawText)
       const repaired = repairJson(extracted)

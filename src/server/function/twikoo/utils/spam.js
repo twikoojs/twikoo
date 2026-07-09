@@ -1,8 +1,7 @@
 const {
   getAkismetClient,
   getCryptoJS,
-  getTencentcloud,
-  getOpenAIClient
+  getTencentcloud
 } = require('./lib')
 const {
   equalsMail
@@ -13,9 +12,6 @@ const CryptoJS = getCryptoJS()
 const logger = require('./logger')
 
 let tencentcloud
-let openai
-let _openaiApiKey
-let _openaiEndpoint
 
 function getTencentCloud () {
   if (!tencentcloud) {
@@ -26,21 +22,6 @@ function getTencentCloud () {
     }
   }
   return tencentcloud
-}
-
-function getOpenAI (config) {
-  if (isConfigChanged(config)) {
-    _openaiApiKey = config.LLM_API_KEY || ''
-    _openaiEndpoint = config.LLM_API_ENDPOINT || ''
-    openai = getOpenAIClient(config)
-  }
-  return openai
-}
-
-function isConfigChanged (config) {
-  return !openai ||
-    _openaiApiKey !== (config.LLM_API_KEY || '') ||
-    _openaiEndpoint !== (config.LLM_API_ENDPOINT || '')
 }
 
 // 提取json结构的函数
@@ -125,8 +106,6 @@ Website: ${commentData.link || ''}`
 async function checkByLLM (comment, config) {
   const maxRetries = Number(config.LLM_MAX_RETRIES) || 3
   let lastError = ''
-
-  const openai = getOpenAI(config)
 
   // 网络/Provider 异常或者格式校验不通过会进入重试逻辑
   for (let attempt = 1; attempt <= maxRetries; attempt++) {

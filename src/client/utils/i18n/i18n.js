@@ -1875,7 +1875,7 @@ export default {
     'コメントはありません',
     '아직 댓글이 없습니다.',
     'Chưa có bình luận',
-    'Tidak ada komentar'
+    'Berikan komentar'
   ],
   COMMENT_EXPAND: [
     '展开',

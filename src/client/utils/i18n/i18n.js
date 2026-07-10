@@ -1875,7 +1875,7 @@ export default {
     'コメントはありません',
     '아직 댓글이 없습니다.',
     'Chưa có bình luận',
-    'Berikan komentar'
+    'Berikan pendapatmu'
   ],
   COMMENT_EXPAND: [
     '展开',
@@ -1930,7 +1930,7 @@ export default {
     'あなたのコメントを削除しますか？',
     '댓글을 삭제하시겠습니까?',
     'Xóa bình luận của bạn?',
-    'Hapus komentar Anda?'
+    'Hapus pendapat Anda?'
   ],
   COMMENT_REVIEWING_TAG: [
     '审核中',

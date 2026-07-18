@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "description": "Idea usulan untuk daftar emoji sederhana yang bisa di-hosting sendiri. The idea of a proposal for a simple emoji list that can be hosted on its own.",
+    "github_profile": "https://github.com/frijal",
+    "blog": "https://dalam.web.id/"
+  },
+  "Emoji": {
+    "emoji": [
+      "😂", "😀", "😅", "😊", "🙂", "🙃", "😌", "😍", "😘", "😜",
+      "😝", "😏", "😒", "🙄", "😳", "😡", "😔", "😫", "😱", "😭",
+      "💩", "👻", "🙌", "🖕", "👍", "👫", "👬", "👭", "🌚", "🌝",
+      "🙈", "💊", "😶", "🙏", "🍦", "🍉", "😣", "🤣", "🥰", "😎",
+      "🥳", "🥺", "🤔", "🤫", "🤭", "🤡", "💀", "🔥", "✨", "💯",
+      "🎉", "❤️", "💔", "💖", "🤝", "✌️", "👌", "👏", "👀", "🚀",
+      "⛔", "❌", "✅", "⚠️", "🚨", "🚫", "💡", "⚙️", "🛠️", "💻",
+      "📝", "📌", "📎", "📁", "📊", "📅", "🌟", "⚡", "🎯", "🔍"
+    ]
+  }
+}

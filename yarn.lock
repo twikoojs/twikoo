@@ -828,13 +828,13 @@
   integrity sha512-Zq6rXXqp7FIoHS2hcC6hRmYz+17TPtvWJjsL5eDhLo5IciIfw0ZcPlZdLVRZ7AycG3ME55pMOJ13o62QAXv+BQ==
 
 "@cloudbase/js-sdk@^3.3.10":
-  version "3.6.2"
-  resolved "https://registry.yarnpkg.com/@cloudbase/js-sdk/-/js-sdk-3.6.2.tgz#0dab81acc4a3006da58402083a809ad9231d243c"
-  integrity sha512-UfWFLpeNx5TI0ICMvPKUZEm0BDRUeQge8YM3xpnFEeX3GnPqQwGeeCgi9StQWL7sIxAabILkMEmyow6x7NE5XQ==
+  version "3.6.3"
+  resolved "https://registry.yarnpkg.com/@cloudbase/js-sdk/-/js-sdk-3.6.3.tgz#37086a8e44a28af483278809fc5a8bd92d24e386"
+  integrity sha512-f9rz+nXPtF6tfF9BqpRWe65Re4mBjp4Uod/RtmIg0KOOEIrOEbhTGsHn8IkUCE77g41oJHp4/IneEyhFK729LA==
   dependencies:
     "@cloudbase/adapter-interface" "^0.7.1"
     "@cloudbase/adapter-wx_mp" "^1.3.1"
-    "@cloudbase/wx-cloud-client-sdk" "^1.8.8"
+    "@cloudbase/wx-cloud-client-sdk" "^1.8.10"
     "@mattiasbuelens/web-streams-adapter" "^0.1.0"
     bson "^6.10.3"
     jwt-decode "^3.1.2"
@@ -843,10 +843,10 @@
     text-encoding-shim "^1.0.5"
     web-streams-polyfill "^4.0.0"
 
-"@cloudbase/wx-cloud-client-sdk@^1.8.8":
-  version "1.8.8"
-  resolved "https://registry.npmmirror.com/@cloudbase/wx-cloud-client-sdk/-/wx-cloud-client-sdk-1.8.8.tgz"
-  integrity sha512-NuvDzKG0U68JSYzudNE9nh0sF3y5hUl/cz+mS+tk6TDLz+b1iikx+U+nR+bf+pfcJVhPW4Sjx+hI9CdKDA5/Ww==
+"@cloudbase/wx-cloud-client-sdk@^1.8.10":
+  version "1.8.10"
+  resolved "https://registry.yarnpkg.com/@cloudbase/wx-cloud-client-sdk/-/wx-cloud-client-sdk-1.8.10.tgz#ad6e413ffe28e22331159f54f7e709e49287aaa6"
+  integrity sha512-XtWR1zNwKUqnAK1psvhK93EUnZBWhVorUdA1lHNWyI661YsdpLcxPRiX+/yoIrTo24MJyd/KguSuHluq3hsHqA==
   dependencies:
     "@cloudbase/adapter-wx_mp" "^1.2.1"
     core-js-pure "^3.45.0"

@@ -119,6 +119,7 @@ db.json.*
 
 pnpm-lock.yaml
 .idea/
+.omc
 
 # macOS
 .DS_Store

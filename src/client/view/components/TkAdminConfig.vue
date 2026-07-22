@@ -160,8 +160,8 @@ export default {
             { key: 'TURNSTILE_SECRET_KEY', desc: t('ADMIN_CONFIG_ITEM_TURNSTILE_SECRET_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}0x4AAAAAAAPLTmBm6gHmOnOqC1iwmU12345`, value: '', secret: true, showIf: (s) => s('CAPTCHA_PROVIDER') === 'Turnstile' },
             { key: 'GEETEST_CAPTCHA_ID', desc: t('ADMIN_CONFIG_ITEM_GEETEST_CAPTCHA_ID'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}your_captcha_id`, value: '', showIf: (s) => s('CAPTCHA_PROVIDER') === 'Geetest' },
             { key: 'GEETEST_CAPTCHA_KEY', desc: t('ADMIN_CONFIG_ITEM_GEETEST_CAPTCHA_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}your_captcha_key`, value: '', secret: true, showIf: (s) => s('CAPTCHA_PROVIDER') === 'Geetest' },
-            { key: 'CAP_API_ENDPOINT', desc: t('ADMIN_CONFIG_ITEM_CAP_API_ENDPOINT'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}https://cap.example.com/d9256640cb53/`, value: '', showIf: (s) => s('CAPTCHA_PROVIDER') === 'Cap' },
-            { key: 'CAP_SECRET_KEY', desc: t('ADMIN_CONFIG_ITEM_CAP_SECRET_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}your_cap_secret_key`, value: '', secret: true, showIf: (s) => s('CAPTCHA_PROVIDER') === 'Cap' }
+            { key: 'CAP_API_ENDPOINT', desc: t('ADMIN_CONFIG_ITEM_CAP_API_ENDPOINT'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}https://cap.example.com/d9256640cb53/（留空=内嵌，无需外部服务）`, value: '', showIf: (s) => s('CAPTCHA_PROVIDER') === 'Cap' },
+            { key: 'CAP_SECRET_KEY', desc: t('ADMIN_CONFIG_ITEM_CAP_SECRET_KEY'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}仅外部 Cap 需要；内嵌模式可留空`, value: '', secret: true, showIf: (s) => s('CAPTCHA_PROVIDER') === 'Cap' }
           ]
         },
         {

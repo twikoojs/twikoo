@@ -11,6 +11,7 @@
   },
   "homepage": "https://twikoo.js.org",
   "dependencies": {
+    "@cap.js/server": "^4.0.5",
     "@cloudbase/manager-node": "^3.9.0",
     "@cloudbase/node-sdk": "^2.5.0",
     "@imaegoo/node-ip2region": "^2.1.1",

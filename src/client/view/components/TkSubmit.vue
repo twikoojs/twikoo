@@ -113,7 +113,7 @@ export default {
       if (typeof this.config.CAPTCHA_PROVIDER !== 'undefined') return this.config.CAPTCHA_PROVIDER
       if (this.config.TURNSTILE_SITE_KEY) return 'Turnstile'
       if (this.config.GEETEST_CAPTCHA_ID) return 'Geetest'
-      if (this.config.CAP_API_ENDPOINT) return 'Cap'
+      if (this.config.CAP_API_ENDPOINT || this.config.CAP_BUILTIN) return 'Cap'
       return ''
     },
     showImage () {
@@ -242,8 +242,59 @@ export default {
       })
     },
     initCap () {
-      if (this.captchaProvider !== 'Cap' || !this.config.CAP_API_ENDPOINT) return
-      if (window.Cap) {
+      if (this.captchaProvider !== 'Cap') return
+      if (!this.config.CAP_API_ENDPOINT && !this.config.CAP_BUILTIN) return
+      // 内嵌 Cap：widget 的 challenge/redeem 经 Twikoo 事件转发
+      if (this.config.CAP_BUILTIN) {
+        window.CAP_CUSTOM_FETCH = async (url, options = {}) => {
+          const path = String(url)
+          const body = options.body ? JSON.parse(options.body) : {}
+          try {
+            if (path.includes('challenge')) {
+              const res = await call(this.$tcb, 'CAP_CHALLENGE')
+              const result = res.result || res
+              if (result.code && result.code !== 0) {
+                return { ok: false, json: async () => ({ error: result.message || 'challenge_failed' }) }
+              }
+              return {
+                ok: true,
+                json: async () => ({
+                  challenge: result.challenge,
+                  token: result.token,
+                  expires: result.expires
+                })
+              }
+            }
+            if (path.includes('redeem')) {
+              const res = await call(this.$tcb, 'CAP_REDEEM', body)
+              const result = res.result || res
+              if (result.code && result.code !== 0 && result.success !== true) {
+                return {
+                  ok: true,
+                  json: async () => ({
+                    success: false,
+                    error: result.message || result.error || 'redeem_failed'
+                  })
+                }
+              }
+              return {
+                ok: true,
+                json: async () => ({
+                  success: result.success,
+                  token: result.token,
+                  expires: result.expires,
+                  message: result.message,
+                  error: result.error || result.message
+                })
+              }
+            }
+            return { ok: false, json: async () => ({ error: 'unknown_cap_path' }) }
+          } catch (e) {
+            return { ok: false, json: async () => ({ error: e.message || 'cap_fetch_failed' }) }
+          }
+        }
+      }
+      if (window.Cap || customElements.get('cap-widget')) {
         this.capLoad = Promise.resolve()
         return
       }
@@ -260,7 +311,11 @@ export default {
         this.capLoad.then(() => {
           const capWidget = document.createElement('cap-widget')
           capWidget.setAttribute('id', 'cap-widget')
-          capWidget.setAttribute('data-cap-api-endpoint', this.config.CAP_API_ENDPOINT)
+          // 内嵌：endpoint 任意非空，实际请求走 CAP_CUSTOM_FETCH
+          const endpoint = this.config.CAP_BUILTIN
+            ? '/'
+            : this.config.CAP_API_ENDPOINT
+          capWidget.setAttribute('data-cap-api-endpoint', endpoint)
           this.$refs['cap-container'].appendChild(capWidget)
           const cleanup = () => {
             if (capWidget && capWidget.parentNode) {
@@ -278,7 +333,7 @@ export default {
             cleanup()
             reject(e)
           })
-        })
+        }).catch(reject)
       })
     },
     onMetaUpdate (updates) {
@@ -337,7 +392,7 @@ export default {
           comment.geeTestPassToken = geeTestResult.geeTestPassToken
           comment.geeTestGenTime = geeTestResult.geeTestGenTime
         }
-        if (this.captchaProvider === 'Cap' && this.config.CAP_API_ENDPOINT) {
+        if (this.captchaProvider === 'Cap' && (this.config.CAP_API_ENDPOINT || this.config.CAP_BUILTIN)) {
           comment.capToken = await this.getCapToken()
         }
         const sendResult = await call(this.$tcb, 'COMMENT_SUBMIT', comment)

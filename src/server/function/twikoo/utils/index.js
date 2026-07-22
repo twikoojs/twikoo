@@ -366,11 +366,17 @@ const fn = {
       throw new Error('极验验证码检测失败: ' + e.message)
     }
   },
-  async checkCapCaptcha ({ capToken, capSecretKey, capApiEndpoint }) {
+  async checkCapCaptcha ({ capToken, capSecretKey, capApiEndpoint, cap }) {
     try {
-      // 移除末尾的斜杠，避免双斜杠
+      // 内嵌 Cap：直接 validateToken，无需外部 Standalone
+      if (cap) {
+        const { validateToken } = require('./cap')
+        const ok = await validateToken(cap, capToken)
+        if (!ok) throw new Error('验证码错误')
+        return
+      }
+      // 外部 Cap Standalone：HTTP siteverify
       const endpoint = capApiEndpoint.replace(/\/$/, '')
-      // Cap 的 siteverify 端点
       const url = `${endpoint}/siteverify`
       logger.log('Cap验证码验证URL:', url)
       logger.log('Cap验证码验证参数:', { secret: capSecretKey ? '***' : undefined, response: capToken.substring(0, 20) + '...' })
@@ -426,9 +432,13 @@ const fn = {
       baseConfig.GEETEST_CAPTCHA_ID = config.GEETEST_CAPTCHA_ID
     }
 
-    // 仅在明确指定使用 Cap 时下发 Cap 的 api endpoint
+    // Cap：有外部 endpoint 则下发；否则标记 builtin，前端走 twikoo 事件代理
     if (config.CAPTCHA_PROVIDER === 'Cap') {
-      baseConfig.CAP_API_ENDPOINT = config.CAP_API_ENDPOINT
+      if (config.CAP_API_ENDPOINT) {
+        baseConfig.CAP_API_ENDPOINT = config.CAP_API_ENDPOINT
+      } else {
+        baseConfig.CAP_BUILTIN = true
+      }
     }
 
     return {

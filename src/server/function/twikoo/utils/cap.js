@@ -117,8 +117,10 @@ function lokiStorage (db) {
         const col = getChallengeCol()
         const existing = col.findOne({ token })
         const row = { token, challenge: data.challenge, expires: data.expires }
-        if (existing) col.update({ ...existing, ...row })
-        else col.insert(row)
+        if (existing) {
+          Object.assign(existing, row)
+          col.update(existing)
+        } else col.insert(row)
       },
       read: async (token) => {
         const doc = getChallengeCol().findOne({ token })
@@ -135,8 +137,10 @@ function lokiStorage (db) {
         const col = getTokenCol()
         const existing = col.findOne({ key })
         const row = { key, expires }
-        if (existing) col.update({ ...existing, ...row })
-        else col.insert(row)
+        if (existing) {
+          Object.assign(existing, row)
+          col.update(existing)
+        } else col.insert(row)
       },
       get: async (key) => {
         const doc = getTokenCol().findOne({ key })

@@ -1019,26 +1019,26 @@ export default {
     'Kunci GeeTest CAPTCHA'
   ],
   [S.ACI + '_CAP_API_ENDPOINT']: [
-    'Cap 验证码 API 端点（格式：https://<实例地址>/<site_key>/）',
-    'Cap 验证码 API 端点（格式：https://<实例地址>/<site_key>/）',
-    'Cap 验证码 API 端点（格式：https://<实例地址>/<site_key>/）',
-    'Cap CAPTCHA API Endpoint (format: https://<instance_url>/<site_key>/)',
-    'Cap CAPTCHA API Endpoint (format: https://<instance_url>/<site_key>/)',
-    'Cap CAPTCHA API Endpoint (format: https://<instance_url>/<site_key>/)',
-    'Cap CAPTCHA API Endpoint (format: https://<instance_url>/<site_key>/)',
-    'Cap CAPTCHA API Endpoint (định dạng: https://<instance_url>/<site_key>/)',
-    'Endpoint API Cap CAPTCHA (format: https://<alamat_instansi>/<site_key>/)'
+    'Cap 验证码 API 端点。留空则使用内嵌 Cap（无需额外部署）；外部 Standalone 格式：https://<实例地址>/<site_key>/',
+    'Cap 验证码 API 端点。留空则使用内嵌 Cap（无需额外部署）；外部 Standalone 格式：https://<实例地址>/<site_key>/',
+    'Cap 验证码 API 端点。留空则使用内嵌 Cap（无需额外部署）；外部 Standalone 格式：https://<实例地址>/<site_key>/',
+    'Cap CAPTCHA API endpoint. Leave empty for built-in Cap (no extra server). External Standalone format: https://<instance_url>/<site_key>/',
+    'Cap CAPTCHA API endpoint. Leave empty for built-in Cap (no extra server). External Standalone format: https://<instance_url>/<site_key>/',
+    'Cap CAPTCHA API Endpoint。空欄で内蔵 Cap を使用（追加サーバー不要）。外部 Standalone 形式: https://<instance_url>/<site_key>/',
+    'Cap CAPTCHA API Endpoint. 비우면 내장 Cap 사용(추가 서버 불필요). 외부 Standalone 형식: https://<instance_url>/<site_key>/',
+    'Endpoint API Cap CAPTCHA. Để trống = Cap tích hợp (không cần server ngoài). Standalone ngoài: https://<instance_url>/<site_key>/',
+    'Endpoint API Cap CAPTCHA. Kosongkan = Cap bawaan (tanpa server ekstra). Standalone eksternal: https://<instance_url>/<site_key>/'
   ],
   [S.ACI + '_CAP_SECRET_KEY']: [
-    'Cap 验证码的 Secret Key',
-    'Cap 验证码的 Secret Key',
-    'Cap 验证码的 Secret Key',
-    'Cap CAPTCHA Secret Key',
-    'Cap CAPTCHA Secret Key',
-    'Cap CAPTCHA Secret Key',
-    'Cap CAPTCHA Secret Key',
-    'Cap CAPTCHA Secret Key',
-    'Kunci Rahasia CAPTCHA Cap'
+    'Cap Secret Key（仅外部 Standalone 需要；内嵌模式可留空）',
+    'Cap Secret Key（僅外部 Standalone 需要；內嵌模式可留空）',
+    'Cap Secret Key（僅外部 Standalone 需要；內嵌模式可留空）',
+    'Cap Secret Key (external Standalone only; leave empty for built-in)',
+    'Cap Secret Key (external Standalone only; leave empty for built-in)',
+    'Cap Secret Key（外部 Standalone のみ。内蔵時は空欄可）',
+    'Cap Secret Key (외부 Standalone 전용; 내장 모드는 비워둠)',
+    'Cap Secret Key (chỉ Standalone ngoài; để trống nếu dùng tích hợp)',
+    'Cap Secret Key (hanya Standalone eksternal; kosongkan untuk bawaan)'
   ],
   [S.ACI + '_QCLOUD_SECRET_ID']: [
     '腾讯云 secret id，用于垃圾评论检测。同时设置腾讯云和 Akismet 时，只有腾讯云会生效。注册：https://twikoo.js.org/cms.html',

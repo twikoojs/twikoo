@@ -12,6 +12,7 @@ import xss from 'xss'
 import bowser from 'bowser'
 import { AsyncLocalStorage } from 'node:async_hooks'
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto'
+import { createRequire } from 'node:module'
 import {
   getMd5,
   getSha256,
@@ -55,6 +56,15 @@ import { sendNotice, emailTest } from 'twikoo-func/utils/notify'
 import { uploadImage } from 'twikoo-func/utils/image'
 import logger from 'twikoo-func/utils/logger'
 import constants from 'twikoo-func/utils/constants'
+
+const require = createRequire(import.meta.url)
+const {
+  createCap,
+  kvStorage,
+  createChallenge,
+  redeemChallenge,
+  isBuiltinCap
+} = require('twikoo-func/utils/cap')
 
 const { RES_CODE, MAX_REQUEST_TIMES } = constants
 const VERSION = '1.7.14'
@@ -633,8 +643,26 @@ function createBlobDatabase () {
       }
       await store.setJSON(key, counter)
       return 1
+    },
+    // Cap.js KV hooks
+    async capGet (key) {
+      return await store.get(key, { type: 'json' })
+    },
+    async capSet (key, value) {
+      await store.setJSON(key, value)
+    },
+    async capDel (key) {
+      try { await store.delete(key) } catch (e) {}
     }
   }
+}
+
+function createEoCap (db) {
+  return createCap(kvStorage({
+    get: (k) => db.capGet(k),
+    set: (k, v) => db.capSet(k, v),
+    del: (k) => db.capDel(k)
+  }))
 }
 
 // ==================== 配置管理 ====================
@@ -1139,6 +1167,16 @@ async function checkCaptcha (event, ip) {
       geeTestPassToken: event.geeTestPassToken,
       geeTestGenTime: event.geeTestGenTime
     })
+  } else if (provider === 'Cap' && isBuiltinCap(config)) {
+    if (!event.capToken) {
+      throw new Error('验证码 token 缺失，请刷新页面重试')
+    }
+    // db is not in scope here — re-create blob db for validation
+    const db = createBlobDatabase()
+    await checkCapCaptcha({
+      capToken: event.capToken,
+      cap: createEoCap(db)
+    })
   } else if (provider === 'Cap' && config.CAP_API_ENDPOINT && config.CAP_SECRET_KEY) {
     if (!event.capToken) {
       throw new Error('验证码 token 缺失，请刷新页面重试')
@@ -1149,7 +1187,7 @@ async function checkCaptcha (event, ip) {
       capApiEndpoint: config.CAP_API_ENDPOINT
     })
   } else if (provider === 'Cap') {
-    throw new Error('Cap 验证码配置不完整，请联系管理员')
+    throw new Error('Cap 验证码配置不完整：内嵌模式无需额外配置，外部模式需填写 CAP_API_ENDPOINT 与 CAP_SECRET_KEY')
   } else if (provider) {
     throw new Error(`不支持的验证码类型: ${provider}`)
   }
@@ -1464,6 +1502,22 @@ async function handlePost (req, res) {
         break
       case 'GET_QQ_NICK':
         result = await qqNickGet(event)
+        break
+      case 'CAP_CHALLENGE':
+        if (!isBuiltinCap(config)) {
+          result = { code: RES_CODE.FAIL, message: '内嵌 Cap 未启用' }
+        } else {
+          const data = await createChallenge(createEoCap(db))
+          result = { code: RES_CODE.SUCCESS, ...data }
+        }
+        break
+      case 'CAP_REDEEM':
+        if (!isBuiltinCap(config)) {
+          result = { code: RES_CODE.FAIL, message: '内嵌 Cap 未启用' }
+        } else {
+          const data = await redeemChallenge(createEoCap(db), event)
+          result = { code: RES_CODE.SUCCESS, ...data }
+        }
         break
       default:
         if (event.event) {

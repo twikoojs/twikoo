@@ -268,7 +268,7 @@ const fn = {
       if (qqApiKey) {
         headers.Authorization = `Bearer ${qqApiKey}`
       }
-      const result = await axios.get(`https://v1.nsuuu.com/api/qqname?qq=${qqNum}`, { headers })
+      const result = await axios.get(`https://v1.tqq.me/v1/qqname?qq=${qqNum}`, { headers })
       if (result.data?.code === 200 && result.data?.data?.nick) {
         return result.data.data.nick
       }

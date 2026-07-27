@@ -668,15 +668,15 @@ export default {
     'Sembunyikan tombol panel manajemen. Atur kata sandi, hanya ketika kata sandi yang sama dimasukkan di kolom nama, tombol akan muncul. Kosongkan untuk tidak menyembunyikan.'
   ],
   [S.ACI + '_QQ_API_KEY']: [
-    'QQ昵称API密钥，用于获取QQ昵称。前往 https://api.nsuuu.com/admin/key 获取',
-    'QQ暱稱API密鑰，用於獲取QQ暱稱。前往 https://api.nsuuu.com/admin/key 獲取',
-    'QQ暱稱API密鑰，用於獲取QQ暱稱。前往 https://api.nsuuu.com/admin/key 獲取',
+    'QQ昵称API密钥，用于获取QQ昵称。前往 https://api.tqq.me/dashboard/api-keys 获取',
+    'QQ暱稱API密鑰，用於獲取QQ暱稱。前往 https://api.tqq.me/dashboard/api-keys 獲取',
+    'QQ暱稱API密鑰，用於獲取QQ暱稱。前往 https://api.tqq.me/dashboard/api-keys 獲取',
     'QQ nickname API key for fetching QQ nickname. Get it from https://api.nsuuu.com/admin/key',
-    'QQ laqab API kaliti, QQ laqabni olish uchun. https://api.nsuuu.com/admin/key dan oling',
-    'QQニックネームAPIキー。QQニックネームの取得に使用します。https://api.nsuuu.com/admin/key で取得',
-    'QQ 닉네임 API 키. https://api.nsuuu.com/admin/key 에서 발급',
-    'API key lấy biệt danh QQ. Lấy tại https://api.nsuuu.com/admin/key',
-    'Kunci API nama panggilan QQ. Dapatkan dari https://api.nsuuu.com/admin/key'
+    'QQ laqab API kaliti, QQ laqabni olish uchun. https://api.tqq.me/dashboard/api-keys dan oling',
+    'QQニックネームAPIキー。QQニックネームの取得に使用します。https://api.tqq.me/dashboard/api-keys で取得',
+    'QQ 닉네임 API 키. https://api.tqq.me/dashboard/api-keys 에서 발급',
+    'API key lấy biệt danh QQ. Lấy tại https://api.tqq.me/dashboard/api-keys',
+    'Kunci API nama panggilan QQ. Dapatkan dari https://api.tqq.me/dashboard/api-keys'
   ],
   [S.ACI + '_HIGHLIGHT']: [
     '启用代码高亮功能。如果您的主题和代码高亮有冲突，请设为 false。默认：true',
@@ -746,15 +746,15 @@ export default {
     'Token hosting gambar. Tidak diperlukan untuk qcloud.'
   ],
   [S.ACI + '_NSFW_API_URL']: [
-    'NSFW 图片检测 API 地址。免费服务：nsfw.xnet.ren、nsfw.qixz.cn，项目：github.com/HG-ha/nsfwpy',
-    'NSFW 圖片檢測 API 地址。免費服務：nsfw.xnet.ren、nsfw.qixz.cn，項目：github.com/HG-ha/nsfwpy',
-    'NSFW 圖片檢測 API 地址。免費服務：nsfw.xnet.ren、nsfw.qixz.cn，項目：github.com/HG-ha/nsfwpy',
-    'NSFW image detection API URL. Free services: nsfw.xnet.ren, nsfw.qixz.cn, project: github.com/HG-ha/nsfwpy',
-    'NSFW расмни аниқлаш API URL. Бепул хизматлар: nsfw.xnet.ren, nsfw.qixz.cn, лойиҳа: github.com/HG-ha/nsfwpy',
-    'NSFW画像検出API URL。無料サービス：nsfw.xnet.ren、nsfw.qixz.cn、プロジェクト：github.com/HG-ha/nsfwpy',
-    'NSFW 이미지 감지 API URL. 무료 서비스: nsfw.xnet.ren, nsfw.qixz.cn, 프로젝트: github.com/HG-ha/nsfwpy',
-    'URL API phát hiện ảnh NSFW. Dịch vụ miễn phí: nsfw.xnet.ren, nsfw.qixz.cn, dự án: github.com/HG-ha/nsfwpy',
-    'URL API deteksi gambar NSFW. Layanan gratis: nsfw.xnet.ren, nsfw.qixz.cn, proyek: github.com/HG-ha/nsfwpy'
+    'NSFW 图片检测 API 地址。免费服务：nsfw.qixz.cn，项目：github.com/HG-ha/nsfwpy',
+    'NSFW 圖片檢測 API 地址。免費服務：nsfw.qixz.cn，項目：github.com/HG-ha/nsfwpy',
+    'NSFW 圖片檢測 API 地址。免費服務：nsfw.qixz.cn，項目：github.com/HG-ha/nsfwpy',
+    'NSFW image detection API URL. Free services: nsfw.qixz.cn, project: github.com/HG-ha/nsfwpy',
+    'NSFW расмни аниқлаш API URL. Бепул хизматлар: nsfw.qixz.cn, лойиҳа: github.com/HG-ha/nsfwpy',
+    'NSFW画像検出API URL。無料サービス：nsfw.qixz.cn、プロジェクト：github.com/HG-ha/nsfwpy',
+    'NSFW 이미지 감지 API URL. 무료 서비스: nsfw.qixz.cn, 프로젝트: github.com/HG-ha/nsfwpy',
+    'URL API phát hiện ảnh NSFW. Dịch vụ miễn phí: nsfw.qixz.cn, dự án: github.com/HG-ha/nsfwpy',
+    'URL API deteksi gambar NSFW. Layanan gratis: nsfw.qixz.cn, proyek: github.com/HG-ha/nsfwpy'
   ],
   [S.ACI + '_NSFW_THRESHOLD']: [
     'NSFW 检测阈值（0-1），当检测分数高于此值时拒绝上传。默认：0.5',

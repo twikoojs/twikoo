@@ -814,36 +814,157 @@
   resolved "https://registry.npmmirror.com/@cloudbase/adapter-interface/-/adapter-interface-0.7.1.tgz"
   integrity sha512-BjHTAvIMSLxbp26SeT6qLiSSBygz3kAVno/PMwwBwjgzVkVUvuZGVcvf1mhHxY/BjdRGLrd6X60OgvymV/aAUw==
 
-"@cloudbase/adapter-wx_mp@^1.2.1", "@cloudbase/adapter-wx_mp@^1.3.1":
+"@cloudbase/adapter-wx_mp@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@cloudbase/adapter-wx_mp/-/adapter-wx_mp-1.2.0.tgz#08caf02494e6578c095335f66242aa2f809327b3"
+  integrity sha512-+ie6CuDa5u0IY8dAe2cfEBL2beCXRmyFUPfz8XeQ9FGpOwhJ/dRUFreErxIEgIN4LqAqht0njkyuBn7oXroLpg==
+  dependencies:
+    "@cloudbase/adapter-interface" "^0.7.0"
+    web-streams-polyfill "^4.0.0"
+
+"@cloudbase/adapter-wx_mp@^1.2.0", "@cloudbase/adapter-wx_mp@^1.2.1":
   version "1.3.1"
-  resolved "https://registry.npmmirror.com/@cloudbase/adapter-wx_mp/-/adapter-wx_mp-1.3.1.tgz"
+  resolved "https://registry.yarnpkg.com/@cloudbase/adapter-wx_mp/-/adapter-wx_mp-1.3.1.tgz#d850f470d136e48559b3cd95c5a87590f73a04ad"
   integrity sha512-rS0N1aD1a0zc421ds17/HzM4RChQ6T2ixMz87bhPJ1yveqJt/KUqYxiXJDWhZ803wwTmJs8aqNkgugsNusNhbg==
   dependencies:
     "@cloudbase/adapter-interface" "^0.7.0"
     web-streams-polyfill "^4.0.0"
+
+"@cloudbase/ai@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@cloudbase/ai/-/ai-4.0.0.tgz#679b3371a598422611751dbf406fd7713f2615a9"
+  integrity sha512-geSvNhfOHrKprE29f/eO1mbp6rK3WXNUrfQIZE/yFqZhDRj2nQEWMonroa+8S9gwD/BGy5M07xX/s3r99jiWTQ==
+  dependencies:
+    "@cloudbase/types" "4.0.0"
+    "@cloudbase/utilities" "4.0.0"
+    "@mattiasbuelens/web-streams-adapter" "^0.1.0"
+    text-encoding-shim "^1.0.5"
+    web-streams-polyfill "^4.0.0"
+
+"@cloudbase/analytics@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@cloudbase/analytics/-/analytics-4.0.0.tgz#64257e6d66affbc8692fd344ead36964704095ec"
+  integrity sha512-Q1j2VDPHBRZfJpXHivahE246Eh4L/p/xmz8zUBMh1T4Xl7xkBegxJNysN7D1MGvG0DYXWptNXWK17+SxDNO1FA==
+  dependencies:
+    "@cloudbase/types" "4.0.0"
+    "@cloudbase/utilities" "4.0.0"
+
+"@cloudbase/app@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@cloudbase/app/-/app-4.0.0.tgz#3144ea2462c44c86edfa9646549941094dcfd312"
+  integrity sha512-H0DeGcb9YRvNXjE+izSLwjzZZi3GTR9km3tqyxTfq5iE/pJQu9Hy1CAHH1ZmuMxH+uKHhpnbPXxlru8vk48Zgg==
+  dependencies:
+    "@cloudbase/adapter-interface" "^0.7.1"
+    "@cloudbase/adapter-wx_mp" "^1.2.0"
+    "@cloudbase/types" "4.0.0"
+    "@cloudbase/utilities" "4.0.0"
+
+"@cloudbase/auth@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@cloudbase/auth/-/auth-4.0.0.tgz#47a7374885799036e399a4020b553fc3b352af07"
+  integrity sha512-l6GYeDYE+S67olH90HBy3KVTcdYjZxaPSzBPgeewvXIx9/DpnB2cTtkM2/TtENdsRfW+6+lNnZTAExRybS0QWA==
+  dependencies:
+    "@cloudbase/adapter-wx_mp" "1.2.0"
+    "@cloudbase/oauth" "4.0.0"
+    "@cloudbase/utilities" "4.0.0"
 
 "@cloudbase/cli@^3.3.0":
   version "3.6.4"
   resolved "https://registry.yarnpkg.com/@cloudbase/cli/-/cli-3.6.4.tgz#c76e3371ae94761cbe681b0b23a3394403efc23c"
   integrity sha512-RE7r16TeSICkA5AJ66eJPdqRKSFA6TcySoDarRSyG6xA5JwYxGPEG2pqCeKBcq/8zLL2C1wWDrqvh0BoiAIHPg==
 
-"@cloudbase/js-sdk@^3.3.10":
-  version "3.6.4"
-  resolved "https://registry.yarnpkg.com/@cloudbase/js-sdk/-/js-sdk-3.6.4.tgz#c5629aa2047282f158fb1ecfdeb13d9e8cac813d"
-  integrity sha512-1D0EfFvGC3EAUmliV6CIctkl3avq+6eJbtYJ4om3hxGX8lNO/NH4cnXIwX53SKYcXADbtNM3sD1Z83Sg63aNSA==
+"@cloudbase/cloudrun@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@cloudbase/cloudrun/-/cloudrun-4.0.0.tgz#0a454343125de5140e892fd81fa15d66d96dea1f"
+  integrity sha512-sP8piIu18JXuzxa09KX/pgGbd9qoKddZfQvgtRcqd4jMAVuGjFXUjCdnQnGnLmu0FSfxFsEscZe1h1+ligrxUg==
   dependencies:
     "@cloudbase/adapter-interface" "^0.7.1"
-    "@cloudbase/adapter-wx_mp" "^1.3.1"
-    "@cloudbase/wx-cloud-client-sdk" "^1.8.10"
-    "@mattiasbuelens/web-streams-adapter" "^0.1.0"
-    bson "^6.10.3"
-    jwt-decode "^3.1.2"
-    lodash "^4.17.21"
-    regenerator-runtime "^0.14.1"
-    text-encoding-shim "^1.0.5"
-    web-streams-polyfill "^4.0.0"
+    "@cloudbase/types" "4.0.0"
+    "@cloudbase/utilities" "4.0.0"
 
-"@cloudbase/wx-cloud-client-sdk@^1.8.10":
+"@cloudbase/database@0.9.22":
+  version "0.9.22"
+  resolved "https://registry.yarnpkg.com/@cloudbase/database/-/database-0.9.22.tgz#8a63cdb887e337781ff1f54429ccb78eff8add17"
+  integrity sha512-Q3QFi3uIfZaJFYdR00JOBdWTt4QbFCY95OciEW20Vhh6WQKAv2mecYoxw57OGeNCECLM8/5uAFPq4xVYEjakxA==
+  dependencies:
+    bson "^4.0.2"
+
+"@cloudbase/functions@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@cloudbase/functions/-/functions-4.0.0.tgz#1a3e0cba2d2ce34c5c83cdcfa6457c93d997aabf"
+  integrity sha512-cTKS+KSALO17wmo4Ry+uwvLs2/X9N4yRWiwCFVccsymwFfr+/helDRAVUAZ35FC6iV1TJ3TElNJ6+LmdDyN0qQ==
+  dependencies:
+    "@cloudbase/adapter-interface" "^0.7.1"
+    "@cloudbase/cloudrun" "4.0.0"
+    "@cloudbase/types" "4.0.0"
+    "@cloudbase/utilities" "4.0.0"
+
+"@cloudbase/js-sdk@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@cloudbase/js-sdk/-/js-sdk-4.0.0.tgz#5597a25b29bcd0751bc36d17f2a9ad1bee773c4d"
+  integrity sha512-sx61bGgym2n/7LYYHFSdTytybT2H3MMtfandtSgHgVPc4h0SgPuQuhEiUnu3A/tbXjkTw9keMEldmeKx5NCkLw==
+  dependencies:
+    "@cloudbase/adapter-interface" "^0.7.1"
+    "@cloudbase/ai" "4.0.0"
+    "@cloudbase/analytics" "4.0.0"
+    "@cloudbase/app" "4.0.0"
+    "@cloudbase/auth" "4.0.0"
+    "@cloudbase/cloudrun" "4.0.0"
+    "@cloudbase/database" "0.9.22"
+    "@cloudbase/functions" "4.0.0"
+    "@cloudbase/model" "4.0.0"
+    "@cloudbase/realtime" "4.0.0"
+    "@cloudbase/storage" "4.0.0"
+    "@cloudbase/types" "4.0.0"
+    "@cloudbase/utilities" "4.0.0"
+
+"@cloudbase/model@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@cloudbase/model/-/model-4.0.0.tgz#0addab08b09ddc37b310830dbc27f1a594d27eab"
+  integrity sha512-EbpxGVKIcH8lrQE6Mj8YWn/NJ/ZhTBLpwHsx+sLqOFKphrNDQPm+pH+J0z7l96N9es1FV6D39zv1aefnRcMIjw==
+  dependencies:
+    "@cloudbase/types" "4.0.0"
+    "@cloudbase/utilities" "4.0.0"
+    "@cloudbase/wx-cloud-client-sdk" "^1.5.0"
+
+"@cloudbase/oauth@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@cloudbase/oauth/-/oauth-4.0.0.tgz#fd18f1f9abfe87863fa5b2080626771a3ebd8e0a"
+  integrity sha512-1809/I7hc0Pjikm7vTRWwn3k/zZ3xfoLPF81NlkPitwa63GdmCkP1T8F7ZVeVTiZnHDcfxe0M6GiP3gmOWn0EA==
+
+"@cloudbase/realtime@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@cloudbase/realtime/-/realtime-4.0.0.tgz#2f6314c0059ff8a33e6d462113c9b4391fbe3877"
+  integrity sha512-bVOF3CLHGavuDhdle644sOTtn77yKpPJss+25UXifNk6ZW2wTtCEXuogYdcg9Vy0TxSsfXYwNIGwbQBtBsVV2g==
+  dependencies:
+    "@cloudbase/types" "4.0.0"
+    lodash "^4.17.21"
+
+"@cloudbase/storage@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@cloudbase/storage/-/storage-4.0.0.tgz#a3bfbb873ae956af0947b43ed91f88e8c842b9c7"
+  integrity sha512-gaesMVgsRIc2TsT+XgWQbXBQ8A3x9G4pN4mV4t6ao10YYgHmZfEIJ0jnDf+a/OYQBr3xEND2WS5ozabneU4NrQ==
+  dependencies:
+    "@cloudbase/types" "4.0.0"
+    "@cloudbase/utilities" "4.0.0"
+
+"@cloudbase/types@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@cloudbase/types/-/types-4.0.0.tgz#af46e7b02229153f8c3d28ef575c4d36ccb72f18"
+  integrity sha512-tfzDDPA+whKSIfuawLJIw9O5gup7Oo17eJaJPIPuhLgHHMg+aUCsIvKsXUesFPzJHcfBYs4EuY2ryQscHQPn7A==
+  dependencies:
+    "@cloudbase/adapter-interface" "^0.7.1"
+
+"@cloudbase/utilities@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@cloudbase/utilities/-/utilities-4.0.0.tgz#e6763b9a4f4de7c4c05c26364a6673f959f33d06"
+  integrity sha512-+Kbk/iiQy8j6OoQ/CSoIA0/jGw/Pvsq40OqwjTbN9ynyylbQK5CwXNoigfRpOv3OyA52qo/DabVcGGe+wZeoRQ==
+  dependencies:
+    "@cloudbase/adapter-interface" "^0.7.1"
+    "@cloudbase/types" "4.0.0"
+    jwt-decode "^3.1.2"
+
+"@cloudbase/wx-cloud-client-sdk@^1.5.0":
   version "1.8.10"
   resolved "https://registry.yarnpkg.com/@cloudbase/wx-cloud-client-sdk/-/wx-cloud-client-sdk-1.8.10.tgz#ad6e413ffe28e22331159f54f7e709e49287aaa6"
   integrity sha512-XtWR1zNwKUqnAK1psvhK93EUnZBWhVorUdA1lHNWyI661YsdpLcxPRiX+/yoIrTo24MJyd/KguSuHluq3hsHqA==
@@ -1919,6 +2040,11 @@ balanced-match@^4.0.2:
   resolved "https://registry.npmmirror.com/balanced-match/-/balanced-match-4.0.4.tgz"
   integrity sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==
 
+base64-js@^1.3.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
+  integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
+
 baseline-browser-mapping@^2.10.12:
   version "2.10.27"
   resolved "https://registry.npmmirror.com/baseline-browser-mapping/-/baseline-browser-mapping-2.10.27.tgz"
@@ -2005,15 +2131,25 @@ browserslist@^4.24.0, browserslist@^4.28.1:
     node-releases "^2.0.36"
     update-browserslist-db "^1.2.3"
 
-bson@^6.10.3:
-  version "6.10.4"
-  resolved "https://registry.yarnpkg.com/bson/-/bson-6.10.4.tgz#d530733bb5bb16fb25c162e01a3344fab332fd2b"
-  integrity sha512-WIsKqkSC0ABoBJuT1LEX+2HEvNmNKKgnTAyd0fL8qzK4SH2i9NXg+t08YtdZp/V9IZ33cxe3iV4yM0qg8lMQng==
+bson@^4.0.2:
+  version "4.7.2"
+  resolved "https://registry.yarnpkg.com/bson/-/bson-4.7.2.tgz#320f4ad0eaf5312dd9b45dc369cc48945e2a5f2e"
+  integrity sha512-Ry9wCtIZ5kGqkJoi6aD8KjxFZEx78guTQDnpXWiNthsxzrxAK/i8E6pCHAIZTbaEFWcOCvbecMukfK7XUvyLpQ==
+  dependencies:
+    buffer "^5.6.0"
 
 buffer-from@^1.0.0:
   version "1.1.2"
   resolved "https://registry.npmmirror.com/buffer-from/-/buffer-from-1.1.2.tgz"
   integrity sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==
+
+buffer@^5.6.0:
+  version "5.7.1"
+  resolved "https://registry.yarnpkg.com/buffer/-/buffer-5.7.1.tgz#ba62e7c13133053582197160851a8f648e99eed0"
+  integrity sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==
+  dependencies:
+    base64-js "^1.3.1"
+    ieee754 "^1.1.13"
 
 bundle-name@^4.1.0:
   version "4.1.0"
@@ -3188,6 +3324,11 @@ icss-utils@^5.0.0, icss-utils@^5.1.0:
   version "5.1.0"
   resolved "https://registry.npmmirror.com/icss-utils/-/icss-utils-5.1.0.tgz"
   integrity sha512-soFhflCVWLfRNOPU3iv5Z9VUdT44xFRbzjLsEzSr5AQmgqPMTHdU3PMT1Cf1ssx8fLNJDA1juftYl+PUcv3MqA==
+
+ieee754@^1.1.13:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.2.1.tgz#8eb7a10a63fff25d15a57b001586d177d1b0d352"
+  integrity sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==
 
 ignore@^5.2.0, ignore@^5.3.2:
   version "5.3.2"
@@ -4389,11 +4530,6 @@ regenerator-runtime@^0.11.0:
   version "0.11.1"
   resolved "https://registry.npmmirror.com/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz"
   integrity sha512-MguG95oij0fC3QV3URf4V2SDYGJhJnJGqvIIgdECeODCT98wSWDAJ94SSuVpYQUoTcGUIL6L4yNB7j1DFFHSBg==
-
-regenerator-runtime@^0.14.1:
-  version "0.14.1"
-  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.14.1.tgz#356ade10263f685dda125100cd862c1db895327f"
-  integrity sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw==
 
 regexp.prototype.flags@^1.5.3, regexp.prototype.flags@^1.5.4:
   version "1.5.4"

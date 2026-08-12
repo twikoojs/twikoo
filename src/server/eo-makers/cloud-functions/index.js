@@ -715,12 +715,27 @@ async function login (password) {
   return { code: RES_CODE.SUCCESS }
 }
 
+function getSearchKeyword (event) {
+  if (event.keyword === undefined || event.keyword === null) return ''
+  if (typeof event.keyword !== 'string') throw new Error('搜索关键词必须是字符串')
+  const keyword = event.keyword.trim()
+  if (keyword.length > 100) throw new Error('搜索关键词不能超过 100 个字符')
+  return keyword
+}
+
+function commentMatchesKeyword (comment, keyword) {
+  return [comment.nick, comment.comment].some(value =>
+    typeof value === 'string' && value.toLowerCase().includes(keyword)
+  )
+}
+
 // ==================== 评论读取 ====================
 
 async function commentGet (event, db, accessToken) {
   const res = {}
   try {
     validate(event, ['url'])
+    if (getSearchKeyword(event)) return commentSearch(event, db, accessToken)
     const uid = accessToken
     const isAdminUser = isAdmin(accessToken)
     const limit = parseInt(config.COMMENT_PAGE_SIZE) || 8
@@ -793,6 +808,64 @@ async function commentGet (event, db, accessToken) {
   return res
 }
 
+async function commentSearch (event, db, accessToken) {
+  const res = {}
+  try {
+    validate(event, ['url'])
+    const keyword = getSearchKeyword(event).toLowerCase()
+    const page = Math.max(parseInt(event.page) || 1, 1)
+    const uid = accessToken
+    const isAdminUser = isAdmin(accessToken)
+    const limit = parseInt(config.COMMENT_PAGE_SIZE) || 8
+    const sort = event.sort || 'newest'
+    let more = false
+
+    const urlQuery = getUrlQuery(event.url)
+    const visible = (await db.getComments()).filter(c =>
+      urlQuery.includes(c.url) && (c.isSpam !== true || c.uid === uid || isAdminUser)
+    )
+    const matchedRoots = keyword
+      ? new Set(visible.filter(comment => commentMatchesKeyword(comment, keyword)).map(comment => String(comment.rid || comment._id)))
+      : null
+    let mainComments = visible.filter(comment =>
+      (!comment.rid || comment.rid === '') && (!matchedRoots || matchedRoots.has(String(comment._id)))
+    )
+    const count = mainComments.length
+
+    if (sort === 'oldest') {
+      mainComments.sort((a, b) => a.created - b.created)
+    } else if (sort === 'popular') {
+      mainComments.sort((a, b) => {
+        const ups = (b.ups || []).length - (a.ups || []).length
+        return ups || b.created - a.created
+      })
+    } else {
+      mainComments.sort((a, b) => b.created - a.created)
+    }
+    let top = []
+    if (!config.TOP_DISABLED) {
+      if (page === 1) top = mainComments.filter(c => c.top === true)
+      mainComments = mainComments.filter(c => c.top !== true)
+    }
+    mainComments = mainComments.slice((page - 1) * limit, page * limit + 1)
+    if (mainComments.length > limit) {
+      more = true
+      mainComments = mainComments.slice(0, limit)
+    }
+    mainComments = [...top, ...mainComments]
+
+    const mainIds = new Set(mainComments.map(c => String(c._id)))
+    const replies = visible.filter(c => mainIds.has(String(c.rid)))
+    res.data = parseComment([...mainComments, ...replies], uid, config)
+    res.more = more
+    res.count = count
+  } catch (e) {
+    res.data = []
+    res.message = e.message
+  }
+  return res
+}
+
 // ==================== 管理员评论操作 ====================
 
 async function commentGetForAdmin (event, db, accessToken) {
@@ -809,8 +882,8 @@ async function commentGetForAdmin (event, db, accessToken) {
       comments = comments.filter(c => c.isSpam === true)
     }
 
-    if (event.keyword) {
-      const keyword = event.keyword.toLowerCase()
+    const keyword = getSearchKeyword(event).toLowerCase()
+    if (keyword) {
       comments = comments.filter(c =>
         (c.nick && c.nick.toLowerCase().includes(keyword)) ||
         (c.mail && c.mail.toLowerCase().includes(keyword)) ||

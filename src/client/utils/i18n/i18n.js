@@ -1811,6 +1811,39 @@ export default {
     'Twikoo Bảng quản trị',
     'Panel Manajemen Twikoo'
   ],
+  COMMENTS_SEARCH: [
+    '搜索',
+    '搜索',
+    '搜尋',
+    'Search',
+    'Излаш',
+    '検索',
+    '검색',
+    'Tìm kiếm',
+    'Cari'
+  ],
+  COMMENTS_SEARCH_PLACEHOLDER: [
+    '搜索评论',
+    '搜索評論',
+    '搜尋留言',
+    'Search comments',
+    'Изоҳларни қидириш',
+    'コメントを検索',
+    '댓글 검색',
+    'Tìm kiếm bình luận',
+    'Cari komentar'
+  ],
+  COMMENTS_SEARCH_NO_RESULT: [
+    '没有找到评论',
+    '沒有找到評論',
+    '沒有找到留言',
+    'No comments found',
+    'Изоҳлар топилмади',
+    'コメントが見つかりません',
+    '댓글을 찾을 수 없습니다',
+    'Không tìm thấy bình luận',
+    'Tidak ada komentar ditemukan'
+  ],
   COMMENTS_COUNT_SUFFIX: [
     ' 条评论',
     ' 條評論',

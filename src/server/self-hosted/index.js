@@ -291,11 +291,30 @@ async function login (password) {
   }
 }
 
+function getSearchKeyword (event) {
+  if (event.keyword === undefined || event.keyword === null) return ''
+  if (typeof event.keyword !== 'string') throw new Error('搜索关键词必须是字符串')
+  const keyword = event.keyword.trim()
+  if (keyword.length > 100) throw new Error('搜索关键词不能超过 100 个字符')
+  return keyword
+}
+
+function commentMatchesKeyword (comment, keyword) {
+  return [comment.nick, comment.comment].some(value =>
+    typeof value === 'string' && value.toLowerCase().includes(keyword)
+  )
+}
+
+function escapeRegExp (value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
 // 读取评论
 async function commentGet (event) {
   const res = {}
   try {
     validate(event, ['url'])
+    if (getSearchKeyword(event)) return commentSearch(event)
     const uid = event.accessToken
     const isAdminUser = isAdmin(event.accessToken)
     const limit = parseInt(config.COMMENT_PAGE_SIZE) || 8
@@ -383,6 +402,79 @@ async function commentGet (event) {
   return res
 }
 
+async function commentSearch (event) {
+  const res = {}
+  try {
+    validate(event, ['url'])
+    const keyword = getSearchKeyword(event).toLowerCase()
+    const page = Math.max(parseInt(event.page) || 1, 1)
+    const uid = event.accessToken
+    const isAdminUser = isAdmin(event.accessToken)
+    const limit = parseInt(config.COMMENT_PAGE_SIZE) || 8
+    const sort = event.sort || 'newest'
+    let more = false
+    let main
+    let replies
+    let count
+
+    if (keyword) {
+      const visible = db.getCollection('comment').chain()
+        .find(getCommentQuery({ condition: { url: { $in: getUrlQuery(event.url) } }, uid, isAdminUser }))
+        .data()
+      const matchedRoots = new Set(visible
+        .filter(comment => commentMatchesKeyword(comment, keyword))
+        .map(comment => String(comment.rid || comment._id)))
+      main = visible.filter(comment => !comment.rid && matchedRoots.has(String(comment._id)))
+      count = main.length
+      replies = visible
+    } else {
+      const condition = { url: { $in: getUrlQuery(event.url) }, rid: { $exists: false } }
+      count = db.getCollection('comment').count(getCommentQuery({ condition, uid, isAdminUser }))
+      main = db.getCollection('comment').chain()
+        .find(getCommentQuery({ condition, uid, isAdminUser }))
+        .data()
+    }
+
+    if (sort === 'oldest') {
+      main.sort((a, b) => a.created - b.created)
+    } else if (sort === 'popular') {
+      main.sort((a, b) => {
+        const ups = (b.ups || []).length - (a.ups || []).length
+        return ups || b.created - a.created
+      })
+    } else {
+      main.sort((a, b) => b.created - a.created)
+    }
+    let top = []
+    if (!config.TOP_DISABLED) {
+      if (page === 1) top = main.filter(comment => comment.top === true)
+      main = main.filter(comment => comment.top !== true)
+    }
+    main = main.slice((page - 1) * limit, page * limit + 1)
+    if (main.length > limit) {
+      more = true
+      main = main.slice(0, limit)
+    }
+    main = [...top, ...main]
+
+    const mainIds = new Set(main.map(comment => comment._id.toString()))
+    if (keyword) {
+      replies = replies.filter(comment => mainIds.has(String(comment.rid)))
+    } else {
+      replies = db.getCollection('comment').chain()
+        .find(getCommentQuery({ condition: { rid: { $in: [...mainIds] } }, uid, isAdminUser }))
+        .data()
+    }
+    res.data = parseComment([...main, ...replies], uid, config)
+    res.more = more
+    res.count = count
+  } catch (e) {
+    res.data = []
+    res.message = e.message
+  }
+  return res
+}
+
 function getCommentQuery ({ condition, uid, isAdminUser }) {
   return {
     $or: [
@@ -431,9 +523,10 @@ function getCommentSearchCondition (event) {
         break
     }
   }
-  if (event.keyword) {
+  const keyword = getSearchKeyword(event)
+  if (keyword) {
     const regExp = {
-      $regex: event.keyword,
+      $regex: escapeRegExp(keyword),
       $options: 'i'
     }
     condition = {

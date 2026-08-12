@@ -50,10 +50,10 @@
     "element-ui": "^2.15.6",
     "eslint": "^9.8.0",
     "eslint-plugin-vue": "^9.33.0",
-    "neostandard": "^0.13.0",
     "js-sha256": "^1.0.0",
     "marked": "^18.0.4",
     "mini-css-extract-plugin": "^2.6.1",
+    "neostandard": "^0.13.0",
     "owo": "^1.0.2",
     "prismjs": "^1.28.0",
     "svg-inline-loader": "^0.8.2",
@@ -66,5 +66,6 @@
     "webpack-bundle-analyzer": "^5.3.0",
     "webpack-cli": "^7.0.2",
     "webpack-dev-server": "^6.0.0"
-  }
+  },
+  "packageManager": "yarn@1.22.22"
 }

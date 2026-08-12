@@ -71,13 +71,5 @@ module.exports = {
   getXml2js () {
     const xml2js = require('xml2js') // XML 解析
     return xml2js
-  },
-  getOpenAIClient (config) {
-    const { createXSClient } = require('xsai') // xsai SDK
-    const openaiClient = createXSClient({
-      apiKey: config.LLM_API_KEY,
-      baseURL: config.LLM_API_ENDPOINT || 'https://api.deepseek.com/v1'
-    })
-    return openaiClient
   }
 }

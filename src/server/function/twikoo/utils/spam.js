@@ -121,8 +121,10 @@ async function checkByLLM (comment, config) {
         messages = buildMessages(comment, lastError)
       }
 
-      const { generateText } = require('xsai')
+      const { generateText } = await import('@xsai/generate-text')
       const chatCompletion = await generateText({
+        apiKey: config.LLM_API_KEY,
+        baseURL: config.LLM_API_ENDPOINT || 'https://api.deepseek.com/v1',
         model: config.LLM_MODEL || 'deepseek-chat',
         responseFormat: { type: 'json_object' },
         messages

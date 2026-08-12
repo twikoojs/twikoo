@@ -11,6 +11,9 @@
   },
   "homepage": "https://twikoo.js.org",
   "dependencies": {
+    "@xsai/generate-text": "0.2.2",
+    "@xsai/shared": "0.2.2",
+    "@xsai/shared-chat": "0.2.2",
     "@cap.js/server": "^4.0.5",
     "@cloudbase/manager-node": "^3.9.0",
     "@cloudbase/node-sdk": "^2.5.0",
@@ -28,7 +31,6 @@
     "nodemailer": "^7.0.11",
     "pushoo": "latest",
     "tencentcloud-sdk-nodejs": "^4.0.65",
-    "xml2js": "^0.6.0",
-    "xsai": "^0.2.2"
+    "xml2js": "^0.6.0"
   }
 }

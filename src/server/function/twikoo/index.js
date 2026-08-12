@@ -370,88 +370,50 @@ async function commentSearch (event) {
     const limit = parseInt(config.COMMENT_PAGE_SIZE) || 8
     const sort = event.sort || 'newest'
     let more = false
-    let condition
-    let query
-    let count
-    let main
-    let searchComments
 
-    if (keyword) {
-      condition = { url: _.in(getUrlQuery(event.url)) }
-      query = getCommentQuery({ condition, uid, isAdminUser })
-      searchComments = []
-      let cursor
-      while (true) {
-        const batchQuery = cursor
-          ? _.and(query, _.or(
-            { created: _.gt(cursor.created) },
-            { created: cursor.created, _id: _.gt(cursor._id) }
-          ))
-          : query
-        const batch = await db.collection('comment')
-          .where(batchQuery)
-          .orderBy('created', 'asc')
-          .orderBy('_id', 'asc')
-          .limit(100)
-          .get()
-        searchComments.push(...batch.data)
-        if (batch.data.length < 100) break
-        cursor = batch.data[batch.data.length - 1]
-      }
-      const matchedRoots = new Set(searchComments
-        .filter(comment => commentMatchesKeyword(comment, keyword))
-        .map(comment => String(comment.rid || comment._id)))
-      main = searchComments.filter(comment =>
-        (!comment.rid || comment.rid === '') && matchedRoots.has(String(comment._id))
-      )
-      count = main.length
-    } else {
-      condition = {
-        url: _.in(getUrlQuery(event.url)),
-        rid: _.in(['', null])
-      }
-      query = getCommentQuery({ condition, uid, isAdminUser })
-      count = (await db.collection('comment').where(query).count()).total
-      main = null
+    const condition = { url: _.in(getUrlQuery(event.url)) }
+    const query = getCommentQuery({ condition, uid, isAdminUser })
+    const searchComments = []
+    let cursor
+    while (true) {
+      const batchQuery = cursor
+        ? _.and(query, _.or(
+          { created: _.gt(cursor.created) },
+          { created: cursor.created, _id: _.gt(cursor._id) }
+        ))
+        : query
+      const batch = await db.collection('comment')
+        .where(batchQuery)
+        .orderBy('created', 'asc')
+        .orderBy('_id', 'asc')
+        .limit(100)
+        .get()
+      searchComments.push(...batch.data)
+      if (batch.data.length < 100) break
+      cursor = batch.data[batch.data.length - 1]
     }
+    const matchedRoots = new Set(searchComments
+      .filter(comment => commentMatchesKeyword(comment, keyword))
+      .map(comment => String(comment.rid || comment._id)))
+    let main = searchComments.filter(comment =>
+      (!comment.rid || comment.rid === '') && matchedRoots.has(String(comment._id))
+    )
+    const count = main.length
 
-    let orderField = 'created'
-    let orderDirection = 'desc'
-    if (sort === 'oldest') {
-      orderDirection = 'asc'
-    } else if (sort === 'popular') {
-      orderField = 'ups'
-    }
-
+    main.sort((a, b) => {
+      if (sort === 'oldest') return a.created - b.created
+      if (sort === 'popular') {
+        const ups = (b.ups || []).length - (a.ups || []).length
+        if (ups) return ups
+      }
+      return b.created - a.created
+    })
     let top = []
-    if (main) {
-      main.sort((a, b) => {
-        if (sort === 'oldest') return a.created - b.created
-        if (sort === 'popular') {
-          const ups = (b.ups || []).length - (a.ups || []).length
-          if (ups) return ups
-        }
-        return b.created - a.created
-      })
-      if (!config.TOP_DISABLED) {
-        if (page === 1) top = main.filter(comment => comment.top === true)
-        main = main.filter(comment => comment.top !== true)
-      }
-      main = main.slice((page - 1) * limit, page * limit + 1)
-    } else {
-      if (event.before) condition.created = _.lt(event.before)
-      condition.top = _.neq(true)
-      query = getCommentQuery({ condition, uid, isAdminUser })
-      main = (await db.collection('comment')
-        .where(query)
-        .orderBy(orderField, orderDirection)
-        .limit(limit + 1)
-        .get()).data
-      if (!config.TOP_DISABLED && !event.before) {
-        query = { ...condition, top: true }
-        top = (await db.collection('comment').where(query).orderBy('updated', 'desc').get()).data
-      }
+    if (!config.TOP_DISABLED) {
+      if (page === 1) top = main.filter(comment => comment.top === true)
+      main = main.filter(comment => comment.top !== true)
     }
+    main = main.slice((page - 1) * limit, page * limit + 1)
 
     if (main.length > limit) {
       more = true
@@ -459,15 +421,8 @@ async function commentSearch (event) {
     }
     main = [...top, ...main]
 
-    let reply
-    if (keyword) {
-      const mainIds = new Set(main.map(comment => String(comment._id)))
-      reply = searchComments.filter(comment => mainIds.has(String(comment.rid)))
-    } else {
-      condition = { rid: _.in(main.map((item) => item._id)) }
-      query = getCommentQuery({ condition, uid, isAdminUser })
-      reply = (await db.collection('comment').where(query).get()).data
-    }
+    const mainIds = new Set(main.map(comment => String(comment._id)))
+    const reply = searchComments.filter(comment => mainIds.has(String(comment.rid)))
     res.data = parseComment([...main, ...reply], uid, config)
     res.more = more
     res.count = count

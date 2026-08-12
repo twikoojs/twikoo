@@ -410,66 +410,32 @@ async function commentSearch (event) {
     const limit = parseInt(config.COMMENT_PAGE_SIZE) || 8
     const sort = event.sort || 'newest'
     let more = false
-    let condition
-    let query
-    let count
-    let main
-    let searchComments
 
-    if (keyword) {
-      condition = { url: { $in: getUrlQuery(event.url) } }
-      query = getCommentQuery({ condition, uid, isAdminUser })
-      searchComments = await db.collection('comment').find(query).toArray()
-      const matchedRoots = new Set(searchComments
-        .filter(comment => commentMatchesKeyword(comment, keyword))
-        .map(comment => String(comment.rid || comment._id)))
-      main = searchComments.filter(comment =>
-        (!comment.rid || comment.rid === '') && matchedRoots.has(String(comment._id))
-      )
-      count = main.length
-    } else {
-      condition = {
-        url: { $in: getUrlQuery(event.url) },
-        rid: { $in: ['', null] }
+    const condition = { url: { $in: getUrlQuery(event.url) } }
+    const query = getCommentQuery({ condition, uid, isAdminUser })
+    const searchComments = await db.collection('comment').find(query).toArray()
+    const matchedRoots = new Set(searchComments
+      .filter(comment => commentMatchesKeyword(comment, keyword))
+      .map(comment => String(comment.rid || comment._id)))
+    let main = searchComments.filter(comment =>
+      (!comment.rid || comment.rid === '') && matchedRoots.has(String(comment._id))
+    )
+    const count = main.length
+
+    main.sort((a, b) => {
+      if (sort === 'oldest') return a.created - b.created
+      if (sort === 'popular') {
+        const ups = (b.ups || []).length - (a.ups || []).length
+        if (ups) return ups
       }
-      query = getCommentQuery({ condition, uid, isAdminUser })
-      count = await db.collection('comment').countDocuments(query)
-    }
-
-    let orderField = 'created'
-    let orderDirection = -1
-    if (sort === 'oldest') {
-      orderDirection = 1
-    } else if (sort === 'popular') {
-      orderField = 'ups'
-    }
-
+      return b.created - a.created
+    })
     let top = []
-    if (keyword) {
-      main.sort((a, b) => {
-        if (sort === 'oldest') return a.created - b.created
-        if (sort === 'popular') {
-          const ups = (b.ups || []).length - (a.ups || []).length
-          if (ups) return ups
-        }
-        return b.created - a.created
-      })
-      if (!config.TOP_DISABLED) {
-        if (page === 1) top = main.filter(comment => comment.top === true)
-        main = main.filter(comment => comment.top !== true)
-      }
-      main = main.slice((page - 1) * limit, page * limit + 1)
-    } else {
-      if (event.before) condition.created = { $lt: event.before }
-      condition.top = { $ne: true }
-      query = getCommentQuery({ condition, uid, isAdminUser })
-      main = await db.collection('comment').find(query)
-        .sort({ [orderField]: orderDirection }).limit(limit + 1).toArray()
-      if (!config.TOP_DISABLED && !event.before) {
-        query = { ...condition, top: true }
-        top = await db.collection('comment').find(query).sort({ created: -1 }).toArray()
-      }
+    if (!config.TOP_DISABLED) {
+      if (page === 1) top = main.filter(comment => comment.top === true)
+      main = main.filter(comment => comment.top !== true)
     }
+    main = main.slice((page - 1) * limit, page * limit + 1)
 
     if (main.length > limit) {
       more = true
@@ -477,15 +443,8 @@ async function commentSearch (event) {
     }
     main = [...top, ...main]
 
-    let reply
-    if (keyword) {
-      const mainIds = new Set(main.map(comment => comment._id.toString()))
-      reply = searchComments.filter(comment => mainIds.has(String(comment.rid)))
-    } else {
-      condition = { rid: { $in: main.map(item => item._id.toString()) } }
-      query = getCommentQuery({ condition, uid, isAdminUser })
-      reply = await db.collection('comment').find(query).toArray()
-    }
+    const mainIds = new Set(main.map(comment => comment._id.toString()))
+    const reply = searchComments.filter(comment => mainIds.has(String(comment.rid)))
     res.data = parseComment([...main, ...reply], uid, config)
     res.more = more
     res.count = count

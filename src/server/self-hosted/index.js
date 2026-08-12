@@ -413,27 +413,16 @@ async function commentSearch (event) {
     const limit = parseInt(config.COMMENT_PAGE_SIZE) || 8
     const sort = event.sort || 'newest'
     let more = false
-    let main
-    let replies
-    let count
 
-    if (keyword) {
-      const visible = db.getCollection('comment').chain()
-        .find(getCommentQuery({ condition: { url: { $in: getUrlQuery(event.url) } }, uid, isAdminUser }))
-        .data()
-      const matchedRoots = new Set(visible
-        .filter(comment => commentMatchesKeyword(comment, keyword))
-        .map(comment => String(comment.rid || comment._id)))
-      main = visible.filter(comment => !comment.rid && matchedRoots.has(String(comment._id)))
-      count = main.length
-      replies = visible
-    } else {
-      const condition = { url: { $in: getUrlQuery(event.url) }, rid: { $exists: false } }
-      count = db.getCollection('comment').count(getCommentQuery({ condition, uid, isAdminUser }))
-      main = db.getCollection('comment').chain()
-        .find(getCommentQuery({ condition, uid, isAdminUser }))
-        .data()
-    }
+    const visible = db.getCollection('comment').chain()
+      .find(getCommentQuery({ condition: { url: { $in: getUrlQuery(event.url) } }, uid, isAdminUser }))
+      .data()
+    const matchedRoots = new Set(visible
+      .filter(comment => commentMatchesKeyword(comment, keyword))
+      .map(comment => String(comment.rid || comment._id)))
+    let main = visible.filter(comment => !comment.rid && matchedRoots.has(String(comment._id)))
+    const count = main.length
+    let replies = visible
 
     if (sort === 'oldest') {
       main.sort((a, b) => a.created - b.created)
@@ -458,13 +447,7 @@ async function commentSearch (event) {
     main = [...top, ...main]
 
     const mainIds = new Set(main.map(comment => comment._id.toString()))
-    if (keyword) {
-      replies = replies.filter(comment => mainIds.has(String(comment.rid)))
-    } else {
-      replies = db.getCollection('comment').chain()
-        .find(getCommentQuery({ condition: { rid: { $in: [...mainIds] } }, uid, isAdminUser }))
-        .data()
-    }
+    replies = replies.filter(comment => mainIds.has(String(comment.rid)))
     res.data = parseComment([...main, ...replies], uid, config)
     res.more = more
     res.count = count

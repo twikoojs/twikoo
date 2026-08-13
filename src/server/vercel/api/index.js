@@ -406,7 +406,7 @@ async function commentSearch (event, accessToken) {
     const keyword = getSearchKeyword(event).toLowerCase()
     const page = Math.max(parseInt(event.page) || 1, 1)
     const uid = accessToken
-    const isAdminUser = isAdmin()
+    const isAdminUser = isAdmin(accessToken)
     const limit = parseInt(config.COMMENT_PAGE_SIZE) || 8
     const sort = event.sort || 'newest'
     let more = false

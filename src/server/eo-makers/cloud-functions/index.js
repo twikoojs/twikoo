@@ -12,7 +12,6 @@ import xss from 'xss'
 import bowser from 'bowser'
 import { AsyncLocalStorage } from 'node:async_hooks'
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto'
-import { createRequire } from 'node:module'
 import {
   getMd5,
   getSha256,
@@ -56,15 +55,15 @@ import { sendNotice, emailTest } from 'twikoo-func/utils/notify'
 import { uploadImage } from 'twikoo-func/utils/image'
 import logger from 'twikoo-func/utils/logger'
 import constants from 'twikoo-func/utils/constants'
+import capUtils from 'twikoo-func/utils/cap'
 
-const require = createRequire(import.meta.url)
 const {
   createCap,
   kvStorage,
   createChallenge,
   redeemChallenge,
   isBuiltinCap
-} = require('twikoo-func/utils/cap')
+} = capUtils
 
 const { RES_CODE, MAX_REQUEST_TIMES } = constants
 const VERSION = '1.7.18'

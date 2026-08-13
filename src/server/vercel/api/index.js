@@ -313,7 +313,7 @@ async function commentGet (event, accessToken) {
   const res = {}
   try {
     validate(event, ['url'])
-    if (getSearchKeyword(event)) return commentSearch(event)
+    if (getSearchKeyword(event)) return commentSearch(event, accessToken)
     const uid = accessToken
     const isAdminUser = isAdmin(accessToken)
     const limit = parseInt(config.COMMENT_PAGE_SIZE) || 8
@@ -399,13 +399,13 @@ async function commentGet (event, accessToken) {
   return res
 }
 
-async function commentSearch (event) {
+async function commentSearch (event, accessToken) {
   const res = {}
   try {
     validate(event, ['url'])
     const keyword = getSearchKeyword(event).toLowerCase()
     const page = Math.max(parseInt(event.page) || 1, 1)
-    const uid = getUid()
+    const uid = accessToken
     const isAdminUser = isAdmin()
     const limit = parseInt(config.COMMENT_PAGE_SIZE) || 8
     const sort = event.sort || 'newest'

@@ -2,6 +2,17 @@
   <div class="tk-comments">
     <tk-submit @load="initComments" :config="config" />
     <div class="tk-comments-container" v-loading="loading">
+      <div class="tk-comments-search">
+        <el-input
+          v-model="searchInput"
+          size="small"
+          clearable
+          maxlength="100"
+          :placeholder="t('COMMENTS_SEARCH_PLACEHOLDER')"
+          @clear="clearSearch"
+          @keyup.enter.native="search" />
+        <el-button size="small" type="primary" @click="search">{{ t('COMMENTS_SEARCH') }}</el-button>
+      </div>
       <div class="tk-comments-title">
         <span class="tk-comments-count" :class="{ __hidden: !comments.length }">
           <span>{{ count }}</span>
@@ -31,7 +42,8 @@
         </span>
       </div>
       <div class="tk-comments-no" v-if="!loading && !comments.length">
-        <span v-if="!errorMessage">{{ t('COMMENTS_NO_COMMENTS') }}</span>
+        <span v-if="!errorMessage && searchKeyword">{{ t('COMMENTS_SEARCH_NO_RESULT') }}</span>
+        <span v-if="!errorMessage && !searchKeyword">{{ t('COMMENTS_NO_COMMENTS') }}</span>
         <span v-if="errorMessage" class="tk-comments-error">{{ errorMessage }}</span>
       </div>
       <tk-comment v-for="comment in comments"
@@ -77,6 +89,9 @@ export default {
       replyId: '',
       loadedPages: 1,
       currentSort: 'newest',
+      searchInput: '',
+      searchKeyword: '',
+      requestVersion: 0,
       iconSetting,
       iconRefresh
     }
@@ -91,34 +106,59 @@ export default {
       }
     },
     async initComments () {
+      const requestVersion = ++this.requestVersion
       this.loading = true
+      this.errorMessage = ''
       const url = getUrl(this.$twikoo.path)
-      await this.getComments({ url, sort: this.currentSort })
-      this.loading = false
+      const event = { url, sort: this.currentSort, keyword: this.searchKeyword }
+      if (this.searchKeyword) event.page = 1
+      await this.getComments(event)
+      if (requestVersion === this.requestVersion) this.loading = false
     },
-    refresh () {
+    resetComments () {
       this.comments = []
       this.loadedPages = 1
+    },
+    search () {
+      const keyword = this.searchInput.trim()
+      this.searchInput = keyword
+      if (this.searchKeyword === keyword) return
+      this.searchKeyword = keyword
+      this.resetComments()
+      this.initComments()
+    },
+    clearSearch () {
+      if (!this.searchKeyword) return
+      this.searchKeyword = ''
+      this.resetComments()
+      this.initComments()
+    },
+    refresh () {
+      this.resetComments()
       this.initComments()
     },
     async refreshPreservingState () {
+      const requestVersion = ++this.requestVersion
       this.loading = true
+      this.errorMessage = ''
       try {
         const url = getUrl(this.$twikoo.path)
-        await this.getComments({ url, sort: this.currentSort })
-        for (let i = 1; i < this.loadedPages; i++) {
-          if (!(await this.loadNextPage(url))) break
+        const loadedPages = this.loadedPages
+        const event = { url, sort: this.currentSort, keyword: this.searchKeyword }
+        if (this.searchKeyword) event.page = 1
+        if (!(await this.getComments(event))) return
+        for (let page = 2; page <= loadedPages; page++) {
+          if (!(await this.loadNextPage(url, page))) break
         }
       } finally {
-        this.loading = false
+        if (requestVersion === this.requestVersion) this.loading = false
       }
-      this.$emit('refreshed')
+      if (requestVersion === this.requestVersion) this.$emit('refreshed')
     },
     setSort (sort) {
       if (this.currentSort === sort) return
       this.currentSort = sort
-      this.comments = []
-      this.loadedPages = 1
+      this.resetComments()
       this.initComments()
     },
     async onExpand () {
@@ -127,7 +167,7 @@ export default {
       this.loadedPages++
       try {
         const url = getUrl(this.$twikoo.path)
-        await this.loadNextPage(url)
+        await this.loadNextPage(url, this.loadedPages)
       } finally {
         this.loadingMore = false
       }
@@ -139,27 +179,39 @@ export default {
       }
       return min === Infinity ? undefined : min
     },
-    async loadNextPage (url) {
+    async loadNextPage (url, page = this.loadedPages) {
+      if (this.searchKeyword) {
+        return this.getComments({ url, page, sort: this.currentSort, keyword: this.searchKeyword })
+      }
       const before = this.getOldestCreated()
       if (before === undefined) return false
-      await this.getComments({ url, before, sort: this.currentSort })
-      return true
+      return this.getComments({ url, before, sort: this.currentSort, keyword: this.searchKeyword })
     },
     onCommentLoaded () {
       typeof this.$twikoo.onCommentLoaded === 'function' && this.$twikoo.onCommentLoaded()
     },
     async getComments (event) {
+      const requestVersion = this.requestVersion
       try {
         const comments = await call(this.$tcb, 'COMMENT_GET', event)
+        if (requestVersion !== this.requestVersion) return false
+        if (comments && comments.result && comments.result.message) {
+          this.errorMessage = comments.result.message
+          return false
+        }
         if (comments && comments.result && comments.result.data) {
-          this.comments = event.before ? this.comments.concat(comments.result.data) : comments.result.data
+          this.comments = event.before || event.page > 1
+            ? this.comments.concat(comments.result.data)
+            : comments.result.data
           this.showExpand = comments.result.more
           this.count = comments.result.count || this.comments.length || 0
           this.$nextTick(this.onCommentLoaded)
+          return true
         }
       } catch (e) {
-        this.errorMessage = e.message
+        if (requestVersion === this.requestVersion) this.errorMessage = e.message
       }
+      return false
     },
     onReply (id) {
       this.replyId = id
@@ -178,6 +230,22 @@ export default {
 </script>
 
 <style>
+.tk-comments-search {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.tk-comments-search .el-input {
+  flex: 1;
+}
+@media (max-width: 480px) {
+  .tk-comments-search {
+    flex-wrap: wrap;
+  }
+  .tk-comments-search .el-input {
+    flex-basis: 100%;
+  }
+}
 .tk-comments-title {
   font-size: 1.25rem;
   font-weight: bold;

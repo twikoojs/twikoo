@@ -75,10 +75,10 @@ const { RES_CODE, MAX_REQUEST_TIMES } = require('twikoo-func/utils/constants')
 // 全局变量 / variables
 let db = null
 let config
-let accessToken
 const requestTimes = {}
 
 module.exports = async (request, response) => {
+  let accessToken
   const event = request.body || {}
   logger.log('请求 IP：', getIp(request))
   logger.log('请求函数：', event.event)
@@ -99,28 +99,28 @@ module.exports = async (request, response) => {
         res = getFuncVersion({ VERSION })
         break
       case 'COMMENT_GET':
-        res = await commentGet(event)
+        res = await commentGet(event, accessToken)
         break
       case 'COMMENT_GET_FOR_ADMIN':
-        res = await commentGetForAdmin(event)
+        res = await commentGetForAdmin(event, accessToken)
         break
       case 'COMMENT_SET_FOR_ADMIN':
-        res = await commentSetForAdmin(event)
+        res = await commentSetForAdmin(event, accessToken)
         break
       case 'COMMENT_DELETE_FOR_ADMIN':
-        res = await commentDeleteForAdmin(event)
+        res = await commentDeleteForAdmin(event, accessToken)
         break
       case 'COMMENT_DELETE_FOR_USER':
-        res = await commentDeleteForUser(event)
+        res = await commentDeleteForUser(event, accessToken)
         break
       case 'COMMENT_IMPORT_FOR_ADMIN':
-        res = await commentImportForAdmin(event)
+        res = await commentImportForAdmin(event, accessToken)
         break
       case 'COMMENT_LIKE':
-        res = await commentLike(event)
+        res = await commentLike(event, accessToken)
         break
       case 'COMMENT_SUBMIT':
-        res = await commentSubmit(event, request)
+        res = await commentSubmit(event, request, accessToken)
         break
       case 'POST_SUBMIT':
         res = await postSubmit(event.comment, request)
@@ -132,16 +132,16 @@ module.exports = async (request, response) => {
         res = await getPasswordStatus(config, VERSION)
         break
       case 'SET_PASSWORD':
-        res = await setPassword(event)
+        res = await setPassword(event, accessToken)
         break
       case 'GET_CONFIG':
-        res = await getConfig({ config, VERSION, isAdmin: isAdmin() })
+        res = await getConfig({ config, VERSION, isAdmin: isAdmin(accessToken) })
         break
       case 'GET_CONFIG_FOR_ADMIN':
-        res = await getConfigForAdmin({ config, isAdmin: isAdmin() })
+        res = await getConfigForAdmin({ config, isAdmin: isAdmin(accessToken) })
         break
       case 'SET_CONFIG':
-        res = await setConfig(event)
+        res = await setConfig(event, accessToken)
         break
       case 'LOGIN':
         res = await login(event.password)
@@ -153,7 +153,7 @@ module.exports = async (request, response) => {
         res = await getRecentComments(event)
         break
       case 'EMAIL_TEST': // >= 1.4.6
-        res = await emailTest(event, config, isAdmin())
+        res = await emailTest(event, config, isAdmin(accessToken))
         break
       case 'UPLOAD_IMAGE': // >= 1.5.0
         res = await uploadImage(event, config)
@@ -162,7 +162,7 @@ module.exports = async (request, response) => {
         res = await qqNickGet(event)
         break
       case 'COMMENT_EXPORT_FOR_ADMIN': // >= 1.6.13
-        res = await commentExportForAdmin(event)
+        res = await commentExportForAdmin(event, accessToken)
         break
       case 'CAP_CHALLENGE':
         res = await capChallenge()
@@ -260,8 +260,8 @@ async function connectToDatabase (uri) {
 }
 
 // 写入管理密码
-async function setPassword (event) {
-  const isAdminUser = isAdmin()
+async function setPassword (event, accessToken) {
+  const isAdminUser = isAdmin(accessToken)
   // 如果数据库里没有密码，则写入密码
   // 如果数据库里有密码，则只有管理员可以写入密码
   if (config.ADMIN_PASS && !isAdminUser) {
@@ -291,12 +291,12 @@ async function login (password) {
 }
 
 // 读取评论
-async function commentGet (event) {
+async function commentGet (event, accessToken) {
   const res = {}
   try {
     validate(event, ['url'])
-    const uid = getUid()
-    const isAdminUser = isAdmin()
+    const uid = accessToken
+    const isAdminUser = isAdmin(accessToken)
     const limit = parseInt(config.COMMENT_PAGE_SIZE) || 8
     const sort = event.sort || 'newest'
     let more = false
@@ -390,9 +390,9 @@ function getCommentQuery ({ condition, uid, isAdminUser }) {
 }
 
 // 管理员读取评论
-async function commentGetForAdmin (event) {
+async function commentGetForAdmin (event, accessToken) {
   const res = {}
-  const isAdminUser = isAdmin()
+  const isAdminUser = isAdmin(accessToken)
   if (isAdminUser) {
     validate(event, ['per', 'page'])
     const collection = db
@@ -448,9 +448,9 @@ function getCommentSearchCondition (event) {
 }
 
 // 管理员修改评论
-async function commentSetForAdmin (event) {
+async function commentSetForAdmin (event, accessToken) {
   const res = {}
-  const isAdminUser = isAdmin()
+  const isAdminUser = isAdmin(accessToken)
   if (isAdminUser) {
     validate(event, ['id', 'set'])
     const data = await db
@@ -471,9 +471,9 @@ async function commentSetForAdmin (event) {
 }
 
 // 管理员删除评论
-async function commentDeleteForAdmin (event) {
+async function commentDeleteForAdmin (event, accessToken) {
   const res = {}
-  const isAdminUser = isAdmin()
+  const isAdminUser = isAdmin(accessToken)
   if (isAdminUser) {
     validate(event, ['id'])
     const data = await db
@@ -489,10 +489,10 @@ async function commentDeleteForAdmin (event) {
 }
 
 // 用户删除自己的评论
-async function commentDeleteForUser (event) {
+async function commentDeleteForUser (event, accessToken) {
   const res = {}
   try {
-    const uid = getUid()
+    const uid = accessToken
     await checkCommentOwnership(event.id, uid, async (id) => {
       return db.collection('comment').findOne({ _id: id })
     })
@@ -507,13 +507,13 @@ async function commentDeleteForUser (event) {
 }
 
 // 管理员导入评论
-async function commentImportForAdmin (event) {
+async function commentImportForAdmin (event, accessToken) {
   const res = {}
   let logText = ''
   const log = (message) => {
     logText += `${new Date().toLocaleString()} ${message}\n`
   }
-  const isAdminUser = isAdmin()
+  const isAdminUser = isAdmin(accessToken)
   if (isAdminUser) {
     try {
       validate(event, ['source', 'file'])
@@ -563,9 +563,9 @@ async function commentImportForAdmin (event) {
   return res
 }
 
-async function commentExportForAdmin (event) {
+async function commentExportForAdmin (event, accessToken) {
   const res = {}
-  const isAdminUser = isAdmin()
+  const isAdminUser = isAdmin(accessToken)
   if (isAdminUser) {
     const collection = event.collection || 'comment'
     const data = await db
@@ -608,11 +608,11 @@ async function bulkSaveComments (comments) {
 }
 
 // 点赞 / 反对 / 取消
-async function commentLike (event) {
+async function commentLike (event, accessToken) {
   const res = {}
   validate(event, ['id'])
   const type = event.type || 'up'
-  res.updated = await like(event.id, getUid(), type)
+  res.updated = await like(event.id, accessToken, type)
   return res
 }
 
@@ -667,7 +667,7 @@ async function like (id, uid, type) {
  * @param {String} event.pid 回复的 ID
  * @param {String} event.rid 评论楼 ID
  */
-async function commentSubmit (event, request) {
+async function commentSubmit (event, request, accessToken) {
   const res = {}
   // 参数校验
   validate(event, ['url', 'ua', 'comment'])
@@ -676,7 +676,7 @@ async function commentSubmit (event, request) {
   // 验证码
   await checkCaptcha(event, request)
   // 预检测、转换
-  const data = await parse(event, request)
+  const data = await parse(event, request, accessToken)
   // 保存
   const comment = await save(data)
   res.id = comment.id
@@ -727,16 +727,16 @@ async function postSubmit (comment, request) {
 }
 
 // 将评论转为数据库存储格式
-async function parse (comment, request) {
+async function parse (comment, request, accessToken) {
   const timestamp = Date.now()
-  const isAdminUser = isAdmin()
+  const isAdminUser = isAdmin(accessToken)
   const isBloggerMail = equalsMail(comment.mail, config.BLOGGER_EMAIL)
   if (isBloggerMail && !isAdminUser) throw new Error('请先登录管理面板，再使用博主身份发送评论')
   if (comment.mail && !isValidEmail(comment.mail)) throw new Error('邮箱格式不合法')
   const hashMethod = config.GRAVATAR_CDN === 'cravatar.cn' ? md5 : sha256
   const commentDo = {
     _id: uuidv4().replace(/-/g, ''),
-    uid: getUid(),
+    uid: accessToken,
     nick: comment.nick ? comment.nick : '匿名',
     mail: comment.mail ? comment.mail : '',
     mailMd5: comment.mail ? hashMethod(normalizeMail(comment.mail)) : '',
@@ -996,8 +996,8 @@ async function qqNickGet (event) {
 }
 
 // 修改配置
-async function setConfig (event) {
-  const isAdminUser = isAdmin()
+async function setConfig (event, accessToken) {
+  const isAdminUser = isAdmin(accessToken)
   if (isAdminUser) {
     writeConfig(event.config)
     return {
@@ -1064,15 +1064,9 @@ async function writeConfig (newConfig) {
   }
 }
 
-// 获取用户 ID
-function getUid () {
-  return accessToken
-}
-
 // 判断用户是否管理员
-function isAdmin () {
-  const uid = getUid()
-  return config.ADMIN_PASS === md5(uid)
+function isAdmin (accessToken) {
+  return config.ADMIN_PASS === md5(accessToken)
 }
 
 // 判断是否为递归调用（即云函数调用自身）

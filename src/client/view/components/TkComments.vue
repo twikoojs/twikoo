@@ -2,17 +2,6 @@
   <div class="tk-comments">
     <tk-submit @load="initComments" :config="config" />
     <div class="tk-comments-container" v-loading="loading">
-      <div class="tk-comments-search">
-        <el-input
-          v-model="searchInput"
-          size="small"
-          clearable
-          maxlength="100"
-          :placeholder="t('COMMENTS_SEARCH_PLACEHOLDER')"
-          @clear="clearSearch"
-          @keyup.enter.native="search" />
-        <el-button size="small" type="primary" @click="search">{{ t('COMMENTS_SEARCH') }}</el-button>
-      </div>
       <div class="tk-comments-title">
         <span class="tk-comments-count" :class="{ __hidden: !comments.length }">
           <span>{{ count }}</span>
@@ -36,10 +25,23 @@
               :class="{ __active: currentSort === 'popular' }"
               @click="setSort('popular')">{{ t('COMMENTS_SORT_POPULAR') }}</button>
           </span>
-          <span class="tk-icon __comments" v-if="!loading && !loadingMore" v-html="iconRefresh" @click="refresh"
+          <span class="tk-icon __comments" v-if="!loading && !loadingMore" v-html="iconSearch" @click="toggleSearch"
+            ></span><span class="tk-icon __comments" v-if="!loading && !loadingMore" v-html="iconRefresh" @click="refresh"
             ></span><span class="tk-icon __comments" v-if="showAdminEntry" v-html="iconSetting" @click="openAdmin"
             ></span>
         </span>
+      </div>
+      <div class="tk-comments-search" v-show="showSearch">
+        <el-input
+          ref="searchInputRef"
+          v-model="searchInput"
+          size="small"
+          clearable
+          maxlength="100"
+          :placeholder="t('COMMENTS_SEARCH_PLACEHOLDER')"
+          @clear="clearSearch"
+          @keyup.enter.native="search" />
+        <el-button size="small" type="primary" @click="search">{{ t('COMMENTS_SEARCH') }}</el-button>
       </div>
       <div class="tk-comments-no" v-if="!loading && !comments.length">
         <span v-if="!errorMessage && searchKeyword">{{ t('COMMENTS_SEARCH_NO_RESULT') }}</span>
@@ -63,6 +65,7 @@
 <script>
 import iconSetting from '@fortawesome/fontawesome-free/svgs/solid/cog.svg'
 import iconRefresh from '@fortawesome/fontawesome-free/svgs/solid/sync.svg'
+import iconSearch from '@fortawesome/fontawesome-free/svgs/solid/magnifying-glass.svg'
 import Vue from 'vue'
 import { call, getUrl, t } from '../../utils'
 import { app } from '../index'
@@ -91,9 +94,11 @@ export default {
       currentSort: 'newest',
       searchInput: '',
       searchKeyword: '',
+      showSearch: false,
       requestVersion: 0,
       iconSetting,
-      iconRefresh
+      iconRefresh,
+      iconSearch
     }
   },
   methods: {
@@ -132,6 +137,12 @@ export default {
       this.searchKeyword = ''
       this.resetComments()
       this.initComments()
+    },
+    toggleSearch () {
+      this.showSearch = !this.showSearch
+      if (this.showSearch) {
+        this.$nextTick(() => this.$refs.searchInputRef && this.$refs.searchInputRef.focus())
+      }
     },
     refresh () {
       this.resetComments()

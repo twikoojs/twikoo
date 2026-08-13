@@ -418,8 +418,7 @@ const fn = {
       HIGHLIGHT_THEME: config.HIGHLIGHT_THEME,
       HIGHLIGHT_PLUGIN: config.HIGHLIGHT_PLUGIN,
       LIMIT_LENGTH: config.LIMIT_LENGTH,
-      CAPTCHA_PROVIDER: config.CAPTCHA_PROVIDER,
-      QQ_API_KEY: config.QQ_API_KEY
+      CAPTCHA_PROVIDER: config.CAPTCHA_PROVIDER
     }
 
     // 仅在明确指定使用 Turnstile 时下发 Turnstile 的 site key

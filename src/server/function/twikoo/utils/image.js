@@ -1,6 +1,4 @@
-const fs = require('fs')
-const os = require('os')
-const path = require('path')
+const crypto = require('crypto')
 const { isUrl } = require('.')
 const { RES_CODE } = require('./constants')
 const { getAxios, getFormData } = require('./lib')
@@ -8,9 +6,33 @@ const axios = getAxios()
 const FormData = getFormData()
 const logger = require('./logger')
 
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024
+const IMAGE_TYPES = [
+  {
+    mimeType: 'image/jpeg',
+    extension: 'jpg',
+    matches: (body) => body.length >= 3 && body[0] === 0xff && body[1] === 0xd8 && body[2] === 0xff
+  },
+  {
+    mimeType: 'image/png',
+    extension: 'png',
+    matches: (body) => body.length >= 8 && body.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))
+  },
+  {
+    mimeType: 'image/gif',
+    extension: 'gif',
+    matches: (body) => body.length >= 6 && (body.subarray(0, 6).equals(Buffer.from('GIF87a')) || body.subarray(0, 6).equals(Buffer.from('GIF89a')))
+  },
+  {
+    mimeType: 'image/webp',
+    extension: 'webp',
+    matches: (body) => body.length >= 12 && body.subarray(0, 4).equals(Buffer.from('RIFF')) && body.subarray(8, 12).equals(Buffer.from('WEBP'))
+  }
+]
+
 const fn = {
   async uploadImage (event, config) {
-    const { photo, fileName } = event
+    const { photo } = event
     const res = {}
     const imageService = config.IMAGE_CDN
     try {
@@ -22,8 +44,9 @@ const fn = {
       } else if (!imageService || !config.IMAGE_CDN_TOKEN) {
         throw new Error('未配置图片上传服务')
       }
+      const image = fn.parseImage(photo)
       if (config.NSFW_API_URL) {
-        const nsfwResult = await fn.checkNsfw({ photo, config })
+        const nsfwResult = await fn.checkNsfw({ image, config })
         if (nsfwResult.rejected) {
           res.code = RES_CODE.NSFW_REJECTED
           res.err = nsfwResult.message
@@ -32,21 +55,21 @@ const fn = {
       }
       // tip: qcloud 图床走前端上传，其他图床走后端上传
       if (imageService === '7bu') {
-        await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: 'https://7bu.top' })
+        await fn.uploadImageToLskyPro({ image, config, res, imageCdn: 'https://7bu.top' })
       } else if (imageService === 'see') {
-        await fn.uploadImageToSee({ photo, fileName, config, res, imageCdn: 'https://s.ee/api/v1/file/upload' })
+        await fn.uploadImageToSee({ image, config, res, imageCdn: 'https://s.ee/api/v1/file/upload' })
       } else if (isUrl(imageService)) {
-        await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: imageService })
+        await fn.uploadImageToLskyPro({ image, config, res, imageCdn: imageService })
       } else if (imageService === 'lskypro') {
-        await fn.uploadImageToLskyPro({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN_URL })
+        await fn.uploadImageToLskyPro({ image, config, res, imageCdn: config.IMAGE_CDN_URL })
       } else if (imageService === 'piclist') {
-        await fn.uploadImageToPicList({ photo, fileName, config, res, imageCdn: config.IMAGE_CDN_URL })
+        await fn.uploadImageToPicList({ image, config, res, imageCdn: config.IMAGE_CDN_URL })
       } else if (imageService === 'easyimage') {
-        await fn.uploadImageToEasyImage({ photo, fileName, config, res })
+        await fn.uploadImageToEasyImage({ image, config, res })
       } else if (imageService === 'chevereto') {
-        await fn.uploadImageToChevereto({ photo, fileName, config, res })
+        await fn.uploadImageToChevereto({ image, config, res })
       } else if (imageService === 's3') {
-        await fn.uploadImageToS3({ photo, fileName, config, res })
+        await fn.uploadImageToS3({ image, config, res })
       } else {
         throw new Error('不支持的图片上传服务')
       }
@@ -57,13 +80,13 @@ const fn = {
     }
     return res
   },
-  async checkNsfw ({ photo, config }) {
+  async checkNsfw ({ image, config }) {
     const result = { rejected: false, message: '' }
     try {
       const threshold = parseFloat(config.NSFW_THRESHOLD) || 0.5
       const apiUrl = config.NSFW_API_URL.replace(/\/$/, '')
       const formData = new FormData()
-      formData.append('image', fn.base64UrlToReadStream(photo, 'nsfw_check.jpg'))
+      fn.appendImage(formData, 'image', image)
       const response = await axios.post(`${apiUrl}/classify`, formData, {
         headers: {
           ...formData.getHeaders()
@@ -84,10 +107,10 @@ const fn = {
     }
     return result
   },
-  async uploadImageToSee ({ photo, fileName, config, res, imageCdn }) {
+  async uploadImageToSee ({ image, config, res, imageCdn }) {
     // S.EE 图床 https://s.ee (原 SM.MS)
     const formData = new FormData()
-    formData.append('smfile', fn.base64UrlToReadStream(photo, fileName))
+    fn.appendImage(formData, 'smfile', image)
     const uploadResult = await axios.post(imageCdn, formData, {
       headers: {
         ...formData.getHeaders(),
@@ -100,10 +123,10 @@ const fn = {
       throw new Error(uploadResult.data.message)
     }
   },
-  async uploadImageToLskyPro ({ photo, fileName, config, res, imageCdn }) {
+  async uploadImageToLskyPro ({ image, config, res, imageCdn }) {
     // 自定义兰空图床（v2）URL
     const formData = new FormData()
-    formData.append('file', fn.base64UrlToReadStream(photo, fileName))
+    fn.appendImage(formData, 'file', image)
     if (process.env.TWIKOO_LSKY_STRATEGY_ID) {
       formData.append('strategy_id', parseInt(process.env.TWIKOO_LSKY_STRATEGY_ID))
     }
@@ -125,11 +148,11 @@ const fn = {
       throw new Error(uploadResult.data.message)
     }
   },
-  async uploadImageToPicList ({ photo, fileName, config, res, imageCdn }) {
+  async uploadImageToPicList ({ image, config, res, imageCdn }) {
     // PicList https://piclist.cn/ 高效的云存储和图床平台管理工具
     // 鉴权使用 query 参数 key
     const formData = new FormData()
-    formData.append('file', fn.base64UrlToReadStream(photo, fileName))
+    fn.appendImage(formData, 'file', image)
     let url = `${imageCdn}/upload`
     // 如果填写了 key 则拼接 url
     if (config.IMAGE_CDN_TOKEN) {
@@ -143,7 +166,7 @@ const fn = {
       throw new Error(uploadResult.data.message)
     }
   },
-  async uploadImageToEasyImage ({ photo, fileName, config, res }) {
+  async uploadImageToEasyImage ({ image, config, res }) {
     // EasyImage2.0 https://github.com/icret/EasyImages2.0 简单图床 - 一款功能强大无数据库的图床 2.0版
     try {
       // 参数校验
@@ -158,9 +181,7 @@ const fn = {
       // 添加 token 参数到 Body
       formData.append('token', config.IMAGE_CDN_TOKEN)
       // 添加图片文件（固定参数名 image）
-      formData.append('image', fn.base64UrlToReadStream(photo, fileName), {
-        filename: fileName
-      })
+      fn.appendImage(formData, 'image', image)
       // 发送请求
       const uploadResult = await axios.post(config.IMAGE_CDN_URL, formData, {
         headers: {
@@ -193,7 +214,7 @@ const fn = {
       throw new Error(errorMsg)
     }
   },
-  async uploadImageToChevereto ({ photo, fileName, config, res }) {
+  async uploadImageToChevereto ({ image, config, res }) {
     if (!config.IMAGE_CDN_URL) {
       throw new Error('未配置 Chevereto 站点地址 (IMAGE_CDN_URL)')
     }
@@ -202,7 +223,7 @@ const fn = {
     }
     const formData = new FormData()
     formData.append('key', config.IMAGE_CDN_TOKEN)
-    formData.append('source', fn.base64UrlToReadStream(photo, fileName))
+    fn.appendImage(formData, 'source', image)
     formData.append('format', 'json')
     const apiUrl = config.IMAGE_CDN_URL.replace(/\/$/, '') + '/api/1/upload'
     const uploadResult = await axios.post(apiUrl, formData, {
@@ -222,7 +243,7 @@ const fn = {
       throw new Error(`Chevereto 上传失败: ${errMsg}`)
     }
   },
-  async uploadImageToS3 ({ photo, fileName, config, res }) {
+  async uploadImageToS3 ({ image, config, res }) {
     // 使用原生 crypto + axios 实现 AWS Signature V4，无需引入 SDK
     if (!config.S3_BUCKET) {
       throw new Error('未配置 S3 存储桶名称 (S3_BUCKET)')
@@ -233,15 +254,11 @@ const fn = {
     if (!config.S3_SECRET_ACCESS_KEY) {
       throw new Error('未配置 S3 Secret Access Key (S3_SECRET_ACCESS_KEY)')
     }
-    const crypto = require('crypto')
     const region = config.S3_REGION || 'us-east-1'
-    // 解析 base64 图片数据
-    const base64 = photo.split(';base64,').pop()
-    const mimeType = photo.split(';base64,')[0].replace('data:', '') || 'image/webp'
-    const body = Buffer.from(base64, 'base64')
+    const { body, mimeType, fileName } = image
     // 构建对象 key
     const prefix = config.S3_PATH_PREFIX ? config.S3_PATH_PREFIX.replace(/\/$/, '') + '/' : ''
-    const key = `${prefix}${Date.now()}-${fileName}`
+    const key = `${prefix}${fileName}`
     const forcePathStyle = String(config.S3_FORCE_PATH_STYLE).trim().toLowerCase() !== 'false'
     let endpoint
     let s3Base
@@ -315,11 +332,44 @@ const fn = {
     }
     res.data = { url: fileUrl }
   },
-  base64UrlToReadStream (base64Url, fileName) {
-    const base64 = base64Url.split(';base64,').pop()
-    const writePath = path.resolve(os.tmpdir(), fileName)
-    fs.writeFileSync(writePath, base64, { encoding: 'base64' })
-    return fs.createReadStream(writePath)
+  parseImage (photo) {
+    if (typeof photo !== 'string' || photo.length > Math.ceil(MAX_IMAGE_SIZE / 3) * 4 + 64) {
+      throw new Error('图片大小不能超过 10 MB')
+    }
+    const header = /^data:([a-z0-9.+-]+\/[a-z0-9.+-]+);base64,/i.exec(photo)
+    if (!header) {
+      throw new Error('图片数据格式不合法')
+    }
+    const declaredMimeType = header[1].toLowerCase()
+    const base64 = photo.slice(header[0].length)
+    if (!base64 || base64.length % 4 !== 0 || !/^[a-z0-9+/]*={0,2}$/i.test(base64)) {
+      throw new Error('图片数据格式不合法')
+    }
+    const padding = base64.endsWith('==') ? 2 : (base64.endsWith('=') ? 1 : 0)
+    const decodedSize = base64.length * 3 / 4 - padding
+    if (decodedSize > MAX_IMAGE_SIZE) {
+      throw new Error('图片大小不能超过 10 MB')
+    }
+    const body = Buffer.from(base64, 'base64')
+    const imageType = IMAGE_TYPES.find((type) => type.matches(body))
+    if (!imageType) {
+      throw new Error('仅支持 JPEG、PNG、GIF 和 WebP 图片')
+    }
+    if (declaredMimeType !== imageType.mimeType) {
+      throw new Error('图片 MIME 类型与文件内容不匹配')
+    }
+    return {
+      body,
+      mimeType: imageType.mimeType,
+      fileName: `${crypto.randomBytes(16).toString('hex')}.${imageType.extension}`
+    }
+  },
+  appendImage (formData, fieldName, image) {
+    formData.append(fieldName, image.body, {
+      filename: image.fileName,
+      contentType: image.mimeType,
+      knownLength: image.body.length
+    })
   }
 }
 

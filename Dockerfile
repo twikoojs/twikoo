@@ -9,5 +9,7 @@ FROM ${NODE_IMAGE}:lts-alpine
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=build /app .
+RUN chown -R node:node /app
+USER node
 EXPOSE 8080
 CMD ["/app/node_modules/.bin/tkserver"]

@@ -869,9 +869,9 @@
     "@cloudbase/utilities" "4.0.0"
 
 "@cloudbase/cli@^3.3.0":
-  version "3.7.2"
-  resolved "https://registry.yarnpkg.com/@cloudbase/cli/-/cli-3.7.2.tgz#474f54a911e8dd197183874cc954fb0d0ce36576"
-  integrity sha512-iXg0e7AL1BRW1LvunvobcX05e4yszJwA4Mw7Q6+bJxN0ERUZE+XFBjF52FkaR+LxVNLcfv3fvVnIsWgM/H+pTQ==
+  version "3.7.3"
+  resolved "https://registry.yarnpkg.com/@cloudbase/cli/-/cli-3.7.3.tgz#b1ee9d5a53f22d175b25f6861637d9e68f9f5bba"
+  integrity sha512-S6XMXxHIyDFcEqtHaK+TJSEKmerglcBEZyhq5iRfDwDcQRnz2u8BsZkmkfWXTC4bYjJ2wVoY26TG2RrfkbjKzA==
 
 "@cloudbase/cloudrun@4.0.0":
   version "4.0.0"

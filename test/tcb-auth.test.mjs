@@ -37,10 +37,23 @@ test('recognizes CloudBase SDK 4 custom providers', async () => {
   assert.equal(await hasCustomLogin(auth), true)
 })
 
-test('rejects anonymous, missing, and unrelated providers', () => {
+test('hasCustomLogin returns false for non-custom users', async () => {
+  const anonymousAuth = {
+    getCurrentUser: async () => ({ providers: [{ id: 'anonymous' }] })
+  }
+  const missingUserAuth = { getCurrentUser: async () => null }
+
+  assert.equal(await hasCustomLogin(anonymousAuth), false)
+  assert.equal(await hasCustomLogin(missingUserAuth), false)
+})
+
+test('rejects missing, malformed, and unrelated providers', () => {
   assert.equal(isCustomUser(null), false)
   assert.equal(isCustomUser({}), false)
   assert.equal(isCustomUser({ providers: [{ id: 'anonymous' }] }), false)
+  assert.equal(isCustomUser({ providers: [null, {}] }), false)
+  assert.equal(isCustomUser({ providers: 'custom' }), false)
+  assert.equal(isCustomUser({ providers: { id: 'custom' } }), false)
 })
 
 test('keeps compatibility with the legacy custom login marker', () => {

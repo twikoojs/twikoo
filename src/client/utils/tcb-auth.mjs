@@ -9,7 +9,7 @@ const isCustomUser = (user) => Boolean(
   user && (
     user.loginType === 'CUSTOM' ||
     (Array.isArray(user.providers) &&
-      user.providers.some((provider) => provider.id === 'custom'))
+      user.providers.some((provider) => provider && provider.id === 'custom'))
   )
 )
 

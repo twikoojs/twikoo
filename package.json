@@ -24,11 +24,12 @@
     "dev": "webpack serve --mode development",
     "serve": "webpack serve --mode development",
     "build": "cross-env NODE_ENV=production webpack --mode production",
+    "test": "node --test test/*.test.mjs",
     "analyze": "webpack --profile --json > stats.json && webpack-bundle-analyzer stats.json",
     "login": "tcb login",
     "logout": "tcb logout",
     "deploy": "tcb fn deploy twikoo --force",
-    "lint": "eslint src/**",
+    "lint": "eslint src/** test/**",
     "docs:dev": "cd docs && yarn docs:dev",
     "docs:build": "cd docs && yarn docs:build"
   },

@@ -93,6 +93,7 @@
 
 <script>
 import { timeago, convertLink, call, renderLinks, renderMath, renderCode, t } from '../../utils'
+import { hasCustomLogin } from '../../utils/tcb-auth.mjs'
 import TkAction from './TkAction.vue'
 import TkAvatar from './TkAvatar.vue'
 import TkSubmit from './TkSubmit.vue'
@@ -327,8 +328,7 @@ export default {
     async checkAuth () {
       // 检查用户身份
       if (this.$tcb) {
-        const currentUser = await this.$tcb.auth.getCurrenUser()
-        this.isLogin = currentUser.loginType === 'CUSTOM'
+        this.isLogin = await hasCustomLogin(this.$tcb.auth)
       } else {
         this.isLogin = this.$twikoo.serverConfig && this.$twikoo.serverConfig.IS_ADMIN
       }

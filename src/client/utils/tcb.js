@@ -2,6 +2,7 @@ import {
   isNotSet,
   logger
 } from '.'
+import { signInAnonymously } from './tcb-auth.mjs'
 
 const builtInOptions = [
   { key: 'envId', required: true }
@@ -55,9 +56,7 @@ async function initAuth () {
     if (tcb.auth.hasLoginState()) {
       resolve()
     } else {
-      tcb.auth
-        .anonymousAuthProvider()
-        .signIn()
+      signInAnonymously(tcb.auth)
         .then(resolve)
         .catch(reject)
     }

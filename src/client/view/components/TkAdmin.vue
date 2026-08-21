@@ -68,6 +68,7 @@ import TkAdminConfig from './TkAdminConfig.vue'
 import TkAdminImport from './TkAdminImport.vue'
 import TkAdminExport from './TkAdminExport.vue'
 import { logger, call, t } from '../../utils'
+import { hasCustomLogin, signInAnonymously, signInWithCustomTicket } from '../../utils/tcb-auth.mjs'
 import iconClose from '@fortawesome/fontawesome-free/svgs/solid/times.svg'
 
 export default {
@@ -121,9 +122,7 @@ export default {
         this.loginErrorMessage = res.result.message
       } else if (res.result.ticket) {
         try {
-          await this.$tcb.auth
-            .customAuthProvider()
-            .signIn(res.result.ticket)
+          await signInWithCustomTicket(this.$tcb.auth, res.result.ticket)
           logger.log('登录成功')
           this.password = ''
           this.checkAuth()
@@ -143,9 +142,7 @@ export default {
       this.loading = true
       if (this.$tcb) {
         await this.$tcb.auth.signOut()
-        await this.$tcb.auth
-          .anonymousAuthProvider()
-          .signIn()
+        await signInAnonymously(this.$tcb.auth)
       } else {
         localStorage.removeItem('twikoo-access-token')
       }
@@ -190,8 +187,7 @@ export default {
     async checkAuth () {
       // 检查用户身份
       if (this.$tcb) {
-        const currentUser = await this.$tcb.auth.getCurrenUser()
-        this.isLogin = currentUser.loginType === 'CUSTOM'
+        this.isLogin = await hasCustomLogin(this.$tcb.auth)
       } else {
         const result = await call(this.$tcb, 'GET_CONFIG')
         if (result && result.result && result.result.config) {

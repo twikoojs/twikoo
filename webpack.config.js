@@ -54,9 +54,7 @@ function getConfig ({ extractCss }) {
         parallel: 4,
         terserOptions: {
           ecma: 5,
-          toplevel: true,
-          ie8: true,
-          safari10: true
+          toplevel: true
         }
       })
     ],

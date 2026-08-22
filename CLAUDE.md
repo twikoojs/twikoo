@@ -62,6 +62,5 @@ Vue 2 + Element UI 组件，Webpack 5 构建为 UMD 库。两个入口：
 
 ## 注意事项
 
-- 构建目标兼容 ES5（IE8 / Safari 10），使用 Babel + Terser
 - `twikoo-func` 是服务端各后端共用的核心包，修改其 `utils/` 会影响所有部署方式
 - CloudBase 部署配置在 `cloudbaserc.json`，函数运行时 Node.js 16.13

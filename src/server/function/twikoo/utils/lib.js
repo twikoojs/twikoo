@@ -4,9 +4,15 @@ module.exports = {
   setCustomLibs (libs) {
     customLibs = libs
   },
-  getCheerio () {
-    const $ = require('cheerio') // jQuery 服务器版
-    return $
+  getHtmlToText () {
+    const { compile } = require('html-to-text') // HTML 转纯文本
+    return compile({
+      wordwrap: false,
+      selectors: [
+        { selector: 'a', options: { ignoreHref: true } },
+        { selector: 'img', format: 'skip' }
+      ]
+    })
   },
   getAkismetClient () {
     const { AkismetClient } = require('akismet-api') // 反垃圾 API

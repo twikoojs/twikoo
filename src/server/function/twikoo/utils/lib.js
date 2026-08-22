@@ -1,3 +1,5 @@
+const crypto = require('crypto')
+
 let customLibs = {}
 
 module.exports = {
@@ -11,10 +13,6 @@ module.exports = {
   getAkismetClient () {
     const { AkismetClient } = require('akismet-api') // 反垃圾 API
     return AkismetClient
-  },
-  getCryptoJS () {
-    const CryptoJS = require('crypto-js') // 编解码
-    return CryptoJS
   },
   getFormData () {
     const FormData = require('form-data') // 图片上传
@@ -46,13 +44,13 @@ module.exports = {
     return marked
   },
   getMd5 () {
-    const md5 = require('blueimp-md5') // MD5 哈希
-    return md5
+    return (message) => {
+      return crypto.createHash('md5').update(String(message)).digest('hex')
+    }
   },
   getSha256 () {
-    const { SHA256 } = require('crypto-js') // SHA256 哈希
     return (message) => {
-      return SHA256(message).toString()
+      return crypto.createHash('sha256').update(message ? String(message) : '').digest('hex')
     }
   },
   getNodemailer () {

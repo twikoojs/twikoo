@@ -57,7 +57,7 @@ import iconImage from '@fortawesome/fontawesome-free/svgs/regular/image.svg'
 import iconEmotion from '@fortawesome/fontawesome-free/svgs/regular/laugh.svg'
 import Clickoutside from 'element-ui/src/utils/clickoutside'
 import OwO from '../../lib/owo'
-import { blobToDataURL, call, getHref, getUrl, getUserAgent, initMarkedOwo, initOwoEmotions, logger, marked, renderCode, renderLinks, renderMath, t } from '../../utils'
+import { blobToDataURL, call, getHref, getUrl, getUserAgent, initMarkedOwo, initOwoEmotions, logger, marked, renderCode, renderLinks, renderMath, sanitizeHtml, t } from '../../utils'
 import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
 
@@ -355,7 +355,7 @@ export default {
     },
     updatePreview () {
       if (this.isPreviewing) {
-        this.commentHtml = marked(this.comment)
+        this.commentHtml = sanitizeHtml(marked(this.comment))
         this.$nextTick(() => {
           renderLinks(this.$refs['comment-preview'])
           renderMath(this.$refs['comment-preview'], this.$twikoo.katex)

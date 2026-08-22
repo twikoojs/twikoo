@@ -50,7 +50,7 @@ module.exports = {
   },
   getSha256 () {
     return (message) => {
-      return crypto.createHash('sha256').update(message ? String(message) : '').digest('hex')
+      return crypto.createHash('sha256').update(message == null ? '' : String(message)).digest('hex')
     }
   },
   getNodemailer () {

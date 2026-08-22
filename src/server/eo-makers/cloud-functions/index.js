@@ -13,6 +13,7 @@ import bowser from 'bowser'
 import { AsyncLocalStorage } from 'node:async_hooks'
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto'
 import {
+  getHtmlToText,
   getMd5,
   getSha256,
   getXml2js,
@@ -66,6 +67,7 @@ const {
 } = capUtils
 
 const { RES_CODE, MAX_REQUEST_TIMES } = constants
+const htmlToText = getHtmlToText()
 const VERSION = '1.7.19'
 const EO_SMTP_BRIDGE_PATH = '/smtp'
 const SMTP_BRIDGE_PROBE_TIMEOUT_MS = 5000
@@ -1346,7 +1348,7 @@ async function getRecentComments (event, db) {
       mailMd5: getMailMd5(comment),
       link: comment.link,
       comment: comment.comment,
-      commentText: comment.comment.replace(/<[^>]*>/g, ''),
+      commentText: htmlToText(comment.comment),
       created: comment.created
     }))
   } catch (e) {

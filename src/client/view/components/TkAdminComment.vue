@@ -58,7 +58,7 @@
 
 <script>
 import { app } from '../index'
-import { timeago, call, convertLink, renderLinks, renderMath, renderCode, t } from '../../utils'
+import { timeago, call, convertLink, renderLinks, renderMath, renderCode, sanitizeHtml, t } from '../../utils'
 import { version } from '../../version'
 import TkAvatar from './TkAvatar.vue'
 import TkPagination from './TkPagination.vue'
@@ -104,7 +104,10 @@ export default {
       })
       if (res.result && !res.result.code) {
         this.count = res.result.count
-        this.comments = res.result.data
+        this.comments = res.result.data.map(comment => ({
+          ...comment,
+          comment: sanitizeHtml(comment.comment)
+        }))
       }
       this.$nextTick(() => {
         renderLinks(this.$refs.comments)

@@ -3,7 +3,8 @@
     <tk-submit @load="initComments" :config="config" />
     <div class="tk-comments-container" v-loading="loading">
       <div class="tk-comments-title">
-        <span class="tk-comments-count" :class="{ __hidden: !comments.length }">
+        <span class="tk-comments-count" :class="{ __hidden: loading || (!comments.length && !searchKeyword) }">
+          <span v-if="searchKeyword">{{ t('COMMENTS_SEARCH_COUNT_PREFIX') }}</span>
           <span>{{ count }}</span>
           <span>{{ t('COMMENTS_COUNT_SUFFIX') }}</span>
         </span>
@@ -25,7 +26,7 @@
               :class="{ __active: currentSort === 'popular' }"
               @click="setSort('popular')">{{ t('COMMENTS_SORT_POPULAR') }}</button>
           </span>
-          <span class="tk-icon __comments" v-if="!loading && !loadingMore" v-html="iconSearch" @click="toggleSearch"
+          <span class="tk-icon __comments" :class="{ __active: showSearch }" v-if="!loading && !loadingMore" v-html="iconSearch" @click="toggleSearch"
             ></span><span class="tk-icon __comments" v-if="!loading && !loadingMore" v-html="iconRefresh" @click="refresh"
             ></span><span class="tk-icon __comments" v-if="showAdminEntry" v-html="iconSetting" @click="openAdmin"
             ></span>
@@ -142,6 +143,9 @@ export default {
       this.showSearch = !this.showSearch
       if (this.showSearch) {
         this.$nextTick(() => this.$refs.searchInputRef && this.$refs.searchInputRef.focus())
+      } else {
+        this.searchInput = ''
+        this.clearSearch()
       }
     },
     refresh () {
@@ -332,6 +336,12 @@ export default {
   flex-shrink: 0;
   cursor: pointer;
   color: #409eff;
+}
+.tk-icon.__comments.__active {
+  color: #ffffff;
+  background: #409eff;
+  border-radius: 0.125rem;
+  box-shadow: 0 0 0 0.2rem #409eff;
 }
 .tk-icon.__comments svg {
   display: block;

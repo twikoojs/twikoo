@@ -1844,6 +1844,17 @@ export default {
     'Không tìm thấy bình luận',
     'Tidak ada komentar ditemukan'
   ],
+  COMMENTS_SEARCH_COUNT_PREFIX: [
+    '找到 ',
+    '找到 ',
+    '找到 ',
+    'Found ',
+    'Топилди: ',
+    '見つかった ',
+    '찾은 ',
+    'Tìm thấy ',
+    'Ditemukan '
+  ],
   COMMENTS_COUNT_SUFFIX: [
     ' 条评论',
     ' 條評論',

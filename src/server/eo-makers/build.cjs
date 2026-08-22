@@ -70,7 +70,7 @@ const packagesToOverwrite = [
   // jsdom 依赖 canvas，Node Function 不支持
   'node_modules/jsdom/lib/api.js',
   // tencentcloud-sdk 体积大且不兼容
-  'node_modules/tencentcloud-sdk-nodejs/tencentcloud/index.js',
+  'node_modules/tencentcloud-sdk-nodejs-tms/tencentcloud/index.js',
   // nodemailer 在某些环境下有兼容性问题
   'node_modules/nodemailer/lib/nodemailer.js'
 ]

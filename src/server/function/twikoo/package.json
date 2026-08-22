@@ -30,7 +30,7 @@
     "marked": "^4.0.12",
     "nodemailer": "^9.0.5",
     "pushoo": "latest",
-    "tencentcloud-sdk-nodejs": "^4.0.65",
+    "tencentcloud-sdk-nodejs-tms": "^4.1.293",
     "xml2js": "^0.6.0"
   }
 }

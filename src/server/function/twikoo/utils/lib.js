@@ -70,9 +70,9 @@ module.exports = {
     const pushoo = require('pushoo').default // 即时消息通知
     return pushoo
   },
-  getTencentcloud () {
-    const tencentcloud = require('tencentcloud-sdk-nodejs') // 腾讯云 API NODEJS SDK
-    return tencentcloud
+  getTencentcloudTms () {
+    const tencentcloudTms = require('tencentcloud-sdk-nodejs-tms') // 腾讯云文本内容安全 SDK
+    return tencentcloudTms
   },
   getXml2js () {
     const xml2js = require('xml2js') // XML 解析

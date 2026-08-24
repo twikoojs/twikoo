@@ -10,7 +10,7 @@ const getUserIP = require('get-user-ip')
 const { URL } = require('url')
 const { v4: uuidv4 } = require('uuid') // 用户 id 生成
 const {
-  getCheerio,
+  getHtmlToText,
   getAxios,
   getDomPurify,
   getMd5,
@@ -62,7 +62,7 @@ const { sendNotice, emailTest } = require('twikoo-func/utils/notify')
 const { uploadImage } = require('twikoo-func/utils/image')
 const logger = require('twikoo-func/utils/logger')
 
-const $ = getCheerio()
+const htmlToText = getHtmlToText()
 const axios = getAxios()
 const DOMPurify = getDomPurify()
 const md5 = getMd5()
@@ -1045,7 +1045,7 @@ async function getRecentComments (event) {
         mailMd5: getMailMd5(comment),
         link: comment.link,
         comment: comment.comment,
-        commentText: $(comment.comment).text(),
+        commentText: htmlToText(comment.comment),
         created: comment.created
       }
     })

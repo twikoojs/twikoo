@@ -190,7 +190,7 @@ export default {
     async checkAuth () {
       // 检查用户身份
       if (this.$tcb) {
-        const currentUser = await this.$tcb.auth.getCurrenUser()
+        const currentUser = await this.$tcb.auth.getCurrentUser()
         this.isLogin = currentUser.loginType === 'CUSTOM'
       } else {
         const result = await call(this.$tcb, 'GET_CONFIG')

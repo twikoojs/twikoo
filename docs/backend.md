@@ -3,13 +3,13 @@
 | <div style="width: 6em">部署方式</div> | 推荐度 | 描述 |
 | ---- | ---- | ---- |
 | [腾讯云一键部署](#腾讯云一键部署) | ★☆☆☆☆ | 虽然方便，但是仅支持按量计费环境——也就是说，**一键部署的环境，当免费资源用尽后，将会产生费用**。且按量计费环境无法切换为包年包月环境。免费额度数据库读操作数只有 500 次 / 天，**无法支撑 Twikoo 的运行需求**。 |
-| [腾讯云手动部署](#腾讯云手动部署) | ★★☆☆☆ | 手动部署到腾讯云云开发环境，在中国大陆访问速度较快。需要付费购买环境才能部署。 |
+| [腾讯云手动部署](#腾讯云手动部署) | ★★★★☆ | 手动部署到腾讯云云开发环境，在中国大陆访问速度较快。 |
 | [腾讯云命令行部署](#腾讯云命令行部署) | ★☆☆☆☆ | 仅针对有 Node.js 经验的开发者。 |
 | [Vercel 部署](#vercel-部署) | ★★★☆☆ | 适用于想要免费部署的用户，在中国大陆访问速度较慢甚至无法访问，绑定自己的域名可以提高访问速度。 |
 | [Railway 部署](#railway-部署) | ★★☆☆☆ | 有免费额度但不足以支持一个月连续运行，部署简单，适合全球访问。 |
 | [Zeabur 部署](#zeabur-部署) | ★☆☆☆☆ | 需要绑定支付宝或信用卡，部署简单，适合中国大陆访问，免费计划环境随时可能会被删除。 |
 | [Netlify 部署](#netlify-部署) | ★★★★☆ | 有充足的免费额度，中国大陆访问速度不错。 |
-| [Hugging Face 部署](#hugging-face-部署) | ★★★★☆ | 免费，中国大陆访问速度不错。允许通过 Cloudflare Tunnels 自定义域名。 |
+| [Hugging Face 部署](#hugging-face-部署) | ★★★☆☆ | 免费，中国大陆访问速度不错。允许通过 Cloudflare Tunnels 自定义域名。 |
 | [AWS Lambda 部署](#aws-lambda-部署) | ★★★☆☆ | 全球最大的云平台，适合已经使用 AWS 全家桶的用户。 |
 | [Cloudflare workers 部署](#cloudflare-workers-部署) | ★★☆☆☆ | 部署需使用命令行，冷启动时间较短，功能有部分限制。 |
 | [私有部署](#私有部署) | ★★☆☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
@@ -24,29 +24,51 @@
 
 ## 腾讯云手动部署
 
-如果您打算部署到一个现有的云开发环境，请直接从第 3 步开始。
+如果您打算部署到一个现有的云开发环境，请直接从第 2 步开始。
 
-1. 进入[云开发CloudBase](https://curl.qcloud.com/KnnJtUom)活动页面，滚动到“新用户专享”部分，选择适合的套餐，点击“立即购买”，按提示创建好环境。
+1. 进入[云开发CloudBase购买页面](https://buy.cloud.tencent.com/lowcode?buyType=tcb)，数据库请选择“云数据库”，其余选项按页面提示填写，点击“立即购买”，按提示创建好环境。
 ::: tip 提示
-* 推荐创建上海环境。如选择广州环境，需要在 `twikoo.init()` 时额外指定环境 `region: "ap-guangzhou"`
+* 推荐创建上海环境。如选择其它环境，需要在 `twikoo.init()` 时额外指定环境 `region: "ap-guangzhou"`
 * 环境名称自由填写
-* 推荐选择计费方式`包年包月`，套餐版本`基础版 1`，超出免费额度不会收费
-* 如果提示选择“应用模板”，请选择“空模板”
 :::
-2. 进入[云开发控制台](https://console.cloud.tencent.com/tcb/)<br>
-3. 进入[环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)，启用“匿名登录”
-4. 进入[环境-安全配置](https://console.cloud.tencent.com/tcb/env/safety)，将网站域名添加到“WEB安全域名”
-5. 进入[环境-云函数](https://console.cloud.tencent.com/tcb/scf/index)，点击“新建云函数”
-6. 函数名称请填写：`twikoo`，创建方式请选择：`空白函数`，运行环境请选择：`Nodejs 16.13`，函数内存请选择：`128MB`，点击“下一步”
-7. 清空输入框中的示例代码，复制以下代码、粘贴到“函数代码”输入框中，点击“确定”
-``` js
+
+![](./static/tcb/1787559137780.webp)
+
+2. 进入[云开发新版开发平台](https://tcb.cloud.tencent.com/dev)<br>
+3. 进入“身份认证-配置-登录方式”，启用“允许匿名登入”
+
+![](./static/tcb/1787559902813.webp)
+
+4. 进入“云函数/托管-云函数-函数管理”，点击“权限控制”，将输入框内容修改为以下内容，然后点击确定
+```json
+{
+    "*": {
+        "invoke": "auth != null"
+    }
+}
+```
+
+![](./static/tcb/1787560276073.webp)
+
+5. 进入“云函数/托管-云函数-函数管理”，点击“新建云函数”，点击“通过模板创建-Node.js Hello World”
+6. 打开 `index.js` 文件，清空输入框中的示例代码，复制以下代码、粘贴到代码框中
+```js
 exports.main = require('twikoo-func').main
 ```
-8. 创建完成后，点击“twikoo"进入云函数详情页，进入“函数代码”标签，点击“文件 - 新建文件”，输入 `package.json`，回车
-9. 复制以下代码、粘贴到代码框中，点击“保存并安装依赖”
-``` json
+
+![](./static/tcb/1787559949154.webp)
+
+7. 打开 `package.json` 文件，清空输入框中的示例代码，复制以下代码、粘贴到代码框中
+```json
 { "dependencies": { "twikoo-func": "1.7.19" } }
 ```
+
+![](./static/tcb/1787559956229.webp)
+
+8. 其它文件不用修改，页面下方的函数名称请填写：`twikoo`，点击“创建”
+9. 等待函数状态变为“正常”后，环境部署完成，鼠标悬浮到页面左上角的环境名称上，即可看到您的 envId，注意腾讯云环境的 envId 为 `环境名称-数字字母` 组合，不带 `https://` 的前缀
+
+![](./static/tcb/1787560759049.webp)
 
 ## 腾讯云命令行部署
 
@@ -64,23 +86,23 @@ exports.main = require('twikoo-func').main
 3. 进入[环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)，启用“匿名登录”
 4. 进入[环境-安全配置](https://console.cloud.tencent.com/tcb/env/safety)，将网站域名添加到“WEB安全域名”
 5. 克隆本仓库
-``` sh
+```sh
 git clone https://github.com/twikoojs/twikoo.git # 或 git clone https://e.coding.net/imaegoo/twikoo/twikoo.git
 cd twikoo
 ```
 > 如果您没有安装 Git，也可以从 [Release](https://github.com/twikoojs/twikoo/releases) 页面下载最新的 Source code<br>
 > 如果您所在的地区访问 Github 速度慢，也可以尝试另一个仓库地址：[https://imaegoo.coding.net/public/twikoo/twikoo/git](https://imaegoo.coding.net/public/twikoo/twikoo/git)
 6. 安装依赖项
-``` sh
+```sh
 npm install -g yarn # 已安装 yarn 可以跳过此步
 yarn install
 ```
 7. 授权云开发环境（此命令会弹出浏览器要求授权，需在有图形界面的系统下进行）
-``` sh
+```sh
 yarn run login
 ```
 8. 自动部署
-``` sh
+```sh
 yarn deploy -e 您的环境id
 ```
 

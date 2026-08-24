@@ -9,3 +9,5 @@ updates:
         versions: [">= 3.0.0"]
       - dependency-name: "vue-loader"
         versions: [">= 16.0.0"]
+      - dependency-name: "@cloudbase/js-sdk"
+        versions: [">= 4.0.0"]

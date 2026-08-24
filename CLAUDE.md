@@ -15,7 +15,7 @@ yarn login        # tcb login
 yarn deploy       # tcb fn deploy twikoo --force
 ```
 
-开发后端时需先 `cd src/server/self-hosted && yarn install && yarn link twikoo-func`，再 `node server.js` 启动本地服务端。前端通过 `yarn dev` 启动，envId 填写 `http://localhost:8080`。
+开发后端时需先在 `src/server/core` 执行 `yarn install && yarn link`，再进入 `src/server/self-hosted` 执行 `yarn install && yarn link twikoo-core`，最后通过 `node server.js` 启动本地服务端。前端通过 `yarn dev` 启动，envId 填写 `http://localhost:8080`。
 
 ## 项目架构
 
@@ -33,10 +33,11 @@ Vue 2 + Element UI 组件，Webpack 5 构建为 UMD 库。两个入口：
 
 ### 服务端 (`src/server/`)
 
-核心业务逻辑在 `src/server/function/twikoo/`（发布为 npm 包 `twikoo-func`），其他后端均为平台适配层：
+平台无关的服务端公共逻辑在 `src/server/core/`（发布为 npm 包 `twikoo-core`），其他后端均为平台适配层：
 
 | 后端 | 包名 | 数据库 | 说明 |
 |---|---|---|---|
+| 公共核心 | `twikoo-core` | — | 平台无关的工具与业务能力 |
 | CloudBase | `twikoo-func` | 腾讯云开发数据库 | 主后端，入口 `exports.main` |
 | Self-hosted | `tkserver` | LokiJS（默认）/ MongoDB | Node.js HTTP 服务器，入口 `server.js` |
 | Vercel | `twikoo-vercel` | MongoDB | Serverless 函数，入口 `api/index.js` |
@@ -62,5 +63,5 @@ Vue 2 + Element UI 组件，Webpack 5 构建为 UMD 库。两个入口：
 
 ## 注意事项
 
-- `twikoo-func` 是服务端各后端共用的核心包，修改其 `utils/` 会影响所有部署方式
+- `twikoo-core` 是服务端各后端共用的核心包，修改其 `utils/` 会影响所有部署方式
 - CloudBase 部署配置在 `cloudbaserc.json`，函数运行时 Node.js 16.13

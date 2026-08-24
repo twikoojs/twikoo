@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const http = require('http')
-const logger = require('twikoo-func/utils/logger')
+const logger = require('twikoo-core/utils/logger')
 
 const dbUrl = process.env.MONGODB_URI || process.env.MONGO_URL || null
 const twikoo = dbUrl ? require('./mongo') : require('./index')

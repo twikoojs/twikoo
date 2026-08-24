@@ -12,7 +12,7 @@ const {
   getMd5,
   getSha256,
   getXml2js
-} = require('./utils/lib')
+} = require('twikoo-core/utils/lib')
 const {
   getFuncVersion,
   getUrlQuery,
@@ -37,14 +37,14 @@ const {
   validate,
   checkCommentOwnership,
   isValidEmail
-} = require('./utils')
+} = require('twikoo-core/utils')
 const {
   createCap,
   tcbStorage,
   createChallenge,
   redeemChallenge,
   isBuiltinCap
-} = require('./utils/cap')
+} = require('twikoo-core/utils/cap')
 const {
   jsonParse,
   commentImportValine,
@@ -52,11 +52,11 @@ const {
   commentImportArtalk,
   commentImportArtalk2,
   commentImportTwikoo
-} = require('./utils/import')
-const { postCheckSpam } = require('./utils/spam')
-const { sendNotice, emailTest } = require('./utils/notify')
-const { uploadImage } = require('./utils/image')
-const logger = require('./utils/logger')
+} = require('twikoo-core/utils/import')
+const { postCheckSpam } = require('twikoo-core/utils/spam')
+const { sendNotice, emailTest } = require('twikoo-core/utils/notify')
+const { uploadImage } = require('twikoo-core/utils/image')
+const logger = require('twikoo-core/utils/logger')
 
 // 云函数 SDK / tencent cloudbase sdk
 const app = tcb.init({ env: tcb.SYMBOL_CURRENT_ENV })
@@ -70,7 +70,7 @@ const sha256 = getSha256()
 const xml2js = getXml2js()
 
 // 常量 / constants
-const { RES_CODE, MAX_REQUEST_TIMES } = require('./utils/constants')
+const { RES_CODE, MAX_REQUEST_TIMES } = require('twikoo-core/utils/constants')
 const ADMIN_USER_ID = 'admin'
 
 // 全局变量 / variables

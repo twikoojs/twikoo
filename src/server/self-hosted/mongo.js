@@ -15,7 +15,7 @@ const {
   getMd5,
   getSha256,
   getXml2js
-} = require('twikoo-func/utils/lib')
+} = require('twikoo-core/utils/lib')
 const {
   getFuncVersion,
   getUrlQuery,
@@ -38,14 +38,14 @@ const {
   getConfigForAdmin,
   validate,
   checkCommentOwnership
-} = require('twikoo-func/utils')
+} = require('twikoo-core/utils')
 const {
   createCap,
   mongoStorage,
   createChallenge,
   redeemChallenge,
   isBuiltinCap
-} = require('twikoo-func/utils/cap')
+} = require('twikoo-core/utils/cap')
 const {
   jsonParse,
   commentImportValine,
@@ -53,11 +53,11 @@ const {
   commentImportArtalk,
   commentImportArtalk2,
   commentImportTwikoo
-} = require('twikoo-func/utils/import')
-const { postCheckSpam } = require('twikoo-func/utils/spam')
-const { sendNotice, emailTest } = require('twikoo-func/utils/notify')
-const { uploadImage } = require('twikoo-func/utils/image')
-const logger = require('twikoo-func/utils/logger')
+} = require('twikoo-core/utils/import')
+const { postCheckSpam } = require('twikoo-core/utils/spam')
+const { sendNotice, emailTest } = require('twikoo-core/utils/notify')
+const { uploadImage } = require('twikoo-core/utils/image')
+const logger = require('twikoo-core/utils/logger')
 
 const htmlToText = getHtmlToText()
 const DOMPurify = getDomPurify()
@@ -66,7 +66,7 @@ const sha256 = getSha256()
 const xml2js = getXml2js()
 
 // 常量 / constants
-const { RES_CODE, MAX_REQUEST_TIMES } = require('twikoo-func/utils/constants')
+const { RES_CODE, MAX_REQUEST_TIMES } = require('twikoo-core/utils/constants')
 const TWIKOO_REQ_TIMES_CLEAR_TIME = parseInt(process.env.TWIKOO_REQ_TIMES_CLEAR_TIME) || 10 * 60 * 1000
 
 // 全局变量 / variables

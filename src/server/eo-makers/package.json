@@ -28,7 +28,7 @@
     "@imaegoo/node-ip2region": "^2.1.1",
     "bowser": "^2.13.1",
     "pako": "^2.1.0",
-    "twikoo-func": "^1.7.19",
+    "twikoo-core": "^1.7.19",
     "uuid": "^8.3.2",
     "xss": "^1.0.15"
   }

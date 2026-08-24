@@ -22,7 +22,7 @@ function getConfig ({ extractCss }) {
           ? { test: /\.css$/, use: [MiniCssExtractPlugin.loader, 'css-loader'] }
           : { test: /\.css$/, use: ['vue-style-loader', 'css-loader'] },
         { test: /\.svg$/, loader: 'svg-inline-loader' },
-        { test: /\.js$/, exclude: /node_modules\/(webpack|webpack-dev-server|webpack-cli)\//, use: { loader: 'babel-loader', options: { presets: ['@babel/preset-env'], plugins: ['@babel/plugin-transform-modules-commonjs', '@babel/transform-runtime'] } } }
+        { test: /\.js$/, exclude: /node_modules[\\/](webpack|webpack-dev-server|webpack-cli)[\\/]/, use: { loader: 'babel-loader', options: { presets: ['@babel/preset-env'], plugins: ['@babel/plugin-transform-modules-commonjs', '@babel/transform-runtime'] } } }
       ]
     },
     entry: extractCss
@@ -54,9 +54,7 @@ function getConfig ({ extractCss }) {
         parallel: 4,
         terserOptions: {
           ecma: 5,
-          toplevel: true,
-          ie8: true,
-          safari10: true
+          toplevel: true
         }
       })
     ],

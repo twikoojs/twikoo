@@ -1,6 +1,6 @@
 const {
   getAkismetClient,
-  getTencentcloud
+  getTencentcloudTms
 } = require('./lib')
 const {
   equalsMail
@@ -9,18 +9,18 @@ const AkismetClient = getAkismetClient()
 
 const logger = require('./logger')
 
-let tencentcloud
+let tencentcloudTms
 let generateTextPromise
 
-function getTencentCloud () {
-  if (!tencentcloud) {
+function getTencentCloudTms () {
+  if (!tencentcloudTms) {
     try {
-      tencentcloud = getTencentcloud() // 腾讯云 API NODEJS SDK
+      tencentcloudTms = getTencentcloudTms()
     } catch (e) {
-      logger.warn('加载 "tencentcloud-sdk-nodejs" 失败', e)
+      logger.warn('加载 "tencentcloud-sdk-nodejs-tms" 失败', e)
     }
   }
-  return tencentcloud
+  return tencentcloudTms
 }
 
 function getGenerateText () {
@@ -183,7 +183,7 @@ const fn = {
         isSpam = false
       } else if (config.QCLOUD_SECRET_ID && config.QCLOUD_SECRET_KEY) {
         // 腾讯云内容安全
-        const client = new (getTencentCloud().tms.v20201229.Client)({
+        const client = new (getTencentCloudTms().tms.v20201229.Client)({
           credential: { secretId: config.QCLOUD_SECRET_ID, secretKey: config.QCLOUD_SECRET_KEY },
           region: 'ap-shanghai',
           profile: { httpProfile: { endpoint: 'tms.tencentcloudapi.com' } }
@@ -202,6 +202,9 @@ const fn = {
         const checkResult = await client.TextModeration(textModerationParams)
         logger.log('腾讯云返回结果：', checkResult)
         isSpam = checkResult.Suggestion !== 'Pass'
+        if (isSpam) {
+          logger.warn(`腾讯云判定不通过: id="${comment.id}" nick="${comment.nick}" suggestion="${checkResult.Suggestion}" label="${checkResult.Label}" subLabel="${checkResult.SubLabel}"`)
+        }
       } else if (config.AKISMET_KEY) {
         // Akismet
         const akismetClient = new AkismetClient({

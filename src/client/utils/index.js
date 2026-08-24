@@ -1,4 +1,5 @@
 import t, { setLanguage } from './i18n'
+import DOMPurify from 'dompurify'
 import timeago from './timeago'
 import marked from './marked'
 import renderCode from './highlight'
@@ -24,6 +25,11 @@ const logger = {
     console.error(`Twikoo: ${message}`, e)
   }
 }
+
+const sanitizeHtml = (html) => DOMPurify.sanitize(typeof html === 'string' ? html : '', {
+  FORBID_TAGS: ['style'],
+  FORBID_ATTR: ['style']
+})
 
 const timestamp = (date = new Date()) => {
   return date.getTime()
@@ -215,6 +221,7 @@ export {
   setLanguage,
   isNotSet,
   logger,
+  sanitizeHtml,
   timeago,
   timestamp,
   convertLink,

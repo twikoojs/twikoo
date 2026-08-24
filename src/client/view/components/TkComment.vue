@@ -39,7 +39,7 @@
       </div>
       <div class="tk-content" :class="{ 'tk-content-expand': isContentExpanded || !showContentExpand }" ref="tk-content">
         <span v-if="comment.pid">{{ t('COMMENT_REPLIED') }} <a class="tk-ruser" href="#" @click.prevent="scrollToPid(comment.pid)">@{{ comment.ruser }}</a> :</span>
-        <span v-html="comment.comment" ref="comment" @click="popupLightbox"></span>
+        <span v-html="sanitizedComment" ref="comment" @click="popupLightbox"></span>
       </div>
       <div class="tk-expand-wrap" v-if="showContentExpand">
         <div class="tk-expand" @click="onContentExpand">{{ t('COMMENT_EXPAND') }}</div>
@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import { timeago, convertLink, call, renderLinks, renderMath, renderCode, t } from '../../utils'
+import { timeago, convertLink, call, renderLinks, renderMath, renderCode, sanitizeHtml, t } from '../../utils'
 import TkAction from './TkAction.vue'
 import TkAvatar from './TkAvatar.vue'
 import TkSubmit from './TkSubmit.vue'
@@ -159,6 +159,9 @@ export default {
     config: Object
   },
   computed: {
+    sanitizedComment () {
+      return sanitizeHtml(this.comment.comment)
+    },
     displayCreated () {
       return timeago(this.comment.created)
     },

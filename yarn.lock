@@ -869,9 +869,9 @@
     "@cloudbase/utilities" "4.0.0"
 
 "@cloudbase/cli@^3.3.0":
-  version "3.7.3"
-  resolved "https://registry.yarnpkg.com/@cloudbase/cli/-/cli-3.7.3.tgz#b1ee9d5a53f22d175b25f6861637d9e68f9f5bba"
-  integrity sha512-S6XMXxHIyDFcEqtHaK+TJSEKmerglcBEZyhq5iRfDwDcQRnz2u8BsZkmkfWXTC4bYjJ2wVoY26TG2RrfkbjKzA==
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/@cloudbase/cli/-/cli-3.8.0.tgz#556a70e93180579bc109fc3f99e3394357863a70"
+  integrity sha512-eNqd/HLDLubffwGgkVvNXGLKwX3KIzAbXPiGJSyeA9D8KBfRj+tOee6xqKJY4DGF8ZYZtAmGXtGMv65rvhlI3w==
 
 "@cloudbase/cloudrun@4.0.0":
   version "4.0.0"
@@ -1547,6 +1547,11 @@
   dependencies:
     "@types/http-errors" "*"
     "@types/node" "*"
+
+"@types/trusted-types@^2.0.7":
+  version "2.0.7"
+  resolved "https://registry.npmjs.org/@types/trusted-types/-/trusted-types-2.0.7.tgz"
+  integrity sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==
 
 "@types/ws@^8.18.1":
   version "8.18.1"
@@ -2506,6 +2511,13 @@ doctrine@^2.1.0:
   integrity sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==
   dependencies:
     esutils "^2.0.2"
+
+dompurify@^3.4.14:
+  version "3.4.14"
+  resolved "https://registry.npmjs.org/dompurify/-/dompurify-3.4.14.tgz"
+  integrity sha512-dVoH9z+MY+C9IilgGCk3YfFqjLi3fChm2OiKJMzh6axrJ5qwxqWaZamgmHrpv22CN/KdbZJuGEGgfQoL00LTdg==
+  optionalDependencies:
+    "@types/trusted-types" "^2.0.7"
 
 dunder-proto@^1.0.0, dunder-proto@^1.0.1:
   version "1.0.1"
@@ -3833,9 +3845,9 @@ lru-cache@^4.1.2:
     yallist "^2.1.2"
 
 marked@^18.0.4:
-  version "18.0.9"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-18.0.9.tgz#729fb57203a4fd58dd5ddc551917ef40daf5036a"
-  integrity sha512-/Sa4qiiHZxf0/FQdBBowr9q4r10krCwMvpK48FUBdXdUXScDxiQGR9zCPrFgRVR5LU3iySOiIjy09ZQvADir1w==
+  version "18.0.10"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-18.0.10.tgz#a09ac1f54e378b9efc8b31707adc188fdc047d2e"
+  integrity sha512-FJeH4bRpYoXiggcgriCGItKCSv3xkngJc4QCZ/rkQCogU3VYaLxYJoZl8Nw/b4+x7iij/pd+09mZ6A1dXzpL0A==
 
 math-intrinsics@^1.1.0:
   version "1.1.0"

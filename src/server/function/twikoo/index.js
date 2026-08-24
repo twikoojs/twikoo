@@ -7,7 +7,7 @@
 const { version: VERSION } = require('./package.json')
 const tcb = require('@cloudbase/node-sdk') // 云开发 SDK
 const {
-  getCheerio,
+  getHtmlToText,
   getDomPurify,
   getMd5,
   getSha256,
@@ -63,7 +63,7 @@ const app = tcb.init({ env: tcb.SYMBOL_CURRENT_ENV })
 const auth = app.auth()
 const db = app.database()
 const _ = db.command
-const $ = getCheerio()
+const htmlToText = getHtmlToText()
 const DOMPurify = getDomPurify()
 const md5 = getMd5()
 const sha256 = getSha256()
@@ -1026,7 +1026,7 @@ async function getRecentComments (event) {
         mailMd5: getMailMd5(comment),
         link: comment.link,
         comment: comment.comment,
-        commentText: $(comment.comment).text(),
+        commentText: htmlToText(comment.comment),
         created: comment.created
       }
     })

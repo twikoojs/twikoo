@@ -1,10 +1,10 @@
 const { equalsMail, getAvatar, isValidEmail } = require('.')
 const {
-  getCheerio,
+  getHtmlToText,
   getNodemailer,
   getPushoo
 } = require('./lib')
-const $ = getCheerio()
+const htmlToText = getHtmlToText()
 const pushoo = getPushoo()
 const { RES_CODE } = require('./constants')
 const logger = require('./logger')
@@ -175,7 +175,7 @@ const fn = {
     const NICK = escapeHtml(comment.nick)
     const MAIL = escapeHtml(comment.mail)
     const IP = comment.ip
-    const COMMENT = $(comment.comment).text()
+    const COMMENT = htmlToText(comment.comment)
     const SITE_URL = config.SITE_URL
     const POST_URL = escapeHtml(fn.appendHashToUrl(comment.href || SITE_URL + comment.url, comment.id))
     const subject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}有新评论了`

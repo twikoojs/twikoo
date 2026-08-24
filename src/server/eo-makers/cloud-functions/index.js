@@ -3,7 +3,7 @@
  * (c) 2020-present iMaeGoo
  * Released under the MIT License.
  *
- * 使用 twikoo-func 实现核心逻辑，通过 Cloud Function 操作 Blob 数据库
+ * 使用 twikoo-core 实现核心逻辑，通过 Cloud Function 操作 Blob 数据库
  */
 
 import { getStore } from '@edgeone/pages-blob'
@@ -18,7 +18,7 @@ import {
   getSha256,
   getXml2js,
   setCustomLibs
-} from 'twikoo-func/utils/lib'
+} from 'twikoo-core/utils/lib'
 import { getIpRegion } from './ip2region-searcher.js'
 import {
   getFuncVersion,
@@ -42,7 +42,7 @@ import {
   validate,
   checkCommentOwnership,
   isValidEmail
-} from 'twikoo-func/utils'
+} from 'twikoo-core/utils'
 import {
   jsonParse,
   commentImportValine,
@@ -50,13 +50,13 @@ import {
   commentImportArtalk,
   commentImportArtalk2,
   commentImportTwikoo
-} from 'twikoo-func/utils/import'
-import { postCheckSpam } from 'twikoo-func/utils/spam'
-import { sendNotice, emailTest } from 'twikoo-func/utils/notify'
-import { uploadImage } from 'twikoo-func/utils/image'
-import logger from 'twikoo-func/utils/logger'
-import constants from 'twikoo-func/utils/constants'
-import capUtils from 'twikoo-func/utils/cap'
+} from 'twikoo-core/utils/import'
+import { postCheckSpam } from 'twikoo-core/utils/spam'
+import { sendNotice, emailTest } from 'twikoo-core/utils/notify'
+import { uploadImage } from 'twikoo-core/utils/image'
+import logger from 'twikoo-core/utils/logger'
+import constants from 'twikoo-core/utils/constants'
+import capUtils from 'twikoo-core/utils/cap'
 
 const {
   createCap,
@@ -348,7 +348,7 @@ const md5 = getMd5()
 const sha256 = getSha256()
 const xml2js = getXml2js()
 
-// ==================== 本地实现的 parseComment（替代 twikoo-func 版本）====================
+// ==================== 本地实现的 parseComment（替代 twikoo-core 版本）====================
 
 /**
  * 修复 OS 版本名称

@@ -7,12 +7,12 @@
 ### Install dependencies
 
 ```
-cd src/server/function/twikoo
+cd src/server/core
 yarn
 yarn link
-cd ../../self-hosted
+cd ../self-hosted
 yarn
-yarn link twikoo-func
+yarn link twikoo-core
 ```
 
 ### Start

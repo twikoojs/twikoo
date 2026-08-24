@@ -24,6 +24,8 @@ jobs:
       - if: "github.event.release.prerelease"
         run: npm publish --provenance --tag beta
       - if: "github.event.release.prerelease"
+        run: cd src/server/core && npm publish --provenance --tag beta
+      - if: "github.event.release.prerelease"
         run: cd src/server/function/twikoo && npm publish --provenance --tag beta
       - if: "github.event.release.prerelease"
         run: cd src/server/vercel && npm publish --provenance --tag beta
@@ -33,6 +35,8 @@ jobs:
         run: cd src/server/netlify && npm publish --provenance --tag beta
       - if: "!github.event.release.prerelease"
         run: npm publish --provenance
+      - if: "!github.event.release.prerelease"
+        run: cd src/server/core && npm publish --provenance
       - if: "!github.event.release.prerelease"
         run: cd src/server/function/twikoo && npm publish --provenance
       - if: "!github.event.release.prerelease"

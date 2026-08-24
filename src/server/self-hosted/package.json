@@ -31,7 +31,7 @@
     "get-user-ip": "^1.0.1",
     "lokijs": "^1.5.12",
     "mongodb": "^6.3.0",
-    "twikoo-func": "1.7.19",
+    "twikoo-core": "1.7.19",
     "uuid": "^8.3.2"
   }
 }

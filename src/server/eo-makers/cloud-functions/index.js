@@ -68,7 +68,7 @@ const {
 
 const { RES_CODE, MAX_REQUEST_TIMES } = constants
 const htmlToText = getHtmlToText()
-const VERSION = '1.7.19'
+const VERSION = '1.7.20'
 const EO_SMTP_BRIDGE_PATH = '/smtp'
 const SMTP_BRIDGE_PROBE_TIMEOUT_MS = 5000
 

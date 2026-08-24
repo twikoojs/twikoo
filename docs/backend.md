@@ -62,7 +62,7 @@ exports.main = require('twikoo-func').main
 
 8. 打开 `package.json` 文件，清空输入框中的示例代码，复制以下代码、粘贴到代码框中
 ```json
-{ "dependencies": { "twikoo-func": "1.7.19" } }
+{ "dependencies": { "twikoo-func": "1.7.20" } }
 ```
 
 ![](./static/tcb/1787559956229.webp)

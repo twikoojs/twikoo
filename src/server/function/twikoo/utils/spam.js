@@ -1,13 +1,11 @@
 const {
   getAkismetClient,
-  getCryptoJS,
   getTencentcloudTms
 } = require('./lib')
 const {
   equalsMail
 } = require('.')
 const AkismetClient = getAkismetClient()
-const CryptoJS = getCryptoJS()
 
 const logger = require('./logger')
 
@@ -192,7 +190,7 @@ const fn = {
         })
         const textModerationParams = {
           // 文档: https://cloud.tencent.com/document/api/1124/51860
-          Content: CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(comment.comment)),
+          Content: Buffer.from(comment.comment, 'utf8').toString('base64'),
           DataId: comment.id,
           User: { Nickname: comment.nick },
           Device: { IP: comment.ip }

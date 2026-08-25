@@ -127,7 +127,7 @@ const defaultGravatar = [
  *   'ja-JP'  // Contributor: [yumexupanic](https://github.com/yumexupanic), [HakoMC](https://github.com/HakoMC)
  *   'ko-KR'  // Contributor: [다배](https://github.com/tipsyoncola)
  *   'vi-VN'  // Contributor: (you!)
- *   'id-ID'  // Contributor: (Rijal)(https://github.com/frijal)
+ *   'id-ID'  // Contributor: [Rijal](https://github.com/frijal)
  * ]
  */
 export default {

@@ -823,9 +823,9 @@
     web-streams-polyfill "^4.0.0"
 
 "@cloudbase/cli@^3.3.0":
-  version "3.8.0"
-  resolved "https://registry.yarnpkg.com/@cloudbase/cli/-/cli-3.8.0.tgz#556a70e93180579bc109fc3f99e3394357863a70"
-  integrity sha512-eNqd/HLDLubffwGgkVvNXGLKwX3KIzAbXPiGJSyeA9D8KBfRj+tOee6xqKJY4DGF8ZYZtAmGXtGMv65rvhlI3w==
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/@cloudbase/cli/-/cli-3.8.1.tgz#bacfd40790386d0b161f4b63c7fc07ca251b9dd6"
+  integrity sha512-UTazVglGgMSqhsIk7MlbwRuSX/43vG83Ps598RIN5p/bF8I48pXlRlPQGj1m0PbE5VZFZS4I+tEudEr1MMt3Fw==
 
 "@cloudbase/js-sdk@^3.3.10":
   version "3.8.1"

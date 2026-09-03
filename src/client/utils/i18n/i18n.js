@@ -1292,30 +1292,29 @@ export default {
     '웹사이트 주소.',
     'Địa chỉ website.',
     'Alamat situs web'
-  ],
-  [S.ACI + '_SMTP_HOST']: [
+],
+[S.ACI + '_SMTP_HOST']: [
     '自定义 SMTP 服务器地址。如您已配置 SMTP_SERVICE，此项请留空。',
     '自定義 SMTP 伺服器地址。如您已配置 SMTP_SERVICE，此項請留空。',
     '自訂 SMTP 伺服器位址。如您已設定 SMTP_SERVICE，此項請留白。',
     'Custom SMTP server address. If you have configured SMTP_SERVICE, please leave it empty.',
     'Махсус СМТП сервер манзили. Агар сиз СМТП_СEРВИСE созлаган бўлсангиз, уни бўш қолдиринг.',
-    '自定义 SMTP 服务器地址。如您已配置 SMTP_SERVICE，此项请留空。',
     'カスタムSMTPサーバのアドレス。SMTP_SERVICEを設定している場合は空白のままにします。',
     'SMTP 서버 주소. SMTP_SERVICE를 설정한 경우 비워두세요.',
     'Địa chỉ máy chủ SMTP tùy chỉnh. Để trống nếu đã cấu hình SMTP_SERVICE.',
     'Alamat server SMTP kustom. Jika Anda telah mengonfigurasi SMTP_SERVICE, biarkan kosong.'
-  ],
-  [S.ACI + '_SMTP_PASS']: [
+],
+[S.ACI + '_SMTP_PASS']: [
     '邮件通知邮箱密码，QQ、163邮箱请填写授权码。',
     '郵件通知郵箱密碼，QQ、163郵箱請填寫授權碼。',
     '郵件通知郵箱密碼，QQ、163 郵箱請填寫授權碼。',
     'Email notification mailbox password. Enter authorization code for QQ/163 mail.',
     'Электрон почта хабарномаси почта қутиси пароли. ҚҚ/163 почтаси учун авторизация кодини киритинг.',
     'メール通知のメールボックスパスワード。QQ、163メールは認証コードを入力してください',
-    '알림 이메일 계정 SMTP용 비밀번호. (QQ, 163 등 대부분 별도의 앱 비밀번호/인증 코드 사용)',
+    '메일 알림 계정 비밀번호. QQ/163 메일은 인증 코드를 입력하세요.',
     'Mật khẩu hòm thư gửi thông báo. Với QQ/163 hãy nhập mã ủy quyền.',
     'Kata sandi kotak email notifikasi. Untuk email QQ/163, masukkan kode otorisasi.'
-  ],
+]
   [S.ACI + '_SMTP_PORT']: [
     '自定义 SMTP 端口。如您已配置 SMTP_SERVICE，此项请留空。',
     '自定義 SMTP 端口。如您已配置 SMTP_SERVICE，此項請留空。',

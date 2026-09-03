@@ -1304,7 +1304,7 @@ export default {
     'Địa chỉ máy chủ SMTP tùy chỉnh. Để trống nếu đã cấu hình SMTP_SERVICE.',
     'Alamat server SMTP kustom. Jika Anda telah mengonfigurasi SMTP_SERVICE, biarkan kosong.'
   ],
-  [S.ACI + '_SMTP_PASS']: [>
+  [S.ACI + '_SMTP_PASS']: [
     '邮件通知邮箱密码，QQ、163邮箱请填写授权码。',
     '郵件通知郵箱密碼，QQ、163郵箱請填寫授權碼。',
     '郵件通知郵箱密碼，QQ、163 郵箱請填寫授權碼。',

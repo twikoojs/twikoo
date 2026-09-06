@@ -828,9 +828,9 @@
   integrity sha512-UTazVglGgMSqhsIk7MlbwRuSX/43vG83Ps598RIN5p/bF8I48pXlRlPQGj1m0PbE5VZFZS4I+tEudEr1MMt3Fw==
 
 "@cloudbase/js-sdk@^3.3.10":
-  version "3.9.0"
-  resolved "https://registry.yarnpkg.com/@cloudbase/js-sdk/-/js-sdk-3.9.0.tgz#043022fdc314ff3d17d97d4980df91c2a6b37b7e"
-  integrity sha512-N1AA8gGeF5A7UMIq8211hdZUiBFMZdGdMggn8GelwtrieqLFR7pW6MDrJ9iUiJmoh1M5vgWdZiDf9nvoGOd3xQ==
+  version "3.9.1"
+  resolved "https://registry.yarnpkg.com/@cloudbase/js-sdk/-/js-sdk-3.9.1.tgz#1c42ac0493b3b6094c44302f2b28ce98e1097dae"
+  integrity sha512-ld31fr1TbLIVXDxtZMpnYzAM0crNw/6dJ3AAL9yMogNsgqHgFV6auh4H87AwXtrv73NzZphZFdQT2L9Cv2R+oQ==
   dependencies:
     "@cloudbase/adapter-interface" "^0.7.1"
     "@cloudbase/adapter-wx_mp" "^1.3.1"

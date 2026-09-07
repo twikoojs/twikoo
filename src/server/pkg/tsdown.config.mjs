@@ -76,7 +76,8 @@ export default defineConfig({
       // 把 ip2region.db 内联进产物：
       // ip2region 用 fs.openSync(dbPath) + fs.readSync 随机读取，必须是真实文件，
       // 无法纯内存运行。因此把 db 内容 base64 存进产物字符串，
-      // 替换 DEFAULT_DB_PATH 定义：文件存在时直接用；不存在时落盘到系统临时目录再用。
+      // 替换 DEFAULT_DB_PATH 定义：文件存在时直接用；不存在时落盘到系统临时目录固定
+      // 路径再用（按大小校验，避免重启累积副本或使用半截文件）。
       // 这样产物不再依赖 dist/data/ip2region.db（copy 已移除），部署仍只需单文件。
       renderChunk (code) {
         const target =
@@ -96,8 +97,14 @@ const DEFAULT_DB_PATH = (() => {
   try {
     if (fs.statSync(bundled).isFile()) return bundled; // 优先使用部署目录里的文件
   } catch {}
-  const tmpFile = path.join(fs.mkdtempSync(path.join(require("os").tmpdir(), "ip2region-")), "ip2region.db");
-  fs.writeFileSync(tmpFile, Buffer.from(__TWIKOO_IP2REGION_DB__, "base64"));
+  // 使用固定路径而不是每次启动新建临时目录，避免可执行文件反复重启时累积数据库副本；
+  // 文件大小与内联内容不一致（首次写入被中断或版本升级）时重新生成
+  const dbBuffer = Buffer.from(__TWIKOO_IP2REGION_DB__, "base64");
+  const tmpFile = path.join(require("os").tmpdir(), "twikoo-ip2region.db");
+  try {
+    if (fs.statSync(tmpFile).size === dbBuffer.length) return tmpFile;
+  } catch {}
+  fs.writeFileSync(tmpFile, dbBuffer);
   return tmpFile;
 })();`
         )

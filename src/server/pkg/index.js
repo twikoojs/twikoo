@@ -1,11 +1,12 @@
 const { program } = require('commander')
-const { join } = require('path')
-const { existsSync, writeFileSync } = require('fs')
-const { getAsset, isSea } = require('node:sea')
+const { join } = require('node:path')
+const { existsSync, writeFileSync } = require('node:fs')
+const { getAsset, isSea, getAssetKeys } = require('node:sea')
+const { name, dependencies } = require('./package.json')
 
 program
-  .name(require('./package.json').name)
-  .version(require('./package.json').dependencies.tkserver, '-v, --version')
+  .name(name)
+  .version(dependencies.tkserver, '-v, --version')
   .description(
     `DESCRIPTION:
   Official website: https://twikoo.js.org/`
@@ -14,42 +15,41 @@ program
 
 program.parse(process.argv)
 
-try {
-  if (isSea()) {
-    // 创建.env文件
-    if (!existsSync(join(__dirname, '.env'))) {
-      writeFileSync(join(__dirname, '.env'), getAsset('.env', 'utf8'))
-    }
+const envPath = join(__dirname, '.env')
 
-    // 适配iis
-    if (process.platform === 'win32' && !existsSync(join(__dirname, './web.config'))) {
-      writeFileSync(join(__dirname, './web.config'), getAsset('web.config', 'utf8'))
-    }
+// SEA 打包场景：若内置了 .env 资源，首次启动时释放到 exe 同目录，
+// 方便用户直接编辑配置
+if (isSea() && getAssetKeys().includes('.env') && !existsSync(envPath)) {
+  writeFileSync(envPath, getAsset('.env', 'utf8'))
+}
 
-    // 拷贝ip2region.db
-    if (!existsSync(join(__dirname, './ip2region.db'))) {
-      writeFileSync(
-        join(__dirname, './ip2region.db'),
-        Buffer.from(new Uint8Array(getAsset('ip2region.db')))
-      )
-    }
-    if (!existsSync(join(__dirname, './xhr-sync-worker.js'))) {
-      writeFileSync(
-        join(__dirname, './xhr-sync-worker.js'),
-        getAsset('xhr-sync-worker.js', 'utf8')
-      )
-    }
+// .env 存在则加载（不覆盖已有环境变量，与 dotenv 默认行为一致）
+if (existsSync(envPath)) {
+  try {
+    process.loadEnvFile(envPath)
+  } catch (e) {
+    console.error(`Failed to load ${envPath}:`, e.message)
   }
-} catch (error) {}
+}
 
-// 获取env
-require('dotenv').config({
-  override: true,
-  path: existsSync(join(__dirname, '.env')) ? join(__dirname, '.env') : undefined
-})
+// 适配iis
+if (
+  isSea() &&
+  getAssetKeys().includes('web.config') &&
+  process.platform === 'win32' &&
+  !existsSync(join(__dirname, './web.config'))
+) {
+  writeFileSync(join(__dirname, './web.config'), getAsset('web.config', 'utf8'))
+}
 
 // 匹配iis
-if (process.env.ASPNETCORE_PORT) {
+if (
+  isSea() &&
+  getAssetKeys().includes('web.config') &&
+  process.platform === 'win32' &&
+  existsSync(join(__dirname, './web.config')) &&
+  process.env.ASPNETCORE_PORT
+) {
   process.env.TWIKOO_PORT = process.env.ASPNETCORE_PORT
   process.env.TWIKOO_LOCALHOST_ONLY = undefined
 }

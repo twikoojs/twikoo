@@ -149,7 +149,7 @@ If your changes can help more people, feel free to submit a Pull Request!
 
 ## I18N
 
-Support Simplified Chinese, Traditional Chinese, English. [translate Pull Request](https://github.com/twikoojs/twikoo/tree/main/src/client/utils/i18n).
+Support Simplified Chinese, Traditional Chinese, English, Indonesia. [translate Pull Request](https://github.com/twikoojs/twikoo/tree/main/src/client/utils/i18n).
 
 ## License
 

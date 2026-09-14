@@ -105,7 +105,7 @@ Akismet (Automattic Kismet) 是应用广泛的一个垃圾留言过滤系统，�
 使用 [OpenAI SDK](https://www.npmjs.com/package/openai) 兼容的 API 服务（如 DeepSeek, OpenAI 等）来实现更智能的垃圾评论检测。管理员可以自定义提示词，灵活定义何为“垃圾评论”。
 
 - `LLM_API_KEY`：填写您的 API 密钥。
-- `LLM_API_ENDPOINT`：填写 API 接口地址（默认 `https://api.deepseek.com`）。
+- `LLM_API_ENDPOINT`：填写 API 接口地址（默认 `https://api.deepseek.com/v1`）。
 - `LLM_MODEL`：填写模型名称（默认 `deepseek-v4-pro`）。
 - `LLM_MAX_RETRIES`：LLM 检测最大重试次数（默认 3 次）。
 

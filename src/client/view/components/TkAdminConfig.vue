@@ -136,7 +136,7 @@ export default {
             { key: 'BLOCKED_WORDS', desc: t('ADMIN_CONFIG_ITEM_BLOCKED_WORDS'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}快递,空包`, value: '' },
             { key: 'NOTIFY_SPAM', desc: t('ADMIN_CONFIG_ITEM_NOTIFY_SPAM'), ph: `${t('ADMIN_CONFIG_EXAMPLE')}false`, value: '' },
             { key: 'LLM_API_KEY', desc: t('ADMIN_CONFIG_ITEM_LLM_API_KEY'), ph: 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', value: '', secret: true },
-            { key: 'LLM_API_ENDPOINT', desc: t('ADMIN_CONFIG_ITEM_LLM_API_ENDPOINT'), ph: 'https://api.deepseek.com', value: '' },
+            { key: 'LLM_API_ENDPOINT', desc: t('ADMIN_CONFIG_ITEM_LLM_API_ENDPOINT'), ph: 'https://api.deepseek.com/v1', value: '' },
             { key: 'LLM_MODEL', desc: t('ADMIN_CONFIG_ITEM_LLM_MODEL'), ph: 'deepseek-v4-pro', value: '' },
             { key: 'LLM_SPAM_PROMPT', desc: t('ADMIN_CONFIG_ITEM_LLM_SPAM_PROMPT'), ph: '', value: '', type: 'textarea' },
             { key: 'LLM_MAX_RETRIES', desc: t('ADMIN_CONFIG_ITEM_LLM_MAX_RETRIES'), ph: '3', value: '' }

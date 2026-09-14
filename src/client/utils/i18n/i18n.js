@@ -1085,15 +1085,15 @@ export default {
     'LLM API Key, digunakan untuk deteksi komentar spam dengan AI. Hanya berlaku jika Tencent Cloud dan Akismet tidak dikonfigurasi.'
   ],
   [S.ACI + '_LLM_API_ENDPOINT']: [
-    'LLM API 接口地址，默认：https://api.deepseek.com',
-    'LLM API 接口地址，預設：https://api.deepseek.com',
-    'LLM API 接口地址，預設：https://api.deepseek.com',
-    'LLM API endpoint URL, defaults to https://api.deepseek.com',
-    'LLM API endpoint manzili, standart: https://api.deepseek.com',
-    'LLM APIエンドポイントURL。デフォルト：https://api.deepseek.com',
-    'LLM API 엔드포인트 URL. 기본값: https://api.deepseek.com',
-    'Địa chỉ LLM API endpoint, mặc định: https://api.deepseek.com',
-    'URL endpoint LLM API, bawaan: https://api.deepseek.com'
+    'LLM API 接口地址，默认：https://api.deepseek.com/v1',
+    'LLM API 接口地址，預設：https://api.deepseek.com/v1',
+    'LLM API 接口地址，預設：https://api.deepseek.com/v1',
+    'LLM API endpoint URL, defaults to https://api.deepseek.com/v1',
+    'LLM API endpoint manzili, standart: https://api.deepseek.com/v1',
+    'LLM APIエンドポイントURL。デフォルト：https://api.deepseek.com/v1',
+    'LLM API 엔드포인트 URL. 기본값: https://api.deepseek.com/v1',
+    'Địa chỉ LLM API endpoint, mặc định: https://api.deepseek.com/v1',
+    'URL endpoint LLM API, bawaan: https://api.deepseek.com/v1'
   ],
   [S.ACI + '_LLM_MODEL']: [
     'LLM 模型名称，默认：deepseek-v4-pro',

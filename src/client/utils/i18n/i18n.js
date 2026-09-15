@@ -963,6 +963,17 @@ export default {
     'Có gửi thông báo cho bình luận spam không. Mặc định: true.',
     'Apakah mengirim notifikasi untuk komentar spam. Bawaan: true.'
   ],
+  [S.ACI + '_HIDE_SPAM']: [
+    '前台评论区对所有人隐藏垃圾评论，包括管理员和评论作者。评论管理后台仍可审核和恢复。设为 true 开启，默认：false。',
+    '前台評論區對所有人隱藏垃圾評論，包括管理員和評論作者。評論管理後台仍可審核和恢復。設為 true 開啟，預設：false。',
+    '前台留言區對所有人隱藏垃圾留言，包括管理員和留言作者。留言管理後台仍可審核和恢復。設為 true 啟用，預設：false。',
+    'Hide spam comments from everyone in the public comment section, including admins and comment authors. Comments can still be reviewed and restored in the admin panel. Set to true to enable. Default: false.',
+    'Оммавий шарҳлар бўлимида спам шарҳларни ҳаммадан, жумладан администраторлар ва шарҳ муаллифларидан яшириш. Администратор панелида шарҳларни кўриб чиқиш ва тиклаш мумкин. Ёқиш учун true қийматини ўрнатинг. Стандарт: false.',
+    '公開コメント欄でスパムコメントを管理者と投稿者を含む全員から非表示にします。管理パネルでは引き続き確認・復元できます。true で有効。デフォルト：false。',
+    '공개 댓글 영역에서 관리자와 작성자를 포함한 모든 사용자에게 스팸 댓글을 숨깁니다. 관리 패널에서는 검토하고 복원할 수 있습니다. 활성화하려면 true로 설정하세요. 기본값: false.',
+    'Ẩn bình luận spam khỏi mọi người trong phần bình luận công khai, kể cả quản trị viên và tác giả. Vẫn có thể duyệt và khôi phục trong trang quản trị. Đặt thành true để bật. Mặc định: false.',
+    'Sembunyikan komentar spam dari semua orang di bagian komentar publik, termasuk admin dan penulis komentar. Komentar tetap dapat ditinjau dan dipulihkan di panel admin. Atur ke true untuk mengaktifkan. Bawaan: false.'
+  ],
   [S.ACI + '_CAPTCHA_PROVIDER']: [
     '人机验证码提供商',
     '人機驗證碼提供商',
@@ -1085,15 +1096,15 @@ export default {
     'LLM API Key, digunakan untuk deteksi komentar spam dengan AI. Hanya berlaku jika Tencent Cloud dan Akismet tidak dikonfigurasi.'
   ],
   [S.ACI + '_LLM_API_ENDPOINT']: [
-    'LLM API 接口地址，默认：https://api.deepseek.com',
-    'LLM API 接口地址，預設：https://api.deepseek.com',
-    'LLM API 接口地址，預設：https://api.deepseek.com',
-    'LLM API endpoint URL, defaults to https://api.deepseek.com',
-    'LLM API endpoint manzili, standart: https://api.deepseek.com',
-    'LLM APIエンドポイントURL。デフォルト：https://api.deepseek.com',
-    'LLM API 엔드포인트 URL. 기본값: https://api.deepseek.com',
-    'Địa chỉ LLM API endpoint, mặc định: https://api.deepseek.com',
-    'URL endpoint LLM API, bawaan: https://api.deepseek.com'
+    'LLM API 接口地址，默认：https://api.deepseek.com/v1',
+    'LLM API 接口地址，預設：https://api.deepseek.com/v1',
+    'LLM API 接口地址，預設：https://api.deepseek.com/v1',
+    'LLM API endpoint URL, defaults to https://api.deepseek.com/v1',
+    'LLM API endpoint manzili, standart: https://api.deepseek.com/v1',
+    'LLM APIエンドポイントURL。デフォルト：https://api.deepseek.com/v1',
+    'LLM API 엔드포인트 URL. 기본값: https://api.deepseek.com/v1',
+    'Địa chỉ LLM API endpoint, mặc định: https://api.deepseek.com/v1',
+    'URL endpoint LLM API, bawaan: https://api.deepseek.com/v1'
   ],
   [S.ACI + '_LLM_MODEL']: [
     'LLM 模型名称，默认：deepseek-v4-pro',

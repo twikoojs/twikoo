@@ -108,7 +108,7 @@ Akismet (Automattic Kismet) is a widely used spam filtering system by Matt Mulle
 Use [OpenAI SDK](https://www.npmjs.com/package/openai) compatible API services (such as DeepSeek, OpenAI, etc.) to implement more intelligent spam comment detection. Administrators can customize the prompt to flexibly define what constitutes "spam comments."
 
 - `LLM_API_KEY`: Enter your API key.
-- `LLM_API_ENDPOINT`: Enter the API endpoint URL (default `https://api.deepseek.com`).
+- `LLM_API_ENDPOINT`: Enter the API endpoint URL (default `https://api.deepseek.com/v1`).
 - `LLM_MODEL`: Enter the model name (default `deepseek-v4-pro`).
 - `LLM_MAX_RETRIES`: Maximum retries for LLM detection (default 3).
 

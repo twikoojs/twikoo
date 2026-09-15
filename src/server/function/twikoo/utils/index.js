@@ -288,7 +288,7 @@ const fn = {
     }
   },
   // 预垃圾评论检测
-  preCheckSpam ({ comment, nick }, config) {
+  preCheckSpam ({ comment, nick, link, mail }, config) {
     // 长度限制
     let limitLength = parseInt(config.LIMIT_LENGTH)
     if (Number.isNaN(limitLength)) limitLength = 500
@@ -313,9 +313,11 @@ const fn = {
       // 违禁词检测
       const commentLowerCase = comment.toLowerCase()
       const nickLowerCase = nick.toLowerCase()
+      const linkLowerCase = (link || '').toLowerCase()
+      const mailLowerCase = (mail || '').toLowerCase()
       for (const forbiddenWord of config.FORBIDDEN_WORDS.replace(/,+$/, '').split(',')) {
         const forbiddenWordLowerCase = forbiddenWord.trim().toLowerCase()
-        if (commentLowerCase.indexOf(forbiddenWordLowerCase) !== -1 || nickLowerCase.indexOf(forbiddenWordLowerCase) !== -1) {
+        if (commentLowerCase.indexOf(forbiddenWordLowerCase) !== -1 || nickLowerCase.indexOf(forbiddenWordLowerCase) !== -1 || linkLowerCase.indexOf(forbiddenWordLowerCase) !== -1 || mailLowerCase.indexOf(forbiddenWordLowerCase) !== -1) {
           logger.warn('包含违禁词，直接标记为垃圾评论~')
           return true
         }

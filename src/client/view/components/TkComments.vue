@@ -238,8 +238,13 @@ export default {
   mounted () {
     this.initConfig()
     this.initComments()
-    // Re-fetch config when admin saves settings (e.g. captcha provider change)
+    // 保存配置后同步刷新配置和评论可见性
     app.$on('configUpdated', this.initConfig)
+    app.$on('configUpdated', this.refreshPreservingState)
+  },
+  beforeDestroy () {
+    app.$off('configUpdated', this.initConfig)
+    app.$off('configUpdated', this.refreshPreservingState)
   }
 }
 </script>

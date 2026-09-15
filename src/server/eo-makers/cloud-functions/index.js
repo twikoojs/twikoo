@@ -40,6 +40,7 @@ import {
   getConfig,
   getConfigForAdmin,
   validate,
+  validateClientFields,
   checkCommentOwnership,
   isValidEmail
 } from 'twikoo-func/utils'
@@ -1499,6 +1500,9 @@ async function handlePost (req, res) {
   try {
     // 防护
     protect(ip)
+
+    // 统一校验客户端字段类型，防止查询操作符对象注入数据库查询条件
+    validateClientFields(event)
 
     // 生成或使用 accessToken
     accessToken = event.accessToken || uuidv4().replace(/-/g, '')

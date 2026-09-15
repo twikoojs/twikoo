@@ -40,6 +40,7 @@ const {
   getConfig,
   getConfigForAdmin,
   validate,
+  validateClientFields,
   checkCommentOwnership,
   isValidEmail
 } = require('twikoo-func/utils')
@@ -91,6 +92,8 @@ module.exports = async (request, response) => {
   let res = {}
   try {
     protect(request)
+    // 统一校验客户端字段类型，防止查询操作符对象注入数据库查询条件
+    validateClientFields(event)
     // 判断客户端是否自带 accessToken，须在 anonymousSignIn 回填身份之前
     hasClientToken = !!(request.body && request.body.accessToken)
     accessToken = anonymousSignIn(request)

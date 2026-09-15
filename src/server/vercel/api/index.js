@@ -39,6 +39,7 @@ const {
   getConfig,
   getConfigForAdmin,
   validate,
+  validateClientFields,
   checkCommentOwnership,
   isValidEmail
 } = require('twikoo-func/utils')
@@ -86,6 +87,8 @@ module.exports = async (request, response) => {
   let res = {}
   try {
     protect(request)
+    // 统一校验客户端字段类型，防止查询操作符对象注入数据库查询条件
+    validateClientFields(event)
     accessToken = anonymousSignIn(request)
     await connectToDatabase(process.env.MONGODB_URI)
     await readConfig()

@@ -35,6 +35,7 @@ const {
   getConfig,
   getConfigForAdmin,
   validate,
+  validateClientFields,
   checkCommentOwnership,
   isValidEmail
 } = require('./utils')
@@ -87,6 +88,8 @@ exports.main = async (event, context) => {
   let res = {}
   try {
     protect()
+    // 统一校验客户端字段类型，防止查询操作符对象注入数据库查询条件
+    validateClientFields(event)
     await readConfig()
     switch (event.event) {
       case 'GET_FUNC_VERSION':

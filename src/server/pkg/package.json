@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "commander": "15.0.0",
-    "tkserver": "1.7.23"
+    "tkserver": "1.7.24"
   },
   "devDependencies": {
     "@tsdown/exe": "0.23.0",

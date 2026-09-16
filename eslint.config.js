@@ -233,6 +233,9 @@ export default defineConfigWithVueTs(
             "xml2js",
             "html-to-text",
             "pushoo",
+            // 数据库驱动同属重依赖（T14/T15）：common 内只允许 await import() 动态加载
+            "mongodb",
+            "lokijs",
           ].map((name) => ({ name, message: heavyDepMessage })),
           patterns: [{ group: ["@xsai/*"], message: heavyDepMessage }],
         },

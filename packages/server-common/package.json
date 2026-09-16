@@ -3,12 +3,23 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
   },
   "dependencies": {
     "@twikoojs/shared": "workspace:*"
   },
+  "peerDependencies": {
+    "mongodb": "^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "mongodb": {
+      "optional": true
+    }
+  },
   "devDependencies": {
-    "@types/node": "^22.20.2"
+    "@types/node": "^22.20.2",
+    "lokijs": "^1.5.12",
+    "mongodb": "^6.3.0"
   }
 }

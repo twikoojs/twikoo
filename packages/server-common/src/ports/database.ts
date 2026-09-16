@@ -92,10 +92,35 @@ export interface CounterDoc {
   url: string;
   /** 评论条数 */
   time: number;
+  /** 页面标题（1.x incCounter 随计数写入） */
+  title?: string;
+  /** 创建时间（毫秒时间戳） */
+  created?: number;
+  /** 更新时间（毫秒时间戳） */
+  updated?: number;
 }
 
 /** 配置数据：扁平键值对（1.x 配置值为字符串；数值/布尔为 2.0 前瞻兼容） */
 export type ConfigData = Record<string, string | number | boolean>;
+
+/**
+ * 排序说明：字段名 → 方向（1 = 升序，-1 = 降序），与 1.x Mongo
+ * `sort({ created: -1 })` 的形态一致，支持多键排序（键顺序即排序优先级）。
+ */
+export type SortSpec = Record<string, 1 | -1>;
+
+/**
+ * 查询选项：排序与分页（1.x Mongo 游标 sort/skip/limit 语义对齐；
+ * 1.x commentGet 的「多读 1 条判断 more」属于 handler 层逻辑，组合本选项实现）。
+ */
+export interface QueryOptions {
+  /** 排序（不传 = 实现默认序；Mongo 为自然序） */
+  sort?: SortSpec;
+  /** 跳过条数（分页起点，1.x skip = per * (page - 1)） */
+  skip?: number;
+  /** 返回条数上限 */
+  limit?: number;
+}
 
 /** 生命周期：初始化（如 Mongo 建连 / Loki 加载持久化文件 / Blob KV 探活） */
 export type DatabaseInit = () => Promise<void>;
@@ -109,8 +134,8 @@ export type DatabaseClose = () => Promise<void>;
 /** 评论：获取全部评论（管理员导出用） */
 export type GetAllComments = () => Promise<CommentDoc[]>;
 
-/** 评论：按语义查询对象获取评论列表 */
-export type GetComments = (query: SemanticQuery) => Promise<CommentDoc[]>;
+/** 评论：按语义查询对象获取评论列表（可携带排序/分页选项） */
+export type GetComments = (query: SemanticQuery, options?: QueryOptions) => Promise<CommentDoc[]>;
 
 /** 评论：按语义查询对象计数 */
 export type CountComments = (query: SemanticQuery) => Promise<number>;
@@ -133,8 +158,8 @@ export type BulkAddComments = (list: CommentDoc[]) => Promise<void>;
 /** 计数：获取页面评论计数；无记录返回 null */
 export type GetCounter = (url: string) => Promise<CounterDoc | null>;
 
-/** 计数：页面评论计数自增（无记录则创建；返回更新后的计数） */
-export type IncCounter = (url: string) => Promise<CounterDoc>;
+/** 计数：页面评论计数自增（无记录则创建；title 为可选页面标题，1.x 语义）；返回更新后的计数 */
+export type IncCounter = (url: string, title?: string) => Promise<CounterDoc>;
 
 /** 配置：读取全量配置；未初始化返回 null */
 export type GetConfig = () => Promise<ConfigData | null>;

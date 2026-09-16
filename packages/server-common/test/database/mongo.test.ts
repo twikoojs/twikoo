@@ -1,0 +1,73 @@
+/**
+ * MongoDatabase 测试（T14）。
+ *
+ * 默认用 mongodb-memory-server 提供的临时实例（§9.4 B 类默认值：无需用户
+ * 填充 TEST_MONGODB_URI）；设置了 TEST_MONGODB_URI 时改连真实实例。
+ * QA− 场景（实例停机 → 连接失败错误可读）单列 describe。
+ */
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { MongoMemoryServer } from "mongodb-memory-server";
+import { MongoDatabase } from "../../src/database/mongo";
+import type { Database } from "../../src/ports/database";
+import { runDatabaseSemanticSuite } from "./semantic-suite";
+
+/** 复用进程级单例：多 describe 共享，避免重复启动内存实例 */
+let mongod: MongoMemoryServer | null = null;
+
+/** 测试库连接串（外部真实实例优先，默认内存实例） */
+let uri = "";
+
+beforeAll(async () => {
+  // 固定服务端版本 4.4.29（driver 6.x 官方支持矩阵内最小版）：Windows 全量 zip
+  // 体积随版本显著增大（8.x ≈ 820MB，4.4 ≈ 291MB），且语义套件只使用基础操作；
+  // 已设置 MONGOMS_VERSION 时尊重外部配置。
+  process.env.MONGOMS_VERSION ??= "4.4.29";
+  if (process.env.TEST_MONGODB_URI) {
+    uri = process.env.TEST_MONGODB_URI;
+    return;
+  }
+  mongod = await MongoMemoryServer.create();
+  uri = mongod.getUri("twikoo_test");
+});
+
+afterAll(async () => {
+  await mongod?.stop();
+});
+
+/** 语义套件接入（T15 Loki 跑同一套断言） */
+runDatabaseSemanticSuite("MongoDatabase", {
+  /** 每个用例独立数据库：隔离用例间数据（同一 mongod 实例上多库零成本） */
+  create: async () => {
+    const dbName = `twikoo_test_${Math.random().toString(36).slice(2, 10)}`;
+    const db = new MongoDatabase({ uri, dbName });
+    await db.init();
+    return db;
+  },
+  /** 关闭连接（内存实例由 afterAll 统一停机） */
+  dispose: async (db: Database) => {
+    await db.close?.();
+  },
+});
+
+describe("MongoDatabase 连接语义（T14）", () => {
+  it("init 幂等：重复调用复用同一连接不报错", async () => {
+    const db = new MongoDatabase({ uri });
+    await db.init();
+    await db.init();
+    await db.addComment({ _id: "idempotent-check", nick: "x" });
+    expect((await db.getComment("idempotent-check"))?.nick).toBe("x");
+    await db.close();
+  });
+
+  it("QA−：内存实例停机后操作抛可读错误（非静默失败）", async () => {
+    if (mongod === null) return; // 外部真实实例不执行本用例（不能停别人的库）
+    const db = new MongoDatabase({ uri });
+    await db.init();
+    await mongod.stop();
+    mongod = null;
+    // 实例已停：任何读操作都必须显式失败，绝不静默返回空结果
+    // （实测错误形态：connect ECONNREFUSED / MongoServerClosedError 等）
+    await expect(db.getComments({})).rejects.toThrow(/econnrefused|topology|closed|connection/i);
+    await db.close().catch(() => {});
+  });
+});

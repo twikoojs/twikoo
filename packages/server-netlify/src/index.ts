@@ -1,2 +1,4 @@
-// 占位：该包实现随 Wave 2/3/4/5 接入。
-export {};
+/**
+ * twikoo-netlify 入口（Netlify 适配器；handler 为 Functions v1 入口）。
+ */
+export { handler, createNetlifyFunc, toTkRequest, fromTkResponse } from "./main";

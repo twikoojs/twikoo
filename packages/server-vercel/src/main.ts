@@ -3,27 +3,17 @@
  * 业务逻辑全部在 @twikoojs/common；平台核对（§6.8）：vercel.com/docs/functions（查阅 2026-09-17）。
  */
 import {
+  FULL_CAPABILITIES,
   MongoDatabase,
   createHandler,
-  defineCapabilities,
   scaffoldAdapters,
-  type Capabilities,
   type Database,
   type TkRequest,
   type TkResponse,
 } from "@twikoojs/common";
 
 /** Vercel 平台能力：全能力（§6.5 能力矩阵） */
-const vercelCapabilities: Capabilities = defineCapabilities({
-  mail: true,
-  domPurify: true,
-  ip2region: true,
-  akismet: true,
-  tencentTms: true,
-  imageUpload: true,
-  qqAvatar: true,
-  ai: true,
-});
+const vercelCapabilities = FULL_CAPABILITIES;
 
 /** Vercel 请求的最小结构面（Node IncomingMessage + Vercel 扩展） */
 export interface VercelRequestLike {

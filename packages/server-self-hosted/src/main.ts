@@ -4,29 +4,19 @@
  * 平台核对（§6.8）：nodejs.org/api http/信号处理（查阅 2026-09-17）。
  */
 import {
+  FULL_CAPABILITIES,
   LokiDatabase,
   MongoDatabase,
   createHandler,
-  defineCapabilities,
   resetRequestTimes,
   scaffoldAdapters,
-  type Capabilities,
   type Database,
   type TkRequest,
   type TkResponse,
 } from "@twikoojs/common";
 
 /** tkserver 平台能力：全能力（§6.5 能力矩阵） */
-const tkserverCapabilities: Capabilities = defineCapabilities({
-  mail: true,
-  domPurify: true,
-  ip2region: true,
-  akismet: true,
-  tencentTms: true,
-  imageUpload: true,
-  qqAvatar: true,
-  ai: true,
-});
+const tkserverCapabilities = FULL_CAPABILITIES;
 
 /** Node 请求的最小结构面（IncomingMessage；body 已由 server.ts 解析挂载） */
 export interface ServerRequestLike {

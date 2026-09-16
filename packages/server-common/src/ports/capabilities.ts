@@ -33,3 +33,15 @@ export interface Capabilities {
   /** 是否支持 AI 内容生成（@xsai/*） */
   ai: boolean;
 }
+
+/** 全能力声明（§6.5 矩阵：cloudbase / vercel / self-hosted / netlify / aws-lambda 共用） */
+export const FULL_CAPABILITIES: Capabilities = {
+  mail: true,
+  domPurify: true,
+  ip2region: true,
+  akismet: true,
+  tencentTms: true,
+  imageUpload: true,
+  qqAvatar: true,
+  ai: true,
+};

@@ -7,27 +7,17 @@
  * 环境变量机制由本适配器消化（§6.3：公共库不感知该变量）。
  */
 import {
+  FULL_CAPABILITIES,
   MongoDatabase,
   createHandler,
-  defineCapabilities,
   scaffoldAdapters,
-  type Capabilities,
   type Database,
   type TkRequest,
   type TkResponse,
 } from "@twikoojs/common";
 
 /** Netlify 平台能力：全能力（§6.5 能力矩阵） */
-const netlifyCapabilities: Capabilities = defineCapabilities({
-  mail: true,
-  domPurify: true,
-  ip2region: true,
-  akismet: true,
-  tencentTms: true,
-  imageUpload: true,
-  qqAvatar: true,
-  ai: true,
-});
+const netlifyCapabilities = FULL_CAPABILITIES;
 
 /** Netlify Functions v1 事件的最小结构面 */
 export interface NetlifyEventLike {

@@ -73,6 +73,8 @@ export { dispatch } from "./core/dispatcher";
 export { resetRequestTimes } from "./core/pipeline";
 export type { PostSubmitService } from "./services/post-submit";
 export { setPostSubmitService, getPostSubmitService } from "./services/post-submit";
+// ---- 适配器脚手架（T21：storage/mailer/notifier 占位装配）----
+export { scaffoldAdapters } from "./adapters/scaffold";
 // ---- 数据库实现导出（适配器按平台选择其一）----
 export { MongoDatabase, toMongoFilter, newCommentId } from "./database/mongo";
 export type { MongoDatabaseOptions } from "./database/mongo";

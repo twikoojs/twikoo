@@ -145,7 +145,7 @@ export class LokiDatabase implements Database {
     }
     const Loki = (await import("lokijs")).default;
     const { default: LokiFsStructuredAdapter } =
-      await import("lokijs/src/loki-fs-structured-adapter");
+      await import("lokijs/src/loki-fs-structured-adapter.js");
     const dbFile = resolve(this.dataDir, "db.json");
     /** 构造在闭包内完成，经局部变量取回实例（规避 TS 对闭包赋值的收窄限制） */
     let instance: LokiInstance | null = null;

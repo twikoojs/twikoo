@@ -1,7 +1,50 @@
 {
   "name": "tkserver",
   "version": "0.0.0",
+  "description": "Twikoo 2.0 自托管服务器（业务逻辑在 @twikoojs/common）",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "tkserver": "./dist/server.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "build": "tsup",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@cap.js/server": "^4.0.5",
+    "@imaegoo/node-ip2region": "^2.1.1",
+    "@twikoojs/common": "workspace:*",
+    "@twikoojs/shared": "workspace:*",
+    "@xsai/generate-text": "^0.2.2",
+    "akismet-api": "^5.1.0",
+    "axios": "^1.6.2",
+    "bowser": "^2.11.0",
+    "dompurify": "^3.4.14",
+    "form-data": "^4.0.0",
+    "html-to-text": "^9.0.5",
+    "jsdom": "^22.1.0",
+    "lokijs": "^1.5.12",
+    "mongodb": "^6.3.0",
+    "nodemailer": "^9.0.5",
+    "pushoo": "^0.1.12",
+    "tencentcloud-sdk-nodejs-tms": "^4.1.293",
+    "xml2js": "^0.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.2"
   }
 }

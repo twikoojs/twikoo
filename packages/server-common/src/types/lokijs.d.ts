@@ -149,7 +149,7 @@ declare module "lokijs" {
  * loki-fs-structured-adapter（lokijs 仓库内附带的文件持久化适配器，
  * 1.x self-hosted 同款子路径导入）。
  */
-declare module "lokijs/src/loki-fs-structured-adapter" {
+declare module "lokijs/src/loki-fs-structured-adapter.js" {
   /** 结构化文件适配器 */
   class LokiFsStructuredAdapter {
     /** 初始化适配器（lokijs 构造选项 adapter 传入） */

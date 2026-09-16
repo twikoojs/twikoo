@@ -6,6 +6,10 @@ export default defineConfig({
     name: "@twikoojs/shared",
     // shared 无 UI 依赖，node 环境即可；后续包（client 用 happy-dom 等）各自在自己的配置里定环境
     environment: "node",
+    // T10：.env 加载 setup（仓库级共享文件，后续包复用约定——各包 vitest.config.ts
+    // 按相对自身配置文件的路径挂同一文件：根 test/setup/env.ts）。
+    // 路径相对本配置文件解析：packages/shared → ../../test/setup/env.ts。
+    setupFiles: ["../../test/setup/env.ts"],
     include: ["test/**/*.test.ts"],
     coverage: {
       provider: "v8",

@@ -16,6 +16,7 @@
  *     ② 本地规则 twikoo/no-scoped-style——禁 <style scoped>
  *     ③ no-restricted-imports（仅 server-common）——重依赖顶层静态 import 禁令
  *     （规则二「禁新 .js 源码」由 scripts/check-no-js-sources.mjs + check:no-js 脚本承担）
+ *  9. T10 测试目录疑似密钥字面量禁令（.env 机制配套，同在 prettier 末层之前）
  *
  * 重写模式说明：client 尚无源码，本配置直接按 Vue 3 设定，无任何 Vue2 过渡降级；
  * T27 接入 client 组件时天然 Vue3。
@@ -267,6 +268,47 @@ export default defineConfigWithVueTs(
     name: "twikoo/no-jsdoc-on-tooling-scripts",
     files: ["scripts/**"],
     rules: { "jsdoc/require-jsdoc": "off" },
+  },
+
+  // ===== 9. T10：测试目录疑似密钥字面量禁令（§9.4 机制要求 5）=====
+
+  {
+    // .env 机制配套守卫：测试代码出现疑似密钥的字符串字面量即报错，
+    // 强制走环境变量 / hasEnv()（缺失时用例 skip，见 packages/shared/test/utils/env.ts
+    // 与根 .env.example）。仅作用于 test 目录（含子目录）与 *.test.ts 文件——
+    // 源码中的密钥属运行时用户配置数据，不在本约束面。
+    // 实现选型：no-restricted-syntax 选择器正则（零本地规则代码），
+    // 三形态：sk- 前缀 / AKID 前缀 / 敏感命名变量直接赋非空字符串字面量。
+    name: "twikoo/test-secret-literal-ban",
+    files: ["**/test/**", "**/*.test.ts"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          // sk- 前缀（OpenAI / Anthropic 等风格 API Key）且主体足够长，避免误伤普通文案
+          selector: "Literal[value=/^sk-[A-Za-z0-9][A-Za-z0-9_-]{15,}$/]",
+          message:
+            "疑似密钥字符串字面量（sk- 前缀）：请改用环境变量 / hasEnv() 读取（清单见根 .env.example）。",
+        },
+        {
+          // AKID 前缀（云厂商 AccessKeyId 常见形态）
+          selector: "Literal[value=/^AKID[A-Za-z0-9]{10,}$/]",
+          message:
+            "疑似密钥字符串字面量（AKID 前缀）：请改用环境变量 / hasEnv() 读取（清单见根 .env.example）。",
+        },
+        {
+          // password/secret/token/key/credential 语义命名的变量直接赋 ≥8 字符字符串字面量
+          // （长度门槛压低误伤面：短文案/枚举值不触发）。
+          // 大小写逐字符枚举而非 [Kk]ey 式首字母枚举：QA− 实测 const KEY（全大写，
+          // 测试中硬编码密钥最常见命名形态）漏检——每字母双写覆盖 Camel 与 SCREAMING。
+          // esquery 无处用 flag 语法，枚举是确定性实现。
+          selector:
+            "VariableDeclarator[id.name=/([Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Pp][Aa][Ss][Ss][Ww][Dd]|[Ss][Ee][Cc][Rr][Ee][Tt]|[Tt][Oo][Kk][Ee][Nn]|[Kk][Ee][Yy]|[Aa][Pp][Ii]_?[Kk][Ee][Yy]|[Aa][Cc][Cc][Ee][Ss][Ss]_?[Kk][Ee][Yy]|[Cc][Rr][Ee][Dd][Ee][Nn][Tt][Ii][Aa][Ll])/] > Literal[value=/^.{8,}$/]",
+          message:
+            "疑似密钥赋值（敏感命名字符串字面量）：请改用环境变量 / hasEnv() 读取（清单见根 .env.example）。",
+        },
+      ],
+    },
   },
 
   // 7. 末层：关闭所有格式类规则，格式交给 Prettier（.prettierrc.json）

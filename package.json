@@ -17,7 +17,7 @@
     "check:no-js": "node scripts/check-no-js-sources.mjs",
     "typecheck": "pnpm -r --if-present run typecheck",
     "prepare": "simple-git-hooks",
-    "env:check": "echo \"TODO: wire up env check in a later wave (T10)\""
+    "env:check": "node scripts/env-check.mjs"
   },
   "lint-staged": {
     "*.{js,mjs,cjs,ts,vue}": [

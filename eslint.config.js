@@ -11,6 +11,11 @@
  *  5. 配置文件/测试文件跳过 type-aware 规则
  *  6. pushoo 迁入源码过渡放宽（T47 收敛）
  *  7. eslint-config-prettier 末层关闭格式类规则（格式由 Prettier 单一职责）
+ *  8. T8 强制规则四件套（位于 prettier 末层之前）：
+ *     ① jsdoc/require-jsdoc——函数/类方法/对象方法/箭头函数常量/导出常量必须带注释
+ *     ② 本地规则 twikoo/no-scoped-style——禁 <style scoped>
+ *     ③ no-restricted-imports（仅 server-common）——重依赖顶层静态 import 禁令
+ *     （规则二「禁新 .js 源码」由 scripts/check-no-js-sources.mjs + check:no-js 脚本承担）
  *
  * 重写模式说明：client 尚无源码，本配置直接按 Vue 3 设定，无任何 Vue2 过渡降级；
  * T27 接入 client 组件时天然 Vue3。
@@ -20,6 +25,102 @@ import pluginVue from "eslint-plugin-vue";
 import tseslint from "typescript-eslint";
 import eslintConfigPrettier from "eslint-config-prettier";
 import globals from "globals";
+import jsdoc from "eslint-plugin-jsdoc";
+
+/**
+ * T8 规则一：jsdoc/require-jsdoc 公共选项——覆盖函数声明、类方法、
+ * 箭头函数赋值常量、对象方法、导出常量（export const）。
+ *
+ * 设计要点：
+ * - 匿名回调/函数实参（如 `setTimeout(() => {}, 0)`）不在任何 contexts 内，天然豁免；
+ * - 注释语言不做机器校验（AGENTS.md 已规定中文）；
+ * - require-jsdoc 会沿 AST 祖先链查找注释，`export const X = ...` 的注释写在
+ *   export 关键字上方即可命中。
+ * @type {import("eslint-plugin-jsdoc").eslintPluginJsdocConfigs["require-jsdoc"][1]}
+ */
+const jsdocRequireOptions = {
+  require: {
+    FunctionDeclaration: true,
+    MethodDefinition: true,
+    ArrowFunctionExpression: false,
+    FunctionExpression: false,
+    ClassDeclaration: false,
+    ClassExpression: false,
+  },
+  contexts: [
+    // 箭头函数赋值常量（const x = () => {}）
+    "VariableDeclarator > ArrowFunctionExpression",
+    // 对象字面量方法：method shorthand 与属性值为箭头函数
+    "Property > FunctionExpression",
+    "Property > ArrowFunctionExpression",
+    // 导出常量（export const/let/var X = ...，含非函数初始化）。
+    // 注意：不能用 `ExportNamedDeclaration > VariableDeclaration > VariableDeclarator`——
+    // require-jsdoc 的注释查找对 VariableDeclarator 只看其前一个 token（`const` 关键字），
+    // 沿祖先链回溯仅对函数类节点生效，写在 export 上方的注释会漏检（T8 实测）。
+    // 直接匹配 ExportNamedDeclaration 节点本身，其 token-before 即为 jsdoc 块。
+    "ExportNamedDeclaration[declaration.type='VariableDeclaration']",
+  ],
+};
+
+/**
+ * tsup-config 过渡期专用：同上但去掉对象方法两个 contexts（存量对象字面量方法
+ * 无独立注释，见下方 override 段说明）；其余检查保持生效。
+ * @type {typeof jsdocRequireOptions}
+ */
+const jsdocRequireOptionsNoProperty = {
+  require: jsdocRequireOptions.require,
+  contexts: jsdocRequireOptions.contexts.filter((c) => !c.startsWith("Property")),
+};
+
+/** T8 规则四：重依赖统一提示语（D-2 动态加载 + 适配器声明缺失依赖）。 */
+const heavyDepMessage =
+  "重依赖禁止顶层静态 import：请用 await import() 动态加载（D-2），缺失依赖在适配器声明。";
+
+/**
+ * T8 规则三本地规则：禁 <style scoped>（AGENTS.md CSS 规范——样式全局化，
+ * 类名 tk- 前缀，作用域挂 .twikoo 根选择器）。
+ *
+ * 为什么不用 vue/no-restricted-block：实测 eslint-plugin-vue 10.11.0 该规则按
+ * VElement.rawName 匹配，<style scoped> 的 rawName 是 "style"（scoped 只是
+ * startTag 属性），element 选项目无法表达「带 scoped 修饰的 style 块」；
+ * 而 element: "style" 会把普通 <style> 块一并禁掉，与 AGENTS.md「所有样式
+ * 写在 <style> 块内」矛盾。故以本地规则检查顶层 <style> 块的 scoped 属性。
+ */
+const noScopedStyleRule = {
+  meta: {
+    type: "problem",
+    docs: { description: "Disallow <style scoped> blocks (AGENTS.md CSS rules)." },
+    schema: [],
+    messages: {
+      noScoped:
+        "禁止 <style scoped>：所有样式写在非 scoped <style> 块内，类名用 tk- 前缀并以 .twikoo 根选择器限定作用域（见 AGENTS.md CSS 规范）。",
+    },
+  },
+  /**
+   * 规则实现：在 SFC 顶层块中查找带 scoped 静态属性的 style 块。
+   * @param {import("eslint").Rule.RuleContext} context ESLint 规则上下文
+   * @returns {import("eslint").Rule.RuleListener} 访问器
+   */
+  create(context) {
+    const sourceCode = context.sourceCode;
+    return {
+      /** 在文档片段（SFC 顶层块集合）上检查 style 块的 scoped 属性。 */
+      Program() {
+        const fragment = sourceCode.parserServices?.getDocumentFragment?.();
+        if (!fragment) return;
+        for (const child of fragment.children) {
+          if (
+            child.type === "VElement" &&
+            child.name === "style" &&
+            child.startTag.attributes.some((attr) => !attr.directive && attr.key.name === "scoped")
+          ) {
+            context.report({ node: child.startTag, messageId: "noScoped" });
+          }
+        }
+      },
+    };
+  },
+};
 
 export default defineConfigWithVueTs(
   {
@@ -83,6 +184,89 @@ export default defineConfigWithVueTs(
     name: "twikoo/allow-tsup-onSuccess-no-await",
     files: ["packages/tsup-config/src/index.ts"],
     rules: { "@typescript-eslint/require-await": "off" },
+  },
+
+  // ===== 8. T8 强制规则四件套（必须在 prettier 末层之前）=====
+
+  {
+    // 规则一：函数/类方法/对象方法/箭头函数常量/导出常量必须带 JSDoc 注释（AGENTS.md 硬性规则）。
+    name: "twikoo/jsdoc-required-on-functions",
+    plugins: { jsdoc },
+    rules: {
+      "jsdoc/require-jsdoc": ["error", jsdocRequireOptions],
+    },
+  },
+
+  {
+    // 规则三：禁 <style scoped>——本地规则实现（选型原因见 noScopedStyleRule 注释）。
+    name: "twikoo/no-scoped-style-blocks",
+    files: ["**/*.vue"],
+    plugins: { twikoo: { rules: { "no-scoped-style": noScopedStyleRule } } },
+    rules: {
+      "twikoo/no-scoped-style": "error",
+    },
+  },
+
+  {
+    // 规则四：server-common 禁止顶层静态 import 重依赖（Scope F 清单，AGENTS.md 依赖规则）。
+    // no-restricted-imports 只命中静态 import/require 声明，`await import()` 动态导入不受影响。
+    // 适配器按需在自身 package.json dependencies 声明实际使用的重依赖；
+    // @twikoojs/common 仅以 peerDependenciesMeta(optional) 声明接口约束。
+    name: "twikoo/server-common-heavy-dep-top-import-ban",
+    files: ["packages/server-common/src/**"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            "nodemailer",
+            "jsdom",
+            "dompurify",
+            "@imaegoo/node-ip2region",
+            "akismet-api",
+            "tencentcloud-sdk-nodejs-tms",
+            "form-data",
+            "axios",
+            "bowser",
+            "marked",
+            "xml2js",
+            "html-to-text",
+            "pushoo",
+          ].map((name) => ({ name, message: heavyDepMessage })),
+          patterns: [{ group: ["@xsai/*"], message: heavyDepMessage }],
+        },
+      ],
+    },
+  },
+
+  {
+    // 规则一过渡豁免：pushoo 迁入存量 8 处顶层函数无 JSDoc（checkParameters/getHtml/
+    // getTxt/getTitle/removeUrlAndIp/noticePushdeer/noticeIgot/notice）。按 T8 纪律
+    // 不得改其源码，T47 pushoo 收敛时补注释并移除本段。
+    name: "twikoo/pushoo-jsdoc-defer",
+    files: ["packages/pushoo/**"],
+    rules: { "jsdoc/require-jsdoc": "off" },
+  },
+
+  {
+    // 规则一过渡豁免（收窄版）：tsup-config 存量对象字面量方法（createVersionPlugin
+    // 返回对象的 setup、defineConfig 中 base/返回对象的 outExtension 与 onSuccess）
+    // 无独立注释，其上层工厂函数已有完整 JSDoc。保持其余 jsdoc 检查生效，
+    // 仅去掉 Property 类 contexts；pkg 波次接入时补注释后恢复完整版并移除本段。
+    name: "twikoo/allow-tsup-object-methods-no-jsdoc",
+    files: ["packages/tsup-config/src/index.ts"],
+    rules: {
+      "jsdoc/require-jsdoc": ["error", jsdocRequireOptionsNoProperty],
+    },
+  },
+
+  {
+    // 规则一作用域排除：scripts/** 工具脚本不属于包源码，不参与 jsdoc 强制
+    // （docs/** 已在全局 ignores 中）。守卫脚本 check-no-js-sources.mjs 以头部
+    // 块注释自释用途，不依赖本豁免，但豁免保证未来脚本无需为此补注释。
+    name: "twikoo/no-jsdoc-on-tooling-scripts",
+    files: ["scripts/**"],
+    rules: { "jsdoc/require-jsdoc": "off" },
   },
 
   // 7. 末层：关闭所有格式类规则，格式交给 Prettier（.prettierrc.json）

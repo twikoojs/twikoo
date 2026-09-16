@@ -14,6 +14,7 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
+    "check:no-js": "node scripts/check-no-js-sources.mjs",
     "typecheck": "pnpm -r --if-present run typecheck",
     "prepare": "simple-git-hooks",
     "env:check": "echo \"TODO: wire up env check in a later wave (T10)\""
@@ -36,6 +37,7 @@
     "@vue/test-utils": "^2.5.0",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsdoc": "^64.5.0",
     "eslint-plugin-vue": "^10.11.0",
     "globals": "^17.12.0",
     "happy-dom": "^20.14.5",

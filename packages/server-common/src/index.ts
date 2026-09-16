@@ -77,3 +77,30 @@ export { RES_CODE, getMaxRequestTimes } from "./utils/constants";
 export type { RequestLogger } from "./utils/logger";
 export { createRequestLogger } from "./utils/logger";
 export { validateClientFields } from "./utils/validate";
+// ---- 库加载器（T17，D-2 依赖外部化）----
+export type {
+  NodemailerLike,
+  DOMPurifyLike,
+  AxiosLike,
+  CustomLibs,
+  LibImporter,
+} from "./utils/lib-loader";
+export {
+  CapabilityError,
+  LibLoadError,
+  defineCapabilities,
+  setCustomLibs,
+  resetCustomLibs,
+  setLibImporter,
+  getNodemailer,
+  getDomPurify,
+  getIpToRegion,
+  getAkismetClient,
+  getTencentcloudTms,
+  getFormData,
+  getAxios,
+  getXml2js,
+  getHtmlToText,
+  getBowser,
+  getMarked,
+} from "./utils/lib-loader";

@@ -1,5 +1,8 @@
 {
   "name": "twikoo-deta",
   "version": "0.0.0",
-  "private": true
+  "private": true,
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  }
 }

@@ -198,9 +198,26 @@ importers:
 
   packages/server-vercel-min: {}
 
-  packages/shared: {}
+  packages/shared:
+    devDependencies:
+      '@twikoojs/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
+      '@types/node':
+        specifier: ^22.14.1
+        version: 22.20.2
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(postcss@8.5.28)(supports-color@7.2.0)(typescript@5.9.3)
 
-  packages/tsup-config: {}
+  packages/tsup-config:
+    devDependencies:
+      '@types/node':
+        specifier: ^22.14.1
+        version: 22.20.2
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(postcss@8.5.28)(supports-color@7.2.0)(typescript@5.9.3)
 
 packages:
 

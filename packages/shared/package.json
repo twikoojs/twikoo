@@ -1,4 +1,29 @@
 {
   "name": "@twikoojs/shared",
-  "version": "0.0.0"
+  "version": "0.0.0",
+  "description": "Twikoo 2.0 共享常量与类型（版本占位符、推送渠道、后端事件）",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@twikoojs/tsup-config": "workspace:*",
+    "@types/node": "^22.14.1",
+    "tsup": "^8.5.1"
+  }
 }

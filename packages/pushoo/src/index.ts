@@ -1,6 +1,6 @@
-import axios from 'axios';
-import { marked } from 'marked';
-import markdownToTxt from 'markdown-to-txt';
+import axios from "axios";
+import { marked } from "marked";
+import markdownToTxt from "markdown-to-txt";
 
 export interface NoticeOptions {
   /**
@@ -14,7 +14,7 @@ export interface NoticeOptions {
     /**
      * method 请求方法，默认为 POST
      */
-    method?: 'GET' | 'POST';
+    method?: "GET" | "POST";
   };
   /**
    * bark通知方式的参数配置
@@ -90,27 +90,27 @@ export interface CommonOptions {
 }
 
 export type ChannelType =
-  | 'webhook'
-  | 'qmsg'
-  | 'serverchan'
-  | 'serverchain'
-  | 'pushplus'
-  | 'pushplushxtrip'
-  | 'dingtalk'
-  | 'wecom'
-  | 'bark'
-  | 'gocqhttp'
-  | 'onebot'
-  | 'atri'
-  | 'pushdeer'
-  | 'igot'
-  | 'telegram'
-  | 'feishu'
-  | 'ifttt'
-  | 'wecombot'
-  | 'discord'
-  | 'wxpusher'
-  | 'join';
+  | "webhook"
+  | "qmsg"
+  | "serverchan"
+  | "serverchain"
+  | "pushplus"
+  | "pushplushxtrip"
+  | "dingtalk"
+  | "wecom"
+  | "bark"
+  | "gocqhttp"
+  | "onebot"
+  | "atri"
+  | "pushdeer"
+  | "igot"
+  | "telegram"
+  | "feishu"
+  | "ifttt"
+  | "wecombot"
+  | "discord"
+  | "wxpusher"
+  | "join";
 
 function checkParameters(options: any, requires: string[] = []) {
   requires.forEach((require) => {
@@ -129,31 +129,29 @@ function getTxt(content: string) {
 }
 
 function getTitle(content: string) {
-  return getTxt(content).split('\n')[0];
+  return getTxt(content).split("\n")[0];
 }
 
 function removeUrlAndIp(content: string) {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   const ipRegex = /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/g;
   // 邮箱正则表达式来自 https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#validation
-  const mailRegExp = /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*/g;
-  return content
-    .replace(urlRegex, '')
-    .replace(ipRegex, '')
-    .replace(mailRegExp, '');
+  const mailRegExp =
+    /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*/g;
+  return content.replace(urlRegex, "").replace(ipRegex, "").replace(mailRegExp, "");
 }
 
 /**
  * 自定义 Webhook 推送
  */
 async function noticeWebhook(options: CommonOptions) {
-  checkParameters(options, ['content']);
-  const method = options?.options?.webhook?.method || 'POST';
+  checkParameters(options, ["content"]);
+  const method = options?.options?.webhook?.method || "POST";
   const url = options?.options?.webhook?.url;
   if (!url) {
-    throw new Error('Webhook url is required');
+    throw new Error("Webhook url is required");
   }
-  if (method === 'GET') {
+  if (method === "GET") {
     const params = new URLSearchParams({
       ...(options.token ? { token: options.token } : {}),
       ...(options.title ? { title: options.title } : {}),
@@ -162,7 +160,7 @@ async function noticeWebhook(options: CommonOptions) {
     const response = await axios.get(url, { params });
     return response.data;
   }
-  if (method === 'POST') {
+  if (method === "POST") {
     const payload: Record<string, any> = {
       ...(options.token && { token: options.token }),
       ...(options.title && { title: options.title }),
@@ -178,8 +176,8 @@ async function noticeWebhook(options: CommonOptions) {
  * https://qmsg.zendee.cn/
  */
 async function noticeQmsg(options: CommonOptions) {
-  checkParameters(options, ['token', 'content']);
-  const url = options?.options?.qmsg?.url || 'https://qmsg.zendee.cn';
+  checkParameters(options, ["token", "content"]);
+  const url = options?.options?.qmsg?.url || "https://qmsg.zendee.cn";
   let msg = getTxt(options.content);
   if (options.title) {
     msg = `${options.title}\n${msg}`;
@@ -189,16 +187,20 @@ async function noticeQmsg(options: CommonOptions) {
   const param = new URLSearchParams({ msg });
   const qq = options?.options?.qmsg?.qq || false;
   if (qq) {
-    param.append('qq', qq);
+    param.append("qq", qq);
   }
   const bot = options?.options?.qmsg?.bot || false;
   if (bot) {
-    param.append('bot', bot);
+    param.append("bot", bot);
   }
   const group = options?.options?.qmsg?.group || false;
-  const response = await axios.post(`${url}/${group ? 'group' : 'send'}/${options.token}`, param.toString(), {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-  });
+  const response = await axios.post(
+    `${url}/${group ? "group" : "send"}/${options.token}`,
+    param.toString(),
+    {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    },
+  );
   return response.data;
 }
 
@@ -206,8 +208,8 @@ async function noticeQmsg(options: CommonOptions) {
  * https://github.com/Tianli0/push-bot-api/
  */
 async function noticeAtri(options: CommonOptions) {
-  checkParameters(options, ['token', 'content']);
-  const url = 'http://pushoo.tianli0.top/';
+  checkParameters(options, ["token", "content"]);
+  const url = "http://pushoo.tianli0.top/";
   let message = getTxt(options.content);
   if (options.title) {
     message = `${options.title}\n${message}`;
@@ -217,7 +219,7 @@ async function noticeAtri(options: CommonOptions) {
     message,
   });
   const response = await axios.post(url, param.toString(), {
-    headers: { 'X-Requested-By': 'pushoo' },
+    headers: { "X-Requested-By": "pushoo" },
   });
   return response.data;
 }
@@ -227,30 +229,30 @@ async function noticeAtri(options: CommonOptions) {
  * V3: https://sc3.ft07.com/
  */
 async function noticeServerChan(options: CommonOptions) {
-  checkParameters(options, ['token', 'content']);
+  checkParameters(options, ["token", "content"]);
   let url: string;
   let param: URLSearchParams;
-  if (options.token.startsWith('sctp')) {
+  if (options.token.startsWith("sctp")) {
     url = `https://${options.token.match(/^sctp(\d+)t/)[1]}.push.ft07.com/send`;
     param = new URLSearchParams({
       title: options.title || getTitle(options.content),
       desp: options.content,
     });
-  } else if (options.token.substring(0, 3).toLowerCase() === 'sct') {
-    url = 'https://sctapi.ftqq.com';
+  } else if (options.token.substring(0, 3).toLowerCase() === "sct") {
+    url = "https://sctapi.ftqq.com";
     param = new URLSearchParams({
       title: options.title || getTitle(options.content),
       desp: options.content,
     });
   } else {
-    url = 'https://sc.ftqq.com';
+    url = "https://sc.ftqq.com";
     param = new URLSearchParams({
       text: options.title || getTitle(options.content),
       desp: options.content,
     });
   }
   const response = await axios.post(`${url}/${options.token}.send`, param.toString(), {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
   });
   return response.data;
 }
@@ -259,13 +261,13 @@ async function noticeServerChan(options: CommonOptions) {
  * https://www.pushplus.plus/
  */
 async function noticePushPlus(options: CommonOptions) {
-  checkParameters(options, ['token', 'content']);
-  const ppApiUrl = 'http://www.pushplus.plus/send';
+  checkParameters(options, ["token", "content"]);
+  const ppApiUrl = "http://www.pushplus.plus/send";
   const ppApiParam = {
     token: options.token,
     title: options.title || getTitle(options.content),
     content: options.content,
-    template: 'markdown',
+    template: "markdown",
   };
   const response = await axios.post(ppApiUrl, ppApiParam);
   return response.data;
@@ -275,13 +277,13 @@ async function noticePushPlus(options: CommonOptions) {
  * https://pushplus.hxtrip.com/
  */
 async function noticePushPlusHxtrip(options: CommonOptions) {
-  checkParameters(options, ['token', 'content']);
-  const ppApiUrl = 'http://pushplus.hxtrip.com/send';
+  checkParameters(options, ["token", "content"]);
+  const ppApiUrl = "http://pushplus.hxtrip.com/send";
   const ppApiParam = {
     token: options.token,
     title: options.title || getTitle(options.content),
     content: getHtml(options.content),
-    template: 'html',
+    template: "html",
   };
   const response = await axios.post(ppApiUrl, ppApiParam);
   return response.data;
@@ -292,26 +294,27 @@ async function noticePushPlusHxtrip(options: CommonOptions) {
  * 教程: https://blog.ljcbaby.top/article/Twikoo-DingTalk/
  */
 async function noticeDingTalk(options: CommonOptions) {
-  checkParameters(options, ['token', 'content']);
-  let url = 'https://oapi.dingtalk.com/robot/send?access_token=';
-  if (options.token.substring(0, 4).toLowerCase() === 'http') {
+  checkParameters(options, ["token", "content"]);
+  let url = "https://oapi.dingtalk.com/robot/send?access_token=";
+  if (options.token.substring(0, 4).toLowerCase() === "http") {
     url = options.token;
   } else {
     url += options.token;
   }
 
-  const msgtype = options.options?.dingtalk?.msgtype || 'text';
-  const content = msgtype === 'text'
-    ? (options.title ? `${options.title}\n` : '') + getTxt(options.content)
-    : options.content;
+  const msgtype = options.options?.dingtalk?.msgtype || "text";
+  const content =
+    msgtype === "text"
+      ? (options.title ? `${options.title}\n` : "") + getTxt(options.content)
+      : options.content;
 
   const msgBody = {
     msgtype,
   };
 
-  if (msgtype === 'text') {
+  if (msgtype === "text") {
     msgBody[msgtype] = { content };
-  } else if (msgtype === 'markdown') {
+  } else if (msgtype === "markdown") {
     msgBody[msgtype] = { title: options.title || getTitle(options.content), text: content };
   }
   const response = await axios.post(url, msgBody);
@@ -323,15 +326,15 @@ async function noticeDingTalk(options: CommonOptions) {
  * 教程: https://sct.ftqq.com/forward
  */
 async function noticeWeCom(options: CommonOptions) {
-  checkParameters(options, ['token', 'content']);
-  const [corpid, corpsecret, agentid, touser = '@all'] = options.token.split('#');
+  checkParameters(options, ["token", "content"]);
+  const [corpid, corpsecret, agentid, touser = "@all"] = options.token.split("#");
   checkParameters(
     {
       corpid,
       corpsecret,
       agentid,
     },
-    ['corpid', 'corpsecret', 'agentid'],
+    ["corpid", "corpsecret", "agentid"],
   );
   // 获取 Access Token
   let accessToken;
@@ -341,7 +344,7 @@ async function noticeWeCom(options: CommonOptions) {
     );
     accessToken = accessTokenRes.data.access_token;
   } catch (e) {
-    console.error('获取企业微信 access token 失败，请检查 token', e);
+    console.error("获取企业微信 access token 失败，请检查 token", e);
     return {};
   }
   // 发送消息
@@ -352,7 +355,7 @@ async function noticeWeCom(options: CommonOptions) {
   }
   const param = {
     touser,
-    msgtype: 'text',
+    msgtype: "text",
     agentid,
     text: { content },
   };
@@ -364,18 +367,18 @@ async function noticeWeCom(options: CommonOptions) {
  * https://github.com/Finb/Bark
  */
 async function noticeBark(options: CommonOptions) {
-  checkParameters(options, ['token', 'content']);
-  let url = 'https://api.day.app/';
-  if (options.token.substring(0, 4).toLowerCase() === 'http') {
+  checkParameters(options, ["token", "content"]);
+  let url = "https://api.day.app/";
+  if (options.token.substring(0, 4).toLowerCase() === "http") {
     url = options.token;
   } else {
     url += options.token;
   }
-  if (!url.endsWith('/')) url += '/';
+  if (!url.endsWith("/")) url += "/";
   const title = encodeURIComponent(options.title || getTitle(options.content));
   const content = encodeURIComponent(getTxt(options.content));
   const params = new URLSearchParams({
-    url: options?.options?.bark?.url || '',
+    url: options?.options?.bark?.url || "",
   });
   const response = await axios.get(`${url}${title}/${content}/`, { params });
   return response.data;
@@ -386,7 +389,7 @@ async function noticeBark(options: CommonOptions) {
  * 教程: https://twikoo.js.org/QQ_API.html
  */
 async function noticeGoCqhttp(options: CommonOptions) {
-  checkParameters(options, ['token', 'content']);
+  checkParameters(options, ["token", "content"]);
   const url = options.token;
   let message = getTxt(options.content);
   if (options.title) {
@@ -402,17 +405,17 @@ async function noticeGoCqhttp(options: CommonOptions) {
  * 教程: https://ayakasuki.com/
  */
 async function noticeNodeOnebot(options: CommonOptions) {
-  checkParameters(options, ['token', 'content']);
+  checkParameters(options, ["token", "content"]);
 
   try {
     const urlObj = new URL(options.token);
     const { searchParams } = urlObj;
 
-    const groupId = searchParams.get('group_id');
-    const userId = searchParams.get('user_id');
+    const groupId = searchParams.get("group_id");
+    const userId = searchParams.get("user_id");
 
-    searchParams.delete('group_id');
-    searchParams.delete('user_id');
+    searchParams.delete("group_id");
+    searchParams.delete("user_id");
 
     const apiUrl = urlObj.toString();
 
@@ -427,23 +430,23 @@ async function noticeNodeOnebot(options: CommonOptions) {
 
     const response = await axios.post(apiUrl, body, {
       timeout: 5000,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
 
     if (response.data?.retcode !== 0) {
-      throw new Error(`[${response.data.retcode}] ${response.data.status || 'Unknown Error'}`);
+      throw new Error(`[${response.data.retcode}] ${response.data.status || "Unknown Error"}`);
     }
 
     return response.data;
   } catch (e: any) {
-    console.error('[ONEBOT] 推送失败:', e.response?.data || e.message);
+    console.error("[ONEBOT] 推送失败:", e.response?.data || e.message);
     throw new Error(`OneBot推送失败: ${e.message}`);
   }
 }
 
 async function noticePushdeer(options: CommonOptions) {
-  checkParameters(options, ['token', 'content']);
-  const url = 'https://api2.pushdeer.com/message/push';
+  checkParameters(options, ["token", "content"]);
+  const url = "https://api2.pushdeer.com/message/push";
   const response = await axios.post(url, {
     pushkey: options.token,
     text: options.title || getTitle(options.content),
@@ -453,7 +456,7 @@ async function noticePushdeer(options: CommonOptions) {
 }
 
 async function noticeIgot(options: CommonOptions) {
-  checkParameters(options, ['token', 'content']);
+  checkParameters(options, ["token", "content"]);
   const url = `https://push.hellyw.com/${options.token}`;
   const response = await axios.post(url, {
     title: options.title || getTitle(options.content),
@@ -467,23 +470,23 @@ async function noticeIgot(options: CommonOptions) {
  * 教程: https://core.telegram.org/bots#3-how-do-i-create-a-bot
  */
 async function noticeTelegram(options: CommonOptions) {
-  checkParameters(options, ['token', 'content']);
-  const [tgToken, chatId] = options.token.split('#');
+  checkParameters(options, ["token", "content"]);
+  const [tgToken, chatId] = options.token.split("#");
   checkParameters(
     {
       tgToken,
       chatId,
     },
-    ['tgToken', 'chatId'],
+    ["tgToken", "chatId"],
   );
-  let text = options.content.replace(/([*_])/g, '\\$1'); // * 和 _ 似乎需要转义，否则会抛出 400 Bad Request 以及消息显示不正常
+  let text = options.content.replace(/([*_])/g, "\\$1"); // * 和 _ 似乎需要转义，否则会抛出 400 Bad Request 以及消息显示不正常
   if (options.title) {
     text = `${options.title}\n\n${text}`;
   }
   const response = await axios.post(`https://api.telegram.org/bot${tgToken}/sendMessage`, {
     text,
     chat_id: chatId,
-    parse_mode: 'Markdown',
+    parse_mode: "Markdown",
   });
   return response.data;
 }
@@ -492,12 +495,12 @@ async function noticeTelegram(options: CommonOptions) {
  * https://www.feishu.cn/hc/zh-CN/articles/360024984973
  */
 async function noticeFeishu(options: CommonOptions) {
-  checkParameters(options, ['token', 'content']);
-  const v1 = 'https://open.feishu.cn/open-apis/bot/hook/';
-  const v2 = 'https://open.feishu.cn/open-apis/bot/v2/hook/';
+  checkParameters(options, ["token", "content"]);
+  const v1 = "https://open.feishu.cn/open-apis/bot/hook/";
+  const v2 = "https://open.feishu.cn/open-apis/bot/v2/hook/";
   let url;
   let params;
-  if (options.token.substring(0, 4).toLowerCase() === 'http') {
+  if (options.token.substring(0, 4).toLowerCase() === "http") {
     url = options.token;
   } else {
     url = v2 + options.token;
@@ -513,7 +516,7 @@ async function noticeFeishu(options: CommonOptions) {
       text = `${options.title}\n${text}`;
     }
     params = {
-      msg_type: 'text',
+      msg_type: "text",
       content: { text },
     };
   }
@@ -526,15 +529,15 @@ async function noticeFeishu(options: CommonOptions) {
  * http://ift.tt/webhooks_faq
  */
 async function noticeIfttt(options: CommonOptions) {
-  checkParameters(options, ['token', 'content']);
+  checkParameters(options, ["token", "content"]);
 
-  const [token, eventName] = options.token.split('#');
+  const [token, eventName] = options.token.split("#");
   checkParameters(
     {
       token,
       eventName,
     },
-    ['token', 'eventName'],
+    ["token", "eventName"],
   );
 
   const url = `https://maker.ifttt.com/trigger/${eventName}/with/key/${token}`;
@@ -547,7 +550,7 @@ async function noticeIfttt(options: CommonOptions) {
       value3: options.options?.ifttt?.value3,
     },
     {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     },
   );
   return response.data;
@@ -558,20 +561,20 @@ async function noticeIfttt(options: CommonOptions) {
  * 教程: https://developer.work.weixin.qq.com/tutorial/detail/54
  */
 async function noticeWecombot(options: CommonOptions) {
-  checkParameters(options, ['token', 'content']);
+  checkParameters(options, ["token", "content"]);
   const url = `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${options.token}`;
   const content = getTxt(options.content);
 
   const response = await axios.post(
     url,
     {
-      msgtype: 'text',
+      msgtype: "text",
       text: {
         content,
       },
     },
     {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     },
   );
 
@@ -582,10 +585,10 @@ async function noticeWecombot(options: CommonOptions) {
  * 文档：https://discord.com/developers/docs/resources/webhook#execute-webhook
  */
 async function noticeDiscord(options: CommonOptions) {
-  checkParameters(options, ['token', 'content']);
-  const url = options.token.startsWith('https://')
+  checkParameters(options, ["token", "content"]);
+  const url = options.token.startsWith("https://")
     ? options.token
-    : `https://discord.com/api/webhooks/${options.token.replace(/#/, '/')}`;
+    : `https://discord.com/api/webhooks/${options.token.replace(/#/, "/")}`;
 
   const response = await axios.post(
     url,
@@ -595,7 +598,7 @@ async function noticeDiscord(options: CommonOptions) {
       avatar_url: options.options?.discord?.avatarUrl,
     },
     {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     },
   );
   return `Delivered successfully, code ${response.status}.`;
@@ -607,10 +610,10 @@ async function noticeDiscord(options: CommonOptions) {
  * 文档: https://wxpusher.zjiecode.com/docs/#/
  */
 async function noticeWxPusher(options: CommonOptions) {
-  checkParameters(options, ['token', 'content']);
-  const url = 'http://wxpusher.zjiecode.com/api/send/message';
-  const [appToken, topicIds] = options.token.split('#');
-  checkParameters({ appToken, topicIds }, ['appToken', 'topicIds']);
+  checkParameters(options, ["token", "content"]);
+  const url = "http://wxpusher.zjiecode.com/api/send/message";
+  const [appToken, topicIds] = options.token.split("#");
+  checkParameters({ appToken, topicIds }, ["appToken", "topicIds"]);
 
   const response = await axios.post(
     url,
@@ -619,14 +622,14 @@ async function noticeWxPusher(options: CommonOptions) {
       content: options.content,
       summary: options.title || getTitle(options.content),
       contentType: 3,
-      topicIds: topicIds.split(',').map((id) => Number(id)),
+      topicIds: topicIds.split(",").map((id) => Number(id)),
       uids: options?.options?.wxpusher?.uids || [],
-      url: options?.options?.wxpusher?.url || '',
+      url: options?.options?.wxpusher?.url || "",
       verifyPayload: options?.options?.wxpusher?.verifyPay || false,
     },
     {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     },
   );
@@ -638,11 +641,11 @@ async function noticeWxPusher(options: CommonOptions) {
  * 文档: https://joaoapps.com/join/api/
  */
 async function noticeJoin(options: CommonOptions) {
-  checkParameters(options, ['token', 'content']);
-  const [apiKey, deviceId] = options.token.split('#');
-  checkParameters({ apiKey, deviceId }, ['apiKey', 'deviceId']);
+  checkParameters(options, ["token", "content"]);
+  const [apiKey, deviceId] = options.token.split("#");
+  checkParameters({ apiKey, deviceId }, ["apiKey", "deviceId"]);
 
-  const url = 'https://joinjoaomgcd.appspot.com/_ah/api/messaging/v1/sendPush';
+  const url = "https://joinjoaomgcd.appspot.com/_ah/api/messaging/v1/sendPush";
   const param = new URLSearchParams({
     apikey: apiKey,
     deviceId,
@@ -650,7 +653,7 @@ async function noticeJoin(options: CommonOptions) {
     text: options.content,
   });
   const response = await axios.post(url, param.toString(), {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
   });
   return response.data;
 }
@@ -683,12 +686,15 @@ async function notice(channel: ChannelType | string, options: CommonOptions) {
     }[channel.toLowerCase()];
     if (noticeFn) {
       data = await noticeFn(options);
-    } else if (typeof channel === 'string' && (channel.startsWith('http://') || channel.startsWith('https://'))) {
+    } else if (
+      typeof channel === "string" &&
+      (channel.startsWith("http://") || channel.startsWith("https://"))
+    ) {
       options.options = options.options || {};
       options.options.webhook = { url: channel };
-      if (channel.endsWith(':GET')) {
+      if (channel.endsWith(":GET")) {
         // hack: 如果 URL 以 :GET 结尾，则使用 GET 方法
-        options.options.webhook.method = 'GET';
+        options.options.webhook.method = "GET";
         options.options.webhook.url = channel.slice(0, -4);
       }
       data = await noticeWebhook(options);
@@ -698,7 +704,7 @@ async function notice(channel: ChannelType | string, options: CommonOptions) {
     console.debug(`[PUSHOO] Send to <${channel}> result:`, data);
     return data;
   } catch (e) {
-    console.error('[PUSHOO] Got error:', e.message);
+    console.error("[PUSHOO] Got error:", e.message);
     return { error: e };
   }
 }

@@ -6,8 +6,8 @@
 
 登录[环境-我的应用](https://console.cloud.tencent.com/tcb/apps/index)，输入
 
-* 来源地址：`https://github.com/twikoojs/twikoo/tree/main`
-* 部署分支：`main`
+- 来源地址：`https://github.com/twikoojs/twikoo/tree/main`
+- 部署分支：`main`
 
 应用目录无需填写，点击“确定”，部署完成。
 
@@ -25,7 +25,7 @@
 
 进入 Twikoo 源码目录，执行以下命令更新现有的云函数
 
-``` sh
+```sh
 yarn deploy -e 您的环境id
 ```
 

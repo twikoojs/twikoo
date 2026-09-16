@@ -14,24 +14,24 @@ Twikoo 是一个开源的静态网站评论系统。本仓库为 **2.0 重构**�
 
 ### 目录 ↔ 包名对照表
 
-| 目录 | 包名 | 类型 | 说明 |
-| --- | --- | --- | --- |
-| `packages/client` | **`twikoo`** | 发布 | 客户端（Vue3 + TS + Vite，UMD 输出） |
-| `packages/server-cloudbase` | **`twikoo-func`** ⚠️ | 发布 | CloudBase 适配器（入口 `exports.main`，CloudBase 控制台依赖此名） |
-| `packages/server-common` | **`@twikoojs/common`** ⚠️ | 发布 | 服务端公共逻辑（pipeline + 事件分发 + ports + 4 DB 实现） |
-| `packages/server-vercel` | `twikoo-vercel` | 发布 | Vercel 适配器 |
-| `packages/server-netlify` | `twikoo-netlify` | 发布 | Netlify 适配器 |
-| `packages/server-self-hosted` | `tkserver` | 发布 | 自托管（Node.js HTTP） |
-| `packages/pushoo` | `pushoo` | 发布 | 推送通道库（独立仓库源迁入） |
-| `packages/shared` | `@twikoojs/shared` | 发布 | 版本占位符、事件常量、共享类型 |
-| `packages/server-edgeone-makers` | `twikoo-edgeone-makers` | 私有 | EdgeOne Makers 适配器（不发布） |
-| `packages/server-aws-lambda` | `twikoo-aws-lambda` | 私有 | AWS Lambda 适配器（不发布） |
-| `packages/server-deta` | `twikoo-deta` | 私有 | Deta 适配器（不发布） |
-| `packages/server-vercel-min` | `twikoo-vercel-min` | 私有 | Vercel 精简适配器（不发布） |
-| `packages/pkg` | `twikoo-pkg` | 私有 | Node 24 SEA 打包流水线（非 HTTP 适配器） |
-| `packages/tsup-config` | `@twikoojs/tsup-config` | 私有 | tsup 共享配置 |
-| `packages/demo` | `@twikoojs/demo` | 私有 | 本地演示工程 |
-| `docs` | `twikoo-docs` | 私有 | VitePress 文档站 |
+| 目录                             | 包名                      | 类型 | 说明                                                              |
+| -------------------------------- | ------------------------- | ---- | ----------------------------------------------------------------- |
+| `packages/client`                | **`twikoo`**              | 发布 | 客户端（Vue3 + TS + Vite，UMD 输出）                              |
+| `packages/server-cloudbase`      | **`twikoo-func`** ⚠️      | 发布 | CloudBase 适配器（入口 `exports.main`，CloudBase 控制台依赖此名） |
+| `packages/server-common`         | **`@twikoojs/common`** ⚠️ | 发布 | 服务端公共逻辑（pipeline + 事件分发 + ports + 4 DB 实现）         |
+| `packages/server-vercel`         | `twikoo-vercel`           | 发布 | Vercel 适配器                                                     |
+| `packages/server-netlify`        | `twikoo-netlify`          | 发布 | Netlify 适配器                                                    |
+| `packages/server-self-hosted`    | `tkserver`                | 发布 | 自托管（Node.js HTTP）                                            |
+| `packages/pushoo`                | `pushoo`                  | 发布 | 推送通道库（独立仓库源迁入）                                      |
+| `packages/shared`                | `@twikoojs/shared`        | 发布 | 版本占位符、事件常量、共享类型                                    |
+| `packages/server-edgeone-makers` | `twikoo-edgeone-makers`   | 私有 | EdgeOne Makers 适配器（不发布）                                   |
+| `packages/server-aws-lambda`     | `twikoo-aws-lambda`       | 私有 | AWS Lambda 适配器（不发布）                                       |
+| `packages/server-deta`           | `twikoo-deta`             | 私有 | Deta 适配器（不发布）                                             |
+| `packages/server-vercel-min`     | `twikoo-vercel-min`       | 私有 | Vercel 精简适配器（不发布）                                       |
+| `packages/pkg`                   | `twikoo-pkg`              | 私有 | Node 24 SEA 打包流水线（非 HTTP 适配器）                          |
+| `packages/tsup-config`           | `@twikoojs/tsup-config`   | 私有 | tsup 共享配置                                                     |
+| `packages/demo`                  | `@twikoojs/demo`          | 私有 | 本地演示工程                                                      |
+| `docs`                           | `twikoo-docs`             | 私有 | VitePress 文档站                                                  |
 
 > **⚠️ 最大陷阱**：目录名 ≠ 包名——`server-cloudbase` → **`twikoo-func`**、`server-common` → **`@twikoojs/common`**。所有代码中引用包名必须使用 `package.json` 里的 `name`，不可凭目录名推断。
 
@@ -107,17 +107,17 @@ Twikoo 2.0 分为三层：
 
 客户端通过 HTTP POST 发送事件名，服务端 dispatcher switch 分发到对应处理函数：
 
-| 类别 | 事件名（示例） |
-| --- | --- |
-| 评论操作 | `COMMENT_SUBMIT` · `COMMENT_GET` · `COMMENT_LIKE` · `COMMENT_DELETE_FOR_USER` |
-| 管理员操作 | `COMMENT_GET_FOR_ADMIN` · `COMMENT_SET_FOR_ADMIN` · `COMMENT_DELETE_FOR_ADMIN` · `COMMENT_IMPORT_FOR_ADMIN` · `COMMENT_EXPORT_FOR_ADMIN` |
-| 统计 | `COUNTER_GET` · `GET_COMMENTS_COUNT` · `GET_RECENT_COMMENTS` |
-| 配置/登录 | `GET_CONFIG` · `GET_CONFIG_FOR_ADMIN` · `SET_CONFIG` · `LOGIN` · `GET_PASSWORD_STATUS` · `SET_PASSWORD` |
-| 验证码 | `CAP_CHALLENGE` · `CAP_REDEEM` |
-| 邮件/上传/反垃圾 | `EMAIL_TEST` · `UPLOAD_IMAGE` · `GET_QQ_NICK` |
-| 版本 | `GET_FUNC_VERSION` |
-| 内部钩子 | `POST_SUBMIT`（内部钩子 + 1.x 兼容分支） |
-| 可见性 | `HIDDEN` / `VISIBLE`（参数化 + 1.x 兼容分支） |
+| 类别             | 事件名（示例）                                                                                                                           |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| 评论操作         | `COMMENT_SUBMIT` · `COMMENT_GET` · `COMMENT_LIKE` · `COMMENT_DELETE_FOR_USER`                                                            |
+| 管理员操作       | `COMMENT_GET_FOR_ADMIN` · `COMMENT_SET_FOR_ADMIN` · `COMMENT_DELETE_FOR_ADMIN` · `COMMENT_IMPORT_FOR_ADMIN` · `COMMENT_EXPORT_FOR_ADMIN` |
+| 统计             | `COUNTER_GET` · `GET_COMMENTS_COUNT` · `GET_RECENT_COMMENTS`                                                                             |
+| 配置/登录        | `GET_CONFIG` · `GET_CONFIG_FOR_ADMIN` · `SET_CONFIG` · `LOGIN` · `GET_PASSWORD_STATUS` · `SET_PASSWORD`                                  |
+| 验证码           | `CAP_CHALLENGE` · `CAP_REDEEM`                                                                                                           |
+| 邮件/上传/反垃圾 | `EMAIL_TEST` · `UPLOAD_IMAGE` · `GET_QQ_NICK`                                                                                            |
+| 版本             | `GET_FUNC_VERSION`                                                                                                                       |
+| 内部钩子         | `POST_SUBMIT`（内部钩子 + 1.x 兼容分支）                                                                                                 |
+| 可见性           | `HIDDEN` / `VISIBLE`（参数化 + 1.x 兼容分支）                                                                                            |
 
 > 新增事件时须在前端 `api.ts`、`@twikoojs/common` dispatcher 及所有适配器中同步添加（适配器通过 common 统一分发，自身仅需声明 capabilities）。
 
@@ -163,11 +163,11 @@ Twikoo 2.0 分为三层：
 
 ## 模块格式
 
-| 位置 | 源码格式 | 产物格式 |
-| --- | --- | --- |
-| 公共包/适配器 | ESM + TS | 双格式：ESM（`.mjs`）+ CJS（`.cjs`） |
-| 客户端 | ESM + TS | UMD（`twikoo.all.min.js` 等，文件名沿用 1.x） |
-| 共享配置 | ESM + TS | 纯 TS（被其他包直接引用） |
+| 位置          | 源码格式 | 产物格式                                      |
+| ------------- | -------- | --------------------------------------------- |
+| 公共包/适配器 | ESM + TS | 双格式：ESM（`.mjs`）+ CJS（`.cjs`）          |
+| 客户端        | ESM + TS | UMD（`twikoo.all.min.js` 等，文件名沿用 1.x） |
+| 共享配置      | ESM + TS | 纯 TS（被其他包直接引用）                     |
 
 ### 重依赖加载策略
 
@@ -238,10 +238,10 @@ Twikoo 2.0 分为三层：
 
 ### 覆盖率门禁
 
-| 包 | 最低行覆盖率 |
-| --- | --- |
-| `@twikoojs/common` | ≥ **80%** |
-| 客户端 | ≥ **70%** |
+| 包                 | 最低行覆盖率 |
+| ------------------ | ------------ |
+| `@twikoojs/common` | ≥ **80%**    |
+| 客户端             | ≥ **70%**    |
 
 ### `.env` 机制
 
@@ -260,16 +260,16 @@ Twikoo 2.0 分为三层：
 
 ### 客户端（`TwikooError`）
 
-| kind | 说明 |
-| --- | --- |
-| `NETWORK` | 网络连接失败（断网、DNS 解析错误） |
-| `CORS` | 跨域请求被浏览器拦截 |
-| `TIMEOUT` | 请求超时 |
-| `REJECTED` | 服务端拒绝请求（非 2xx 响应） |
-| `NOT_FOUND` | 请求目标不存在（404） |
+| kind           | 说明                               |
+| -------------- | ---------------------------------- |
+| `NETWORK`      | 网络连接失败（断网、DNS 解析错误） |
+| `CORS`         | 跨域请求被浏览器拦截               |
+| `TIMEOUT`      | 请求超时                           |
+| `REJECTED`     | 服务端拒绝请求（非 2xx 响应）      |
+| `NOT_FOUND`    | 请求目标不存在（404）              |
 | `CLIENT_ERROR` | 客户端参数错误（4xx，除 CORS/404） |
-| `SERVER_ERROR` | 服务端内部错误（5xx） |
-| `UNKNOWN` | 无法归类的其他错误 |
+| `SERVER_ERROR` | 服务端内部错误（5xx）              |
+| `UNKNOWN`      | 无法归类的其他错误                 |
 
 > 每个错误对象附带 `httpStatus` / `rawMessage` / `hintKey` / `solutionsKey` / `logText` 字段，支持前端渲染内联错误卡片与可折叠详情。
 
@@ -279,9 +279,9 @@ Twikoo 2.0 分为三层：
 
 ### 分支保留策略
 
-| 兼容分支 | 当前行为 | 移除时间 |
-| --- | --- | --- |
-| `POST_SUBMIT` | 作为内部钩子 + 1.x 调用方兼容分支 | **2.2.0** |
+| 兼容分支             | 当前行为                                                  | 移除时间  |
+| -------------------- | --------------------------------------------------------- | --------- |
+| `POST_SUBMIT`        | 作为内部钩子 + 1.x 调用方兼容分支                         | **2.2.0** |
 | `HIDDEN` / `VISIBLE` | 统一为 `COMMENT_GET_FOR_ADMIN` 参数，保留独立 switch 分支 | **2.2.0** |
 
 ### 包名不变

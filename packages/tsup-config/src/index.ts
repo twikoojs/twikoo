@@ -1,7 +1,7 @@
-import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
-import type { Options } from 'tsup';
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+import type { Options } from "tsup";
 
 /**
  * 版本占位符字符串。
@@ -11,10 +11,10 @@ import type { Options } from 'tsup';
  * 本地开发构建得到 `0.0.0`；CI 发布时先由 release 流程改写 `package.json` 的 version，
  * 构建产物即携带真实版本号（设计决策 D-13）。
  */
-export const VERSION_PLACEHOLDER = '__TWIKOO_VERSION__';
+export const VERSION_PLACEHOLDER = "__TWIKOO_VERSION__";
 
 /** esbuild 插件类型（从 tsup 的 Options 派生，避免引入 esbuild 直接依赖） */
-type EsbuildPlugin = NonNullable<Options['esbuildPlugins']>[number];
+type EsbuildPlugin = NonNullable<Options["esbuildPlugins"]>[number];
 
 /** 被构建包的清单信息，仅取构建需要的 name 与 version */
 interface PackageManifest {
@@ -29,12 +29,12 @@ interface PackageManifest {
  * 缺少 version 字段时直接抛错，避免静默产出错误版本号。
  */
 function readPackageManifest(cwd: string): PackageManifest {
-  const manifestPath = join(cwd, 'package.json');
-  const parsed = JSON.parse(readFileSync(manifestPath, 'utf8')) as Partial<PackageManifest>;
+  const manifestPath = join(cwd, "package.json");
+  const parsed = JSON.parse(readFileSync(manifestPath, "utf8")) as Partial<PackageManifest>;
   if (!parsed.version) {
     throw new Error(`[tsup-config] 无法从 ${manifestPath} 读取 version 字段`);
   }
-  return { name: parsed.name ?? 'unknown', version: parsed.version };
+  return { name: parsed.name ?? "unknown", version: parsed.version };
 }
 
 /**
@@ -52,9 +52,9 @@ function sweepVersionPlaceholder(dir: string, version: string): void {
       sweepVersionPlaceholder(fullPath, version);
       continue;
     }
-    const contents = readFileSync(fullPath, 'utf8');
+    const contents = readFileSync(fullPath, "utf8");
     if (contents.includes(VERSION_PLACEHOLDER)) {
-      writeFileSync(fullPath, contents.split(VERSION_PLACEHOLDER).join(version), 'utf8');
+      writeFileSync(fullPath, contents.split(VERSION_PLACEHOLDER).join(version), "utf8");
     }
   }
 }
@@ -68,12 +68,12 @@ function sweepVersionPlaceholder(dir: string, version: string): void {
  */
 function createVersionPlugin(version: string): EsbuildPlugin {
   return {
-    name: 'twikoo-version-placeholder',
+    name: "twikoo-version-placeholder",
     setup(build) {
       build.onLoad({ filter: /version\.(ts|mts|cts|js|mjs|cjs)$/ }, async (args) => {
-        const source = await readFile(args.path, 'utf8');
+        const source = await readFile(args.path, "utf8");
         if (!source.includes(VERSION_PLACEHOLDER)) return null;
-        return { contents: source.split(VERSION_PLACEHOLDER).join(version), loader: 'ts' };
+        return { contents: source.split(VERSION_PLACEHOLDER).join(version), loader: "ts" };
       });
     },
   };
@@ -89,19 +89,19 @@ function createVersionPlugin(version: string): EsbuildPlugin {
 export function defineConfig(options: Options = {}): Options {
   const cwd = process.cwd();
   const { name, version } = readPackageManifest(cwd);
-  const outDirOption = options.outDir ?? 'dist';
+  const outDirOption = options.outDir ?? "dist";
   const outDir = Array.isArray(outDirOption) ? outDirOption[0] : outDirOption;
   const consumerOnSuccess = options.onSuccess;
 
   const base: Options = {
-    entry: ['src/index.ts'],
-    format: ['esm', 'cjs'],
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
     dts: true,
     clean: true,
     sourcemap: true,
-    target: 'es2022',
+    target: "es2022",
     outExtension({ format }) {
-      return { js: format === 'cjs' ? '.cjs' : '.mjs' };
+      return { js: format === "cjs" ? ".cjs" : ".mjs" };
     },
     banner: { js: `/*! ${name} v${version} */` },
     esbuildPlugins: [createVersionPlugin(version)],
@@ -118,7 +118,7 @@ export function defineConfig(options: Options = {}): Options {
     esbuildPlugins: [createVersionPlugin(version), ...(options.esbuildPlugins ?? [])],
     onSuccess: async () => {
       sweepVersionPlaceholder(join(cwd, outDir), version);
-      if (typeof consumerOnSuccess === 'function') await consumerOnSuccess();
+      if (typeof consumerOnSuccess === "function") await consumerOnSuccess();
     },
   };
 }

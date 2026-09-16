@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from "vitest/config";
 
 /**
  * 覆盖率阈值占位（随 Wave 2/4 真正生效）：
@@ -10,8 +10,8 @@ import { defineConfig } from 'vitest/config';
  * 根配置文件，混合命名导出与默认导出会触发 [MIXED_EXPORTS] 告警），接入后即在该包范围内真正生效。
  */
 const COVERAGE_THRESHOLDS = {
-  'packages/server-common': { statements: 80 },
-  'packages/client': { statements: 70 },
+  "packages/server-common": { statements: 80 },
+  "packages/client": { statements: 70 },
 } as const;
 
 export default defineConfig({
@@ -19,6 +19,6 @@ export default defineConfig({
     // Vitest 5 工作区模式：`vitest.workspace.ts` 自 v4 起已移除，由根配置的
     // `projects` 承接——glob 自动发现各包的 vitest.config.ts，
     // 尚未创建测试配置的包（server-common、client 等）会被自动跳过。
-    projects: ['packages/*/vitest.config.ts'],
+    projects: ["packages/*/vitest.config.ts"],
   },
 });

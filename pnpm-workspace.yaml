@@ -1,10 +1,11 @@
 packages:
-  - 'packages/*'
-  - 'docs'
+  - "packages/*"
+  - "docs"
 allowBuilds:
   esbuild: true
   # T9: postinstall 仅用于预下载 Mongo 二进制（可用 MONGOMS_DISABLE_POSTINSTALL=1 跳过）；
   # 批准是为了 ERR_PNPM_IGNORED_BUILDS 不再使 install 失败，二进制默认留给首跑下载。
   mongodb-memory-server: true
+  simple-git-hooks: true
 minimumReleaseAgeExclude:
   - prettier@3.9.7

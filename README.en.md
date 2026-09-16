@@ -1,6 +1,6 @@
 <a href="https://twikoo.js.org/"><img src="./docs/static/logo.png" width="300" alt="Twikoo"></a>
 
-----
+---
 
 [![](https://img.shields.io/npm/v/twikoo)](https://www.npmjs.com/package/twikoo)
 [![](https://img.shields.io/bundlephobia/minzip/twikoo)](https://bundlephobia.com/result?p=twikoo)
@@ -10,7 +10,7 @@
 [![](https://img.shields.io/npm/l/twikoo)](./LICENSE)
 
 A **simple**, **safe**, **free** comment system.  
-[简体中文](./README.md) | **English**  
+[简体中文](./README.md) | **English**
 
 **This document is for American English.**
 
@@ -21,61 +21,61 @@ A **simple**, **safe**, **free** comment system.
 
 ### Simple
 
-* Free Build.（Using Tencent CloudBase as the commenting backend, each user enjoys 1 free standard basic version 1 resource package for a long time）
-* Simple Deployment.（Support one-click deployment, manual deployment, command deployment）
+- Free Build.（Using Tencent CloudBase as the commenting backend, each user enjoys 1 free standard basic version 1 resource package for a long time）
+- Simple Deployment.（Support one-click deployment, manual deployment, command deployment）
 
 ### Easy to use
 
-* Support reply, like.
-* No additional adaptations, support with light theme and dark theme use.
-* Support API , batch get article comment count, latest comments.
-* Visitors entering QQ number in the nickname field will automatically complete the QQ nickname and QQ email.
-* Visitors fill in the digital QQ e-mail, will use the QQ avatar as the comment avatar.
-* Support the comment to paste pictures.（Can be disabled）
-* Support inserting pictures.（Can be disabled）
-* Support 7bu image bed, Tencent CloudBase image bed.
-* Support inserting emoji.（Can be disabled）
-* Support Ctrl + Enter reply.
-* Comments are saved in draft in real time and will not be lost when refreshed.
-* [Support Katex formulas.](https://twikoo.js.org/faq.html#%E5%A6%82%E4%BD%95%E5%90%AF%E7%94%A8-katex-%E6%94%AF%E6%8C%81)
-* Support for code highlighting by language.
+- Support reply, like.
+- No additional adaptations, support with light theme and dark theme use.
+- Support API , batch get article comment count, latest comments.
+- Visitors entering QQ number in the nickname field will automatically complete the QQ nickname and QQ email.
+- Visitors fill in the digital QQ e-mail, will use the QQ avatar as the comment avatar.
+- Support the comment to paste pictures.（Can be disabled）
+- Support inserting pictures.（Can be disabled）
+- Support 7bu image bed, Tencent CloudBase image bed.
+- Support inserting emoji.（Can be disabled）
+- Support Ctrl + Enter reply.
+- Comments are saved in draft in real time and will not be lost when refreshed.
+- [Support Katex formulas.](https://twikoo.js.org/faq.html#%E5%A6%82%E4%BD%95%E5%90%AF%E7%94%A8-katex-%E6%94%AF%E6%8C%81)
+- Support for code highlighting by language.
 
 ### Security
 
-* Privacy and information security. (sensitive fields (email, IP, environment configuration, etc.) are not leaked through Tencent cloud function control)
-* Support for Akismet spam comment detection.（View Details [akismet.com](https://akismet.com/)）
-* Support Tencent Cloud content security spam comment detection.（View Details [Tencent Cloud Content Security](https://console.cloud.tencent.com/cms/text/overview)）
-* Support manual review mode.
-* Anti XSS Attack.
-* Support for limiting the maximum number of comments per IP per 10 minutes.
+- Privacy and information security. (sensitive fields (email, IP, environment configuration, etc.) are not leaked through Tencent cloud function control)
+- Support for Akismet spam comment detection.（View Details [akismet.com](https://akismet.com/)）
+- Support Tencent Cloud content security spam comment detection.（View Details [Tencent Cloud Content Security](https://console.cloud.tencent.com/cms/text/overview)）
+- Support manual review mode.
+- Anti XSS Attack.
+- Support for limiting the maximum number of comments per IP per 10 minutes.
 
 ### notification
 
-* E-mail（Visitors and Blogger）
-* Wechat（only Blogger, [Server酱](https://sc.ftqq.com/3.version)）
-* QQ（only Blogger, [Qmsg酱](https://qmsg.zendee.cn/)）
+- E-mail（Visitors and Blogger）
+- Wechat（only Blogger, [Server酱](https://sc.ftqq.com/3.version)）
+- QQ（only Blogger, [Qmsg酱](https://qmsg.zendee.cn/)）
 
 ### Personalization
 
-* Background image.
-* the "blogger" logo text.
-* Notification Email Template.
-* Comment prompt message.（placeholder）
-* emoji（[OwO 的数据格式](https://cdn.jsdelivr.net/npm/owo@1.0.2/demo/OwO.json)）
-* 【Nickname】 【Email】 【Website】 Required / Optional
-* Code highlighting theme.
+- Background image.
+- the "blogger" logo text.
+- Notification Email Template.
+- Comment prompt message.（placeholder）
+- emoji（[OwO 的数据格式](https://cdn.jsdelivr.net/npm/owo@1.0.2/demo/OwO.json)）
+- 【Nickname】 【Email】 【Website】 Required / Optional
+- Code highlighting theme.
 
 ### Management
 
-* Embedded panel with password login to easily view comments, hide comments, delete comments and modify configuration.
-* Support to hide the management portal and show it by entering a secret code.
-* Support for importing comments from Valine, Artalk, Disqus.
+- Embedded panel with password login to easily view comments, hide comments, delete comments and modify configuration.
+- Support to hide the management portal and show it by entering a secret code.
+- Support for importing comments from Valine, Artalk, Disqus.
 
 ### Disadvantages
 
-* Slower requests. (except China)
-* Deployment requires real name authentication.
-* IE is not supported.
+- Slower requests. (except China)
+- Deployment requires real name authentication.
+- IE is not supported.
 
 </details>
 
@@ -121,13 +121,13 @@ Icon design：[Maemo Lee](https://www.maemo.cc)
 
 [Update logs](https://github.com/twikoojs/twikoo/releases) & [Development Plan](https://github.com/twikoojs/twikoo/projects/2)
 
-##  Development
+## Development
 
 If you want to develop locally for a second time, you can refer to the following commands：
 
-``` sh
+```sh
 yarn dev # (http://localhost:9820/demo.html)
-yarn lint 
+yarn lint
 yarn build # (dist/twikoo.all.min.js)
 ```
 

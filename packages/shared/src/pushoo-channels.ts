@@ -15,34 +15,34 @@
  * 2.0 新代码不得使用，派生实际渠道见 {@link ActiveChannelType}。
  */
 export type ChannelType =
-  | 'webhook'
-  | 'qmsg'
-  | 'serverchan'
-  | 'serverchain'
-  | 'pushplus'
-  | 'pushplushxtrip'
-  | 'dingtalk'
-  | 'wecom'
-  | 'bark'
-  | 'gocqhttp'
-  | 'onebot'
-  | 'atri'
-  | 'pushdeer'
-  | 'igot'
-  | 'telegram'
-  | 'feishu'
-  | 'ifttt'
-  | 'wecombot'
-  | 'discord'
-  | 'wxpusher'
-  | 'join';
+  | "webhook"
+  | "qmsg"
+  | "serverchan"
+  | "serverchain"
+  | "pushplus"
+  | "pushplushxtrip"
+  | "dingtalk"
+  | "wecom"
+  | "bark"
+  | "gocqhttp"
+  | "onebot"
+  | "atri"
+  | "pushdeer"
+  | "igot"
+  | "telegram"
+  | "feishu"
+  | "ifttt"
+  | "wecombot"
+  | "discord"
+  | "wxpusher"
+  | "join";
 
 /**
  * 2.0 实际支持的推送渠道类型。
  *
  * 等于 {@link ChannelType} 排除 1.x 兼容别名 `serverchain`，共 20 个渠道。
  */
-export type ActiveChannelType = Exclude<ChannelType, 'serverchain'>;
+export type ActiveChannelType = Exclude<ChannelType, "serverchain">;
 
 /**
  * PUSHOO 支持的推送渠道清单（20 个，不含 `serverchain`）。
@@ -52,26 +52,26 @@ export type ActiveChannelType = Exclude<ChannelType, 'serverchain'>;
  * 每个字面量都是合法的 {@link ActiveChannelType}。
  */
 export const PUSHOO_CHANNELS = [
-  'webhook',
-  'qmsg',
-  'serverchan',
-  'pushplus',
-  'pushplushxtrip',
-  'dingtalk',
-  'wecom',
-  'bark',
-  'gocqhttp',
-  'onebot',
-  'atri',
-  'pushdeer',
-  'igot',
-  'telegram',
-  'feishu',
-  'ifttt',
-  'wecombot',
-  'discord',
-  'wxpusher',
-  'join',
+  "webhook",
+  "qmsg",
+  "serverchan",
+  "pushplus",
+  "pushplushxtrip",
+  "dingtalk",
+  "wecom",
+  "bark",
+  "gocqhttp",
+  "onebot",
+  "atri",
+  "pushdeer",
+  "igot",
+  "telegram",
+  "feishu",
+  "ifttt",
+  "wecombot",
+  "discord",
+  "wxpusher",
+  "join",
 ] as const satisfies readonly ActiveChannelType[];
 
 /** 编译期完备性守卫：约束为 `never`，一旦有渠道漏列即触发约束错误 */

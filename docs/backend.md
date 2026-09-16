@@ -1,24 +1,24 @@
 # 云函数部署
 
-| <div style="width: 6em">部署方式</div> | 推荐度 | 描述 |
-| ---- | ---- | ---- |
-| [腾讯云一键部署](#腾讯云一键部署) | ★☆☆☆☆ | 虽然方便，但是仅支持按量计费环境——也就是说，**一键部署的环境，当免费资源用尽后，将会产生费用**。且按量计费环境无法切换为包年包月环境。免费额度数据库读操作数只有 500 次 / 天，**无法支撑 Twikoo 的运行需求**。 |
-| [腾讯云手动部署](#腾讯云手动部署) | ★★★☆☆ | 手动部署到腾讯云云开发环境，在中国大陆访问速度较快。需要付费购买环境才能部署。 |
-| [腾讯云命令行部署](#腾讯云命令行部署) | ★☆☆☆☆ | 仅针对有 Node.js 经验的开发者。 |
-| [Vercel 部署](#vercel-部署) | ★★★☆☆ | 适用于想要免费部署的用户，在中国大陆访问速度较慢甚至无法访问，绑定自己的域名可以提高访问速度。 |
-| [Railway 部署](#railway-部署) | ★★☆☆☆ | 有免费额度但不足以支持一个月连续运行，部署简单，适合全球访问。 |
-| [Zeabur 部署](#zeabur-部署) | ★☆☆☆☆ | 需要绑定支付宝或信用卡，部署简单，适合中国大陆访问，免费计划环境随时可能会被删除。 |
-| [Netlify 部署](#netlify-部署) | ★★★★☆ | 有充足的免费额度，中国大陆访问速度不错。 |
-| [Hugging Face 部署](#hugging-face-部署) | ★★★☆☆ | 免费，中国大陆访问速度不错。允许通过 Cloudflare Tunnels 自定义域名。 |
-| [AWS Lambda 部署](#aws-lambda-部署) | ★★★☆☆ | 全球最大的云平台，适合已经使用 AWS 全家桶的用户。 |
-| [Cloudflare workers 部署](#cloudflare-workers-部署) | ★★☆☆☆ | 部署需使用命令行，冷启动时间较短，功能有部分限制。 |
-| [私有部署](#私有部署) | ★★☆☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
-| [私有部署 (Docker)](#私有部署-docker) | ★★★☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
+| <div style="width: 6em">部署方式</div>              | 推荐度 | 描述                                                                                                                                                                                                           |
+| --------------------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [腾讯云一键部署](#腾讯云一键部署)                   | ★☆☆☆☆  | 虽然方便，但是仅支持按量计费环境——也就是说，**一键部署的环境，当免费资源用尽后，将会产生费用**。且按量计费环境无法切换为包年包月环境。免费额度数据库读操作数只有 500 次 / 天，**无法支撑 Twikoo 的运行需求**。 |
+| [腾讯云手动部署](#腾讯云手动部署)                   | ★★★☆☆  | 手动部署到腾讯云云开发环境，在中国大陆访问速度较快。需要付费购买环境才能部署。                                                                                                                                 |
+| [腾讯云命令行部署](#腾讯云命令行部署)               | ★☆☆☆☆  | 仅针对有 Node.js 经验的开发者。                                                                                                                                                                                |
+| [Vercel 部署](#vercel-部署)                         | ★★★☆☆  | 适用于想要免费部署的用户，在中国大陆访问速度较慢甚至无法访问，绑定自己的域名可以提高访问速度。                                                                                                                 |
+| [Railway 部署](#railway-部署)                       | ★★☆☆☆  | 有免费额度但不足以支持一个月连续运行，部署简单，适合全球访问。                                                                                                                                                 |
+| [Zeabur 部署](#zeabur-部署)                         | ★☆☆☆☆  | 需要绑定支付宝或信用卡，部署简单，适合中国大陆访问，免费计划环境随时可能会被删除。                                                                                                                             |
+| [Netlify 部署](#netlify-部署)                       | ★★★★☆  | 有充足的免费额度，中国大陆访问速度不错。                                                                                                                                                                       |
+| [Hugging Face 部署](#hugging-face-部署)             | ★★★☆☆  | 免费，中国大陆访问速度不错。允许通过 Cloudflare Tunnels 自定义域名。                                                                                                                                           |
+| [AWS Lambda 部署](#aws-lambda-部署)                 | ★★★☆☆  | 全球最大的云平台，适合已经使用 AWS 全家桶的用户。                                                                                                                                                              |
+| [Cloudflare workers 部署](#cloudflare-workers-部署) | ★★☆☆☆  | 部署需使用命令行，冷启动时间较短，功能有部分限制。                                                                                                                                                             |
+| [私有部署](#私有部署)                               | ★★☆☆☆  | 适用于有服务器的用户，需要自行申请 HTTPS 证书。                                                                                                                                                                |
+| [私有部署 (Docker)](#私有部署-docker)               | ★★★☆☆  | 适用于有服务器的用户，需要自行申请 HTTPS 证书。                                                                                                                                                                |
 
 ## 腾讯云一键部署
 
 1. 点击以下按钮将 Twikoo 一键部署到云开发<br>
-[![部署到云开发](https://main.qcloudimg.com/raw/67f5a389f1ac6f3b4d04c7256438e44f.svg)](https://console.cloud.tencent.com/tcb/env/index?action=CreateAndDeployCloudBaseProject&appUrl=https%3A%2F%2Fgithub.com%2Fimaegoo%2Ftwikoo&branch=main)
+   [![部署到云开发](https://main.qcloudimg.com/raw/67f5a389f1ac6f3b4d04c7256438e44f.svg)](https://console.cloud.tencent.com/tcb/env/index?action=CreateAndDeployCloudBaseProject&appUrl=https%3A%2F%2Fgithub.com%2Fimaegoo%2Ftwikoo&branch=main)
 2. 进入[环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)，启用“匿名登录”
 3. 进入[环境-安全配置](https://console.cloud.tencent.com/tcb/env/safety)，将网站域名添加到“WEB安全域名”
 
@@ -27,10 +27,11 @@
 如果您打算部署到一个现有的云开发环境，请直接从第 2 步开始。
 
 1. 进入[云开发CloudBase购买页面](https://buy.cloud.tencent.com/lowcode?buyType=tcb)，数据库请选择“云数据库”，其余选项按页面提示填写，点击“立即购买”，按提示创建好环境。
-::: tip 提示
-* 推荐创建上海环境。如选择其它环境，需要在 `twikoo.init()` 时额外指定环境 `region: "ap-guangzhou"`
-* 环境名称自由填写
-:::
+   ::: tip 提示
+
+- 推荐创建上海环境。如选择其它环境，需要在 `twikoo.init()` 时额外指定环境 `region: "ap-guangzhou"`
+- 环境名称自由填写
+  :::
 
 ![](./static/tcb/1787559137780.webp)
 
@@ -42,11 +43,12 @@
 4. 进入“HTTP 网关-跨域设置-添加跨域域名”，添加网站域名（免费套餐无法添加，需升级付费套餐才能添加）
 
 5. 进入“云函数/托管-云函数-函数管理”，点击“权限控制”，将输入框内容修改为以下内容，然后点击确定
+
 ```json
 {
-    "*": {
-        "invoke": "auth != null"
-    }
+  "*": {
+    "invoke": "auth != null"
+  }
 }
 ```
 
@@ -54,13 +56,15 @@
 
 6. 进入“云函数/托管-云函数-函数管理”，点击“新建云函数”，点击“通过模板创建-Node.js Hello World”
 7. 打开 `index.js` 文件，清空输入框中的示例代码，复制以下代码、粘贴到代码框中
+
 ```js
-exports.main = require('twikoo-func').main
+exports.main = require("twikoo-func").main;
 ```
 
 ![](./static/tcb/1787559949154.webp)
 
 8. 打开 `package.json` 文件，清空输入框中的示例代码，复制以下代码、粘贴到代码框中
+
 ```json
 { "dependencies": { "twikoo-func": "1.7.24" } }
 ```
@@ -75,11 +79,12 @@ exports.main = require('twikoo-func').main
 ## 腾讯云命令行部署
 
 ::: warning 注意
-* 请确保您已经安装了 [Node.js](https://nodejs.org/en/download/)
-* 请将命令、代码中“您的环境id”替换为您自己的环境id
-* 第 7 步会弹出浏览器要求授权，需在有图形界面的系统下进行
-* 请勿在 Termux 下操作。虽然可以部署成功，但是使用时会报错 `[FUNCTIONS_EXECUTE_FAIL] Error: EACCES: permission denied, open '/var/user/index.js'`
-:::
+
+- 请确保您已经安装了 [Node.js](https://nodejs.org/en/download/)
+- 请将命令、代码中“您的环境id”替换为您自己的环境id
+- 第 7 步会弹出浏览器要求授权，需在有图形界面的系统下进行
+- 请勿在 Termux 下操作。虽然可以部署成功，但是使用时会报错 `[FUNCTIONS_EXECUTE_FAIL] Error: EACCES: permission denied, open '/var/user/index.js'`
+  :::
 
 如果您打算部署到一个现有的云开发环境，请直接从第 3 步开始。
 
@@ -88,22 +93,30 @@ exports.main = require('twikoo-func').main
 3. 进入[环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)，启用“匿名登录”
 4. 进入[环境-安全配置](https://console.cloud.tencent.com/tcb/env/safety)，将网站域名添加到“WEB安全域名”
 5. 克隆本仓库
+
 ```sh
 git clone https://github.com/twikoojs/twikoo.git # 或 git clone https://e.coding.net/imaegoo/twikoo/twikoo.git
 cd twikoo
 ```
+
 > 如果您没有安装 Git，也可以从 [Release](https://github.com/twikoojs/twikoo/releases) 页面下载最新的 Source code<br>
 > 如果您所在的地区访问 Github 速度慢，也可以尝试另一个仓库地址：[https://imaegoo.coding.net/public/twikoo/twikoo/git](https://imaegoo.coding.net/public/twikoo/twikoo/git)
+
 6. 安装依赖项
+
 ```sh
 npm install -g yarn # 已安装 yarn 可以跳过此步
 yarn install
 ```
+
 7. 授权云开发环境（此命令会弹出浏览器要求授权，需在有图形界面的系统下进行）
+
 ```sh
 yarn run login
 ```
+
 8. 自动部署
+
 ```sh
 yarn deploy -e 您的环境id
 ```
@@ -180,7 +193,9 @@ Zeabur 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 1. 在 [Zeabur](https://dash.zeabur.com) 申请并登录账号，点击部署新服务 - 部署其他服务 - 部署 MongoDB，名称随意
 2. 打开 [twikoojs/twikoo-zeabur](https://github.com/twikoojs/twikoo-zeabur) 点击 fork 将仓库 fork 到自己的账号下
 3. 回到 Zeabur 点击部署新服务 - 部署你的源代码 - 授权 GitHub - 选择刚才 fork 的仓库，名称随意
-  > _无需配置数据库连接字符串！ Zeabur 已自动配置_
+
+> _无需配置数据库连接字符串！ Zeabur 已自动配置_
+
 4. 部署好后点开环境卡片 - 设置 - 域名，绑定一个域名（例如 `mytwikoo.zeabur.app`）
 5. 到博客配置文件中配置 envId 为 `https://` 加域名（例如 `https://mytwikoo.zeabur.app`）
 
@@ -311,17 +326,17 @@ lambda_function_url = "https://axtoiiithbcexamplegq7ozalu0cnkii.lambda-url.us-we
 2. 安装 Twikoo server: `npm i -g tkserver`
 3. 根据需要配置环境变量，所有的环境变量都是可选的
 
-| 名称 | 描述 | 默认值 |
-| ---- | ---- | ---- |
-| `MONGODB_URI` | MongoDB 数据库连接字符串，不传则使用 lokijs | `null` |
-| `MONGO_URL` | MongoDB 数据库连接字符串，不传则使用 lokijs | `null` |
-| `TWIKOO_DATA` | lokijs 数据库存储路径 | `./data` |
-| `TWIKOO_HOST` | 自定义监听的主机名或IP地址（例如 0.0.0.0 或 127.0.0.1）,设置该值则会忽略 TWIKOO_LOCALHOST_ONLY，默认值为 null 但实际行为会回退到 `::` | `null` |
-| `TWIKOO_PORT` | 端口号 | `8080` |
-| `TWIKOO_THROTTLE` | IP 请求限流，当同一 IP 短时间内请求次数超过阈值将对该 IP 返回错误 | `250` |
-| `TWIKOO_LOCALHOST_ONLY` | 为`true`时只监听本地请求，使得 nginx 等服务器反代之后不暴露原始端口 | `null` |
-| `TWIKOO_LOG_LEVEL` | 日志级别，支持 `verbose` / `info` / `warn` / `error` | `info` |
-| `TWIKOO_IP_HEADERS` | 在一些特殊情况下使用，如使用了 `CloudFlare CDN` 它会将请求 IP 写到请求头的 `cf-connecting-ip` 字段上，为了能够正确的获取请求 IP 你可以写成 `["headers.cf-connecting-ip"]` | `[]` |
+| 名称                    | 描述                                                                                                                                                                      | 默认值   |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `MONGODB_URI`           | MongoDB 数据库连接字符串，不传则使用 lokijs                                                                                                                               | `null`   |
+| `MONGO_URL`             | MongoDB 数据库连接字符串，不传则使用 lokijs                                                                                                                               | `null`   |
+| `TWIKOO_DATA`           | lokijs 数据库存储路径                                                                                                                                                     | `./data` |
+| `TWIKOO_HOST`           | 自定义监听的主机名或IP地址（例如 0.0.0.0 或 127.0.0.1）,设置该值则会忽略 TWIKOO_LOCALHOST_ONLY，默认值为 null 但实际行为会回退到 `::`                                     | `null`   |
+| `TWIKOO_PORT`           | 端口号                                                                                                                                                                    | `8080`   |
+| `TWIKOO_THROTTLE`       | IP 请求限流，当同一 IP 短时间内请求次数超过阈值将对该 IP 返回错误                                                                                                         | `250`    |
+| `TWIKOO_LOCALHOST_ONLY` | 为`true`时只监听本地请求，使得 nginx 等服务器反代之后不暴露原始端口                                                                                                       | `null`   |
+| `TWIKOO_LOG_LEVEL`      | 日志级别，支持 `verbose` / `info` / `warn` / `error`                                                                                                                      | `info`   |
+| `TWIKOO_IP_HEADERS`     | 在一些特殊情况下使用，如使用了 `CloudFlare CDN` 它会将请求 IP 写到请求头的 `cf-connecting-ip` 字段上，为了能够正确的获取请求 IP 你可以写成 `["headers.cf-connecting-ip"]` | `[]`     |
 
 4. 启动 Twikoo server: `tkserver`
 5. 访问 `http://服务端IP:8080` 测试服务是否启动成功
@@ -329,11 +344,12 @@ lambda_function_url = "https://axtoiiithbcexamplegq7ozalu0cnkii.lambda-url.us-we
 7. 到博客配置文件中配置 envId 为 `https://` 加域名（例如 `https://twikoo.yourdomain.com`）
 
 ::: tip 提示
+
 1. Linux 服务器可以用 `nohup tkserver >> tkserver.log 2>&1 &` 命令后台启动
 2. 数据默认在 data 目录，请注意定期备份数据
 3. 默认端口为8080，自定义端口使用可使用 `TWIKOO_PORT=1234 tkserver` 启动。
 4. 配置systemctl服务配合`TWIKOO_PORT=1234 tkserver`设置开机启动
-:::
+   :::
 
 ## 私有部署 (Docker)
 
@@ -352,7 +368,7 @@ docker run --name twikoo -e TWIKOO_THROTTLE=1000 -p 8080:8080 -v ${PWD}/data:/ap
 ### Docker Compose
 
 ```yml
-version: '3'
+version: "3"
 services:
   twikoo:
     image: imaegoo/twikoo

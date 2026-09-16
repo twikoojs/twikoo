@@ -4,9 +4,9 @@
 
 消息推送平台多用于在特定的场合提醒使用者，例如：博客收到评论、服务器告警、油价上涨、每日签到结果推送、家中饲养的鸽子外出、飞回，等等……自从方糖气球推出 Server 酱以来，消息推送平台逐渐多样化，他们遵循的 API 格式却很混乱。
 
-* 有的是 URL 地址传参，有的是 form 表单传参，有的是 JSON 传参，暂时还没看到 XML 传参的；
-* 有的正文支持 Markdown，有的正文支持 HTML，有的正文支持纯文本；
-* 有的支持标题，有的不支持标题。
+- 有的是 URL 地址传参，有的是 form 表单传参，有的是 JSON 传参，暂时还没看到 XML 传参的；
+- 有的正文支持 Markdown，有的正文支持 HTML，有的正文支持纯文本；
+- 有的支持标题，有的不支持标题。
 
 Twikoo 评论系统对不同的消息推送平台做了大量的适配工作，云函数越来越大。
 
@@ -56,12 +56,12 @@ npm install pushoo
 现在，不论您使用什么推送平台，都无需关心他们的调用方式，只需要学习 pushoo 的调用方式即可开始发送您的第一条推送！
 
 ```js
-const pushoo = require('pushoo').default;
+const pushoo = require("pushoo").default;
 
-const result = await pushoo('平台名称', {
-  token: '平台用户身份标识',
-  title: '消息标题',
-  content: 'Markdown 格式的推送内容'
+const result = await pushoo("平台名称", {
+  token: "平台用户身份标识",
+  title: "消息标题",
+  content: "Markdown 格式的推送内容",
 });
 
 console.log(result);
@@ -69,13 +69,13 @@ console.log(result);
 
 是的，调用 pushoo 最简单只需要传递 4 个参数！
 
-| 参数 | 必填 | 默认 | 说明 |
-| ---- | ---- | ---- | ---- |
-| 平台名称 | ✅ | 无 | 字符串，平台名称的缩写，支持：`webhook`、`qmsg`、`serverchan`、`pushplus`、`pushplushxtrip`、`dingtalk`、`wecom`、`bark`、`gocqhttp`、`atri`、`pushdeer`、`igot`、`telegram`、`feishu`、`ifttt`、`wecombot`、`discord`, `wxpusher` |
-| token | ✅ | 无 | 平台用户身份标识，通常情况下是一串数字和字母组合，详情和示例见下方详细说明 |
-| title | | 内容第一行 | 可选，消息标题，如果推送平台不支持消息标题，则会拼接在正文首行 |
-| content | ✅ | 无 | Markdown 格式的推送内容，如果推送平台不支持 Markdown，pushoo 会自动转换成支持的格式 |
-| options | ❌ | 无 | 用于推送时的一些额外配置。类型`NoticeOptions` |
+| 参数     | 必填 | 默认       | 说明                                                                                                                                                                                                                               |
+| -------- | ---- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 平台名称 | ✅   | 无         | 字符串，平台名称的缩写，支持：`webhook`、`qmsg`、`serverchan`、`pushplus`、`pushplushxtrip`、`dingtalk`、`wecom`、`bark`、`gocqhttp`、`atri`、`pushdeer`、`igot`、`telegram`、`feishu`、`ifttt`、`wecombot`、`discord`, `wxpusher` |
+| token    | ✅   | 无         | 平台用户身份标识，通常情况下是一串数字和字母组合，详情和示例见下方详细说明                                                                                                                                                         |
+| title    |      | 内容第一行 | 可选，消息标题，如果推送平台不支持消息标题，则会拼接在正文首行                                                                                                                                                                     |
+| content  | ✅   | 无         | Markdown 格式的推送内容，如果推送平台不支持 Markdown，pushoo 会自动转换成支持的格式                                                                                                                                                |
+| options  | ❌   | 无         | 用于推送时的一些额外配置。类型`NoticeOptions`                                                                                                                                                                                      |
 
 ```typescript
 interface NoticeOptions {
@@ -90,7 +90,7 @@ interface NoticeOptions {
     /**
      * method 请求方法，默认为 POST
      */
-    method?: 'GET' | 'POST';
+    method?: "GET" | "POST";
   };
   /**
    * bark通知方式的参数配置
@@ -142,26 +142,26 @@ Webhook 是一种用户定义的 HTTP 回调，通常用于将实时数据推送
 示例调用：
 
 ```js
-let respond = await pushoo('webhook', {
-  token: '', // 可选，暂不支持签名
-  title: '', // 可选
-  content: '推送内容',
+let respond = await pushoo("webhook", {
+  token: "", // 可选，暂不支持签名
+  title: "", // 可选
+  content: "推送内容",
   options: {
     webhook: {
-      url: 'https://example.com/webhook-endpoint',
-      method: 'POST' // 可选，默认为 POST，也可以设置为 GET
-    }
-  }
+      url: "https://example.com/webhook-endpoint",
+      method: "POST", // 可选，默认为 POST，也可以设置为 GET
+    },
+  },
 });
 ```
 
 特别地，为兼容 Twikoo 中现有的使用方式，可以直接把平台名称设置为 Webhook 的 URL 地址（以 `http://` 或 `https://` 开头），无需传入 `options`。
 
 ```js
-let respond = await pushoo('https://example.com/webhook-endpoint', {
-  token: '', // 可选
-  title: '', // 可选
-  content: '推送内容'
+let respond = await pushoo("https://example.com/webhook-endpoint", {
+  token: "", // 可选
+  title: "", // 可选
+  content: "推送内容",
 });
 ```
 
@@ -184,7 +184,7 @@ Server 酱是方糖提供的第三方多渠道推送服务，以服务号推送�
 
 1. 前往 [https://sct.ftqq.com/r/13235](https://sct.ftqq.com/r/13235) 并使用微信登录
 2. 点击 “消息通道”，设置合适的消息通道并保存
-2. 点击 “SendKey”，复制 “SendKey” 下方的 key，填入 pushoo 的 token 中
+3. 点击 “SendKey”，复制 “SendKey” 下方的 key，填入 pushoo 的 token 中
 
 示例 token：`SCT1364TKdsiGjGvyAZNYD*****VAK0k`
 
@@ -223,7 +223,7 @@ Push Plus Hxtrip 是中道（苏州）旅游网络科技有限公司提供的第
 2. 注册成功后，点「管理企业」进入管理界面，选择「应用管理」 → 「自建」 → 「创建应用」
 3. 应用名称填入机器人的名称，应用 logo 选择机器人的头像，可见范围选择公司名
 4. 创建完成后进入应用详情页，可以得到应用ID( `agentid` )，应用Secret( `secret` )，复制<br>
-PS：获取应用Secret时，可能会将其推送到企业微信客户端，这时候微信里边是看不到的，需要在企业微信客户端里边才能看到
+   PS：获取应用Secret时，可能会将其推送到企业微信客户端，这时候微信里边是看不到的，需要在企业微信客户端里边才能看到
 5. 进入「[我的企业](https://work.weixin.qq.com/wework_admin/frame#profile)」页面，拉到最下边，可以看到企业ID，复制
 6. 进入「我的企业」 → 「[微信插件](https://work.weixin.qq.com/wework_admin/frame#profile/wxPlugin)」，拉到下边扫描二维码，关注以后即可收到推送的消息
 7. 将第 4 步和第 5 步取得的 `企业ID#应用Secret#应用ID` 拼到一起，中间用 “`#`” 号分隔，填入 pushoo 的 token 中
@@ -332,6 +332,7 @@ Discord Webhooks推送，免费。
 4. token 设置也可以通过提取 `webhook` url 中的 `id` 和 `token` 来设置，格式为 `id#token`。 如：`https://discord.com/api/webhooks/123456789012345678/abcdefghijklmnopqrstuvwxyz`，则 token 设置为 `123456789012345678#abcdefghijklmnopqrstuvwxyz`。
 
 示例 token：
+
 - `https://discord.com/api/webhooks/123456789012345678/abcdefghijklmnopqrstuvwxyz`
 - `123456789012345678#abcdefghijklmnopqrstuvwxyz`
 
@@ -346,6 +347,7 @@ WxPusher 是一款微信推送平台，免费。
 5. 最后获取的 `appToken` 和 `topicId` 拼接到一起，中间用 “`#`” 号分隔，填入 pushoo 的 token 中（如果有多个主题ID，可用半角逗号分隔）。
 
 示例 token:
+
 - 单个主题ID：`AT_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX#1234`
 - 多个主题ID：`AT_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX#1234,5678`
 

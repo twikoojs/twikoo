@@ -1,4 +1,4 @@
-import { defineConfig } from '@twikoojs/tsup-config';
+import { defineConfig } from "@twikoojs/tsup-config";
 
 /**
  * `@twikoojs/shared` 的 tsup 构建配置。

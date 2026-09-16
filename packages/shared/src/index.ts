@@ -8,6 +8,6 @@
  *
  * 本包不引入任何运行时依赖，仅提供常量与类型。
  */
-export * from './version';
-export * from './pushoo-channels';
-export * from './events';
+export * from "./version";
+export * from "./pushoo-channels";
+export * from "./events";

@@ -10,4 +10,4 @@
  * 占位符字面量由 `@twikoojs/tsup-config` 的 `VERSION_PLACEHOLDER` 常量定义，
  * 客户端与服务端统一读取本常量，避免版本号在多包之间手工同步。
  */
-export const VERSION: string = '__TWIKOO_VERSION__';
+export const VERSION: string = "__TWIKOO_VERSION__";

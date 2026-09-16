@@ -9,16 +9,22 @@
     "dev": "echo \"TODO: wire up dev server in a later wave (T9)\"",
     "demo": "echo \"TODO: wire up demo in a later wave (T35)\"",
     "build": "pnpm -r --if-present run build",
-    "test": "pnpm -r --if-present run test",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "lint": "pnpm -r --if-present run lint",
     "typecheck": "pnpm -r --if-present run typecheck",
     "env:check": "echo \"TODO: wire up env check in a later wave (T10)\""
   },
   "devDependencies": {
-    "typescript": "^5.9.3",
-    "tsup": "^8.5.1",
+    "@vitest/coverage-v8": "5.0.1",
+    "@vue/test-utils": "^2.5.0",
     "eslint": "^9.39.5",
+    "happy-dom": "^20.14.5",
+    "mongodb-memory-server": "^11.2.0",
     "prettier": "^3.9.7",
-    "vitest": "^5.0.1"
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.1",
+    "vue": "^3.5.42"
   }
 }

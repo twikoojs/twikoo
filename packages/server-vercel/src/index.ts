@@ -1,2 +1,4 @@
-// 占位：该包实现随 Wave 2/3/4/5 接入。
-export {};
+/**
+ * twikoo-vercel 入口（Vercel 适配器；默认导出 Serverless Function）。
+ */
+export { createVercelFunc, toTkRequest, fromTkResponse, default } from "./main";

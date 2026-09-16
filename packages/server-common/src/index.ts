@@ -23,6 +23,7 @@ import type { Storage } from "./ports/storage";
 import type { Mailer } from "./ports/mailer";
 import type { Notifier } from "./ports/notifier";
 import type { Capabilities } from "./ports/capabilities";
+import { createPipeline } from "./core/pipeline";
 
 /**
  * 适配器聚合端口（§6.2「适配器契约」全集）：
@@ -52,19 +53,27 @@ export type TwikooHandler = (request: TkRequest) => Promise<TkResponse>;
 /**
  * 创建统一请求处理器（§6.2 唯一入口：createHandler(adapters) → handleRequest）。
  *
- * 【T13 接缝】本波为计划内接缝：仅冻结入口类型签名与装配形态
- * （启动期调用一次，返回逐请求调用的处理器），handleRequest 在 pipeline
- * 接线前一律抛出既定错误；pipeline（限流 → 校验 → 鉴权 → 连库 → 读配置 →
- * CORS → 分发 → 回填）与 dispatcher 装配由 todo 13 接管并替换实现。
+ * 启动期调用一次完成装配（注入适配器聚合端口），返回的处理器逐请求调用，
+ * 内部执行 pipeline 八步编排（限流 → 校验 → 匿名签到 → 连库 → 读配置 →
+ * CORS → OPTIONS/分发 → 回填）。
  * @param adapters 适配器聚合端口
  * @returns 统一请求处理器
  */
 export function createHandler(adapters: TkAdapters): TwikooHandler {
-  // adapters 在装配期注入（T13 前仅保留引用以避免未使用告警）
-  void adapters;
-
-  /** 返回的逐请求处理器：T13 前走既定抛错分支 */
-  return function handleRequest() {
-    return Promise.reject(new Error("pipeline wiring arrives in todo 13"));
-  };
+  /** 返回的逐请求处理器（pipeline 实现） */
+  return createPipeline(adapters);
 }
+
+// ---- core 层导出（T13）----
+// handler / 服务实现经包内相对路径互引；对外只暴露扩展点与复位钩子。
+export type { PipelineContext, EventHandler } from "./core/types";
+export { RateLimitError, HandlerNotRegisteredError } from "./core/errors";
+export { registerHandler, resolveHandler, resetHandlers } from "./core/handler-registry";
+export { dispatch } from "./core/dispatcher";
+export { resetRequestTimes } from "./core/pipeline";
+export type { PostSubmitService } from "./services/post-submit";
+export { setPostSubmitService, getPostSubmitService } from "./services/post-submit";
+export { RES_CODE, getMaxRequestTimes } from "./utils/constants";
+export type { RequestLogger } from "./utils/logger";
+export { createRequestLogger } from "./utils/logger";
+export { validateClientFields } from "./utils/validate";

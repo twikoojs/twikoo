@@ -13,8 +13,11 @@
  * 且当 `code === 0` 且请求未携带 accessToken 时回填 `accessToken`。
  */
 export interface TkResponseBody {
-  /** 业务码：0 = 成功（1.x RES_CODE.SUCCESS）；非 0 = 失败（如 1403 FORBIDDEN） */
-  code: number;
+  /**
+   * 业务码：0 = 成功（1.x RES_CODE.SUCCESS）；非 0 = 失败（如 1403 FORBIDDEN）。
+   * 可选：OPTIONS 预检响应（204）无业务体；1.x 的响应对象亦从空对象起步。
+   */
+  code?: number;
   /** 消息：失败时必带（错误体 code + message），成功时为可选提示语 */
   message?: string;
   /**

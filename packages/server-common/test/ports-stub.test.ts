@@ -2,7 +2,8 @@
  * ports 契约的永久用例（T12 QA+）：
  * 1. stub 适配器 satisfies TkAdapters —— 类型契约（包 tsconfig include 覆盖 test/，
  *    `pnpm typecheck` 每次运行都强制；QA− 通过删方法演示 tsc 报缺失）；
- * 2. createHandler(stub) 类型可接受且运行时走 T13 接缝的既定抛错分支。
+ * 2. createHandler(stub) 类型可接受且运行时打通 GET_FUNC_VERSION（T13 起
+ *    createHandler 由真实 pipeline 承载）。
  *
  * stub 形态说明：端口方法位一律引用具名 helper 标识符而非内联箭头——
  * T8 的 jsdoc/require-jsdoc 对「对象属性位置的内联箭头函数」强制注释
@@ -127,10 +128,13 @@ describe("ports 契约（T12）", () => {
     expect(typeof factory).toBe("function");
   });
 
-  it("createHandler 当前为 T13 接缝：返回的处理器调用走既定抛错分支", async () => {
+  it("createHandler 接受 stub 并打通 GET_FUNC_VERSION（pipeline 已于 T13 接线）", async () => {
     const handler = createHandler(stubAdapters);
     const request = stubAdapters.request.toTkRequest(null);
-    await expect(handler(request)).rejects.toThrow("pipeline wiring arrives in todo 13");
+    const response = await handler(request);
+    expect(response.status).toBe(200);
+    expect(response.body.code).toBe(0);
+    expect(typeof response.body.version).toBe("string");
   });
 
   it("ABSENT 哨兵可表达语义查询对象（R-3）", () => {

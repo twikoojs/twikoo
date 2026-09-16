@@ -228,6 +228,10 @@ importers:
       '@twikoojs/shared':
         specifier: workspace:*
         version: link:../shared
+    devDependencies:
+      '@types/node':
+        specifier: ^22.20.2
+        version: 22.20.2
 
   packages/server-deta: {}
 

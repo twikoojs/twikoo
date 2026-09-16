@@ -1,0 +1,273 @@
+/**
+ * 测试用内存适配器（pipeline / dispatcher 用例的公共 stub）。
+ *
+ * Database 为最小内存实现（Map 直查，不承载 T19 契约套件的完整语义）；
+ * mailer / notifier / cap 存储全部记录调用供断言。T14-T19 的实现级测试
+ * 不使用本文件——它们分别用 mongodb-memory-server / 临时目录 Loki /
+ * 共享契约 runner。
+ */
+import { ABSENT } from "../../src/ports/database";
+import type {
+  Capabilities,
+  CapChallengeData,
+  CommentDoc,
+  ConfigData,
+  CounterDoc,
+  Database,
+  Mailer,
+  Notifier,
+  SemanticQuery,
+  Storage,
+  TkAdapters,
+  TkRequest,
+} from "../../src/index";
+
+/** 内存 Database 的最小实现形态（方法集与端口一致，语义从简） */
+class MemoryDatabase implements Database {
+  /** 评论存储（_id → 文档） */
+  private comments = new Map<string, CommentDoc>();
+
+  /** 页面计数（url → CounterDoc） */
+  private counters = new Map<string, CounterDoc>();
+
+  /** 全量配置（null = 未初始化） */
+  public config: ConfigData | null;
+
+  /** 验证码 KV（key → 任意 JSON 值） */
+  private caps = new Map<string, unknown>();
+
+  /** @param config 预置配置（readConfig 用） */
+  constructor(config: ConfigData | null = null) {
+    this.config = config;
+  }
+
+  /** 生命周期：内存实现无需初始化 */
+  async init(): Promise<void> {}
+
+  /** 评论：全量列表 */
+  async getAllComments(): Promise<CommentDoc[]> {
+    return [...this.comments.values()];
+  }
+
+  /** 评论：按语义查询（内存实现只支持等值过滤，ABSENT 按字段缺失/空处理） */
+  async getComments(query: SemanticQuery): Promise<CommentDoc[]> {
+    const all = await this.getAllComments();
+    return all.filter((doc) => matches(doc, query));
+  }
+
+  /** 评论：计数 */
+  async countComments(query: SemanticQuery): Promise<number> {
+    return (await this.getComments(query)).length;
+  }
+
+  /** 评论：按 id 取单条 */
+  async getComment(id: string): Promise<CommentDoc | null> {
+    return this.comments.get(id) ?? null;
+  }
+
+  /** 评论：新增（自动生成 _id） */
+  async addComment(data: CommentDoc): Promise<CommentDoc> {
+    const doc = { ...data, _id: data._id ?? `c${this.comments.size + 1}` };
+    this.comments.set(doc._id as string, doc);
+    return doc;
+  }
+
+  /** 评论：部分更新 */
+  async updateComment(id: string, data: Partial<CommentDoc>): Promise<void> {
+    const doc = this.comments.get(id);
+    if (doc) this.comments.set(id, { ...doc, ...data });
+  }
+
+  /** 评论：删除 */
+  async deleteComment(id: string): Promise<void> {
+    this.comments.delete(id);
+  }
+
+  /** 评论：批量导入 */
+  async bulkAddComments(list: CommentDoc[]): Promise<void> {
+    for (const item of list) await this.addComment(item);
+  }
+
+  /** 计数：读取 */
+  async getCounter(url: string): Promise<CounterDoc | null> {
+    return this.counters.get(url) ?? null;
+  }
+
+  /** 计数：自增 */
+  async incCounter(url: string): Promise<CounterDoc> {
+    const current = this.counters.get(url) ?? { url, time: 0 };
+    const next = { ...current, time: current.time + 1 };
+    this.counters.set(url, next);
+    return next;
+  }
+
+  /** 配置：读取 */
+  async getConfig(): Promise<ConfigData | null> {
+    return this.config;
+  }
+
+  /** 配置：保存 */
+  async saveConfig(config: ConfigData): Promise<void> {
+    this.config = config;
+  }
+
+  /** 验证码：读取 */
+  async capGet(key: string): Promise<unknown> {
+    return this.caps.get(key) ?? null;
+  }
+
+  /** 验证码：写入 */
+  async capSet(key: string, value: unknown): Promise<void> {
+    this.caps.set(key, value);
+  }
+
+  /** 验证码：删除 */
+  async capDel(key: string): Promise<void> {
+    this.caps.delete(key);
+  }
+}
+
+/**
+ * 语义查询的内存等值匹配（ABSENT 视为「字段缺失或为空」）。
+ * @param doc 评论文档
+ * @param query 语义查询对象
+ * @returns 是否匹配
+ */
+function matches(doc: CommentDoc, query: SemanticQuery): boolean {
+  return Object.entries(query).every(([key, expected]) => {
+    const actual = doc[key];
+    if (expected === ABSENT) return actual === undefined || actual === "" || actual === null;
+    return actual === expected;
+  });
+}
+
+/** 记录型 Mailer（send 调用入参留存供断言） */
+class RecordingMailer implements Mailer {
+  /** 已发送邮件列表 */
+  readonly sent: unknown[] = [];
+
+  /** 记录并「发送成功」 */
+  async send(payload: unknown): Promise<void> {
+    this.sent.push(payload);
+  }
+}
+
+/** 记录型 Notifier（notify 调用入参留存供断言） */
+class RecordingNotifier implements Notifier {
+  /** 已发送通知列表 */
+  readonly sent: unknown[] = [];
+
+  /** 记录并「发送成功」 */
+  async notify(payload: unknown): Promise<void> {
+    this.sent.push(payload);
+  }
+}
+
+/** 记录型 Cap 存储（challenges / tokens 双组，调用留痕） */
+class RecordingStorage implements Storage {
+  /** challenge 存取 */
+  readonly challenges = {
+    /** 记录的 challenge 写入 */
+    stored: [] as Array<[string, CapChallengeData]>,
+    /** 存储 */
+    async store(token: string, data: CapChallengeData): Promise<void> {
+      this.stored.push([token, data]);
+    },
+    /** 读取（恒 null） */
+    async read(): Promise<CapChallengeData | null> {
+      return null;
+    },
+    /** 删除（空操作） */
+    async delete(): Promise<void> {},
+    /** 清理过期（空操作） */
+    async deleteExpired(): Promise<void> {},
+  };
+
+  /** token 存取 */
+  readonly tokens = {
+    /** 记录的 token 写入 */
+    stored: [] as Array<[string, number]>,
+    /** 存储 */
+    async store(key: string, expires: number): Promise<void> {
+      this.stored.push([key, expires]);
+    },
+    /** 读取（恒 null） */
+    async get(): Promise<number | null> {
+      return null;
+    },
+    /** 删除（空操作） */
+    async delete(): Promise<void> {},
+    /** 清理过期（空操作） */
+    async deleteExpired(): Promise<void> {},
+  };
+}
+
+/**
+ * 创建内存适配器聚合。
+ * @param options.database 预置配置或自定义 Database 实例
+ * @param options.capabilities 自定义能力声明（默认全关）
+ * @returns 适配器聚合（database.config 可读写；mailer/notifier/storage 为记录型实例）
+ */
+export function createMemoryAdapters(
+  options: {
+    database?: Database | ConfigData | null;
+    capabilities?: Partial<Capabilities>;
+  } = {},
+): TkAdapters & {
+  mailer: RecordingMailer;
+  notifier: RecordingNotifier;
+  storage: RecordingStorage;
+} {
+  const dbOption = options.database;
+  const database =
+    dbOption && typeof (dbOption as Database).init === "function"
+      ? (dbOption as Database)
+      : new MemoryDatabase((dbOption as ConfigData | null) ?? null);
+  return {
+    request: {
+      /** 测试恒等转换（真实转换属适配器职责） */
+      toTkRequest(raw: unknown): TkRequest {
+        return raw as TkRequest;
+      },
+    },
+    response: {
+      /** 测试恒等转换 */
+      fromTkResponse(response: unknown): unknown {
+        return response;
+      },
+    },
+    database,
+    storage: new RecordingStorage(),
+    mailer: new RecordingMailer(),
+    notifier: new RecordingNotifier(),
+    capabilities: {
+      mail: false,
+      domPurify: false,
+      ip2region: false,
+      akismet: false,
+      tencentTms: false,
+      imageUpload: false,
+      qqAvatar: false,
+      ai: false,
+      ...options.capabilities,
+    },
+  };
+}
+
+/**
+ * 构造内部统一请求（测试辅助：POST / 默认 ip 192.0.2.1）。
+ * @param overrides 覆盖字段（松散类型：允许模拟线上任意 body 形状，内部收窄为 TkRequest）
+ * @returns 内部统一请求
+ */
+export function makeRequest(overrides: Record<string, unknown> = {}): TkRequest {
+  return {
+    method: "POST",
+    path: "/api/twikoo",
+    query: {},
+    body: { event: "GET_FUNC_VERSION" },
+    headers: {},
+    ip: "192.0.2.1",
+    raw: null,
+    ...overrides,
+  } as TkRequest;
+}

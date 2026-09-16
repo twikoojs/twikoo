@@ -3,3 +3,5 @@ packages:
   - 'docs'
 allowBuilds:
   esbuild: true
+minimumReleaseAgeExclude:
+  - prettier@3.9.7

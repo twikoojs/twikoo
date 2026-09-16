@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build": "tsup"
   },
   "dependencies": {
     "@cap.js/server": "^4.0.5",
@@ -22,5 +23,18 @@
     "@types/node": "^22.20.2",
     "lokijs": "^1.5.12",
     "mongodb": "^6.3.0"
-  }
+  },
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "module": "./dist/index.mjs",
+  "files": [
+    "dist"
+  ]
 }

@@ -73,6 +73,22 @@ export { dispatch } from "./core/dispatcher";
 export { resetRequestTimes } from "./core/pipeline";
 export type { PostSubmitService } from "./services/post-submit";
 export { setPostSubmitService, getPostSubmitService } from "./services/post-submit";
+// ---- 数据库实现导出（适配器按平台选择其一）----
+export { MongoDatabase, toMongoFilter, newCommentId } from "./database/mongo";
+export type { MongoDatabaseOptions } from "./database/mongo";
+export { LokiDatabase, newLokiCommentId } from "./database/loki";
+export type { LokiDatabaseOptions } from "./database/loki";
+export { BlobKvDatabase } from "./database/blobkv";
+export type { BlobKvStoreLike } from "./database/blobkv";
+export { CloudBaseDatabase, toTcbCondition } from "./database/cloudbase";
+export type {
+  CloudBaseDatabaseLike,
+  CloudBaseDatabaseOptions,
+  CloudBaseCollectionLike,
+  CloudBaseQueryLike,
+  CloudBaseDocRefLike,
+  CloudBaseCommandLike,
+} from "./database/cloudbase";
 export { RES_CODE, getMaxRequestTimes } from "./utils/constants";
 export type { RequestLogger } from "./utils/logger";
 export { createRequestLogger } from "./utils/logger";

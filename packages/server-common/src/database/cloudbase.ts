@@ -166,7 +166,7 @@ export interface CloudBaseDatabaseOptions {
  * @param command 查询指令（构造 _.in 指令）
  * @returns TCB 查询条件
  */
-function toTcbCondition(
+export function toTcbCondition(
   query: SemanticQuery,
   command: CloudBaseCommandLike,
 ): Record<string, unknown> {

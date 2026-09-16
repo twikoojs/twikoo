@@ -25,8 +25,32 @@
  */
 export const ABSENT: unique symbol = Symbol.for("twikoo.db.absent");
 
+/**
+ * 「不等于」哨兵：`{ isSpam: { [NOT]: true } }` 表示 `isSpam != true`。
+ * 字段缺失视为不等于（与 Mongo $ne 语义一致）。用于 1.x
+ * `isSpam: { $ne: true }` 的可见性过滤。
+ */
+export const NOT: unique symbol = Symbol.for("twikoo.db.not");
+
+/**
+ * 「大于」哨兵：`{ created: { [GT]: Date.now() - 600000 } }`（数值比较，
+ * 1.x limitFilter 的 created $gt 语义）。
+ */
+export const GT: unique symbol = Symbol.for("twikoo.db.gt");
+
+/** 单字段条件：标量等值，或 NOT/GT 哨兵对象 */
+export type FieldCondition =
+  | string
+  | number
+  | boolean
+  | null
+  | Array<string | number>
+  | typeof ABSENT
+  | { [NOT]?: unknown }
+  | { [GT]?: string | number };
+
 /** 语义查询的字段取值：标量 / 数组之一，或 {@link ABSENT} 哨兵（「字段不存在/为空」语义） */
-export type FieldValue = string | number | boolean | null | Array<string | number> | typeof ABSENT;
+export type FieldValue = FieldCondition;
 
 /**
  * 语义查询对象（§6.4 重点）：键为文档字段名，值为等值条件或 {@link ABSENT}。
@@ -76,6 +100,12 @@ export interface CommentDoc {
   rid?: string | null;
   /** 点赞用户 uid 列表 */
   like?: string[];
+  /** 是否置顶 */
+  top?: boolean;
+  /** 赞用户 uid 列表（1.x ups） */
+  ups?: string[];
+  /** 踩用户 uid 列表（1.x downs） */
+  downs?: string[];
   /** 是否垃圾评论 */
   isSpam?: boolean;
   /** 创建时间（毫秒时间戳） */

@@ -101,9 +101,9 @@ export function runDatabaseSemanticSuite(name: string, fixture: DbFixture): void
     it("排序：created 升/降序与多键排序（popular 形态）", async () => {
       const db = await fixture.create();
       try {
-        const ids = [];
+        const ids: Array<string | undefined> = [];
         for (let i = 0; i < 5; i++) {
-          const doc = await db.addComment(makeComment({ created: 1000 + i, ups: 5 - i }, i));
+          const doc = await db.addComment(makeComment({ created: 1000 + i, ups: [`${5 - i}`] }, i));
           ids.push(doc._id);
         }
         const newestFirst = await db.getComments({}, { sort: { created: -1 } });
@@ -112,7 +112,7 @@ export function runDatabaseSemanticSuite(name: string, fixture: DbFixture): void
         expect(oldestFirst[0].created).toBe(1000);
         // popular：ups 降序
         const popular = await db.getComments({}, { sort: { ups: -1 } });
-        expect(popular.map((c) => c.ups)).toEqual([5, 4, 3, 2, 1]);
+        expect(popular.map((c) => (c.ups as string[])?.[0])).toEqual(["5", "4", "3", "2", "1"]);
       } finally {
         await fixture.dispose(db);
       }
@@ -149,7 +149,9 @@ export function runDatabaseSemanticSuite(name: string, fixture: DbFixture): void
         expect(all).toHaveLength(2);
         const kept = await db.getComment("fixed-id-123");
         expect(kept?.nick).toBe("带id");
-        expect(all.every((c) => typeof c._id === "string" && c._id.length > 0)).toBe(true);
+        expect(all.every((c) => typeof c._id === "string" && (c._id as string).length > 0)).toBe(
+          true,
+        );
       } finally {
         await fixture.dispose(db);
       }

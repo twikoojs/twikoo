@@ -4,6 +4,19 @@
 import type { TkRequestBody } from "../ports/request";
 
 /**
+ * 请求参数校验（1.x validate 对齐：必传参数缺失/为空即报错）。
+ * @param event 已解析的请求体
+ * @param requiredParams 必传参数名列表
+ */
+export function validate(event: Record<string, unknown> = {}, requiredParams: string[] = []): void {
+  for (const requiredParam of requiredParams) {
+    if (!event[requiredParam]) {
+      throw new Error(`参数"${requiredParam}"不合法`);
+    }
+  }
+}
+
+/**
  * 客户端字段类型校验，防止 NoSQL 查询条件注入。
  *
  * 以下字段会直接参与数据库查询或作为评论归属标识：如果传入对象，会被数据库

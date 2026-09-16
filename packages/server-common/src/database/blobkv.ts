@@ -15,7 +15,7 @@
  *   公共库不感知平台 SDK——单测用内存 fake 即可覆盖。
  */
 import { randomUUID } from "node:crypto";
-import { ABSENT } from "../ports/database";
+import { ABSENT, GT, NOT } from "../ports/database";
 import type {
   CommentDoc,
   ConfigData,
@@ -73,6 +73,13 @@ function matchCondition(doc: CommentDoc, key: string, expected: unknown): boolea
   const actual = doc[key];
   if (expected === ABSENT) return actual === undefined || actual === null || actual === "";
   if (Array.isArray(expected)) return expected.includes(actual);
+  if (typeof expected === "object" && expected !== null && NOT in expected) {
+    // 「不等于」：缺失字段视为不等（与 Mongo $ne 一致）
+    return actual !== (expected as { [NOT]?: unknown })[NOT];
+  }
+  if (typeof expected === "object" && expected !== null && GT in expected) {
+    return typeof actual === "number" && actual > ((expected as { [GT]?: number })[GT] as number);
+  }
   return actual === expected;
 }
 

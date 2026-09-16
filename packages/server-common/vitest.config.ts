@@ -15,7 +15,10 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       include: ["src/**/*.ts"],
-      // 80% 阈值占位见根 vitest.config.ts，随 Wave 2 DB/服务用例接入时在本包真正生效
+      // lokijs.d.ts 为纯类型声明（无可执行语句），不计入覆盖率分母
+      exclude: ["src/types/**"],
+      // §9.2 门禁：@twikoojs/common 语句覆盖率 ≥ 80%（T18 起生效）
+      thresholds: { statements: 80 },
     },
   },
 });

@@ -23,9 +23,10 @@ import { runDatabaseSemanticSuite } from "./semantic-suite";
 
 /** mock 指令对象形态 */
 interface MockCommand {
-  __op: "in" | "inc";
+  __op: "in" | "inc" | "neq" | "gt";
   list?: unknown[];
   n?: number;
+  value?: unknown;
 }
 
 /** 判定值是否为 mock 指令 */
@@ -56,6 +57,12 @@ class MockTcbCollection implements CloudBaseCollectionLike {
         const list = expected.list ?? [];
         // TCB 语义：null 在列表中命中「字段缺失」
         return list.includes(actual) || (list.includes(null) && actual === undefined);
+      }
+      if (isCommand(expected) && expected.__op === "neq") {
+        return actual !== expected.value;
+      }
+      if (isCommand(expected) && expected.__op === "gt") {
+        return typeof actual === "number" && actual > (expected.value as number);
       }
       return actual === expected;
     });
@@ -183,6 +190,10 @@ class MockTcbDatabase implements CloudBaseDatabaseLike {
     in: (list: unknown[]): MockCommand => ({ __op: "in", list }),
     /** _.inc 指令 */
     inc: (n: number): MockCommand => ({ __op: "inc", n }),
+    /** _.neq 指令 */
+    neq: (value: unknown): MockCommand => ({ __op: "neq", value }),
+    /** _.gt 指令 */
+    gt: (value: unknown): MockCommand => ({ __op: "gt", value }),
   };
 
   /** 已创建集合（name → 实例） */

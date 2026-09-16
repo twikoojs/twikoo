@@ -225,6 +225,9 @@ importers:
 
   packages/server-common:
     dependencies:
+      '@cap.js/server':
+        specifier: ^4.0.5
+        version: 4.0.5
       '@twikoojs/shared':
         specifier: workspace:*
         version: link:../shared
@@ -370,6 +373,9 @@ packages:
   '@bcoe/v8-coverage@1.0.2':
     resolution: {integrity: sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA==}
     engines: {node: '>=18'}
+
+  '@cap.js/server@4.0.5':
+    resolution: {integrity: sha512-S902YIyGyiriNaexfqTzMy5ixxSb3/jYSJwr2gAY9d7XXoYftcifgij/11pjuiU72Ogm6XKZOggDB2DtjRMyww==}
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -3725,6 +3731,8 @@ snapshots:
       '@babel/helper-validator-identifier': 7.29.7
 
   '@bcoe/v8-coverage@1.0.2': {}
+
+  '@cap.js/server@4.0.5': {}
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:

@@ -16,7 +16,7 @@
  * `tcb.init()` 后把 `database()` 句柄注入本实现；公共库不静态依赖 SDK，
  * 单测以结构化 mock 覆盖（plan T16 验收方式）。
  */
-import { ABSENT } from "../ports/database";
+import { ABSENT, GT, NOT } from "../ports/database";
 import type {
   CommentDoc,
   ConfigData,
@@ -40,6 +40,18 @@ export interface CloudBaseCommandLike {
    * @returns 指令对象（透传给 SDK）
    */
   inc(n: number): unknown;
+  /**
+   * 不等于
+   * @param value 比较值
+   * @returns 指令对象（透传给 SDK）
+   */
+  neq(value: unknown): unknown;
+  /**
+   * 大于
+   * @param value 比较值
+   * @returns 指令对象（透传给 SDK）
+   */
+  gt(value: unknown): unknown;
 }
 
 /** CloudBase 查询链的项目使用面（collection().where() 返回值） */
@@ -166,6 +178,10 @@ function toTcbCondition(
       condition[key] = command.in(["", null]);
     } else if (Array.isArray(value)) {
       condition[key] = command.in(value);
+    } else if (typeof value === "object" && value !== null && NOT in value) {
+      condition[key] = command.neq(value[NOT]);
+    } else if (typeof value === "object" && value !== null && GT in value) {
+      condition[key] = command.gt(value[GT]);
     } else {
       condition[key] = value;
     }

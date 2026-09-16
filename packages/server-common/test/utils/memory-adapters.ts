@@ -6,7 +6,8 @@
  * 不使用本文件——它们分别用 mongodb-memory-server / 临时目录 Loki /
  * 共享契约 runner。
  */
-import { ABSENT } from "../../src/ports/database";
+import { ABSENT, GT, NOT } from "../../src/ports/database";
+import type { QueryOptions } from "../../src/ports/database";
 import type {
   Capabilities,
   CapChallengeData,
@@ -49,10 +50,24 @@ class MemoryDatabase implements Database {
     return [...this.comments.values()];
   }
 
-  /** 评论：按语义查询（内存实现只支持等值过滤，ABSENT 按字段缺失/空处理） */
-  async getComments(query: SemanticQuery): Promise<CommentDoc[]> {
-    const all = await this.getAllComments();
-    return all.filter((doc) => matches(doc, query));
+  /** 评论：按语义查询 + 排序/分页（内存形态） */
+  async getComments(query: SemanticQuery, options?: QueryOptions): Promise<CommentDoc[]> {
+    let result = (await this.getAllComments()).filter((doc) => matches(doc, query));
+    if (options?.sort) {
+      const entries = Object.entries(options.sort);
+      result = [...result].sort((a, b) => {
+        for (const [field, direction] of entries) {
+          const av = (a[field] as number | undefined) ?? 0;
+          const bv = (b[field] as number | undefined) ?? 0;
+          const diff = av - bv;
+          if (diff !== 0) return direction === -1 ? -diff : diff;
+        }
+        return 0;
+      });
+    }
+    if (options?.skip !== undefined) result = result.slice(options.skip);
+    if (options?.limit !== undefined) result = result.slice(0, options.limit);
+    return result;
   }
 
   /** 评论：计数 */
@@ -106,9 +121,9 @@ class MemoryDatabase implements Database {
     return this.config;
   }
 
-  /** 配置：保存 */
+  /** 配置：保存（合并语义，与端口契约一致） */
   async saveConfig(config: ConfigData): Promise<void> {
-    this.config = config;
+    this.config = { ...(this.config ?? {}), ...config };
   }
 
   /** 验证码：读取 */
@@ -137,6 +152,17 @@ function matches(doc: CommentDoc, query: SemanticQuery): boolean {
   return Object.entries(query).every(([key, expected]) => {
     const actual = doc[key];
     if (expected === ABSENT) return actual === undefined || actual === "" || actual === null;
+    if (typeof expected === "object" && expected !== null && "$in" in expected) {
+      // Mongo $in 语义：null 在列表中同时命中字段缺失
+      const list = (expected as { $in: unknown[] }).$in;
+      return list.includes(actual) || (list.includes(null) && actual === undefined);
+    }
+    if (typeof expected === "object" && expected !== null && NOT in expected) {
+      return actual !== (expected as { [NOT]?: unknown })[NOT];
+    }
+    if (typeof expected === "object" && expected !== null && GT in expected) {
+      return typeof actual === "number" && actual > ((expected as { [GT]?: number })[GT] as number);
+    }
     return actual === expected;
   });
 }

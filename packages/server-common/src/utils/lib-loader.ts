@@ -104,6 +104,14 @@ export interface AxiosLike {
    * @returns 响应
    */
   get(url: string, config?: unknown): Promise<{ data: unknown }>;
+  /**
+   * PUT 请求（S3 图床上传）
+   * @param url 地址
+   * @param data 载荷
+   * @param config 请求配置
+   * @returns 响应
+   */
+  put(url: string, data?: unknown, config?: unknown): Promise<{ data: unknown }>;
 }
 
 /** xml2js 使用面（导入 Disqus/Valine 等 XML 格式） */
@@ -403,6 +411,46 @@ export async function getHtmlToText(): Promise<HtmlToTextLike> {
       { selector: "img", format: "skip" },
     ],
   });
+}
+
+/** pushoo 使用面（20 渠道即时通知） */
+export interface PushooLike {
+  /**
+   * 发送即时通知
+   * @param channel 渠道名
+   * @param options 推送载荷（token/title/content/options）
+   * @returns 推送结果
+   */
+  (channel: string, options: Record<string, unknown>): Promise<unknown>;
+}
+
+/** @xsai/generate-text 使用面（LLM 垃圾检测） */
+export interface GenerateTextLike {
+  /**
+   * 生成文本
+   * @param options 生成配置（apiKey/baseURL/model/messages 等）
+   * @returns 生成结果
+   */
+  (options: unknown): Promise<{ text?: string }>;
+}
+
+/**
+ * 获取 pushoo（通知能力；全部适配器可用）。
+ * @returns pushoo 推送函数
+ */
+export async function getPushoo(): Promise<PushooLike> {
+  const mod = pickDefault(await loadLib("pushoo")) as PushooLike;
+  return mod;
+}
+
+/**
+ * 获取 @xsai/generate-text（ai 能力）。
+ * @param caps 平台能力声明
+ * @returns generateText 函数
+ */
+export async function getGenerateText(caps: Capabilities): Promise<GenerateTextLike> {
+  requireCapability(caps, "ai", "@xsai/generate-text");
+  return (await loadLib("@xsai/generate-text")) as GenerateTextLike;
 }
 
 /**

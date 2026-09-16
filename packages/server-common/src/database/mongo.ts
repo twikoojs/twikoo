@@ -20,7 +20,7 @@
  * 类型面经 `typeof import("mongodb")`（编译期擦除，不产生静态依赖）。
  */
 import { randomUUID } from "node:crypto";
-import { ABSENT } from "../ports/database";
+import { ABSENT, GT, NOT } from "../ports/database";
 import type {
   CommentDoc,
   ConfigData,
@@ -83,6 +83,12 @@ export function toMongoFilter(query: SemanticQuery): MongoDoc {
     } else if (Array.isArray(value)) {
       // 数组值 = 「属于集合之一」（1.x url $in getUrlsQuery(urls) 语义）
       filter[key] = { $in: value };
+    } else if (typeof value === "object" && value !== null && NOT in value) {
+      // 「不等于」语义：$ne（缺失字段视为不等，Mongo 原生语义）
+      filter[key] = { $ne: value[NOT] };
+    } else if (typeof value === "object" && value !== null && GT in value) {
+      // 「大于」语义：$gt
+      filter[key] = { $gt: value[GT] };
     } else {
       filter[key] = value;
     }

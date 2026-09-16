@@ -1,0 +1,5 @@
+dist/
+coverage/
+pnpm-lock.yaml
+docs/.vitepress/dist/
+node_modules/

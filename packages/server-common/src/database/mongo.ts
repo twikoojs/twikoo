@@ -239,9 +239,9 @@ export class MongoDatabase implements Database {
     return doc;
   }
 
-  /** 配置：全量保存（replaceOne + upsert：真替换语义，旧键随保存移除；文档主键保持稳定） */
+  /** 配置：保存（$set 合并语义，与 1.x writeConfig 对齐——setPassword 只写单键依赖合并；未初始化时 upsert 建档） */
   async saveConfig(config: ConfigData): Promise<void> {
-    await this.col("config").replaceOne({}, config, { upsert: true });
+    await this.col("config").updateOne({}, { $set: config as MongoDoc }, { upsert: true });
   }
 
   /** 验证码：按 key 读取（不存在返回 null） */

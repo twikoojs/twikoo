@@ -170,7 +170,7 @@ export function runDatabaseSemanticSuite(name: string, fixture: DbFixture): void
       }
     });
 
-    it("配置：未初始化 null → 保存 → 读取往返；全量保存为真替换（旧键移除）", async () => {
+    it("配置：未初始化 null → 保存 → 读取往返；保存为合并语义（1.x writeConfig $set 对齐）", async () => {
       const db = await fixture.create();
       try {
         expect(await db.getConfig()).toBeNull();
@@ -182,9 +182,14 @@ export function runDatabaseSemanticSuite(name: string, fixture: DbFixture): void
           SITE_NAME: "twikoo",
           MAIL_SUBJECT: "新评论",
         });
-        // 真替换：不含旧键的保存会移除旧键（两实现语义一致，T18 setConfig 负责先合并）
+        // 合并语义：单键保存不清掉既有键（1.x setPassword 只写 ADMIN_PASS 依赖此行为）
         await db.saveConfig({ ONLY_KEY: "x" });
-        expect(await db.getConfig()).toEqual({ ONLY_KEY: "x" });
+        expect(await db.getConfig()).toEqual({
+          ADMIN_PASS: "hash2",
+          SITE_NAME: "twikoo",
+          MAIL_SUBJECT: "新评论",
+          ONLY_KEY: "x",
+        });
       } finally {
         await fixture.dispose(db);
       }

@@ -286,18 +286,11 @@ export class LokiDatabase implements Database {
     return doc ? stripLokiMeta<ConfigData>(doc) : null;
   }
 
-  /** 配置：全量保存（真替换：旧键不在新配置中即移除，与 Mongo replaceOne 对齐） */
+  /** 配置：保存（合并语义，与 1.x writeConfig 对齐——setPassword 只写单键依赖合并） */
   async saveConfig(config: ConfigData): Promise<void> {
     const col = this.col("config");
     const existing = col.findOne({});
     if (existing) {
-      // 移除旧键再合并新值：保证「全量保存」语义（不是增量 $set）。
-      // $loki / meta 为 Loki 运行时元数据，必须保留（update 依赖 meta.version）
-      for (const key of Object.keys(existing)) {
-        if (key !== "$loki" && key !== "meta" && !(key in config)) {
-          delete existing[key];
-        }
-      }
       Object.assign(existing, config);
       col.update(existing);
     } else {

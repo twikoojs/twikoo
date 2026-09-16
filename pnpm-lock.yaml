@@ -223,7 +223,11 @@ importers:
 
   packages/server-cloudbase: {}
 
-  packages/server-common: {}
+  packages/server-common:
+    dependencies:
+      '@twikoojs/shared':
+        specifier: workspace:*
+        version: link:../shared
 
   packages/server-deta: {}
 

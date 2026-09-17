@@ -414,6 +414,9 @@ importers:
 
   packages/server-edgeone-makers:
     dependencies:
+      '@cap.js/server':
+        specifier: ^4.0.5
+        version: 4.0.5
       '@edgeone/pages-blob':
         specifier: latest
         version: 0.0.16

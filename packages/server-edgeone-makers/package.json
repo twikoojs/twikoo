@@ -30,7 +30,8 @@
     "bowser": "^2.11.0",
     "html-to-text": "^9.0.5",
     "marked": "^18.0.4",
-    "xml2js": "^0.6.0"
+    "xml2js": "^0.6.0",
+    "@cap.js/server": "^4.0.5"
   },
   "devDependencies": {
     "@types/node": "^22.20.2"

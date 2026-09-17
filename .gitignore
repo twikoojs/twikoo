@@ -5,3 +5,6 @@ coverage/
 *.log
 .DS_Store
 .idea/
+
+# T25 pnpm pack 传递依赖模拟产物
+pack-test/

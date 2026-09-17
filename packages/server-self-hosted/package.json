@@ -39,10 +39,10 @@
     "jsdom": "^22.1.0",
     "lokijs": "^1.5.12",
     "mongodb": "^6.3.0",
-    "nodemailer": "^9.0.5",
     "pushoo": "^0.1.12",
     "tencentcloud-sdk-nodejs-tms": "^4.1.293",
-    "xml2js": "^0.6.0"
+    "xml2js": "^0.6.0",
+    "nodemailer": "^9.0.5"
   },
   "devDependencies": {
     "@types/node": "^22.20.2"

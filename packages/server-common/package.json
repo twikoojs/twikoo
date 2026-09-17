@@ -80,7 +80,7 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^22.20.2",
+    "@types/node": "^22.20.3",
     "lokijs": "^1.5.12",
     "mongodb": "^6.3.0"
   },

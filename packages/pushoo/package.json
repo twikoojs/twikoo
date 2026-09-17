@@ -35,7 +35,7 @@
     "marked": "^18.0.4"
   },
   "devDependencies": {
-    "@types/node": "^22.20.2"
+    "@types/node": "^22.20.3"
   },
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

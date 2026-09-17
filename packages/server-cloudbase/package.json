@@ -42,6 +42,6 @@
     "xml2js": "^0.6.0"
   },
   "devDependencies": {
-    "@types/node": "^22.20.2"
+    "@types/node": "^22.20.3"
   }
 }

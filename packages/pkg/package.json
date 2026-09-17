@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@tsdown/exe": "0.23.0",
-    "@types/node": "^22.20.2",
+    "@types/node": "^22.20.3",
     "tsdown": "0.23.0"
   }
 }

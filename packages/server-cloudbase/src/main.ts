@@ -12,6 +12,12 @@ import {
   type TkResponse,
 } from "@twikoojs/common";
 
+/** @cloudbase/node-sdk 静态形态（v2 具名导出 / v3 default 导出，形状一致） */
+interface TcbSdkStatic {
+  SYMBOL_CURRENT_ENV: symbol;
+  init(options: { env: symbol }): { database(): CloudBaseDatabaseLike };
+}
+
 /** CloudBase 平台能力：全能力（§6.5 能力矩阵） */
 const cloudbaseCapabilities: Capabilities = defineCapabilities({
   mail: true,
@@ -50,8 +56,6 @@ export function toTkRequest(event: unknown): TkRequest {
 }
 
 /** 内部统一响应 → 云函数返回体（网关层承载状态码/CORS）。 */
-
-/** 内部统一响应 → 云函数返回体（网关层承载状态码/CORS）。 */
 export function fromTkResponse(response: TkResponse): Record<string, unknown> {
   return response.body;
 }
@@ -71,10 +75,12 @@ export function createTwikooFunc(
     if (database) return database;
     sdkPromise ??= (async () => {
       const specifier = "@cloudbase/node-sdk";
-      const tcb = (await import(/* @vite-ignore */ specifier)) as unknown as {
-        SYMBOL_CURRENT_ENV: symbol;
-        init(options: { env: symbol }): { database(): CloudBaseDatabaseLike };
-      };
+      // v3 起 ESM 命名导出不可用（命名空间仅 default/module.exports/version），
+      // 统一回退取 default，兼容 v2 具名与 v3 default 两种形态。
+      const mod = (await import(/* @vite-ignore */ specifier)) as unknown as {
+        default?: TcbSdkStatic;
+      } & TcbSdkStatic;
+      const tcb: TcbSdkStatic = mod.default ?? mod;
       return tcb.init({ env: tcb.SYMBOL_CURRENT_ENV }).database();
     })();
     database = await sdkPromise;
@@ -85,24 +91,18 @@ export function createTwikooFunc(
     const db = await getDatabase();
     const handler = createHandler({
       request: {
-        /**
-         *
-         */
+        /** 事件已在上游转换为统一请求 */
         toTkRequest: () => request,
       },
       response: { fromTkResponse },
       database: new CloudBaseDatabase({ database: db }),
       storage: { challenges: {} as never, tokens: {} as never },
       mailer: {
-        /**
-         *
-         */
+        /** CloudBase 侧不直发邮件（由 common 内部按需处理） */
         send: async () => {},
       },
       notifier: {
-        /**
-         *
-         */
+        /** CloudBase 侧不直发推送（由 common 内部按需处理） */
         notify: async () => {},
       },
       capabilities: cloudbaseCapabilities,
@@ -113,8 +113,6 @@ export function createTwikooFunc(
 
 /** 装配缓存（main 懒加载语义） */
 let mainFn: ((event: unknown) => Promise<Record<string, unknown>>) | null = null;
-
-/** CloudBase 云函数入口（exports.main 导出名硬约束，D-22）。 */
 
 /** 云函数入口（exports.main 导出名硬约束，D-22）。 */
 export async function main(event: unknown): Promise<Record<string, unknown>> {

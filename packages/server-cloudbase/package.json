@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@cap.js/server": "^4.0.5",
-    "@cloudbase/node-sdk": "^2.5.0",
+    "@cloudbase/node-sdk": "^3.18.3",
     "@imaegoo/node-ip2region": "^2.1.1",
     "@twikoojs/common": "workspace:*",
     "@twikoojs/shared": "workspace:*",

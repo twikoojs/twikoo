@@ -12,8 +12,8 @@
   },
   "devDependencies": {
     "@types/node": "^22.20.3",
-    "bulma": "^0.8.2",
-    "katex": "^0.12.0",
+    "bulma": "^1.0.4",
+    "katex": "^0.18.7",
     "vite": "^8.3.0"
   }
 }

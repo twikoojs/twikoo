@@ -23,7 +23,8 @@ const require = createRequire(import.meta.url);
 
 /**
  * 单文件资产：`node_modules` 内源路径 → vendor 内目标相对路径。
- * 版本与 1.x demo 页 CDN 引用对齐（bulma 0.8.x / katex 0.12.x），保证视觉一致。
+ * 注意：源路径随 bulma/katex 大版本可能变动，升级后应先跑一次本脚本 + demo 测试确认
+ * 四类资产（bulma.min.css / katex.min.css / katex.min.js / auto-render.min.js）仍在原位。
  */
 const FILE_ASSETS = [
   { pkg: "bulma", from: "css/bulma.min.css", to: "bulma/bulma.min.css" },

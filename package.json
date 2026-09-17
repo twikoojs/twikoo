@@ -18,7 +18,9 @@
     "check:no-js": "node scripts/check-no-js-sources.mjs",
     "typecheck": "pnpm -r --if-present run typecheck",
     "prepare": "simple-git-hooks",
-    "env:check": "node scripts/env-check.mjs"
+    "env:check": "node scripts/env-check.mjs",
+    "check:workflows": "node scripts/check-workflows.mjs",
+    "release:check": "node scripts/release-set-version.mjs --check"
   },
   "lint-staged": {
     "*.{js,mjs,cjs,ts,vue}": [
@@ -36,6 +38,7 @@
     "@vitest/coverage-v8": "5.0.1",
     "@vue/eslint-config-typescript": "^14.9.0",
     "@vue/test-utils": "^2.5.0",
+    "actionlint": "^2.0.6",
     "concurrently": "^9.2.1",
     "cross-env": "^10.1.0",
     "eslint": "^9.39.5",
@@ -52,6 +55,7 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.70.0",
     "vitest": "^5.0.1",
-    "vue": "^3.5.42"
+    "vue": "^3.5.42",
+    "yaml": "^2.9.1"
   }
 }

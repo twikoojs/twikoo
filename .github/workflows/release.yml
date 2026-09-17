@@ -1,0 +1,207 @@
+# Twikoo 2.0 发布工作流（D-21 / §4.3）
+#
+# 触发方式：**人工在 GitHub 网页创建 Release**（不提供 workflow_dispatch，不自动创建 Release）。
+#   - Release tag 即最终版本号（容忍 `v` 前缀，CI 统一 strip）
+#   - 「Set as a pre-release」勾选框决定 npm dist-tag：勾了 → beta，未勾 → latest
+#   - 版本号不进入 git：仓库内 8 个发布包恒为 0.0.0，仅在本工作流中覆写后发布
+#
+# 发布顺序（§4.3.2 依赖关系强制分批）：
+#   第一批 @twikoojs/shared / @twikoojs/common / pushoo / twikoo
+#     → verify gate（npm 可见性轮询 600s / 15s）
+#   第二批 twikoo-func / twikoo-vercel / tkserver / twikoo-netlify（依赖 @twikoojs/common）
+#     → verify gate（8 包全部可见）
+#   → docker（needs 第二批）→ pkg SEA 产物上传到已有 Release
+
+name: Release
+
+permissions:
+  contents: write
+  id-token: write
+
+on:
+  release:
+    types: [published]
+
+env:
+  NODE_VERSION: "24"
+  NPM_REGISTRY: https://registry.npmjs.org
+
+jobs:
+  validate:
+    name: 校验版本（格式 / 基线 / 单调性 / 未发布过）
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.resolve.outputs.version }}
+      npm_tag: ${{ steps.resolve.outputs.npm_tag }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: ${{ env.NPM_REGISTRY }}
+      - name: 解析并校验 Release tag
+        id: resolve
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          PRERELEASE: ${{ github.event.release.prerelease }}
+        run: |
+          set -euo pipefail
+          VERSION="${TAG#v}"
+          if ! printf '%s' "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z][0-9A-Za-z.-]*)?$'; then
+            echo "::error::Release tag \"$TAG\" 不是合法版本号（期望 x.y.z 或 x.y.z-beta.n）"
+            exit 1
+          fi
+          if [ "$PRERELEASE" = "true" ]; then NPM_TAG=beta; else NPM_TAG=latest; fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "npm_tag=$NPM_TAG" >> "$GITHUB_OUTPUT"
+          echo "版本号 ${VERSION}（npm dist-tag: ${NPM_TAG}）"
+      - name: 基线校验（8 个发布包 version 必须为 0.0.0）
+        run: node scripts/release-set-version.mjs --check
+      - name: 单调性校验（新版本必须大于已发布的最高同线版本）
+        run: node scripts/release-version-check.mjs monotonic "${{ steps.resolve.outputs.version }}"
+      - name: 未发布过校验
+        run: node scripts/release-version-check.mjs unpublished "${{ steps.resolve.outputs.version }}"
+
+  publish-batch-1:
+    name: 第一批发布 · ${{ matrix.package }}
+    needs: validate
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - package: "@twikoojs/shared"
+            dir: packages/shared
+          - package: "@twikoojs/common"
+            dir: packages/server-common
+          - package: pushoo
+            dir: packages/pushoo
+          - package: twikoo
+            dir: packages/client
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: ${{ env.NPM_REGISTRY }}
+      - run: corepack enable && pnpm install --frozen-lockfile
+      - name: 覆写版本号
+        run: node scripts/release-set-version.mjs "${{ needs.validate.outputs.version }}"
+      - name: 构建（含其依赖）
+        run: pnpm --filter "${{ matrix.package }}..." build
+      - name: 发布到 npm（E403 等错误直接失败，不吞）
+        working-directory: ${{ matrix.dir }}
+        env:
+          NPM_TAG: ${{ needs.validate.outputs.npm_tag }}
+        run: npm publish --provenance --tag "$NPM_TAG"
+
+  verify-batch-1:
+    name: Gate · 第一批在 npm 可见
+    needs: [validate, publish-batch-1]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: ${{ env.NPM_REGISTRY }}
+      - run: node scripts/verify-npm.mjs "${{ needs.validate.outputs.version }}" "${{ needs.validate.outputs.npm_tag }}" 1
+
+  publish-batch-2:
+    name: 第二批发布 · ${{ matrix.package }}
+    needs: [validate, verify-batch-1]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - package: twikoo-func
+            dir: packages/server-cloudbase
+          - package: twikoo-vercel
+            dir: packages/server-vercel
+          - package: tkserver
+            dir: packages/server-self-hosted
+          - package: twikoo-netlify
+            dir: packages/server-netlify
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: ${{ env.NPM_REGISTRY }}
+      - run: corepack enable && pnpm install --frozen-lockfile
+      - name: 覆写版本号
+        run: node scripts/release-set-version.mjs "${{ needs.validate.outputs.version }}"
+      - name: 构建（含其依赖）
+        run: pnpm --filter "${{ matrix.package }}..." build
+      - name: 发布到 npm（E403 等错误直接失败，不吞）
+        working-directory: ${{ matrix.dir }}
+        env:
+          NPM_TAG: ${{ needs.validate.outputs.npm_tag }}
+        run: npm publish --provenance --tag "$NPM_TAG"
+
+  verify-batch-2:
+    name: Gate · 8 个包在 npm 可见
+    needs: [validate, publish-batch-2]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: ${{ env.NPM_REGISTRY }}
+      - run: node scripts/verify-npm.mjs "${{ needs.validate.outputs.version }}" "${{ needs.validate.outputs.npm_tag }}" 2
+
+  publish-docker:
+    name: Docker 镜像
+    needs: [validate, verify-batch-2]
+    if: ${{ !github.event.release.prerelease }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: 构建并推送 amd64 / arm64
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            imaegoo/twikoo:latest
+            imaegoo/twikoo:${{ needs.validate.outputs.version }}
+      - name: 构建并推送 arm32v7
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/arm/v7
+          push: true
+          tags: |
+            imaegoo/twikoo:arm32v7
+            imaegoo/twikoo:${{ needs.validate.outputs.version }}-arm32v7
+          build-args: NODE_IMAGE=arm32v7/node
+
+  publish-pkg:
+    name: SEA 可执行产物
+    needs: [validate, verify-batch-2]
+    if: ${{ !github.event.release.prerelease }}
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: ${{ env.NPM_REGISTRY }}
+      - run: corepack enable && pnpm install --frozen-lockfile
+      - name: 构建 SEA 产物（nodeVersion 见 packages/pkg/package.json）
+        run: pnpm --filter twikoo-pkg build:exe
+      - name: 上传产物到已有 Release（不创建 Release）
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ github.event.release.tag_name }}" packages/pkg/dist/* --clobber

@@ -118,6 +118,9 @@ importers:
       '@vue/test-utils':
         specifier: ^2.5.0
         version: 2.5.0(@vue/compiler-dom@3.5.42)(@vue/server-renderer@3.5.42)(vue@3.5.42(typescript@5.9.3))
+      actionlint:
+        specifier: ^2.0.6
+        version: 2.0.6
       concurrently:
         specifier: ^9.2.1
         version: 9.2.4
@@ -169,6 +172,9 @@ importers:
       vue:
         specifier: ^3.5.42
         version: 3.5.42(typescript@5.9.3)
+      yaml:
+        specifier: ^2.9.1
+        version: 2.9.1
 
   docs:
     devDependencies:
@@ -2001,6 +2007,9 @@ packages:
     resolution: {integrity: sha512-lGq+9yr1/GuAWaVYIHRjvvySG5/4VfKIvC8EWxStPdcDh/Ka7FG3twP6v4d5BkravUilhIAsG4Qj83t02LWUPQ==}
     engines: {node: '>=0.4.0'}
     hasBin: true
+
+  actionlint@2.0.6:
+    resolution: {integrity: sha512-tNx8f48yJNSLXTIygGntu5dSZlIZblDt8sR7pIs7EEmmb2PkEF87d+3UKZV2GUgCuN9Awj7k4ZPrwdAxFWEqgw==}
 
   agent-base@6.0.2:
     resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
@@ -5297,6 +5306,8 @@ snapshots:
 
   acorn@8.18.0: {}
 
+  actionlint@2.0.6: {}
+
   agent-base@6.0.2(supports-color@7.2.0):
     dependencies:
       debug: 4.4.3(supports-color@7.2.0)
@@ -7782,8 +7793,7 @@ snapshots:
 
   y18n@5.0.8: {}
 
-  yaml@2.9.1:
-    optional: true
+  yaml@2.9.1: {}
 
   yargs-parser@21.1.1: {}
 

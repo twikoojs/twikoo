@@ -12,7 +12,7 @@
   ],
   "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "./dist/index.cjs",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
@@ -23,26 +23,30 @@
   },
   "homepage": "https://pushoo.js.org/",
   "scripts": {
-    "build": "tsc",
+    "build": "tsup",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "lint": "eslint src/**",
-    "test": "ts-node src/test.ts"
+    "test": "vitest run"
   },
   "dependencies": {
-    "axios": "^0.26.1",
+    "axios": "^1.6.2",
     "lodash": "^4.17.21",
     "markdown-to-txt": "^2.0.1",
-    "marked": "^4.1.0"
+    "marked": "^18.0.4"
   },
   "devDependencies": {
-    "@types/marked": "^4.0.7",
-    "@types/node": "^22.14.1",
-    "@typescript-eslint/eslint-plugin": "^5.38.0",
-    "@typescript-eslint/parser": "5.38.0",
-    "eslint": "8.10.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "2.25.4",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.8.3"
-  }
+    "@types/node": "^22.20.2"
+  },
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ]
 }

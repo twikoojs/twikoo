@@ -233,7 +233,9 @@ async function noticeServerChan(options: CommonOptions) {
   let url: string;
   let param: URLSearchParams;
   if (options.token.startsWith("sctp")) {
-    url = `https://${options.token.match(/^sctp(\d+)t/)[1]}.push.ft07.com/send`;
+    const sctpMatch = options.token.match(/^sctp(\d+)t/);
+    if (!sctpMatch) throw new Error("invalid serverchan sctp token");
+    url = `https://${sctpMatch[1]}.push.ft07.com/send`;
     param = new URLSearchParams({
       title: options.title || getTitle(options.content),
       desp: options.content,
@@ -308,7 +310,7 @@ async function noticeDingTalk(options: CommonOptions) {
       ? (options.title ? `${options.title}\n` : "") + getTxt(options.content)
       : options.content;
 
-  const msgBody = {
+  const msgBody: Record<string, unknown> = {
     msgtype,
   };
 
@@ -545,7 +547,7 @@ async function noticeIfttt(options: CommonOptions) {
   const response = await axios.post(
     url,
     {
-      value1: options.options?.ifttt?.value1 || getTxt(options.title),
+      value1: options.options?.ifttt?.value1 || getTxt(options.title || ""),
       value2: options.options?.ifttt?.value2 || getTxt(options.content),
       value3: options.options?.ifttt?.value3,
     },
@@ -703,7 +705,8 @@ async function notice(channel: ChannelType | string, options: CommonOptions) {
     }
     console.debug(`[PUSHOO] Send to <${channel}> result:`, data);
     return data;
-  } catch (e) {
+  } catch (caught) {
+    const e = caught instanceof Error ? caught : new Error(String(caught));
     console.error("[PUSHOO] Got error:", e.message);
     return { error: e };
   }

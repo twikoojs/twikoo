@@ -38,10 +38,15 @@ const caps: Capabilities = {
 };
 
 const noopLogger: RequestLogger = {
+  /** 详尽级别日志（集成测试桩：忽略） */
   verbose: () => {},
+  /** 普通信息日志（集成测试桩：忽略） */
   info: () => {},
+  /** 警告日志（集成测试桩：忽略） */
   warn: () => {},
+  /** 错误日志（集成测试桩：忽略） */
   error: () => {},
+  /** 返回已累积的日志文本（集成测试桩：空字符串） */
   getText: () => "",
   requestId: "integration",
 };

@@ -22,6 +22,16 @@ const INTERVAL = parseInt(process.env.VERIFY_INTERVAL ?? "", 10) || 15;
 const REGISTRY = process.env.NPM_REGISTRY ?? "https://registry.npmjs.org";
 
 /**
+ * Windows 下 npm 是 `npm.cmd`，`execFileSync("npm", …)` 会 ENOENT 导致所有包恒判为
+ * 「不可见」（gate 退化为必然超时）。故在 Windows 上经 shell 执行。
+ */
+const NPM_EXEC_OPTIONS = {
+  encoding: "utf8",
+  stdio: ["ignore", "pipe", "pipe"],
+  shell: process.platform === "win32",
+};
+
+/**
  * 查询包在指定 dist-tag 下的版本。
  * @param name 包名
  * @param tag dist-tag（beta / latest）
@@ -29,10 +39,11 @@ const REGISTRY = process.env.NPM_REGISTRY ?? "https://registry.npmjs.org";
  */
 function versionOfTag(name, tag) {
   try {
-    return execFileSync("npm", ["view", `${name}@${tag}`, "version", `--registry=${REGISTRY}`], {
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "pipe"],
-    }).trim();
+    return execFileSync(
+      "npm",
+      ["view", `${name}@${tag}`, "version", `--registry=${REGISTRY}`],
+      NPM_EXEC_OPTIONS,
+    ).trim();
   } catch {
     return "";
   }

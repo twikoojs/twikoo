@@ -37,7 +37,7 @@
     "jsdom": "^22.1.0",
     "marked": "^18.0.4",
     "nodemailer": "^9.0.5",
-    "pushoo": "^0.1.12",
+    "pushoo": "workspace:^",
     "tencentcloud-sdk-nodejs-tms": "^4.1.293",
     "xml2js": "^0.6.0"
   },

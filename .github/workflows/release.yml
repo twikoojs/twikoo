@@ -95,6 +95,11 @@ jobs:
         working-directory: ${{ matrix.dir }}
         env:
           NPM_TAG: ${{ needs.validate.outputs.npm_tag }}
+          # npm 发布凭证（§4.3.0.2：发布用 NPM_TOKEN PAT，与 GITHUB_TOKEN 无关）。
+          # actions/setup-node 的 registry-url 会写入 `.npmrc` 的
+          # `_authToken=${NODE_AUTH_TOKEN}`，因此必须在此显式注入该环境变量；
+          # 否则 npm publish 会直接 ENEEDAUTH 失败（首跑实测前的静态审查发现）。
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --provenance --tag "$NPM_TAG"
 
   verify-batch-1:
@@ -140,6 +145,11 @@ jobs:
         working-directory: ${{ matrix.dir }}
         env:
           NPM_TAG: ${{ needs.validate.outputs.npm_tag }}
+          # npm 发布凭证（§4.3.0.2：发布用 NPM_TOKEN PAT，与 GITHUB_TOKEN 无关）。
+          # actions/setup-node 的 registry-url 会写入 `.npmrc` 的
+          # `_authToken=${NODE_AUTH_TOKEN}`，因此必须在此显式注入该环境变量；
+          # 否则 npm publish 会直接 ENEEDAUTH 失败（首跑实测前的静态审查发现）。
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --provenance --tag "$NPM_TAG"
 
   verify-batch-2:

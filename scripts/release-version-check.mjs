@@ -19,6 +19,16 @@ import { compareVersions, majorMinorOf, PUBLISH_PACKAGES } from "./release-packa
 const REGISTRY = process.env.NPM_REGISTRY ?? "https://registry.npmjs.org";
 
 /**
+ * Windows 下 npm 是 `npm.cmd`，`execFileSync("npm", …)` 会直接 ENOENT 被 catch 吞掉，
+ * 导致「包从未发布过」的误判（本地发布预演失效）。故在 Windows 上经 shell 执行。
+ */
+const NPM_EXEC_OPTIONS = {
+  encoding: "utf8",
+  stdio: ["ignore", "pipe", "pipe"],
+  shell: process.platform === "win32",
+};
+
+/**
  * 查询某包在 npm 上的全部版本。
  * @param name 包名
  * @returns 版本数组（包不存在返回空数组）
@@ -28,10 +38,7 @@ function publishedVersions(name) {
     const out = execFileSync(
       "npm",
       ["view", name, "versions", "--json", `--registry=${REGISTRY}`],
-      {
-        encoding: "utf8",
-        stdio: ["ignore", "pipe", "pipe"],
-      },
+      NPM_EXEC_OPTIONS,
     );
     const parsed = JSON.parse(out);
     return Array.isArray(parsed) ? parsed : [parsed];
@@ -52,7 +59,7 @@ function isPublished(name, version) {
     const out = execFileSync(
       "npm",
       ["view", `${name}@${version}`, "version", `--registry=${REGISTRY}`],
-      { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] },
+      NPM_EXEC_OPTIONS,
     );
     return out.trim() === version;
   } catch {

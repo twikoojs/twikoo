@@ -21,6 +21,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "start": "node dist/server.js",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run"
   },
@@ -38,6 +39,7 @@
     "html-to-text": "^9.0.5",
     "jsdom": "^22.1.0",
     "lokijs": "^1.5.12",
+    "marked": "^18.0.4",
     "mongodb": "^6.3.0",
     "pushoo": "^0.1.12",
     "tencentcloud-sdk-nodejs-tms": "^4.1.293",

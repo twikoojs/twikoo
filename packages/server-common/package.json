@@ -12,10 +12,70 @@
     "@twikoojs/shared": "workspace:*"
   },
   "peerDependencies": {
-    "mongodb": "^6.3.0"
+    "@imaegoo/node-ip2region": "^2.1.1",
+    "@xsai/generate-text": "^0.2.2",
+    "akismet-api": "^5.1.0",
+    "axios": "^1.6.2",
+    "bowser": "^2.11.0",
+    "dompurify": "^3.4.14",
+    "form-data": "^4.0.0",
+    "html-to-text": "^9.0.5",
+    "jsdom": "^22.1.0",
+    "lokijs": "^1.5.12",
+    "marked": "^18.0.4",
+    "mongodb": "^6.3.0",
+    "nodemailer": "^9.0.5",
+    "pushoo": "^0.1.12",
+    "tencentcloud-sdk-nodejs-tms": "^4.1.293",
+    "xml2js": "^0.6.0"
   },
   "peerDependenciesMeta": {
+    "@imaegoo/node-ip2region": {
+      "optional": true
+    },
+    "@xsai/generate-text": {
+      "optional": true
+    },
+    "akismet-api": {
+      "optional": true
+    },
+    "axios": {
+      "optional": true
+    },
+    "bowser": {
+      "optional": true
+    },
+    "dompurify": {
+      "optional": true
+    },
+    "form-data": {
+      "optional": true
+    },
+    "html-to-text": {
+      "optional": true
+    },
+    "jsdom": {
+      "optional": true
+    },
+    "lokijs": {
+      "optional": true
+    },
+    "marked": {
+      "optional": true
+    },
     "mongodb": {
+      "optional": true
+    },
+    "nodemailer": {
+      "optional": true
+    },
+    "pushoo": {
+      "optional": true
+    },
+    "tencentcloud-sdk-nodejs-tms": {
+      "optional": true
+    },
+    "xml2js": {
       "optional": true
     }
   },

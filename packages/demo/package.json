@@ -2,7 +2,18 @@
   "name": "@twikoojs/demo",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
+  "description": "Twikoo 2.0 本地演示工程（pnpm demo：demo 页 + 客户端 watch + tkserver，完全离线，D-6）",
   "scripts": {
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "prepare-assets": "node scripts/prepare-assets.mjs",
+    "dev": "node scripts/prepare-assets.mjs && vite",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.2",
+    "bulma": "^0.8.2",
+    "katex": "^0.12.0",
+    "vite": "^6.0.0"
   }
 }

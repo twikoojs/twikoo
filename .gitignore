@@ -8,3 +8,9 @@ coverage/
 
 # T25 pnpm pack 传递依赖模拟产物
 pack-test/
+
+# T35 demo：本地化 vendor 资产（由 scripts/prepare-assets.mjs 从 npm 依赖复制）
+packages/demo/.vendor/
+
+# T35/T36 demo 后端本地数据目录（TWIKOO_DATA=../../data，LokiJS db.json）
+data/

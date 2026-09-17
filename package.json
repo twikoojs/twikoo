@@ -8,7 +8,8 @@
   },
   "scripts": {
     "dev": "echo \"TODO: wire up dev server in a later wave (T9)\"",
-    "demo": "echo \"TODO: wire up demo in a later wave (T35)\"",
+    "demo:build": "pnpm -r --filter @twikoojs/common --filter tkserver --filter twikoo run build",
+    "demo": "pnpm run demo:build && concurrently -k -n client,server,demo -c blue,green,magenta \"pnpm --filter twikoo build:watch\" \"cross-env TWIKOO_DATA=../../data pnpm --filter tkserver start\" \"pnpm --filter @twikoojs/demo dev\"",
     "build": "pnpm -r --if-present run build",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
@@ -35,6 +36,8 @@
     "@vitest/coverage-v8": "5.0.1",
     "@vue/eslint-config-typescript": "^14.9.0",
     "@vue/test-utils": "^2.5.0",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-jsdoc": "^64.5.0",

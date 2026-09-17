@@ -122,6 +122,49 @@ describe("tkserver handler（T22）", () => {
   });
 });
 
+/**
+ * 回归（T35 端到端冒烟暴露）：D-2 把重依赖外部化到适配器安装，
+ * 而 pnpm isolated 链接下适配器的 node_modules 不在 common 自身解析路径上——
+ * 若不把重依赖声明为 `@twikoojs/common` 的 optional peerDependencies，
+ * `await import("jsdom")` 会在 common 内 MODULE_NOT_FOUND，COMMENT_SUBMIT 直接 1000 失败。
+ * 本用例**不注入任何替身**（不 setCustomLibs），走真实 jsdom + DOMPurify 解析。
+ */
+describe("tkserver 真实重依赖解析（D-2 / §6.5.1 回归）", () => {
+  it("COMMENT_SUBMIT：真实 jsdom+DOMPurify 加载成功且 XSS 内容被清洗", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "tkserver-real-libs-"));
+    const handler = createTkserverHandler({ dataDir: join(dir, "data") });
+    const submit = makeRes();
+    await handler(
+      {
+        method: "POST",
+        headers: {},
+        body: {
+          event: "COMMENT_SUBMIT",
+          nick: "回归",
+          mail: "regression@example.com",
+          url: "/demo.html",
+          ua: "UA",
+          comment: "<p>回归评论</p><script>alert(1)</script>",
+        },
+      },
+      submit.res,
+    );
+    const submitted = JSON.parse(submit.out.body as string) as { code: number; id?: string };
+    expect(submitted.code).toBe(0);
+    expect(typeof submitted.id).toBe("string");
+
+    const get = makeRes();
+    await handler(
+      { method: "POST", headers: {}, body: { event: "COMMENT_GET", url: "/demo.html" } },
+      get.res,
+    );
+    const listed = get.out.body as string;
+    expect(listed).toContain("回归评论");
+    expect(listed).not.toContain("<script");
+    rmSync(dir, { recursive: true, force: true });
+  }, 30000);
+});
+
 /** QA+ 全流程辅助：spawn dist/server.js（随机端口）→ HTTP 请求 → SIGTERM */
 function spawnServer(env: NodeJS.ProcessEnv): {
   proc: ReturnType<typeof spawn>;

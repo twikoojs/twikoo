@@ -48,7 +48,16 @@ withDefaults(
     /** 显示字数统计 */
     showWordLimit?: boolean;
   }>(),
-  { modelValue: "", type: "text", placeholder: "", rows: 3, disabled: false, showWordLimit: false },
+  {
+    modelValue: "",
+    type: "text",
+    placeholder: "",
+    rows: 3,
+    disabled: false,
+    // 显式 undefined：语义不变（未传即不限长），仅为满足 vue/require-default-prop
+    maxlength: undefined,
+    showWordLimit: false,
+  },
 );
 
 /** v-model 与 input 事件 */

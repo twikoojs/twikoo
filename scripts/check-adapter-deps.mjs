@@ -19,7 +19,7 @@ const CAPABILITY_DEPS = {
 };
 
 /** 全能力适配器必备的通用依赖（含策略一致的轻量库） */
-const COMMON_DEPS = ["axios", "bowser", "html-to-text", "xml2js"];
+const COMMON_DEPS = ["axios", "bowser", "html-to-text", "marked", "xml2js"];
 
 /** EO Makers 的 Blob KV 依赖（受限能力形态） */
 const EO_EXTRA_DEPS = ["@edgeone/pages-blob"];

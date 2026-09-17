@@ -5,6 +5,7 @@
  * 内嵌 Cap 未启用语义）、EO 体积门禁脚本、行数门禁。
  */
 import { readFileSync } from "node:fs";
+import { countSourceLines } from "../../../test/utils/line-count";
 import { describe, expect, it } from "vitest";
 import { createEoMakersFunc, eoCapabilities } from "../src/main";
 import type { EoEventLike } from "../src/main";
@@ -117,13 +118,9 @@ describe("twikoo-edgeone-makers 薄适配器（T24）", () => {
   });
 
   it("源码行数门禁：main.ts + index.ts < 150 行", () => {
-    /**
-     *
-     */
+    /** 读取相对路径源文件并统计行数（统一口径，见 countSourceLines） */
     const lines = (path: string): number =>
-      readFileSync(new URL(path, import.meta.url), "utf8")
-        .trimEnd()
-        .split("\n").length;
+      countSourceLines(readFileSync(new URL(path, import.meta.url), "utf8"));
     expect(lines("../src/main.ts") + lines("../src/index.ts")).toBeLessThanOrEqual(150);
   });
 });

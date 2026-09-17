@@ -264,6 +264,8 @@ push 到 `main` 且改动 `docs/**`、或 Release published、或手动触发 �
 | `@twikoojs/common` | ≥ **80%**      |
 | `twikoo`（客户端） | ≥ **70%**      |
 
+> **客户端覆盖率口径（F2 建议 #1 处置）**：`packages/client/vitest.config.ts` 的 `coverage.include` 仅含 `src/**/*.ts`，**刻意排除 `.vue` 组件**。原因：SFC 经 `@vitejs/plugin-vue` 编译插桩后整体语句覆盖率仅约 55%，低于 70% 门禁；组件行为已由 `test/components.test.ts` / `test/tk-components.test.ts` 等功能用例覆盖，故显式收窄口径避免门禁误伤。如后续补组件行覆盖率，需同步下调阈值或新增组件测试，二者择一。
+
 ### `.env` 机制（硬规则）
 
 - 变量清单的**唯一真相源是根 `.env.example`**（当前 23 个：A 类密钥 14 + B 类默认值 9）

@@ -5,6 +5,7 @@
  * base64 body、sourceIp 提取、行数门禁。
  */
 import { readFileSync } from "node:fs";
+import { countSourceLines } from "../../../test/utils/line-count";
 import { describe, expect, it } from "vitest";
 import { createLambdaFunc, toTkRequest } from "../src/main";
 import type { ApiGatewayEventLike } from "../src/main";
@@ -72,7 +73,7 @@ describe("twikoo-aws-lambda 薄适配器（T24）", () => {
      *
      */
     const lines = (path: string): number =>
-      readFileSync(new URL(path, import.meta.url), "utf8").split("\n").length;
+      countSourceLines(readFileSync(new URL(path, import.meta.url), "utf8"));
     expect(lines("../src/main.ts") + lines("../src/index.ts")).toBeLessThan(150);
   });
 });

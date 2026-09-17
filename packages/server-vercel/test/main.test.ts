@@ -5,6 +5,7 @@
  * 429 状态码透传、OPTIONS 204）、BC-13 依赖指向（@twikoojs/common）、行数门禁。
  */
 import { readFileSync } from "node:fs";
+import { countSourceLines } from "../../../test/utils/line-count";
 import { describe, expect, it } from "vitest";
 import { createVercelFunc, toTkRequest, default as vercelHandler } from "../src/main";
 import type { VercelRequestLike, VercelResponseLike } from "../src/main";
@@ -145,7 +146,7 @@ describe("twikoo-vercel 薄适配器（T21）", () => {
      *
      */
     const lines = (path: string): number =>
-      readFileSync(new URL(path, import.meta.url), "utf8").split("\n").length;
+      countSourceLines(readFileSync(new URL(path, import.meta.url), "utf8"));
     expect(lines("../src/main.ts") + lines("../src/index.ts")).toBeLessThan(150);
   });
 });

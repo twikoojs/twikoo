@@ -6,6 +6,7 @@
  * BC-13（dependencies 无 twikoo-vercel）、行数门禁。
  */
 import { readFileSync } from "node:fs";
+import { countSourceLines } from "../../../test/utils/line-count";
 import { describe, expect, it } from "vitest";
 import { createNetlifyFunc, handler, toTkRequest } from "../src/main";
 import type { NetlifyEventLike } from "../src/main";
@@ -85,7 +86,7 @@ describe("twikoo-netlify 薄适配器（T23）", () => {
      *
      */
     const lines = (path: string): number =>
-      readFileSync(new URL(path, import.meta.url), "utf8").split("\n").length;
+      countSourceLines(readFileSync(new URL(path, import.meta.url), "utf8"));
     expect(lines("../src/main.ts") + lines("../src/index.ts")).toBeLessThan(150);
   });
 });

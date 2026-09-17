@@ -5,6 +5,7 @@
  * 验证 main 入口形态 / BC-12 转发导出 / <150 行源码门禁。
  */
 import { readFileSync } from "node:fs";
+import { countSourceLines } from "../../../test/utils/line-count";
 import { describe, expect, it } from "vitest";
 import { createTwikooFunc, toTkRequest } from "../src/main";
 import type { CloudBaseDatabaseLike, Database } from "@twikoojs/common";
@@ -61,7 +62,7 @@ describe("twikoo-func 薄适配器（T20）", () => {
      *
      */
     const lines = (path: string): number =>
-      readFileSync(new URL(path, import.meta.url), "utf8").split("\n").length;
+      countSourceLines(readFileSync(new URL(path, import.meta.url), "utf8"));
     const total = lines("../src/main.ts") + lines("../src/index.ts");
     expect(total).toBeLessThan(150);
   });

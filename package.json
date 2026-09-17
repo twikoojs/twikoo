@@ -23,6 +23,7 @@
     "release:check": "node scripts/release-set-version.mjs --check",
     "check:baseline": "node scripts/check-baseline.mjs",
     "check:agents": "node scripts/check-agents-staleness.mjs",
+    "check:adapter-deps": "node scripts/check-adapter-deps.mjs",
     "e2e:b2": "node scripts/e2e-b2.mjs",
     "check:products": "node scripts/check-cdn-products.mjs"
   },

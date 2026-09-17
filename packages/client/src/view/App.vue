@@ -5,13 +5,25 @@
 <template>
   <div class="twikoo">
     <div id="twikoo-comments" class="tk-comments">
-      <TkComments />
+      <TkComments :key="reloadSignal" />
+    </div>
+    <div id="twikoo-submit" class="tk-submit-region">
+      <TkSubmit :on-sent="reloadComments" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import TkComments from "./components/TkComments.vue";
+import TkSubmit from "../components/TkSubmit.vue";
+
+/** 评论列表刷新通道（TkSubmit 发送成功后触发 TkComments 重载） */
+const reloadSignal = ref(0);
+/** 通知 TkComments 重载（key 重建） */
+function reloadComments(): void {
+  reloadSignal.value += 1;
+}
 </script>
 
 <style>

@@ -176,7 +176,8 @@ export async function getCommentsCountApi(
     urls: options.urls,
     includeReply: options.includeReply,
   });
-  return result;
+  // 1.x 语义：tcb 通道解包 { result } 信封；HTTP 通道无信封直接返回
+  return result.result ?? result;
 }
 
 /**
@@ -195,7 +196,8 @@ export async function getRecentCommentsApi(
     pageSize: options.pageSize,
     includeReply: options.includeReply,
   });
-  return result;
+  // 1.x 语义：tcb 通道解包 { result } 信封
+  return result.result ?? result;
 }
 
 /**
@@ -215,7 +217,8 @@ export async function getVisitorsCountApi(
     href: getHref(options.href),
     title: options.title ?? document.title,
   });
-  return result;
+  // 1.x 语义：tcb 通道解包 { result } 信封
+  return result.result ?? result;
 }
 
 /**
@@ -239,6 +242,54 @@ export async function updateVisitorsCount(
   } catch (e) {
     logger.warn("Failed to update visitors count", e);
     return null;
+  }
+}
+
+/**
+ * 外链安全化（1.x renderLinks 对齐：target=_blank + rel=noopener noreferrer nofollow ugc）。
+ * @param el 容器元素或元素数组
+ */
+export function renderLinks(el: HTMLElement | HTMLElement[]): void {
+  let aEls: HTMLCollectionOf<HTMLAnchorElement>;
+  if (Array.isArray(el)) {
+    const container = document.createElement("div");
+    for (const item of el) {
+      for (const child of Array.from(item.getElementsByTagName("a"))) {
+        container.appendChild(child.cloneNode(true));
+      }
+    }
+    aEls = container.getElementsByTagName("a");
+  } else {
+    aEls = el.getElementsByTagName("a");
+  }
+  for (const aEl of Array.from(aEls)) {
+    aEl.setAttribute("target", "_blank");
+    aEl.setAttribute("rel", "noopener noreferrer nofollow ugc");
+  }
+}
+
+/**
+ * 公式渲染（1.x renderMath 对齐：KaTeX auto-render 由使用方引入后接管）。
+ * @param el 容器元素
+ * @param options 渲染选项
+ */
+export function renderMath(el: HTMLElement, options?: unknown): void {
+  const renderMathInElement = (
+    window as unknown as { renderMathInElement?: (el: HTMLElement, o: unknown) => void }
+  ).renderMathInElement;
+  if (typeof renderMathInElement === "function") {
+    renderMathInElement(
+      el,
+      options ?? {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "$", right: "$", display: false },
+          { left: "\(", right: "\)", display: false },
+          { left: "\[", right: "\]", display: true },
+        ],
+        throwOnError: false,
+      },
+    );
   }
 }
 

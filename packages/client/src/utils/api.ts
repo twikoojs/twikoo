@@ -57,13 +57,62 @@ export class TwikooError extends Error {
   }
 }
 
+/** 云开发应用最小结构面（仅需 callFunction） */
+export type TcbApp = {
+  /**
+   * 调用云函数。
+   * @param params 函数名与数据
+   * @returns 云函数结果
+   */
+  callFunction(params: { name: string; data: unknown }): Promise<Record<string, unknown>>;
+};
+
+/** 云开发鉴权最小结构面（1.x 用到的四个能力：取当前用户、登出、自定义登录、匿名登录） */
+export type TcbAuth = {
+  /**
+   * 取当前登录用户。
+   * @returns 用户信息（`loginType === 'CUSTOM'` 表示管理员）
+   */
+  getCurrentUser(): Promise<{ loginType?: string; uid?: string }>;
+  /** 登出 */
+  signOut(): Promise<void>;
+  /** 当前用户（同步快照；`TkSubmit` 取 uid 用） */
+  currentUser?: { uid?: string };
+  /**
+   * 自定义登录（管理面板用票据换登录态）。
+   * @returns provider
+   */
+  customAuthProvider(): {
+    /**
+     * 用票据登录。
+     * @param ticket 登录票据
+     * @returns 登录结果
+     */
+    signIn(ticket: string): Promise<unknown>;
+  };
+  /**
+   * 匿名登录。
+   * @returns provider
+   */
+  anonymousAuthProvider(): {
+    /**
+     * 匿名登录。
+     * @returns 登录结果
+     */
+    signIn(): Promise<unknown>;
+  };
+  /**
+   * 是否已有登录态。
+   * @returns 是否已登录
+   */
+  hasLoginState?(): boolean;
+};
+
 /** 云开发实例（可选；HTTP 形态为 null） */
-type Tcb = {
-  app: { callFunction(params: { name: string; data: unknown }): Promise<Record<string, unknown>> };
-} | null;
+export type TcbInstance = { app: TcbApp; auth?: TcbAuth } | null;
 
 /** 全局应用状态（view 渲染时注入；§5.5 Options API 全局属性对齐） */
-const appState: { tcb: Tcb; options: Record<string, unknown> } = {
+const appState: { tcb: TcbInstance; options: Record<string, unknown> } = {
   tcb: null,
   options: {},
 };
@@ -73,7 +122,7 @@ const appState: { tcb: Tcb; options: Record<string, unknown> } = {
  * @param tcb 云开发实例
  * @param options 前端选项
  */
-export function setAppState(tcb: Tcb, options: Record<string, unknown>): void {
+export function setAppState(tcb: TcbInstance, options: Record<string, unknown>): void {
   appState.tcb = tcb;
   appState.options = options;
 }
@@ -82,7 +131,7 @@ export function setAppState(tcb: Tcb, options: Record<string, unknown>): void {
  * 读取应用状态（组合式组件经此获取 tcb 与前端选项，替代 1.x 的 this.$tcb）。
  * @returns 应用状态
  */
-export function getAppState(): { tcb: Tcb; options: Record<string, unknown> } {
+export function getAppState(): { tcb: TcbInstance; options: Record<string, unknown> } {
   return appState;
 }
 
@@ -188,7 +237,7 @@ function httpCall(url: string, payload: Record<string, unknown>): Promise<Record
  * @returns 响应体
  */
 export async function call(
-  tcb: Tcb,
+  tcb: TcbInstance,
   event: string,
   data: Record<string, unknown> = {},
 ): Promise<Record<string, unknown>> {

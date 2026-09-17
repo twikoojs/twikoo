@@ -2,6 +2,10 @@ packages:
   - "packages/*"
   - "docs"
 allowBuilds:
+  # @cloudbase/js-sdk（client 的 all 产物内置 SDK，对齐 1.x main.all.js）依赖 core-js-pure，
+  # 其 postinstall 仅打印捐赠提示（`node -e "try{require('./postinstall')}catch(e){}"`），
+  # 批准是为了 ERR_PNPM_IGNORED_BUILDS 不再使 install 失败。
+  core-js-pure: true
   esbuild: true
   # T9: postinstall 仅用于预下载 Mongo 二进制（可用 MONGOMS_DISABLE_POSTINSTALL=1 跳过）；
   # 批准是为了 ERR_PNPM_IGNORED_BUILDS 不再使 install 失败，二进制默认留给首跑下载。

@@ -1,36 +1,30 @@
 /**
- * 客户端通用工具（1.x utils/index.js 语义对齐的 TS 重写）。
+ * 客户端通用工具统一出口（1.x `utils/index.js` 语义对齐的 TS 重写）。
+ *
+ * 结构说明：1.x 把 i18n / marked / prism / avatar / emotion / timeago 全部塞进
+ * `utils/index.js` 一个文件；2.0 按职责拆分为独立模块（§7.2 / §8.3），本文件保留
+ * 「统一出口」角色，使组件沿用 1.x 的 `from '../../utils'` 导入风格即可拿到全部能力。
+ *
+ * 依赖方向：本文件只做「转出 + 少量纯函数」，不反向依赖 view 层（1.x 的
+ * `utils/highlight.js`、`utils/api.js` 都 import 了 view 层的 app 实例，
+ * 2.0 改为经 `utils/api.ts` 的 appState 单例解耦）。
  */
-import { call } from "./api";
+import { call, getAppState, type TcbInstance } from "./api";
+import { logger } from "./logger";
+import { t } from "../i18n";
 
-/** 日志级别（TWIKOO_LOG_LEVEL 语义：verbose/info/warn/error） */
-const logLevel: Record<string, number> = { verbose: 1, info: 2, warn: 3, error: 4 };
-/** 日志级别读取（浏览器产物由 Vite define 注入；Node 测试环境走 process） */
-const envLogLevel: string =
-  typeof process !== "undefined" && process.env
-    ? String(process.env.TWIKOO_LOG_LEVEL || "info")
-    : "info";
-const currentLevel = logLevel[envLogLevel.toLowerCase()] || 2;
-
-/** 客户端日志器（console 输出，级别过滤） */
-export const logger = {
-  /** verbose 级 */
-  verbose: (...m: unknown[]): void => {
-    if (currentLevel <= 1) console.log(...m);
-  },
-  /** info 级 */
-  info: (...m: unknown[]): void => {
-    if (currentLevel <= 2) console.info(...m);
-  },
-  /** warn 级 */
-  warn: (...m: unknown[]): void => {
-    if (currentLevel <= 3) console.warn(...m);
-  },
-  /** error 级 */
-  error: (...m: unknown[]): void => {
-    if (currentLevel <= 4) console.error(...m);
-  },
-};
+export { logger } from "./logger";
+export { t, setLanguage, getLanguage } from "../i18n";
+export { sanitizeHtml } from "./sanitize";
+export { renderCode } from "./highlight";
+export { getQQAvatar, resolveAvatarUrl } from "./avatar";
+export type { AvatarSource, AvatarConfig } from "./avatar";
+export { initOwoEmotions, initMarkedOwo } from "./emotion";
+export type { OwoData, OwoItem, OwoPackage } from "./emotion";
+export { vLoading, vClickoutside } from "./directives";
+export { parseMarkdown, setOwoImages } from "./marked";
+export { call } from "./api";
+export type { TcbInstance } from "./api";
 
 /**
  * 判断是否 URL。
@@ -47,66 +41,134 @@ export const isUrl = (s: unknown): boolean => typeof s === "string" && /^http(s)
 export const isNotSet = (value: unknown): boolean =>
   value === undefined || value === null || value === "";
 
-/** 当前语言（setLanguage 设置） */
-let currentLanguage = "zh-CN";
-
 /**
- * 设置语言（§7.2 语言优先级：options.lang → navigator.language → en）。
- * @param options 前端选项
+ * 邮箱规范化（trim + 小写）。
+ * @param mail 邮箱
+ * @returns 规范化邮箱
  */
-export function setLanguage(options: { lang?: string } = {}): void {
-  if (options.lang) {
-    currentLanguage = options.lang;
-    return;
-  }
-  const nav = navigator.language || "en";
-  // 兼容别名：zh/zh-TW 等就近归并（1.x 语义）
-  if (nav.startsWith("zh")) {
-    currentLanguage = "zh-CN";
-  } else {
-    currentLanguage = "en";
-  }
-}
-
-/** 获取当前语言 */
-export function getLanguage(): string {
-  return currentLanguage;
-}
-
-/** 翻译占位（完整 i18n 词表随 T32 拆分落地；当前键缺省回退原文） */
-export function t(key: string): string {
-  return key;
+export function normalizeMail(mail: unknown): string {
+  return String(mail).trim().toLowerCase();
 }
 
 /**
- * 相对时间（1.x timeago 对齐：分钟/小时/天/月/年）。
- * @param timestamp 毫秒时间戳
- * @param lang 语言
+ * 判断是否 QQ 号/QQ 邮箱。
+ * @param mail 邮箱
+ * @returns 是否 QQ 形态
+ */
+export function isQQ(mail: string): boolean {
+  return /^[1-9][0-9]{4,10}$/.test(mail) || /^[1-9][0-9]{4,10}@qq.com$/i.test(mail);
+}
+
+/**
+ * 当前时间戳。
+ * @param date 日期（缺省为当前时间）
+ * @returns 毫秒时间戳
+ */
+export function timestamp(date: Date = new Date()): number {
+  return date.getTime();
+}
+
+/**
+ * 补全链接协议（1.x convertLink 对齐：无协议时补 `http://`）。
+ * @param link 原始链接
+ * @returns 补全后的链接
+ */
+export function convertLink(link?: string): string {
+  if (!link) return "";
+  if (link.substring(0, 4) !== "http") return `http://${link}`;
+  return link;
+}
+
+/**
+ * 相对时间（1.x timeago 对齐：秒/分/时/天/8 天以上显示日期）。
+ *
+ * 与 1.x 的差异：无有效日期时返回空串（1.x 返回 undefined，模板会渲染成
+ * 字符串 "undefined"）。
+ * @param date 时间戳或 Date
  * @returns 相对时间文案
  */
-export function timeago(timestamp: number, lang = currentLanguage): string {
-  const diff = Date.now() - timestamp;
-  const minutes = Math.floor(diff / 60000);
-  if (lang.startsWith("zh")) {
-    if (minutes < 1) return "刚刚";
-    if (minutes < 60) return `${minutes}分钟前`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}小时前`;
-    const days = Math.floor(hours / 24);
-    if (days < 30) return `${days}天前`;
-    const months = Math.floor(days / 30);
-    if (months < 12) return `${months}个月前`;
-    return `${Math.floor(months / 12)}年前`;
+export function timeago(date?: number | Date): string {
+  const value = typeof date === "number" ? new Date(date) : date;
+  if (!value) return "";
+  try {
+    const diffValue = Date.now() - value.getTime();
+    const days = Math.floor(diffValue / 86400000);
+    if (days === 0) {
+      const leave1 = diffValue % 86400000;
+      const hours = Math.floor(leave1 / 3600000);
+      if (hours === 0) {
+        const leave2 = leave1 % 3600000;
+        const minutes = Math.floor(leave2 / 60000);
+        if (minutes === 0) {
+          return `${Math.round((leave2 % 60000) / 1000)} ${t("TIMEAGO_SECONDS")}`;
+        }
+        return `${minutes} ${t("TIMEAGO_MINUTES")}`;
+      }
+      return `${hours} ${t("TIMEAGO_HOURS")}`;
+    }
+    if (days < 0) return t("TIMEAGO_NOW");
+    if (days < 8) return `${days} ${t("TIMEAGO_DAYS")}`;
+    return dateFormat(value);
+  } catch (error) {
+    logger.warn("timeago 计算失败", error);
+    return "";
   }
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes} minutes ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} hours ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days} days ago`;
-  const months = Math.floor(days / 30);
-  if (months < 12) return `${months} months ago`;
-  return `${Math.floor(months / 12)} years ago`;
+}
+
+/**
+ * 日期格式化（`YYYY-MM-DD`，1.x dateFormat 对齐）。
+ * @param date 日期
+ * @returns 日期字符串
+ */
+export function dateFormat(date: Date): string {
+  return [
+    padWithZeros(date.getFullYear(), 2),
+    padWithZeros(date.getMonth() + 1, 2),
+    padWithZeros(date.getDate(), 2),
+  ].join("-");
+}
+
+/**
+ * 左补零。
+ * @param vNumber 数字
+ * @param width 目标宽度
+ * @returns 补零后的字符串
+ */
+function padWithZeros(vNumber: number, width: number): string {
+  let numAsString = vNumber.toString();
+  while (numAsString.length < width) numAsString = `0${numAsString}`;
+  return numAsString;
+}
+
+/** 云函数版本缓存（1.x getFuncVer 对齐：进程内只请求一次） */
+let twikooFuncVer: unknown;
+
+/**
+ * 获取云函数版本（结果缓存）。
+ * @param tcb 云开发实例
+ * @returns GET_FUNC_VERSION 的响应
+ */
+export async function getFuncVer(tcb: TcbInstance | null): Promise<unknown> {
+  if (twikooFuncVer === undefined) twikooFuncVer = await call(tcb, "GET_FUNC_VERSION");
+  return twikooFuncVer;
+}
+
+/**
+ * 解包响应信封（tcb 通道为 `{ result }`，HTTP 通道为裸响应体）。
+ * @param result 原始响应
+ * @returns 载荷
+ */
+function unwrap(result: unknown): Record<string, unknown> {
+  const envelope = result as { result?: Record<string, unknown> } | null;
+  if (
+    envelope &&
+    typeof envelope === "object" &&
+    envelope.result &&
+    typeof envelope.result === "object"
+  ) {
+    return envelope.result;
+  }
+  return (result ?? {}) as Record<string, unknown>;
 }
 
 /**
@@ -142,62 +204,62 @@ export function getHref(href: unknown): string {
   return magic ?? (typeof href === "string" ? href : window.location.href);
 }
 
-/**
- * 邮箱规范化（trim + 小写）。
- * @param mail 邮箱
- * @returns 规范化邮箱
- */
-export function normalizeMail(mail: unknown): string {
-  return String(mail).trim().toLowerCase();
-}
+/** 本地主机名集合 */
+const LOCALHOST_HOSTNAMES = new Set(["localhost", "127.0.0.1", "0.0.0.0", "::1"]);
 
 /**
- * 判断是否 QQ 号/QQ 邮箱。
- * @param mail 邮箱
- * @returns 是否 QQ 形态
+ * 是否本地环境（访问量计数跳过；1.x 语义）。
+ * @returns 是否本地
  */
-export function isQQ(mail: string): boolean {
-  return /^[1-9][0-9]{4,10}$/.test(mail) || /^[1-9][0-9]{4,10}@qq.com$/i.test(mail);
+export function isLocalhost(): boolean {
+  return LOCALHOST_HOSTNAMES.has(window.location.hostname);
 }
 
 /**
  * 批量获取评论数 API。
  * @param tcb 云开发实例
- * @param options 选项
- * @returns 计数结果
+ * @param options 选项（urls 必填）
+ * @returns 各 url 的计数数组
  */
 export async function getCommentsCountApi(
-  tcb: unknown,
+  tcb: TcbInstance | null,
   options: Record<string, unknown> = {},
 ): Promise<unknown> {
-  const result = await call(tcb as never, "GET_COMMENTS_COUNT", {
+  const urls = options.urls;
+  if (!Array.isArray(urls)) throw new Error("urls 参数有误");
+  if (urls.length === 0) return [];
+  const result = await call(tcb, "GET_COMMENTS_COUNT", {
     envId: options.envId,
     funcName: options.funcName,
-    urls: options.urls,
+    urls,
     includeReply: options.includeReply,
   });
-  // 1.x 语义：tcb 通道解包 { result } 信封；HTTP 通道无信封直接返回
-  return result.result ?? result;
+  return unwrap(result).data;
 }
 
 /**
- * 获取最新评论 API。
+ * 获取最新评论 API（1.x 语义：附带相对时间字段 `relativeTime`）。
  * @param tcb 云开发实例
  * @param options 选项
- * @returns 最新评论
+ * @returns 最新评论数组
  */
 export async function getRecentCommentsApi(
-  tcb: unknown,
+  tcb: TcbInstance | null,
   options: Record<string, unknown> = {},
 ): Promise<unknown> {
-  const result = await call(tcb as never, "GET_RECENT_COMMENTS", {
+  const result = await call(tcb, "GET_RECENT_COMMENTS", {
     envId: options.envId,
     funcName: options.funcName,
     pageSize: options.pageSize,
     includeReply: options.includeReply,
   });
-  // 1.x 语义：tcb 通道解包 { result } 信封
-  return result.result ?? result;
+  const data = unwrap(result).data;
+  if (Array.isArray(data)) {
+    for (const comment of data as Array<{ created?: number; relativeTime?: string }>) {
+      comment.relativeTime = timeago(comment.created);
+    }
+  }
+  return data;
 }
 
 /**
@@ -207,18 +269,17 @@ export async function getRecentCommentsApi(
  * @returns 计数
  */
 export async function getVisitorsCountApi(
-  tcb: unknown,
+  tcb: TcbInstance | null,
   options: Record<string, unknown> = {},
 ): Promise<unknown> {
-  const result = await call(tcb as never, "COUNTER_GET", {
+  const result = await call(tcb, "COUNTER_GET", {
     envId: options.envId,
     funcName: options.funcName,
     url: getUrl(options.path),
     href: getHref(options.href),
     title: options.title ?? document.title,
   });
-  // 1.x 语义：tcb 通道解包 { result } 信封
-  return result.result ?? result;
+  return unwrap(result);
 }
 
 /**
@@ -228,16 +289,14 @@ export async function getVisitorsCountApi(
  * @returns 计数或 null
  */
 export async function updateVisitorsCount(
-  tcb: unknown,
+  tcb: TcbInstance | null,
   options: Record<string, unknown> = {},
 ): Promise<unknown> {
   const counterEl = document.getElementById("twikoo_visitors");
   if (!counterEl || isLocalhost()) return null;
   try {
     const counter = (await getVisitorsCountApi(tcb, options)) as { time?: number };
-    if (counter.time !== undefined) {
-      counterEl.innerHTML = String(counter.time);
-    }
+    if (counter.time !== undefined) counterEl.innerHTML = String(counter.time);
     return counter;
   } catch (e) {
     logger.warn("Failed to update visitors count", e);
@@ -246,23 +305,86 @@ export async function updateVisitorsCount(
 }
 
 /**
- * 外链安全化（1.x renderLinks 对齐：target=_blank + rel=noopener noreferrer nofollow ugc）。
- * @param el 容器元素或元素数组
+ * 读取文本文件内容（1.x readAsText 对齐）。
+ * @param file 文件
+ * @returns 文本内容
  */
-export function renderLinks(el: HTMLElement | HTMLElement[]): void {
-  let aEls: HTMLCollectionOf<HTMLAnchorElement>;
-  if (Array.isArray(el)) {
-    const container = document.createElement("div");
-    for (const item of el) {
-      for (const child of Array.from(item.getElementsByTagName("a"))) {
-        container.appendChild(child.cloneNode(true));
+export function readAsText(file: File): Promise<string | ArrayBuffer | null> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsText(file);
+    reader.onloadend = () => {
+      if (reader.error) reject(reader.error);
+      else resolve(reader.result);
+    };
+  });
+}
+
+/**
+ * Blob 转 DataURL（1.x blobToDataURL 对齐；图床上传用）。
+ * @param blob 二进制数据
+ * @returns DataURL
+ */
+export function blobToDataURL(blob: Blob): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const result = evt.target?.result;
+      resolve(typeof result === "string" ? result : "");
+    };
+    reader.readAsDataURL(blob);
+  });
+}
+
+/**
+ * 读取客户端 UA，并修正 Windows 11 / macOS 11+ 的版本号（1.x getUserAgent 对齐）。
+ * @returns UA 字符串
+ */
+export async function getUserAgent(): Promise<string> {
+  let ua = window.navigator.userAgent;
+  try {
+    const uaData = (
+      navigator as Navigator & {
+        userAgentData?: {
+          platform?: string;
+          getHighEntropyValues(hints: string[]): Promise<{ platformVersion?: string }>;
+        };
+      }
+    ).userAgentData;
+    if (uaData?.platform === "Windows" || uaData?.platform === "macOS") {
+      const { platformVersion } = await uaData.getHighEntropyValues(["platformVersion"]);
+      const major = parseInt(String(platformVersion).split(".")[0], 10);
+      if (uaData.platform === "Windows" && major >= 13) {
+        ua = ua.replace(/Windows NT 10\.0/i, "Windows NT 11.0");
+      } else if (uaData.platform === "macOS" && major >= 11) {
+        ua = ua.replace(
+          /Mac OS X 10_[0-9]+_[0-9]+/i,
+          `Mac OS X ${String(platformVersion).replace(/\./g, "_")}`,
+        );
       }
     }
-    aEls = container.getElementsByTagName("a");
-  } else {
-    aEls = el.getElementsByTagName("a");
+  } catch {
+    // User-Agent Client Hints 不可用：保持原始 UA（1.x 行为）
   }
-  for (const aEl of Array.from(aEls)) {
+  return ua;
+}
+
+/**
+ * 外链安全化（1.x renderLinks 对齐：target=_blank + rel=noopener noreferrer nofollow ugc）。
+ *
+ * 1.x 支持传入「元素」或「元素数组」；2.0 的功能性修正：数组分支直接操作原元素
+ * （2.0 早期实现克隆节点后改克隆体，实际未生效）。
+ * @param el 容器元素或元素数组（可为 null，用于 `$refs` 未就绪时的安全调用）
+ */
+export function renderLinks(el: HTMLElement | HTMLElement[] | null): void {
+  if (!el) return;
+  const hosts: HTMLElement[] = Array.isArray(el) ? el : [el];
+  const aEls: HTMLAnchorElement[] = [];
+  for (const host of hosts) {
+    if (!host) continue;
+    aEls.push(...Array.from(host.getElementsByTagName("a")));
+  }
+  for (const aEl of aEls) {
     aEl.setAttribute("target", "_blank");
     aEl.setAttribute("rel", "noopener noreferrer nofollow ugc");
   }
@@ -270,33 +392,33 @@ export function renderLinks(el: HTMLElement | HTMLElement[]): void {
 
 /**
  * 公式渲染（1.x renderMath 对齐：KaTeX auto-render 由使用方引入后接管）。
- * @param el 容器元素
- * @param options 渲染选项
+ * @param el 容器元素（可为 null）
+ * @param options 渲染选项（缺省为四语法默认配置）
  */
-export function renderMath(el: HTMLElement, options?: unknown): void {
+export function renderMath(el: HTMLElement | null, options?: unknown): void {
+  if (!el) return;
   const renderMathInElement = (
     window as unknown as { renderMathInElement?: (el: HTMLElement, o: unknown) => void }
   ).renderMathInElement;
-  if (typeof renderMathInElement === "function") {
-    renderMathInElement(
-      el,
-      options ?? {
-        delimiters: [
-          { left: "$$", right: "$$", display: true },
-          { left: "$", right: "$", display: false },
-          { left: "\(", right: "\)", display: false },
-          { left: "\[", right: "\]", display: true },
-        ],
-        throwOnError: false,
-      },
-    );
-  }
+  if (typeof renderMathInElement !== "function") return;
+  renderMathInElement(
+    el,
+    options ?? {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "\\[", right: "\\]", display: true },
+      ],
+      throwOnError: false,
+    },
+  );
 }
 
-/** 本地主机名集合 */
-const LOCALHOST_HOSTNAMES = new Set(["localhost", "127.0.0.1", "0.0.0.0", "::1"]);
-
-/** 是否本地环境（访问量计数跳过） */
-export function isLocalhost(): boolean {
-  return LOCALHOST_HOSTNAMES.has(window.location.hostname);
+/**
+ * 读取当前前端选项（组件内获取 `twikoo.init` 入参的便捷入口）。
+ * @returns 前端选项
+ */
+export function getOptions(): Record<string, unknown> {
+  return getAppState().options;
 }

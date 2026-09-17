@@ -27,8 +27,12 @@ describe("twikoo 公开 API（T27）", () => {
     expect(typeof getVisitorsCount).toBe("function");
   });
 
+  it("urls 未提供 → 先报「urls 参数有误」（1.x getCommentsCountApi 校验顺序）", async () => {
+    await expect(getCommentsCount({})).rejects.toThrow(/urls 参数有误/);
+  });
+
   it("缺少 envId 配置 → 报错（1.x 语义）", async () => {
-    await expect(getCommentsCount({})).rejects.toThrow(/缺少 envId 配置/);
+    await expect(getCommentsCount({ urls: ["/a"] })).rejects.toThrow(/缺少 envId 配置/);
   });
 });
 
@@ -74,12 +78,18 @@ describe("HTTP 通信层（T27/T33）", () => {
     mockXhr((xhr) => {
       xhr.readyState = 4;
       xhr.status = 200;
-      xhr.responseText = JSON.stringify({ code: 0, accessToken: "tok-1", data: [] });
+      xhr.responseText = JSON.stringify({
+        code: 0,
+        accessToken: "tok-1",
+        data: [{ url: "/a", count: 3 }],
+      });
     });
+    // getCommentsCountApi 返回 data 数组（1.x 语义），token 由通信层写入 localStorage
     const result = (await getCommentsCount({
       envId: "https://backend.test",
-    })) as Record<string, unknown>;
-    expect(result.code).toBe(0);
+      urls: ["/a"],
+    })) as Array<Record<string, unknown>>;
+    expect(result).toEqual([{ url: "/a", count: 3 }]);
     expect(localStorage.getItem("twikoo-access-token")).toBe("tok-1");
   });
 
@@ -89,9 +99,10 @@ describe("HTTP 通信层（T27/T33）", () => {
       xhr.status = 404;
       xhr.responseText = "not found";
     });
-    const err = (await getCommentsCount({ envId: "https://backend.test" }).catch(
-      (e) => e,
-    )) as TwikooError;
+    const err = (await getCommentsCount({
+      envId: "https://backend.test",
+      urls: ["/a"],
+    }).catch((e) => e)) as TwikooError;
     expect(err).toBeInstanceOf(TwikooError);
     expect(err.kind).toBe("NOT_FOUND");
     expect(err.httpStatus).toBe(404);
@@ -126,9 +137,11 @@ describe("HTTP 通信层（T27/T33）", () => {
       xhr.readyState = 4;
       xhr.status = 0;
     });
-    const err = (await getCommentsCount({ envId: "https://backend.test" }).catch(
-      (e) => e,
-    )) as TwikooError;
+    const err = (await getCommentsCount({
+      envId: "https://backend.test",
+      urls: ["/a"],
+    }).catch((e) => e)) as TwikooError;
+    expect(err).toBeInstanceOf(TwikooError);
     expect(["CORS", "TIMEOUT"]).toContain(err.kind);
   });
 
@@ -138,7 +151,10 @@ describe("HTTP 通信层（T27/T33）", () => {
       xhr.status = 200;
       xhr.responseText = "<html>not json</html>";
     });
-    const err = (await getCommentsCount({ envId: "https://backend.test" }).catch(
+    const err = (await getCommentsCount({
+      envId: "https://backend.test",
+      urls: ["/a"],
+    }).catch(
       /** 捕获后返回错误对象供断言 */
       (e) => e,
     )) as TwikooError;

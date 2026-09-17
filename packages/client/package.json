@@ -23,7 +23,7 @@
   "devDependencies": {
     "@cloudbase/js-sdk": "^3.3.10",
     "@fortawesome/fontawesome-free": "^7.3.1",
-    "@types/jsdom": "^21.1.7",
+    "@types/jsdom": "^30.0.0",
     "@types/node": "^22.20.3",
     "@vitejs/plugin-vue": "^6.0.9",
     "blueimp-md5": "^2.19.0",

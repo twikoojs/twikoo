@@ -29,7 +29,7 @@
     "@twikoojs/shared": "workspace:*",
     "axios": "^1.6.2",
     "bowser": "^2.11.0",
-    "html-to-text": "^9.0.5",
+    "html-to-text": "^10.0.1",
     "marked": "^18.0.4",
     "xml2js": "^0.6.0"
   },

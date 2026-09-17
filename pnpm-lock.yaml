@@ -270,8 +270,8 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
       akismet-api:
-        specifier: ^5.1.0
-        version: 5.3.0(supports-color@8.1.1)
+        specifier: ^6.0.0
+        version: 6.0.0(supports-color@8.1.1)
       axios:
         specifier: ^1.6.2
         version: 1.20.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
@@ -288,8 +288,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.6
       html-to-text:
-        specifier: ^9.0.5
-        version: 9.0.5
+        specifier: ^10.0.1
+        version: 10.0.1
       jsdom:
         specifier: ^22.1.0
         version: 22.1.0(supports-color@8.1.1)
@@ -297,8 +297,8 @@ importers:
         specifier: ^18.0.4
         version: 18.0.13
       nodemailer:
-        specifier: ^9.0.5
-        version: 9.1.1
+        specifier: ^10.0.10
+        version: 10.0.10
       pushoo:
         specifier: workspace:^
         version: link:../pushoo
@@ -359,8 +359,8 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
       akismet-api:
-        specifier: ^5.1.0
-        version: 5.3.0(supports-color@7.2.0)
+        specifier: ^6.0.0
+        version: 6.0.0(supports-color@7.2.0)
       axios:
         specifier: ^1.6.2
         version: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
@@ -374,8 +374,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.6
       html-to-text:
-        specifier: ^9.0.5
-        version: 9.0.5
+        specifier: ^10.0.1
+        version: 10.0.1
       jsdom:
         specifier: ^22.1.0
         version: 22.1.0(supports-color@7.2.0)
@@ -386,8 +386,8 @@ importers:
         specifier: ^7.6.0
         version: 7.6.0
       nodemailer:
-        specifier: ^9.0.5
-        version: 9.1.1
+        specifier: ^10.0.10
+        version: 10.0.10
       pushoo:
         specifier: workspace:^
         version: link:../pushoo
@@ -423,8 +423,8 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
       akismet-api:
-        specifier: ^5.1.0
-        version: 5.3.0(supports-color@7.2.0)
+        specifier: ^6.0.0
+        version: 6.0.0(supports-color@7.2.0)
       axios:
         specifier: ^1.6.2
         version: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
@@ -438,8 +438,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.6
       html-to-text:
-        specifier: ^9.0.5
-        version: 9.0.5
+        specifier: ^10.0.1
+        version: 10.0.1
       jsdom:
         specifier: ^22.1.0
         version: 22.1.0(supports-color@7.2.0)
@@ -447,8 +447,8 @@ importers:
         specifier: ^18.0.4
         version: 18.0.13
       nodemailer:
-        specifier: ^9.0.5
-        version: 9.1.1
+        specifier: ^10.0.10
+        version: 10.0.10
       pushoo:
         specifier: workspace:^
         version: link:../pushoo
@@ -478,8 +478,8 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
       akismet-api:
-        specifier: ^5.1.0
-        version: 5.3.0(supports-color@8.1.1)
+        specifier: ^6.0.0
+        version: 6.0.0(supports-color@8.1.1)
       axios:
         specifier: ^1.6.2
         version: 1.20.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
@@ -493,8 +493,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.6
       html-to-text:
-        specifier: ^9.0.5
-        version: 9.0.5
+        specifier: ^10.0.1
+        version: 10.0.1
       jsdom:
         specifier: ^22.1.0
         version: 22.1.0(supports-color@8.1.1)
@@ -502,8 +502,8 @@ importers:
         specifier: ^18.0.4
         version: 18.0.13
       nodemailer:
-        specifier: ^9.0.5
-        version: 9.1.1
+        specifier: ^10.0.10
+        version: 10.0.10
       pushoo:
         specifier: workspace:^
         version: link:../pushoo
@@ -542,8 +542,8 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
       akismet-api:
-        specifier: ^5.1.0
-        version: 5.3.0(supports-color@7.2.0)
+        specifier: ^6.0.0
+        version: 6.0.0(supports-color@7.2.0)
       axios:
         specifier: ^1.6.2
         version: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
@@ -557,8 +557,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.6
       html-to-text:
-        specifier: ^9.0.5
-        version: 9.0.5
+        specifier: ^10.0.1
+        version: 10.0.1
       jsdom:
         specifier: ^22.1.0
         version: 22.1.0(supports-color@7.2.0)
@@ -569,8 +569,8 @@ importers:
         specifier: ^7.6.0
         version: 7.6.0
       nodemailer:
-        specifier: ^9.0.5
-        version: 9.1.1
+        specifier: ^10.0.10
+        version: 10.0.10
       pushoo:
         specifier: workspace:^
         version: link:../pushoo
@@ -606,8 +606,8 @@ importers:
         specifier: ^2.11.0
         version: 2.14.1
       html-to-text:
-        specifier: ^9.0.5
-        version: 9.0.5
+        specifier: ^10.0.1
+        version: 10.0.1
       marked:
         specifier: ^18.0.4
         version: 18.0.13
@@ -637,8 +637,8 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
       akismet-api:
-        specifier: ^5.1.0
-        version: 5.3.0(supports-color@7.2.0)
+        specifier: ^6.0.0
+        version: 6.0.0(supports-color@7.2.0)
       axios:
         specifier: ^1.6.2
         version: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
@@ -652,8 +652,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.6
       html-to-text:
-        specifier: ^9.0.5
-        version: 9.0.5
+        specifier: ^10.0.1
+        version: 10.0.1
       jsdom:
         specifier: ^22.1.0
         version: 22.1.0(supports-color@7.2.0)
@@ -664,8 +664,8 @@ importers:
         specifier: ^7.6.0
         version: 7.6.0
       nodemailer:
-        specifier: ^9.0.5
-        version: 9.1.1
+        specifier: ^10.0.10
+        version: 10.0.10
       pushoo:
         specifier: workspace:^
         version: link:../pushoo
@@ -698,8 +698,8 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
       akismet-api:
-        specifier: ^5.1.0
-        version: 5.3.0(supports-color@7.2.0)
+        specifier: ^6.0.0
+        version: 6.0.0(supports-color@7.2.0)
       axios:
         specifier: ^1.6.2
         version: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
@@ -713,8 +713,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.6
       html-to-text:
-        specifier: ^9.0.5
-        version: 9.0.5
+        specifier: ^10.0.1
+        version: 10.0.1
       jsdom:
         specifier: ^22.1.0
         version: 22.1.0(supports-color@7.2.0)
@@ -728,8 +728,8 @@ importers:
         specifier: ^7.6.0
         version: 7.6.0
       nodemailer:
-        specifier: ^9.0.5
-        version: 9.1.1
+        specifier: ^10.0.10
+        version: 10.0.10
       pushoo:
         specifier: workspace:^
         version: link:../pushoo
@@ -762,8 +762,8 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
       akismet-api:
-        specifier: ^5.1.0
-        version: 5.3.0(supports-color@7.2.0)
+        specifier: ^6.0.0
+        version: 6.0.0(supports-color@7.2.0)
       axios:
         specifier: ^1.6.2
         version: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
@@ -777,8 +777,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.6
       html-to-text:
-        specifier: ^9.0.5
-        version: 9.0.5
+        specifier: ^10.0.1
+        version: 10.0.1
       jsdom:
         specifier: ^22.1.0
         version: 22.1.0(supports-color@7.2.0)
@@ -789,8 +789,8 @@ importers:
         specifier: ^7.6.0
         version: 7.6.0
       nodemailer:
-        specifier: ^9.0.5
-        version: 9.1.1
+        specifier: ^10.0.10
+        version: 10.0.10
       pushoo:
         specifier: workspace:^
         version: link:../pushoo
@@ -1755,8 +1755,10 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@selderee/plugin-htmlparser2@0.11.0':
-    resolution: {integrity: sha512-P33hHGdldxGabLFjPPpaTxVolMrzrcegejx+0GxjrIb9Zv48D8yAIA/QTDR2dFl7Uz7urX8aX6+5bCZslr+gWQ==}
+  '@selderee/plugin-htmlparser2@0.12.0':
+    resolution: {integrity: sha512-oELmoyA6ML9jDRMV3kgcMQFKxUfBU0yFVn6yTctVaLT5ygXnxH52I3TZEgV9EhXJC68/uFvE5Daj1/25c0Xa/A==}
+    peerDependencies:
+      selderee: ~0.12.0
 
   '@shikijs/core@2.5.0':
     resolution: {integrity: sha512-uu/8RExTKtavlpH7XqnVYBrfBkUc20ngXiX9NSrBhOVZYv/7XQRKUyhtkeflY5QsxC0GbJThCerruZfsUaSldg==}
@@ -2257,9 +2259,9 @@ packages:
   ajv@6.15.0:
     resolution: {integrity: sha512-fgFx7Hfoq60ytK2c7DhnF8jIvzYgOMxfugjLOSMHjLIPgenqa7S7oaagATUq99mV6IYvN2tRmC0wnTYX6iPbMw==}
 
-  akismet-api@5.3.0:
-    resolution: {integrity: sha512-mFkZptwjdPt73gH63vqzVXe2kYZBgGV05FNS3BWLolYG4B8mVRxgoXtuSyg+jXl/pRPC37a92E9fX6tKwrMErg==}
-    engines: {node: '>=4.0.0'}
+  akismet-api@6.0.0:
+    resolution: {integrity: sha512-IqPwdqKOpRXXJg/T2772BB1RoCFfB5kBX1Zeef98T/RkIIFuRqO1kPM4wAjgIdGtvP7YNQ8VYh9kTszpR0637g==}
+    engines: {node: '>=14.0.0'}
 
   algoliasearch@5.59.0:
     resolution: {integrity: sha512-wUXzaeI7B526W4y1gFg3lcxgDZ67XSgRJIiellYWOas/pLpO7rOtxm9Gr2E/C8aiSDXIgx1q5TdSsvK67Uakqw==}
@@ -2571,9 +2573,9 @@ packages:
   deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
 
-  deepmerge@4.3.1:
-    resolution: {integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==}
-    engines: {node: '>=0.10.0'}
+  deepmerge-ts@8.0.2:
+    resolution: {integrity: sha512-uqbvqLUMrc6p0MO+WBRtTxY55hmyh94WRwI5a++PZe54X+bfVh59FSN7uWCBCW1CCVjzjnrwzfI8zidE2obMMw==}
+    engines: {node: '>=16.9.0'}
 
   defu@6.1.7:
     resolution: {integrity: sha512-7z22QmUWiQ/2d0KkdYmANbRUVABpZ9SNYyH5vx6PZ+nE5bcC0l7uFvEfHlyld/HcGBFTL536ClDt3DEcSlEJAQ==}
@@ -2981,15 +2983,15 @@ packages:
   html-entities@2.6.0:
     resolution: {integrity: sha512-kig+rMn/QOVRvr7c86gQ8lWXq+Hkv6CbAH1hLu+RG338StTpE8Z0b44SDVaqVu7HGKf27frdmUYEs9hTUX/cLQ==}
 
-  html-to-text@9.0.5:
-    resolution: {integrity: sha512-qY60FjREgVZL03vJU6IfMV4GDjGBIoOyvuFdpBDIX9yTlDw0TjxVBQp+P8NvpdIXNJvfWBTNul7fsAQJq2FNpg==}
-    engines: {node: '>=14'}
+  html-to-text@10.0.1:
+    resolution: {integrity: sha512-GiVhRI1BatGARSCmlXWNCjDT0cWrwBWoeduLoV0WSKAgaV/wa+hUWy5LiQLUs4UwiUrE52ZCMfBGiKD87TDPrg==}
+    engines: {node: '>=20.19.0'}
 
   html-void-elements@3.0.0:
     resolution: {integrity: sha512-bEqo66MRXsUGxWHV5IP0PUiAWwoEjba4VCzg0LjFJBpchPaTfyfCKTG6bc5F8ucKec3q5y6qOdGyYTSBEvhCrg==}
 
-  htmlparser2@8.0.2:
-    resolution: {integrity: sha512-GYdjWKDkbRLkZ5geuHs5NY1puJ+PXwP7+fHPRz06Eirsb9ugf6d8kkXav6ADhcODhFFPMIXyxkxSuMf3D6NCFA==}
+  htmlparser2@10.1.0:
+    resolution: {integrity: sha512-VTZkM9GWRAtEpveh7MSF6SjjrpNVNNVJfFup7xTY3UpFtm67foy9HDVXneLtFVt4pMz5kZtgNcvCniNFb1hlEQ==}
 
   http-proxy-agent@5.0.0:
     resolution: {integrity: sha512-n2hY8YdoRE1i7r6M0w9DIw5GgZN0G25P8zLCRQ8rjXtTU3vsNFBI/vWK/UIeE6g5MUUz6avwAPXmL6Fy9D/90w==}
@@ -3028,9 +3030,6 @@ packages:
   imurmurhash@0.1.4:
     resolution: {integrity: sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==}
     engines: {node: '>=0.8.19'}
-
-  inherits@2.0.4:
-    resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
 
   ini@1.3.8:
     resolution: {integrity: sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==}
@@ -3130,8 +3129,8 @@ packages:
   keyv@5.6.0:
     resolution: {integrity: sha512-CYDD3SOtsHtyXeEORYRx2qBtpDJFjRTGXUtmNEMGyzYOKj1TE3tycdlho7kA1Ufx9OYWZzg52QFBGALTirzDSw==}
 
-  leac@0.6.0:
-    resolution: {integrity: sha512-y+SqErxb8h7nE/fiEX07jsbuhrpO9lL8eca7/Y1nuWV2moNlXhyd59iDGcRf6moVyDMbmTNzL40SUyrFU/yDpg==}
+  leac@0.7.0:
+    resolution: {integrity: sha512-qMrZeyEekgdRQ9o6a4NAB2EQZrv827GJdn1vnapwSJ90hWRB4TzUSunvacPkxQ2TnNqHNI1/zSt0hlo0crG8Jw==}
 
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
@@ -3446,9 +3445,9 @@ packages:
       encoding:
         optional: true
 
-  nodemailer@9.1.1:
-    resolution: {integrity: sha512-izw9mVKFix6YSnC9eLgV6g1opl9DUlRio9ZNcq+Wu9Ujn2UwF+8Nl0B8nz22kEC+CTZCvinkxwJ0DeFbb6NwcQ==}
-    engines: {node: '>=6.0.0'}
+  nodemailer@10.0.10:
+    resolution: {integrity: sha512-He9XskOFms62SyAKkLu8CcGcYHAo+BSHSsORI8s4PJH8qZgZY4L4lDfvyN0twvmbpyG+eGrxpyBlskj9d9rJ8A==}
+    engines: {node: '>=20.0.0'}
 
   nopt@10.0.1:
     resolution: {integrity: sha512-df3sBr/6ax9hSGuC3CspvLlbnX8cP5L5nZwXF8cGN8l0zSWR6BvzmQ6jPUKjvo6+/xdpkNvEcucBNUdBeeV13g==}
@@ -3518,8 +3517,8 @@ packages:
   parse5@8.0.1:
     resolution: {integrity: sha512-z1e/HMG90obSGeidlli3hj7cbocou0/wa5HacvI3ASx34PecNjNQeaHNo5WIZpWofN9kgkqV1q5YvXe3F0FoPw==}
 
-  parseley@0.12.1:
-    resolution: {integrity: sha512-e6qHKe3a9HWr0oMRVDTRhKce+bRO8VGQR3NyVwcjwrbhMmFCX9KszEV35+rn4AdilFAq9VPxP/Fe1wC9Qjd2lw==}
+  parseley@0.13.1:
+    resolution: {integrity: sha512-uNBJZzmb60l6p6VWLTmevizNAGnE0xoSf1n0B4q3ntegDNzcS68NRCcBDZTcyXHxt2XhBChsCuqj4M+nChvE/A==}
 
   path-exists@4.0.0:
     resolution: {integrity: sha512-ak9Qy5Q7jYb2Wwcey5Fpvg2KoAc/ZIhLSLOSBmRmygPsGwkVVt0fZa0qrtMz+m6tJTAHfZQ8FnmB4MG4LWy7/w==}
@@ -3536,8 +3535,8 @@ packages:
   pathe@2.0.3:
     resolution: {integrity: sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==}
 
-  peberminta@0.9.0:
-    resolution: {integrity: sha512-XIxfHpEuSJbITd1H3EeQwpcZbTLHc+VVr8ANI9t5sit565tsI4/xK3KWTUFE2e6QiangUkh3B0jihzmGnNrRsQ==}
+  peberminta@0.10.0:
+    resolution: {integrity: sha512-80B2AsU+I4Qdb0ZAPSfe9UwvGzwkM37IKIFEvdS3D/3Ndgv2bsuJ0bfG1+iEYO+l7Gfd4EUJmuRyq7efLgRMzQ==}
 
   pend@1.2.0:
     resolution: {integrity: sha512-F3asv42UuXchdzt+xXqfW1OGlVBe+mxa2mqI0pg5yAHZPvFmY3Y6drSf/GQ1A86WgWEN9Kzh/WrgKa6iGcHXLg==}
@@ -3651,10 +3650,6 @@ packages:
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
-  readable-stream@3.6.2:
-    resolution: {integrity: sha512-9u/sniCrY3D5WdsERHzHE4G2YCXqoG5FTHUiCC4SIbr6XcLZBY05ya9EKjYek9O5xOAwjGq+1JdGBAS7Q9ScoA==}
-    engines: {node: '>= 6'}
-
   readdirp@4.1.2:
     resolution: {integrity: sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg==}
     engines: {node: '>= 14.18.0'}
@@ -3755,8 +3750,8 @@ packages:
   search-insights@2.17.3:
     resolution: {integrity: sha512-RQPdCYTa8A68uM2jwxoY842xDhvx3E5LFL1LxvxCNMev4o5mLuokczhzjAgGwUZBAmOKZknArSxLKmXtIi2AxQ==}
 
-  selderee@0.11.0:
-    resolution: {integrity: sha512-5TF+l7p4+OsnP8BCCvSyZiSPc4x4//p5uPwK8TCnVPJYRmU2aYKMpOXvw8zM5a5JvuuCGN1jmsMwuU2W02ukfA==}
+  selderee@0.12.0:
+    resolution: {integrity: sha512-b1YMh3+DHZp59DLna3qVwQ5iOla/nrI6mLBNW02XxU77M3046Df6VLkoaJyFz20VsGIG5kkp+FK0kg4K4HnUFw==}
 
   semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
@@ -3849,9 +3844,6 @@ packages:
     resolution: {integrity: sha512-tsaTIkKW9b4N+AEj+SVA+WhJzV7/zMhcSu78mLKWSk7cXMOSHsBKFWUs0fWwq8QyK3MgJBQRX6Gbi4kYbdvGkQ==}
     engines: {node: '>=18'}
 
-  string_decoder@1.3.0:
-    resolution: {integrity: sha512-hkRX8U1WjJFd8LsDJ2yQ/wWWxaopEsABU1XfkM8A+j0+85JAGppt16cr1Whg6KIbb4okU6Mql6BOj+uup/wKeA==}
-
   stringify-entities@4.0.4:
     resolution: {integrity: sha512-IwfBptatlO+QCJUo19AqvrPNqlVMpW9YEL2LIVY+Rpv2qsjCGxaDLNRgeGsQWJhfItebuJhsGSLjaBbNSQ+ieg==}
 
@@ -3864,8 +3856,8 @@ packages:
     engines: {node: '>=16 || 14 >=14.17'}
     hasBin: true
 
-  superagent@7.1.6:
-    resolution: {integrity: sha512-gZkVCQR1gy/oUXr+kxJMLDjla434KmSOKbx5iGD30Ql+AkJQ/YlPKECJy2nhqOsHLjGHzoDTXNSjhnvWhzKk7g==}
+  superagent@8.1.2:
+    resolution: {integrity: sha512-6WTxW1EB6yCxV5VFOIPQruWGHqc3yI7hEmZK6h+pyk69Lk/Ut7rLUY6W/ONF2MjBuGjvmMiIpsrVJ2vjrHlslA==}
     engines: {node: '>=6.4.0 <13 || >=14'}
     deprecated: Please upgrade to superagent v10.2.2+, see release notes at https://github.com/forwardemail/superagent/releases/tag/v10.2.2 - maintenance is supported by Forward Email @ https://forwardemail.net
 
@@ -5151,10 +5143,11 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.63.3':
     optional: true
 
-  '@selderee/plugin-htmlparser2@0.11.0':
+  '@selderee/plugin-htmlparser2@0.12.0(selderee@0.12.0)':
     dependencies:
+      domelementtype: 2.3.0
       domhandler: 5.0.3
-      selderee: 0.11.0
+      selderee: 0.12.0
 
   '@shikijs/core@2.5.0':
     dependencies:
@@ -5651,17 +5644,17 @@ snapshots:
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
 
-  akismet-api@5.3.0(supports-color@7.2.0):
+  akismet-api@6.0.0(supports-color@7.2.0):
     dependencies:
       bluebird: 3.7.2
-      superagent: 7.1.6(supports-color@7.2.0)
+      superagent: 8.1.2(supports-color@7.2.0)
     transitivePeerDependencies:
       - supports-color
 
-  akismet-api@5.3.0(supports-color@8.1.1):
+  akismet-api@6.0.0(supports-color@8.1.1):
     dependencies:
       bluebird: 3.7.2
-      superagent: 7.1.6(supports-color@8.1.1)
+      superagent: 8.1.2(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -5961,7 +5954,7 @@ snapshots:
 
   deep-is@0.1.4: {}
 
-  deepmerge@4.3.1: {}
+  deepmerge-ts@8.0.2: {}
 
   defu@6.1.7: {}
 
@@ -6458,22 +6451,22 @@ snapshots:
 
   html-entities@2.6.0: {}
 
-  html-to-text@9.0.5:
+  html-to-text@10.0.1:
     dependencies:
-      '@selderee/plugin-htmlparser2': 0.11.0
-      deepmerge: 4.3.1
+      '@selderee/plugin-htmlparser2': 0.12.0(selderee@0.12.0)
+      deepmerge-ts: 8.0.2
       dom-serializer: 2.0.0
-      htmlparser2: 8.0.2
-      selderee: 0.11.0
+      htmlparser2: 10.1.0
+      selderee: 0.12.0
 
   html-void-elements@3.0.0: {}
 
-  htmlparser2@8.0.2:
+  htmlparser2@10.1.0:
     dependencies:
       domelementtype: 2.3.0
       domhandler: 5.0.3
       domutils: 3.2.2
-      entities: 4.5.0
+      entities: 7.0.1
 
   http-proxy-agent@5.0.0(supports-color@7.2.0):
     dependencies:
@@ -6529,8 +6522,6 @@ snapshots:
   import-without-cache@0.4.0: {}
 
   imurmurhash@0.1.4: {}
-
-  inherits@2.0.4: {}
 
   ini@1.3.8: {}
 
@@ -6699,7 +6690,7 @@ snapshots:
     dependencies:
       '@keyv/serialize': 1.1.1
 
-  leac@0.6.0: {}
+  leac@0.7.0: {}
 
   levn@0.4.1:
     dependencies:
@@ -6983,7 +6974,7 @@ snapshots:
     dependencies:
       whatwg-url: 5.0.0
 
-  nodemailer@9.1.1: {}
+  nodemailer@10.0.10: {}
 
   nopt@10.0.1:
     dependencies:
@@ -7054,10 +7045,10 @@ snapshots:
     dependencies:
       entities: 8.1.0
 
-  parseley@0.12.1:
+  parseley@0.13.1:
     dependencies:
-      leac: 0.6.0
-      peberminta: 0.9.0
+      leac: 0.7.0
+      peberminta: 0.10.0
 
   path-exists@4.0.0: {}
 
@@ -7070,7 +7061,7 @@ snapshots:
 
   pathe@2.0.3: {}
 
-  peberminta@0.9.0: {}
+  peberminta@0.10.0: {}
 
   pend@1.2.0: {}
 
@@ -7148,12 +7139,6 @@ snapshots:
   querystringify@2.2.0: {}
 
   queue-microtask@1.2.3: {}
-
-  readable-stream@3.6.2:
-    dependencies:
-      inherits: 2.0.4
-      string_decoder: 1.3.0
-      util-deprecate: 1.0.2
 
   readdirp@4.1.2: {}
 
@@ -7274,9 +7259,9 @@ snapshots:
 
   search-insights@2.17.3: {}
 
-  selderee@0.11.0:
+  selderee@0.12.0:
     dependencies:
-      parseley: 0.12.1
+      parseley: 0.13.1
 
   semver@6.3.1: {}
 
@@ -7375,10 +7360,6 @@ snapshots:
       get-east-asian-width: 1.6.0
       strip-ansi: 7.2.0
 
-  string_decoder@1.3.0:
-    dependencies:
-      safe-buffer: 5.2.1
-
   stringify-entities@4.0.4:
     dependencies:
       character-entities-html4: 2.1.0
@@ -7398,7 +7379,7 @@ snapshots:
       tinyglobby: 0.2.17
       ts-interface-checker: 0.1.13
 
-  superagent@7.1.6(supports-color@7.2.0):
+  superagent@8.1.2(supports-color@7.2.0):
     dependencies:
       component-emitter: 1.3.1
       cookiejar: 2.1.4
@@ -7409,12 +7390,11 @@ snapshots:
       methods: 1.1.2
       mime: 2.6.0
       qs: 6.16.0
-      readable-stream: 3.6.2
       semver: 7.8.5
     transitivePeerDependencies:
       - supports-color
 
-  superagent@7.1.6(supports-color@8.1.1):
+  superagent@8.1.2(supports-color@8.1.1):
     dependencies:
       component-emitter: 1.3.1
       cookiejar: 2.1.4
@@ -7425,7 +7405,6 @@ snapshots:
       methods: 1.1.2
       mime: 2.6.0
       qs: 6.16.0
-      readable-stream: 3.6.2
       semver: 7.8.5
     transitivePeerDependencies:
       - supports-color

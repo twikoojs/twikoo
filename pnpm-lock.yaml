@@ -354,9 +354,94 @@ importers:
         specifier: ^6.3.0
         version: 6.21.0
 
-  packages/server-deta: {}
+  packages/server-deta:
+    dependencies:
+      '@cap.js/server':
+        specifier: ^4.0.5
+        version: 4.0.5
+      '@imaegoo/node-ip2region':
+        specifier: ^2.1.1
+        version: 2.1.1
+      '@twikoojs/common':
+        specifier: workspace:*
+        version: link:../server-common
+      '@twikoojs/shared':
+        specifier: workspace:*
+        version: link:../shared
+      '@xsai/generate-text':
+        specifier: ^0.2.2
+        version: 0.2.2
+      akismet-api:
+        specifier: ^5.1.0
+        version: 5.3.0(supports-color@7.2.0)
+      axios:
+        specifier: ^1.6.2
+        version: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
+      bowser:
+        specifier: ^2.11.0
+        version: 2.14.1
+      dompurify:
+        specifier: ^3.4.14
+        version: 3.4.15
+      form-data:
+        specifier: ^4.0.0
+        version: 4.0.6
+      html-to-text:
+        specifier: ^9.0.5
+        version: 9.0.5
+      jsdom:
+        specifier: ^22.1.0
+        version: 22.1.0(supports-color@7.2.0)
+      mongodb:
+        specifier: ^6.3.0
+        version: 6.21.0
+      nodemailer:
+        specifier: ^9.0.5
+        version: 9.1.1
+      pushoo:
+        specifier: ^0.1.12
+        version: 0.1.12(debug@4.4.3(supports-color@7.2.0))
+      tencentcloud-sdk-nodejs-tms:
+        specifier: ^4.1.293
+        version: 4.1.311(supports-color@7.2.0)
+      xml2js:
+        specifier: ^0.6.0
+        version: 0.6.2
+    devDependencies:
+      '@types/node':
+        specifier: ^22.20.2
+        version: 22.20.2
 
-  packages/server-edgeone-makers: {}
+  packages/server-edgeone-makers:
+    dependencies:
+      '@edgeone/pages-blob':
+        specifier: latest
+        version: 0.0.16
+      '@twikoojs/common':
+        specifier: workspace:*
+        version: link:../server-common
+      '@twikoojs/shared':
+        specifier: workspace:*
+        version: link:../shared
+      axios:
+        specifier: ^1.6.2
+        version: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
+      bowser:
+        specifier: ^2.11.0
+        version: 2.14.1
+      html-to-text:
+        specifier: ^9.0.5
+        version: 9.0.5
+      marked:
+        specifier: ^18.0.4
+        version: 18.0.13
+      xml2js:
+        specifier: ^0.6.0
+        version: 0.6.2
+    devDependencies:
+      '@types/node':
+        specifier: ^22.20.2
+        version: 22.20.2
 
   packages/server-netlify:
     dependencies:
@@ -535,7 +620,15 @@ importers:
         specifier: ^22.20.2
         version: 22.20.2
 
-  packages/server-vercel-min: {}
+  packages/server-vercel-min:
+    dependencies:
+      twikoo-vercel:
+        specifier: workspace:*
+        version: link:../server-vercel
+    devDependencies:
+      '@types/node':
+        specifier: ^22.20.2
+        version: 22.20.2
 
   packages/shared:
     devDependencies:
@@ -696,6 +789,10 @@ packages:
         optional: true
       search-insights:
         optional: true
+
+  '@edgeone/pages-blob@0.0.16':
+    resolution: {integrity: sha512-Qk3SHTSvCF7awlKsG5t45FolHd8kVH44yJKeXM21qNq8A1I1mTGUuQWa+j4shwuBdgQTvRHTFBbQxAvKqiR22A==}
+    engines: {node: '>=18.0.0'}
 
   '@es-joy/jsdoccomment@0.97.0':
     resolution: {integrity: sha512-EP8uoFfh6+GsdGCduYtmWAW0h7AO+Ayik9Vh5YbA2r/3N6lmJKkCNZX+q3QBXC1K6ixjQ/9igF2b7WVvLm063g==}
@@ -3221,6 +3318,11 @@ packages:
   markdown-to-txt@2.0.1:
     resolution: {integrity: sha512-Hsj7KTN8k1gutlLum3vosHwVZGnv8/cbYKWVkUyo/D1rzOYddbDesILebRfOsaVfjIBJank/AVOySBlHAYqfZw==}
 
+  marked@18.0.13:
+    resolution: {integrity: sha512-xTxVzZsBFwunP6HDmtBkabUQEYArnP7/rMDGmPj9SlrKlQ4i8MdYVow+nJL0eOqwpUqhzBoTBRADGN6uYwPyOw==}
+    engines: {node: '>= 20'}
+    hasBin: true
+
   marked@4.3.0:
     resolution: {integrity: sha512-PRsaiG84bK+AMvxziE/lCFss8juXjNaWzVbN5tXAm4XjeaS9NAHhop+PjQxz2A9h8Q4M/xGmzP8vqNwy6JeK0A==}
     engines: {node: '>= 12'}
@@ -4645,6 +4747,8 @@ snapshots:
       search-insights: 2.17.3
     transitivePeerDependencies:
       - '@algolia/client-search'
+
+  '@edgeone/pages-blob@0.0.16': {}
 
   '@es-joy/jsdoccomment@0.97.0':
     dependencies:
@@ -7212,6 +7316,8 @@ snapshots:
       lodash.escape: 4.0.1
       lodash.unescape: 4.0.1
       marked: 4.3.0
+
+  marked@18.0.13: {}
 
   marked@4.3.0: {}
 

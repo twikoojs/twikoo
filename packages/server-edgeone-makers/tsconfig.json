@@ -1,7 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "noEmit": true
+    "noEmit": true,
+    "lib": ["ES2022", "WebWorker"]
   },
-  "include": ["src"]
+  "include": ["src", "test", "../server-common/src/types"]
 }

@@ -1,2 +1,9 @@
-// 占位：该包实现随 Wave 2/3/4/5 接入。
-export {};
+/** twikoo-edgeone-makers 入口（EO Makers 适配器；受限能力形态）。 */
+export {
+  handler,
+  createEoMakersFunc,
+  toTkRequest,
+  fromTkResponse,
+  prepareEoRuntime,
+  eoCapabilities,
+} from "./main";

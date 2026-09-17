@@ -1,8 +1,30 @@
 {
   "name": "twikoo-vercel-min",
   "version": "0.0.0",
-  "private": true,
+  "description": "Twikoo 2.0 Vercel 精简转发壳（直接依赖 twikoo-vercel，不发布）",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "build": "tsup",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "twikoo-vercel": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.2"
   }
 }

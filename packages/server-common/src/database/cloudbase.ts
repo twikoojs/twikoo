@@ -178,6 +178,9 @@ export function toTcbCondition(
       condition[key] = command.in(["", null]);
     } else if (Array.isArray(value)) {
       condition[key] = command.in(value);
+    } else if (typeof value === "object" && value !== null && "$in" in value) {
+      // Mongo 风格 $in 对象（COMMENT_GET 的 url 多形态查询传入）
+      condition[key] = command.in((value as { $in: unknown[] }).$in);
     } else if (typeof value === "object" && value !== null && NOT in value) {
       condition[key] = command.neq(value[NOT]);
     } else if (typeof value === "object" && value !== null && GT in value) {

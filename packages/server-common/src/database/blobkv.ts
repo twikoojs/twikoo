@@ -73,6 +73,11 @@ function matchCondition(doc: CommentDoc, key: string, expected: unknown): boolea
   const actual = doc[key];
   if (expected === ABSENT) return actual === undefined || actual === null || actual === "";
   if (Array.isArray(expected)) return expected.includes(actual);
+  if (typeof expected === "object" && expected !== null && "$in" in expected) {
+    // Mongo 风格 $in 对象（COMMENT_GET 的 url 多形态查询传入）
+    const list = (expected as { $in: unknown[] }).$in;
+    return list.includes(actual) || (list.includes(null) && actual === undefined);
+  }
   if (typeof expected === "object" && expected !== null && NOT in expected) {
     // 「不等于」：缺失字段视为不等（与 Mongo $ne 一致）
     return actual !== (expected as { [NOT]?: unknown })[NOT];

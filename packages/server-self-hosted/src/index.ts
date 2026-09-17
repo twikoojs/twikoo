@@ -9,3 +9,4 @@ export {
   startRequestTimesTimer,
   getRequestTimesClearInterval,
 } from "./main";
+export { createTkserverDatabase } from "./database";

@@ -146,8 +146,10 @@ describe("T35 一键启动编排", () => {
     expect(devDeps.concurrently, "缺少 concurrently 依赖").toBeTruthy();
     expect(devDeps["cross-env"], "缺少 cross-env 依赖（跨平台 env 传递）").toBeTruthy();
     // 后端数据目录显式指向仓库根 data/（packages/server-self-hosted 的 cwd 上溯两级），
-    // 该目录已被 .gitignore 的 data/ 覆盖，保证 demo 数据不误入版本库。
+    // 该目录已被 .gitignore 的 data/ 覆盖，保证 demo 数据不误入版本库；
+    // TWIKOO_SEED=1 打开 demo 测试数据 seed（T36 / §10.2）。
     expect(demo, "demo 脚本未指定 TWIKOO_DATA").toContain("TWIKOO_DATA=../../data");
+    expect(demo, "demo 脚本未开启 TWIKOO_SEED").toContain("TWIKOO_SEED=1");
   });
 
   it("客户端提供 build:watch，tkserver 提供 start", () => {

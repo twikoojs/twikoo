@@ -5,8 +5,6 @@
  */
 import {
   FULL_CAPABILITIES,
-  LokiDatabase,
-  MongoDatabase,
   createHandler,
   resetRequestTimes,
   scaffoldAdapters,
@@ -14,6 +12,7 @@ import {
   type TkRequest,
   type TkResponse,
 } from "@twikoojs/common";
+import { createTkserverDatabase } from "./database";
 
 /** tkserver 平台能力：全能力（§6.5 能力矩阵） */
 const tkserverCapabilities = FULL_CAPABILITIES;
@@ -82,14 +81,7 @@ export function createTkserverHandler(
   let database: Database | null = options.database ?? null;
   /** 数据库选择（1.x server.js：MONGODB_URI → mongo，否则 loki） */
   const getDatabase = async (): Promise<Database> => {
-    if (!database) {
-      const mongoUri = options.mongoUri ?? process.env.MONGODB_URI ?? process.env.MONGO_URL ?? "";
-      database = mongoUri
-        ? new MongoDatabase({ uri: mongoUri })
-        : new LokiDatabase({
-            dataDir: options.dataDir ?? process.env.TWIKOO_DATA ?? "./data",
-          });
-    }
+    if (!database) database = createTkserverDatabase(options);
     await database.init();
     return database;
   };

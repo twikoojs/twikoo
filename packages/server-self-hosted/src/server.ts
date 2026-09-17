@@ -11,6 +11,8 @@ import {
   shutdown,
   startRequestTimesTimer,
 } from "./main";
+import { createTkserverDatabase } from "./database";
+import type { Database } from "@twikoojs/common";
 
 /** 垫片后的响应形态（Node 响应 + status/json） */
 type ServerResponseShim = import("./main").ServerResponseLike;
@@ -22,6 +24,8 @@ type ServerRequestShim = import("./main").ServerRequestLike & { body?: unknown }
 export interface TkserverInstance {
   /** HTTP 服务器（未监听；listen 由调用方执行） */
   server: Server;
+  /** 已装配的数据库实例（供启动期 seed 复用，§10.2） */
+  database: Database;
   /** 优雅关闭（关监听 → 排空连接 → 停定时器 → 关数据库） */
   gracefulShutdown: () => Promise<void>;
   /** 注册 SIGTERM/SIGINT 处理（TWIKOO_SHUTDOWN_TIMEOUT 兜底强杀） */
@@ -30,10 +34,12 @@ export interface TkserverInstance {
 
 /**
  * 创建 tkserver 服务器实例（不监听、不注册信号——由 bin 底部或测试驱动）。
+ * @param options 注入项（数据库可注入，缺省按 MONGODB_URI/TWIKOO_DATA 选择）
  * @returns 服务器实例与生命周期控制
  */
-export function createTkserverServer(): TkserverInstance {
-  const handler = createTkserverHandler();
+export function createTkserverServer(options: { database?: Database } = {}): TkserverInstance {
+  const database = options.database ?? createTkserverDatabase();
+  const handler = createTkserverHandler({ database });
   const timer = startRequestTimesTimer();
   const sockets = new Set<Socket>();
   let isShuttingDown = false;
@@ -103,20 +109,33 @@ export function createTkserverServer(): TkserverInstance {
     process.on("SIGINT", onSignal);
   };
 
-  return { server, gracefulShutdown, registerSignalHandlers };
+  return { server, database, gracefulShutdown, registerSignalHandlers };
 }
 
 /** 测试进程内装配时跳过自动启动（TWIKOO_SKIP_BOOT=1） */
 if (process.env.TWIKOO_SKIP_BOOT !== "1") {
-  const { server, registerSignalHandlers } = createTkserverServer();
+  const { server, database, registerSignalHandlers } = createTkserverServer();
   const port = parseInt(process.env.TWIKOO_PORT ?? "", 10) || 8080;
   const host =
     process.env.TWIKOO_HOST ?? (process.env.TWIKOO_LOCALHOST_ONLY === "true" ? "localhost" : "::");
 
-  server.listen(port, host, () => {
-    const actual = (server.address() as AddressInfo).port;
-    console.log(`Twikoo server started on host ${host} port ${actual}`);
-  });
-  registerSignalHandlers();
-  void getRequestTimesClearInterval;
+  /** 启动序列：先（可选）seed 再监听——避免 seed 与首批请求竞态（§10.2） */
+  void (async () => {
+    if (process.env.TWIKOO_SEED === "1") {
+      try {
+        /** 动态 import：未开启 seed 时本模块不会被加载（生产不可触达第一道防线） */
+        const { seedDemoData } = await import("./seed");
+        await seedDemoData({ database });
+      } catch (e) {
+        /** seed 属演示辅助：失败不阻断服务启动，但必须显式报错（不静默） */
+        console.error("[twikoo-seed] seed 失败，服务仍将启动：", e);
+      }
+    }
+    server.listen(port, host, () => {
+      const actual = (server.address() as AddressInfo).port;
+      console.log(`Twikoo server started on host ${host} port ${actual}`);
+    });
+    registerSignalHandlers();
+    void getRequestTimesClearInterval;
+  })();
 }

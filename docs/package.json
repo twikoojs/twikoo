@@ -15,7 +15,7 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "vitepress": "^1.0.0-rc.29",
+    "vitepress": "^1.6.4",
     "vitest": "^5.0.1"
   }
 }

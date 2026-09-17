@@ -35,7 +35,7 @@
     "html-to-text": "^9.0.5",
     "jsdom": "^22.1.0",
     "marked": "^18.0.4",
-    "mongodb": "^6.3.0",
+    "mongodb": "^7.6.0",
     "nodemailer": "^9.0.5",
     "pushoo": "workspace:^",
     "tencentcloud-sdk-nodejs-tms": "^4.1.293",

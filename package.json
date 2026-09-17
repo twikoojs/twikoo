@@ -20,7 +20,9 @@
     "prepare": "simple-git-hooks",
     "env:check": "node scripts/env-check.mjs",
     "check:workflows": "node scripts/check-workflows.mjs",
-    "release:check": "node scripts/release-set-version.mjs --check"
+    "release:check": "node scripts/release-set-version.mjs --check",
+    "check:baseline": "node scripts/check-baseline.mjs",
+    "check:agents": "node scripts/check-agents-staleness.mjs"
   },
   "lint-staged": {
     "*.{js,mjs,cjs,ts,vue}": [

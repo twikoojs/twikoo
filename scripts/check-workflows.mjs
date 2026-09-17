@@ -36,8 +36,11 @@ for (const file of readdirSync(WORKFLOW_DIR).filter((f) => /\.ya?ml$/.test(f))) 
 console.log(`发现 ${workflows.size} 个工作流：${[...workflows.keys()].join(", ")}`);
 
 // ---- ① actionlint ----
-const linter = await createLinter();
+// 每个文件新建一个 wasm 实例：actionlint 的 npm 构建在 wasm 内存增长后会持有已
+// detach 的 ArrayBuffer，复用同一实例连续 lint 较大文件会抛
+// `RangeError: offset is out of bounds`（实测）。
 for (const [file, { source }] of workflows) {
+  const linter = await createLinter();
   const problems = await linter(source, `.github/workflows/${file}`);
   if (problems.length > 0) {
     for (const p of problems) {
@@ -149,6 +152,59 @@ if (docs) {
   expect(source.includes("imaegoo/vuepress-deploy@master"), "docs.yml 应保留 vuepress-deploy 部署");
   expect(source.includes("CNAME: twikoo.js.org"), "docs.yml 应保留 CNAME");
   expect(/types:\s*\[published\]/.test(source), "docs.yml 应在 Release 时同步部署");
+}
+
+// ---- ③ ci.yml（T40：4 并行门禁 + 2 守卫）----
+const ci = workflows.get("ci.yml");
+expect(ci !== undefined, "缺少 .github/workflows/ci.yml");
+if (ci) {
+  const doc = ci.doc;
+  const source = ci.source;
+  const jobs = doc?.jobs ?? {};
+
+  /** 4 个门禁 job 并行（互不 needs） */
+  for (const job of ["lint", "typecheck", "test", "build"]) {
+    expect(jobs[job] !== undefined, `ci.yml 缺少门禁 job：${job}`);
+    expect(
+      [].concat(jobs[job]?.needs ?? []).length === 0,
+      `ci.yml 的 ${job} job 应与其他门禁并行（不得声明 needs）`,
+    );
+  }
+
+  /** test job 注入 §9.4 的 A 类密钥（缺失即空 → 用例 skip） */
+  const testEnv = jobs["test"]?.env ?? {};
+  const injected = Object.keys(testEnv).filter((k) => k.startsWith("TEST_"));
+  expect(
+    injected.length >= 14,
+    `ci.yml 的 test job 应注入 §9.4 A 类密钥（≥14 个），实际 ${injected.length} 个`,
+  );
+  for (const key of injected) {
+    expect(
+      String(testEnv[key]).includes(`secrets.${key}`),
+      `ci.yml 的 test job 环境变量 ${key} 应取自 secrets.${key}`,
+    );
+  }
+
+  /** 基线守卫 job */
+  expect(jobs["baseline"] !== undefined, "ci.yml 缺少基线守卫 job（baseline）");
+  expect(/check-baseline\.mjs/.test(source), "ci.yml 的基线守卫应执行 scripts/check-baseline.mjs");
+
+  /** AGENTS.md 滞后警告：只在 PR 触发，且不阻塞 */
+  const staleness = jobs["agents-staleness"];
+  expect(staleness !== undefined, "ci.yml 缺少 AGENTS.md 滞后警告 job（agents-staleness）");
+  expect(
+    String(staleness?.if ?? "").includes("pull_request"),
+    "agents-staleness job 应仅在 pull_request 事件触发",
+  );
+  expect(
+    /check-agents-staleness\.mjs/.test(source),
+    "ci.yml 的警告 job 应执行 scripts/check-agents-staleness.mjs",
+  );
+
+  /** 全仓门禁命令齐备 */
+  for (const cmd of ["pnpm lint", "pnpm typecheck", "pnpm test", "pnpm build"]) {
+    expect(source.includes(cmd), `ci.yml 缺少门禁命令：${cmd}`);
+  }
 }
 
 // ---- 汇总 ----

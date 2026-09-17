@@ -1,7 +1,66 @@
 ## 更新日志 | Release notes
 
+- [twikoo 2.0.0](#twikoo-200--2026-09-17)（2026-09-17）
 - [twikoo 2.0.0-beta.1](#twikoo-200-beta1--2026-09-17)（2026-09-17）
 - 1.x 及更早版本：见 [GitHub Releases](https://github.com/twikoojs/twikoo/releases)
+
+---
+
+## twikoo 2.0.0 ·（2026-09-17）
+
+首个正式版（npm dist-tag `latest`）。
+
+**破坏性变更与升级动作与 beta.1 完全一致**——BC-1 ~ BC-5、BC-8 ~ BC-14 共 12 条的逐条含义、
+影响面与「你需要做什么」，以及完整的功能/工程变更清单，见下方
+[twikoo 2.0.0-beta.1](#twikoo-200-beta1--2026-09-17) 小节（含升级指引）。本小节只列
+**相对 beta.1 的变化**与**发布说明**。
+
+### 修复（相对 2.0.0-beta.1）
+
+- **评论列表「加载更多」在 2.0 上失效**：`COMMENT_GET` 的 `before` 流式分页游标此前被当作
+  **等值** 匹配（`created === before` 恒不命中），导致第二页及以后恒为空——评论只能看到第一页。
+  已在语义查询层新增「小于」算子（`LT`，与既有 `ABSENT`/`NOT`/`GT` 并列），
+  四个数据库实现（Mongo / Loki / BlobKV / CloudBase）同步翻译，handler 改回 1.x 的
+  `created < before` 语义。
+- **管理端评论分页失效**：`COMMENT_GET_FOR_ADMIN` 未返回 `count`（1.x 为 `res.count`），
+  管理面板分页控件总数恒为 0 → **永远只有第一页**，管理员只能操作前 5 条评论。
+  已补返回 `count`，关键词检索场景按「过滤后命中数」计数。
+- 上述两项在 beta 发布前的端到端回归中被发现并修复，同时向**语义层**（4 个实现共享用例）
+  与**契约层**（2 个数据库实现共享用例）补齐了回归断言，防止再次漂移。
+
+### 新增仓库级回归工具（不随 npm 包发布）
+
+- `pnpm e2e:b2` —— 真启 `tkserver`（临时数据目录 + seed）+ jsdom 驱动**已构建的客户端产物**，
+  覆盖附录 B.2 前端清单自动化子集 26 项：列表渲染（嵌套回复/站长徽标/头像/属地/外链安全化）、
+  Prism 高亮、KaTeX 公式、加载更多、排序（最新/最早/热门）、点赞落库、提交与草稿、
+  屏蔽词错误卡片、i18n 切换、管理员暗号入口与首次设密、配置读写、管理端检索与筛选。
+- `pnpm check:products` —— B.3「客户端四产物」逐一 `init` + 形态断言（内联样式 / 内置云开发 SDK），
+  以及自托管 `tkserver` 的启动 / 全功能 / `SIGTERM` 优雅退出。
+- 真机平台与打包链路的人工验证清单见仓库根 `VERIFICATION.md`。
+
+### 发布说明 / 已知问题
+
+- **pkg SEA 可执行产物（`publish-pkg` 附件）当前不可用**：单文件产物中 14 个经
+  `loadLib()` 惰性加载的依赖未被内联（jsdom / DOMPurify / nodemailer / ip2region 等），
+  表现为「发评论、邮件通知、反垃圾、UA/属地解析、Markdown、推送」报「缺少依赖」，
+  存储与查询正常。修复方案（pkg 入口静态 import + `setLibImporter` 注入）与验证步骤见
+  `VERIFICATION.md` §6；**修复前不应对外发布该附件**。
+- 平台真机验证（CloudBase / Vercel / Netlify / AWS Lambda / Deta / EdgeOne Makers / 自托管 /
+  Docker / pkg / HF Space / CDN 四产物）与 GitHub 侧工作流验证，需真实账号与推送后执行，
+  清单见 `VERIFICATION.md` 与 `.omo/evidence/deferred-github-verifications.md`。
+
+### 包版本矩阵（2.0.0）
+
+| 包                 | 版本  | 说明                             |
+| ------------------ | ----- | -------------------------------- |
+| `twikoo`           | 2.0.0 | 客户端（UMD）                    |
+| `@twikoojs/common` | 2.0.0 | 服务端公共库                     |
+| `@twikoojs/shared` | 2.0.0 | 共享常量与类型                   |
+| `twikoo-func`      | 2.0.0 | CloudBase 适配器                 |
+| `twikoo-vercel`    | 2.0.0 | Vercel 适配器                    |
+| `tkserver`         | 2.0.0 | 自托管服务                       |
+| `twikoo-netlify`   | 2.0.0 | Netlify 适配器                   |
+| `pushoo`           | 2.0.0 | 消息推送（版本策略变更见 BC-11） |
 
 ---
 

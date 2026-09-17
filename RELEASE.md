@@ -34,6 +34,9 @@ pnpm check:no-js                        # 源码无 .js
 pnpm check:workflows                    # actionlint + 结构断言
 pnpm check:baseline                     # engines / .nvmrc / 8 包 0.0.0
 pnpm release:check                      # 8 个发布包 version 必须为 0.0.0
+pnpm e2e:b2                             # B.2 前端清单端到端回归（26 项；需先 pnpm build）
+pnpm check:products                     # B.3 四产物 + 自托管启动/全功能/shutdown（需先 pnpm build）
+pnpm check:agents                       # AGENTS.md 滞后检查（警告级，不阻塞）
 node node_modules/prettier/bin/prettier.cjs --check .
 git tag -l                              # 必须为空：不得预创建 tag
 git status --porcelain                  # 必须为空：工作区干净
@@ -115,14 +118,31 @@ node -e "require.resolve('@twikoojs/common'); console.log('common resolvable ✓
 
 正式版**前置**额外要求：
 
-- `VERIFICATION.md` §6 的已知缺口（pkg SEA 重依赖缺失）必须先关闭，再执行 §2.9 的 pkg 多平台实测；
-- 若 beta 期间收到的高优先级反馈未关闭，按 `t46` 约定**阻断发布**。
+- beta 反馈问题清单已关闭或明确降级并记录（当前状态：beta 尚未发布，无外部反馈；
+  重构期两轮回归发现的问题清单见 `.omo/evidence/t44-fail.md` / `t45-fail.md`）；
+- `CHANGELOG.md` 的版本号与日期为终稿（**创建 Release 前核对 `2.0.0` 小节的日期与实际发布日一致**）；
+- `git tag -l` 仍为空（tag 由本次 Release 创建）；
+- **SEA 可执行产物（`publish-pkg`）是当前唯一未关闭项**，必须先做决策并记录：
+  该附件目前缺少 14 个惰性加载依赖，发评论等能力不可用（详见 `VERIFICATION.md` §6）。两条合法路径：
+  - **(A) 推荐**：先修复（pkg 入口静态 import 全部重依赖 + `setLibImporter` 注入）→
+    在宿主 Node ≥ 25.7 上生成 SEA 产物并按 `VERIFICATION.md` §2.9 跑通四平台 → 正常发布；
+  - **(B) 显式放弃本次附件**：同步调整 `.github/workflows/release.yml` 中 `publish-pkg` 的
+    job 条件，跑 `pnpm check:workflows` 复验，并在 Release notes 注明「本版本不提供 SEA 可执行产物」。
 
-正式版发布前的额外前置检查：
+### 正式版发布后用户验证项清单
 
-- beta 反馈问题清单已关闭或明确降级并记录；
-- `CHANGELOG.md` 的版本号与日期为终稿；
-- `git tag -l` 仍为空（tag 由本次 Release 创建）。
+发布完成后，按下表逐项验证（结果回填到 `VERIFICATION.md` 对应小节）：
+
+| #   | 验证项            | 判定标准                                                                                                  |
+| --- | ----------------- | --------------------------------------------------------------------------------------------------------- |
+| 1   | npm 8 包 `latest` | `npm view twikoo dist-tags` 的 `latest = 2.0.0`；8 包 `npm view <pkg>@latest version` 均为 `2.0.0`        |
+| 2   | 传递依赖解析      | 空目录 `npm install twikoo-vercel@2.0.0` → `require.resolve("@twikoojs/common")` 可解析                   |
+| 3   | CDN 四产物        | jsDelivr 上 4 个产物均可下载；页面引入任一形态后能渲染评论（`.nocss` 需配 `twikoo.css`）                  |
+| 4   | docs 站点         | `https://twikoo.js.org` 可访问且版本说明为 2.0.0                                                          |
+| 5   | Docker 镜像       | `imaegoo/twikoo:latest` 已推送；`docker run` 后能收发评论                                                 |
+| 6   | 云平台升级指引    | 按 `CHANGELOG.md` 的「升级指引」在 CloudBase 控制台完成一次真实升级（运行时 Node 20+/24.11 + 在线装依赖） |
+| 7   | 前端回归          | 真实浏览器（非 jsdom）跑一遍 B.2 的视觉/暗色/响应式人工清单（`VERIFICATION.md` §2.11 与 T44 报告 §5）     |
+| 8   | 回滚预案可用      | 确认 72h 内 `npm deprecate` 命令可按 §4.1 执行（不必真的执行，核对命令与包名清单即可）                    |
 
 ## 4. 回滚
 

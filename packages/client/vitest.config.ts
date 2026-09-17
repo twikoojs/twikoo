@@ -9,6 +9,11 @@ export default defineConfig({
     environment: "happy-dom",
     setupFiles: ["../../test/setup/env.ts"],
     include: ["test/**/*.test.ts"],
-    coverage: { provider: "v8", include: ["src/**/*.ts"] },
+    coverage: {
+      provider: "v8",
+      include: ["src/**/*.ts"],
+      // §9.2 客户端核心门禁（与 AGENTS.md 的「覆盖率门禁」表一致）
+      thresholds: { statements: 70 },
+    },
   },
 });

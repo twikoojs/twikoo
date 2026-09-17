@@ -129,7 +129,15 @@ export default defineConfigWithVueTs(
     //    docs/：VitePress 文档站自带独立工具链（node_modules 内含自己的 lint 生态决策），
     //    不纳入本仓 lint 范围，由文档站自身演进节奏维护。
     name: "twikoo/ignores",
-    ignores: ["**/dist/**", "coverage/**", "**/node_modules/**", "docs/**", "**/*.min.js"],
+    // build/：pkg 打包的中间产物（单文件 bundle，~1.7MB），与 dist/ 同理不参与 lint
+    ignores: [
+      "**/dist/**",
+      "**/build/**",
+      "coverage/**",
+      "**/node_modules/**",
+      "docs/**",
+      "**/*.min.js",
+    ],
   },
 
   // 2. Vue 3 flat/recommended——只作用于 .vue 文件

@@ -112,30 +112,40 @@ export function createTkserverServer(options: { database?: Database } = {}): Tks
   return { server, database, gracefulShutdown, registerSignalHandlers };
 }
 
-/** 测试进程内装配时跳过自动启动（TWIKOO_SKIP_BOOT=1） */
-if (process.env.TWIKOO_SKIP_BOOT !== "1") {
-  const { server, database, registerSignalHandlers } = createTkserverServer();
+/**
+ * 启动 tkserver（bin `dist/server.js` 与 `twikoo-pkg` 的 SEA 产物共用入口）：
+ * 可选 demo seed → 监听端口 → 注册信号处理。
+ * @param options 注入项（数据库可注入，缺省按 MONGODB_URI/TWIKOO_DATA 选择）
+ * @returns 已进入监听的服务器实例
+ */
+export async function startTkserver(
+  options: { database?: Database } = {},
+): Promise<TkserverInstance> {
+  const instance = createTkserverServer(options);
+  const { server, database, registerSignalHandlers } = instance;
   const port = parseInt(process.env.TWIKOO_PORT ?? "", 10) || 8080;
   const host =
     process.env.TWIKOO_HOST ?? (process.env.TWIKOO_LOCALHOST_ONLY === "true" ? "localhost" : "::");
 
-  /** 启动序列：先（可选）seed 再监听——避免 seed 与首批请求竞态（§10.2） */
-  void (async () => {
-    if (process.env.TWIKOO_SEED === "1") {
-      try {
-        /** 动态 import：未开启 seed 时本模块不会被加载（生产不可触达第一道防线） */
-        const { seedDemoData } = await import("./seed");
-        await seedDemoData({ database });
-      } catch (e) {
-        /** seed 属演示辅助：失败不阻断服务启动，但必须显式报错（不静默） */
-        console.error("[twikoo-seed] seed 失败，服务仍将启动：", e);
-      }
+  if (process.env.TWIKOO_SEED === "1") {
+    try {
+      /** 动态 import：未开启 seed 时本模块不会被加载（生产不可触达第一道防线） */
+      const { seedDemoData } = await import("./seed");
+      await seedDemoData({ database });
+    } catch (e) {
+      /** seed 属演示辅助：失败不阻断服务启动，但必须显式报错（不静默） */
+      console.error("[twikoo-seed] seed 失败，服务仍将启动：", e);
     }
+  }
+
+  await new Promise<void>((resolve) => {
     server.listen(port, host, () => {
       const actual = (server.address() as AddressInfo).port;
       console.log(`Twikoo server started on host ${host} port ${actual}`);
+      resolve();
     });
-    registerSignalHandlers();
-    void getRequestTimesClearInterval;
-  })();
+  });
+  registerSignalHandlers();
+  void getRequestTimesClearInterval;
+  return instance;
 }

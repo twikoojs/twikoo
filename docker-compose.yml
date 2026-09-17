@@ -1,0 +1,31 @@
+# Twikoo 自托管（Docker Compose）
+#
+# 与 1.x 的差异：镜像改为从 workspace 构建（见 Dockerfile），
+# 数据目录用 TWIKOO_DATA 显式声明（2.0 的 tkserver 环境变量，缺省 ./data）。
+#
+# 用法：
+#   docker compose up -d
+#   docker compose logs -f
+#
+# 若使用外部 MongoDB，取消 MONGODB_URI 注释（此时 TWIKOO_DATA 仅用于验证码缓存）。
+
+services:
+  twikoo-service:
+    image: imaegoo/twikoo
+    restart: unless-stopped
+    environment:
+      # 单 IP 每分钟最大请求次数（1.x 语义，2.0 保留；缺省 250）
+      TWIKOO_THROTTLE: "250"
+      # 数据目录（LokiJS db.json 落盘位置）
+      TWIKOO_DATA: /app/data
+      # 时区（日志时间与「最后更新于」显示）
+      TZ: Asia/Shanghai
+      # 外部数据库（可选）：mongodb://user:pass@host:27017/twikoo
+      # MONGODB_URI: ""
+    volumes:
+      - twikoo-data:/app/data
+    ports:
+      - "8080:8080"
+
+volumes:
+  twikoo-data:

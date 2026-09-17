@@ -196,10 +196,13 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          # 宿主 Node 必须 ≥ 25.7（tsdown 的 exe 选项依赖较新的 SEA API）；
+          # SEA 产物的**目标运行时**由 packages/pkg/tsdown.config.ts 的
+          # exe.targets[].nodeVersion 决定，D-13 规定为 24。两者含义不同，勿混淆。
+          node-version: "26"
           registry-url: ${{ env.NPM_REGISTRY }}
       - run: corepack enable && pnpm install --frozen-lockfile
-      - name: 构建 SEA 产物（nodeVersion 见 packages/pkg/package.json）
+      - name: 构建 SEA 产物（目标运行时 nodeVersion 见 packages/pkg/tsdown.config.ts）
         run: pnpm --filter twikoo-pkg build:exe
       - name: 上传产物到已有 Release（不创建 Release）
         env:

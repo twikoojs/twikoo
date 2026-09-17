@@ -9,6 +9,9 @@ coverage/
 # T25 pnpm pack 传递依赖模拟产物
 pack-test/
 
+# pkg 打包中间产物（单文件 bundle；exe 产物在 dist/）
+build/
+
 # T35 demo：本地化 vendor 资产（由 scripts/prepare-assets.mjs 从 npm 依赖复制）
 packages/demo/.vendor/
 

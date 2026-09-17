@@ -1,4 +1,5 @@
 dist/
+build/
 coverage/
 pnpm-lock.yaml
 docs/.vitepress/dist/

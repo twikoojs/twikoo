@@ -18,7 +18,7 @@ export default defineConfig([
     external: Object.keys(pkg.dependencies ?? {}),
   },
   {
-    entry: { server: "src/server.ts" },
+    entry: { server: "src/bin.ts" },
     format: ["cjs"],
     sourcemap: true,
     target: "es2022",

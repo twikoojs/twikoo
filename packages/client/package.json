@@ -1,7 +1,29 @@
 {
   "name": "twikoo",
   "version": "0.0.0",
+  "description": "Twikoo 2.0 客户端（Vue3 + Vite；UMD 全局名 twikoo）",
+  "license": "MIT",
+  "main": "./dist/twikoo.min.js",
+  "module": "./dist/twikoo.min.js",
+  "exports": {
+    ".": "./dist/twikoo.min.js"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "build": "node build.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@twikoojs/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.2",
+    "@vitejs/plugin-vue": "^5.2.0",
+    "happy-dom": "^20.14.5",
+    "vite": "^6.0.0",
+    "vue": "^3.5.42"
   }
 }

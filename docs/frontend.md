@@ -93,14 +93,14 @@ twikoo:
 
 ```html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.7.24/dist/twikoo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@2.0.0-beta.1/dist/twikoo.min.js"></script>
 <script>
   twikoo.init({
     envId: "您的环境id", // 腾讯云环境填 envId；Vercel 环境填地址（https://xxx.vercel.app）
     el: "#tcomment", // 容器元素
     // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，腾讯云环境填 ap-shanghai 或 ap-guangzhou；Vercel 环境不填
     // path: location.pathname, // 用于区分不同文章的自定义 js 路径，如果您的文章路径不是 location.pathname，需传此参数
-    // lang: 'zh-CN', // 用于手动设定评论区语言，支持的语言列表 https://github.com/twikoojs/twikoo/blob/main/src/client/utils/i18n/index.js
+    // lang: 'zh-CN', // 用于手动设定评论区语言，支持的语言列表 https://github.com/twikoojs/twikoo/blob/main/packages/client/src/i18n/index.ts
   });
 </script>
 ```
@@ -117,12 +117,12 @@ twikoo:
 
 #### 推荐在中国使用
 
-- `https://registry.npmmirror.com/twikoo/1.7.24/files/dist/twikoo.min.js`
-- `https://s4.zstatic.net/npm/twikoo@1.7.24/dist/twikoo.min.js`
+- `https://registry.npmmirror.com/twikoo/2.0.0-beta.1/files/dist/twikoo.min.js`
+- `https://s4.zstatic.net/npm/twikoo@2.0.0-beta.1/dist/twikoo.min.js`
 
 #### 推荐在全球使用
 
-- `https://cdn.jsdelivr.net/npm/twikoo@1.7.24/dist/twikoo.min.js`
+- `https://cdn.jsdelivr.net/npm/twikoo@2.0.0-beta.1/dist/twikoo.min.js`
 
 #### 备用选项
 
@@ -131,6 +131,10 @@ twikoo:
 
 ::: warning 注意
 建议使用 CDN 引入 Twikoo 的用户在链接地址上锁定版本，以免将来 Twikoo 升级时受到非兼容性更新的影响。
+:::
+
+::: tip 浏览器基线（BC-2）
+2.0 起前端产物语法目标为 **ES2022**，不再兼容 IE / ES5。最低版本：Chrome 94+、Edge 94+、Firefox 93+、Safari 15.4+、iOS Safari 15.4+。
 :::
 
 ::: warning 注意

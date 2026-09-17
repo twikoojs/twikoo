@@ -175,6 +175,23 @@ On a page with the comment box, open your browser's developer tools (F12 on Wind
 
 For any other error, please [open an issue](https://github.com/twikoojs/twikoo/issues/new) and include the full error message.
 
+## Troubleshooting by error type
+
+Since 2.0 the frontend classifies network and API failures into 8 kinds. The comment area shows an **inline error card** you can expand to inspect the HTTP status, the request id and a snippet of the raw response. Use the table below to narrow down the cause:
+
+| kind           | Typical symptom                                 | What to check                                                                                                                 |
+| -------------- | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `NETWORK`      | Request never leaves the browser, HTTP status 0 | Domain / network unreachable; ad-blocking extensions; check that the `envId` URL is reachable                                 |
+| `CORS`         | `No 'Access-Control-Allow-Origin' header`       | Clear the `CORS_ALLOW_ORIGIN` config item; make sure the function runs                                                        |
+| `TIMEOUT`      | No response for a long time                     | Slow cold start or backend timeout; Vercel and similar platforms may time out from mainland China — consider another platform |
+| `REJECTED`     | Request rejected by the platform                | Quota exhausted, function not deployed successfully, or the gateway CORS settings are missing your domain                     |
+| `NOT_FOUND`    | 404                                             | Wrong `envId` / deployment URL, or the function is not named `twikoo`                                                         |
+| `CLIENT_ERROR` | 4xx                                             | Invalid request parameters (e.g. out-of-range `per` / `page`, missing required fields)                                        |
+| `SERVER_ERROR` | 5xx                                             | Exception inside the function: check the function logs; usually a wrong database URI or a runtime older than Node 20          |
+| `UNKNOWN`      | Anything else                                   | Expand the error card for the raw response snippet, or [open an issue](https://github.com/twikoojs/twikoo/issues/new)         |
+
+> Related: `ERR_BLOCKED_BY_CLIENT` → disable ad blockers; `FUNCTIONS_EXECUTE_FAIL` → function runtime version or permissions.
+
 ## Can it be deployed privately?
 
 Yes.

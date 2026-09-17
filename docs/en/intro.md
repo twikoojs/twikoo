@@ -126,25 +126,48 @@ Icon design：[Maemo Lee](https://www.maemo.cc)
 
 <!-- ## Donate -->
 
+## Browser support
+
+::: tip
+Twikoo 2.0 drops IE / ES5 support (the build target is **ES2022**). Use a modern browser at or above the versions below.
+:::
+
+| IE / Edge | Firefox | Chrome | Safari | iOS Safari |
+| --------- | ------- | ------ | ------ | ---------- |
+| Edge 94+  | 93+     | 94+    | 15.4+  | 15.4+      |
+
+> IE and ES5 engines are no longer supported; the minimum versions follow from ES2022 syntax support (BC-2).
+
 ## Release notes & plans
 
 [Update logs](https://github.com/twikoojs/twikoo/releases) & [Development Plan](https://github.com/twikoojs/twikoo/projects/2)
 
 ## Development
 
-If you want to develop locally for a second time, you can refer to the following commands：
+This repository is a pnpm monorepo and requires **Node 24** (`.nvmrc` = 24, build target ES2022).
 
 ```sh
-yarn dev # (http://localhost:9820/demo.html)
-yarn lint
-yarn build # (dist/twikoo.all.min.js)
+pnpm install # install dependencies
+pnpm demo    # one-command local demo (client watch + tkserver + demo page, fully offline)
+pnpm lint    # lint
+pnpm typecheck
+pnpm test    # unit tests
+pnpm build   # build (packages/client/dist/twikoo.all.min.js)
 ```
+
+### Local development (`pnpm demo`)
+
+`pnpm demo` starts three processes with a single command: the client Vite watcher (port 9820), the tkserver backend (port 8080) and the demo page (port 9820 — open `http://localhost:9820/demo.html`).
+
+- Every asset is local (bulma / katex come from npm dependencies, not a CDN), so it works **without internet access**;
+- On first start it generates demo data covering 11 scenarios (plain comments, nested replies, owo emoji, formulas, code blocks, links and images, likes, spam, multi-path pagination, visitor counter, full config). The data lives in `data/` at the repository root — **delete that directory to reset**;
+- Demo data is only generated when `TWIKOO_SEED=1` is set (`pnpm demo` sets it for you); production deployments can never reach it.
 
 If your changes can help more people, feel free to submit a Pull Request!
 
 ## I18N
 
-Support Simplified Chinese, Traditional Chinese, English, Indonesian. [translate Pull Request](https://github.com/twikoojs/twikoo/tree/main/src/client/utils/i18n).
+Supports 9 locales (zh-CN, zh-HK, zh-TW, en, ja-JP, ko-KR, vi-VN, id-ID, uz-UZ). [Translate Pull Request](https://github.com/twikoojs/twikoo/tree/main/packages/client/src/i18n/locales).
 
 ## License
 

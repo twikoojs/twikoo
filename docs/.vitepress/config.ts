@@ -65,8 +65,13 @@ export default defineConfig({
         sidebar: [
           { text: "Introduction", link: "/en/intro" },
           { text: "Quick start", link: "/en/quick-start" },
+          { text: "MongoDB Atlas", link: "/en/mongodb-atlas" },
+          { text: "Serverless deployment", link: "/en/backend" },
+          { text: "Frontend deployment", link: "/en/frontend" },
+          { text: "Update", link: "/en/update" },
           { text: "FAQ", link: "/en/faq" },
           { text: "API", link: "/en/api" },
+          { text: "Links", link: "/en/link" },
         ],
       },
     },

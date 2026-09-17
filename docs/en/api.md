@@ -122,3 +122,28 @@ twikoo.init({
   }
 });
 ```
+
+## Server events
+
+Besides the frontend API above, the Twikoo cloud function (HTTP endpoint) works with **events**:
+
+```json
+// request
+{ "event": "COMMENT_GET", "url": "/post/1", "page": 1, "per": 8 }
+// response (code 0 means success; a non-zero code is a business error)
+{ "code": 0, "data": [], "more": false, "count": 0 }
+```
+
+2.0 keeps all 26 event names from 1.x unchanged (`COMMENT_GET`, `COMMENT_SUBMIT`, `COMMENT_LIKE`, `COUNTER_GET`, `GET_CONFIG`, `SET_CONFIG`, `LOGIN`, `COMMENT_IMPORT_FOR_ADMIN`, …).
+
+### Compatibility events (scheduled for removal in 2.2.0)
+
+For compatibility with older clients, 2.0 accepts the following legacy event names **in addition to** the new ones, and will remove them in 2.2.0:
+
+| Legacy event  | Equivalent                                     | Notes                             |
+| ------------- | ---------------------------------------------- | --------------------------------- |
+| `POST_SUBMIT` | `COMMENT_SUBMIT`                               | Submit a comment (the 0.1.x name) |
+| `HIDDEN`      | `COMMENT_GET_FOR_ADMIN` with `type: "HIDDEN"`  | Admin: list spam comments         |
+| `VISIBLE`     | `COMMENT_GET_FOR_ADMIN` with `type: "VISIBLE"` | Admin: list approved comments     |
+
+> If you call the function directly or maintain automation scripts, replace these three legacy names before upgrading to 2.2.0. Users of the Twikoo frontend and themes do not need to change anything.

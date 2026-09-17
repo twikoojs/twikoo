@@ -1,0 +1,33 @@
+# 文档站部署（VitePress → GitHub Pages）
+
+name: Docs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/**"
+      - ".github/workflows/docs.yml"
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        # VitePress 需要完整提交历史来生成贡献者信息与最后更新时间
+        with:
+          fetch-depth: 0
+      - uses: imaegoo/vuepress-deploy@master
+        env:
+          ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_REPO: twikoojs/twikoo
+          TARGET_BRANCH: gh-pages
+          BUILD_SCRIPT: corepack enable && pnpm install --frozen-lockfile && pnpm --filter twikoo-docs docs:build
+          BUILD_DIR: docs/.vitepress/dist
+          CNAME: twikoo.js.org

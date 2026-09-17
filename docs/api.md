@@ -129,3 +129,28 @@ twikoo.init({
   }
 });
 ```
+
+## 服务端事件
+
+除上面的前端 API 之外，Twikoo 的云函数（HTTP 接口）以「事件」为请求单位：
+
+```json
+// 请求
+{ "event": "COMMENT_GET", "url": "/post/1", "page": 1, "per": 8 }
+// 响应（code 为 0 表示成功，非 0 为业务错误）
+{ "code": 0, "data": [], "more": false, "count": 0 }
+```
+
+2.0 保持 1.x 的 26 个事件名不变（`COMMENT_GET` / `COMMENT_SUBMIT` / `COMMENT_LIKE` / `COUNTER_GET` / `GET_CONFIG` / `SET_CONFIG` / `LOGIN` / `COMMENT_IMPORT_FOR_ADMIN` 等）。
+
+### 兼容事件（计划 2.2.0 移除）
+
+为兼容旧客户端，2.0 **同时支持**下列旧事件名与新写法，并在 2.2.0 移除旧名：
+
+| 旧事件名      | 等价新写法                                  | 说明                         |
+| ------------- | ------------------------------------------- | ---------------------------- |
+| `POST_SUBMIT` | `COMMENT_SUBMIT`                            | 提交评论（0.1.x 时代的名字） |
+| `HIDDEN`      | `COMMENT_GET_FOR_ADMIN` + `type: "HIDDEN"`  | 管理员读取垃圾评论列表       |
+| `VISIBLE`     | `COMMENT_GET_FOR_ADMIN` + `type: "VISIBLE"` | 管理员读取已通过评论列表     |
+
+> 若您自行调用云函数或写了自动化脚本，请在升级到 2.2.0 前把上述三个旧事件名替换为新写法；仅使用 Twikoo 前端与主题的用户无需改动。

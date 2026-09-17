@@ -5,7 +5,7 @@
  * 见 comment-query.ts）；管理员 HIDE_SPAM=true 时仅见非垃圾。主楼 rid ABSENT +
  * 置顶分离 + 流式分页（多读 1 条判 more）+ 回复按 rid 归组，parseComment 拼装。
  */
-import { ABSENT, NOT } from "../ports/database";
+import { ABSENT, LT, NOT } from "../ports/database";
 import type { CommentDoc } from "../ports/database";
 import type { EventHandler } from "../core/types";
 import { RES_CODE } from "../utils/constants";
@@ -45,7 +45,9 @@ export const commentGet: EventHandler = async (ctx) => {
   // 读取总条数（1.x 语义：与主查询同可见性，先于置顶剔除）
   const count = await queryVisibleCount(ctx, condition);
   if (event.before !== undefined && event.before !== null) {
-    condition = { ...condition, created: event.before };
+    // 流式分页游标：`created < before`（1.x `{ $lt: event.before }` 语义）。
+    // 注意必须走语义层的 LT 哨兵——写成标量会被各实现当成等值匹配。
+    condition = { ...condition, created: { [LT]: event.before as number } };
   }
   // 不包含置顶
   const mainCondition = { ...condition, top: { [NOT]: true } };

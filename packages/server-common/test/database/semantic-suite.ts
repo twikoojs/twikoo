@@ -7,7 +7,7 @@
  */
 import { expect, describe, it } from "vitest";
 import type { CommentDoc, Database, SemanticQuery } from "../../src/ports/database";
-import { ABSENT } from "../../src/ports/database";
+import { ABSENT, GT, LT } from "../../src/ports/database";
 
 /** 被测数据库的创建/销毁句柄 */
 export interface DbFixture {
@@ -93,6 +93,30 @@ export function runDatabaseSemanticSuite(name: string, fixture: DbFixture): void
         const visible = await db.getComments({ url: ["/a", "/b"], isSpam: false });
         expect(visible.map((c) => c._id).sort()).toEqual([keep._id, multi._id].sort());
         expect(await db.countComments({ isSpam: true })).toBe(1);
+      } finally {
+        await fixture.dispose(db);
+      }
+    });
+
+    it("比较语义：GT / LT 哨兵做数值比较（1.x created $gt / $lt 对齐）", async () => {
+      const db = await fixture.create();
+      try {
+        for (let i = 0; i < 4; i++) {
+          await db.addComment(makeComment({ created: 1000 + i }, i));
+        }
+        // created > 1001 → 1002 / 1003
+        const gt = await db.getComments({ created: { [GT]: 1001 } } as SemanticQuery, {
+          sort: { created: -1 },
+        });
+        expect(gt.map((c) => c.created)).toEqual([1003, 1002]);
+        // created < 1002 → 1000 / 1001（流式分页游标语义）
+        const lt = await db.getComments({ created: { [LT]: 1002 } } as SemanticQuery, {
+          sort: { created: 1 },
+        });
+        expect(lt.map((c) => c.created)).toEqual([1000, 1001]);
+        // 与等值区分：标量条件只命中完全相等的一条
+        const eq = await db.getComments({ created: 1002 } as SemanticQuery);
+        expect(eq.map((c) => c.created)).toEqual([1002]);
       } finally {
         await fixture.dispose(db);
       }

@@ -3,6 +3,7 @@
  * 语义对齐）。HIDDEN / VISIBLE 兼容事件（D-4）转发至此，注入 type 参数。
  */
 import { NOT } from "../ports/database";
+import type { CommentDoc } from "../ports/database";
 import type { EventHandler } from "../core/types";
 import { RES_CODE } from "../utils/constants";
 import { validate } from "../utils/validate";
@@ -31,18 +32,32 @@ export const commentGetForAdmin: EventHandler = async (ctx) => {
       : event.type === "HIDDEN"
         ? { isSpam: true }
         : {};
-  // 关键词过滤在服务层执行（1.x 为 Mongo $regex $or，语义等价的 JS 实现）
   const per = Number(event.per);
   const page = Number(event.page);
-  const all = await db.getComments(condition as never, {
-    sort: { created: -1 },
-    skip: per * (page - 1),
-    limit: per,
-  });
   const keyword = getSearchKeyword(event);
-  const filtered = keyword ? all.filter((c) => commentMatchesKeyword(c, keyword)) : all;
-  const data = await parseCommentForAdmin(filtered, ctx.adapters.capabilities);
+  /** 当前页文档 */
+  let pageData: CommentDoc[];
+  /** 命中总数（分页控件依赖，1.x `res.count` 对齐） */
+  let count: number;
+  if (keyword) {
+    // 关键词过滤在服务层执行（1.x 为 Mongo $regex $or 的 JS 等价实现）。
+    // 关键词形态下总数必须按「过滤后」计数，否则分页控件会与实际页数不符。
+    const matched = (await db.getComments(condition as never, { sort: { created: -1 } })).filter(
+      (c) => commentMatchesKeyword(c, keyword),
+    );
+    count = matched.length;
+    pageData = matched.slice(per * (page - 1), per * (page - 1) + per);
+  } else {
+    count = await db.countComments(condition as never);
+    pageData = await db.getComments(condition as never, {
+      sort: { created: -1 },
+      skip: per * (page - 1),
+      limit: per,
+    });
+  }
+  const data = await parseCommentForAdmin(pageData, ctx.adapters.capabilities);
   res.code = RES_CODE.SUCCESS;
+  res.count = count;
   res.data = data;
   return res;
 };

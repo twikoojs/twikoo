@@ -53,7 +53,14 @@ pnpm run check:baseline   # 守卫：engines.node / .nvmrc / 8 包 version
 pnpm run check:agents     # AGENTS.md 滞后检查（CI 在 PR 上自动跑）
 pnpm env:check            # 环境变量清单校验（对照 .env.example）
 pnpm release:check        # 发布基线：8 个发布包 version 必须为 0.0.0
+pnpm e2e:b2               # 附录 B.2 前端清单端到端回归（真启 tkserver + jsdom 驱动构建产物）
 ```
+
+> `pnpm e2e:b2` 需要先 `pnpm build`（消费 `packages/client/dist/twikoo.min.js` 与
+> `packages/server-self-hosted/dist/server.js`），非 `pnpm test` 的一部分（耗时约 20s，
+> 且会起真实端口）。它覆盖「加载更多 / 排序 / 点赞 / 提交 / 错误卡片 / i18n /
+> 管理员登录与配置读写 / 管理端检索」等 B.2 检查项，是服务端语义层回归的**第一道防线**
+> （T44 即由它发现 `created $lt` 分页与 `COMMENT_GET_FOR_ADMIN` 缺 `count` 两个真实缺陷）。
 
 单包命令：`pnpm --filter <包名> <script>`（如 `pnpm --filter tkserver test`、`pnpm --filter twikoo build`、`pnpm --filter twikoo-docs docs:build`）。
 
@@ -219,6 +226,10 @@ cd twikoo2 && pnpm install
    - gate：8 包全部可见
 4. 收尾（仅正式版）：`publish-docker`（`imaegoo/twikoo:latest` / `:VERSION` / `:arm32v7`）、`publish-pkg`（SEA 产物用 `gh release upload` 挂到**已有** Release）
 5. 发布脚本：`scripts/release-set-version.mjs`（基线校验 / 覆写）、`release-version-check.mjs`（单调性 / 未发布过）、`verify-npm.mjs`（可见性 gate）、`check-workflows.mjs`（actionlint + 结构断言）
+
+> **实际操作请照 `RELEASE.md` 走**（发布前本地检查清单 → 网页创建 Release → 观察两阶段 →
+> 发布后核验 → **回滚**）。前置条件（仓库 secrets）以 `RELEASE.md` §0 为准，其中
+> `NPM_TOKEN` 是发布硬依赖：工作流把它注入 `NODE_AUTH_TOKEN`，缺失会直接 ENEEDAUTH。
 
 ### 文档站发布（`docs.yml`）
 

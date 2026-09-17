@@ -121,7 +121,43 @@ export function runContractSuite(name: string, fixture: ContractFixture): void {
       expect(typeof res.body.count).toBe("number");
     });
 
-    it("COMMENT_GET_FOR_ADMIN：分页参数 + data（含 HIDDEN 筛选形态）", async () => {
+    it("COMMENT_GET：before 游标分页（created < before）逐页递减且不重复", async () => {
+      // 页大小压到 2，制造多页
+      await adapters.database.saveConfig({ COMMENT_PAGE_SIZE: "2" });
+      for (let i = 0; i < 5; i++) await seed({ created: 1000 + i * 1000 });
+      /** 响应 data 的元素形态（本用例只关心 created/id） */
+      type Row = { created: number; id: string };
+      const page1 = await post({ event: "COMMENT_GET", url: "/contract" });
+      const data1 = page1.body.data as Row[];
+      expect(page1.body.code).toBe(0);
+      expect(page1.body.count).toBe(5);
+      expect(data1.map((c) => c.created)).toEqual([5000, 4000]);
+      expect(page1.body.more).toBe(true);
+
+      const page2 = await post({
+        event: "COMMENT_GET",
+        url: "/contract",
+        before: data1[1].created,
+      });
+      const data2 = page2.body.data as Row[];
+      // 关键断言：必须真的取到下一页（走等值匹配时这里恒为空数组）
+      expect(data2.map((c) => c.created)).toEqual([3000, 2000]);
+      expect(page2.body.more).toBe(true);
+
+      const page3 = await post({
+        event: "COMMENT_GET",
+        url: "/contract",
+        before: data2[1].created,
+      });
+      const data3 = page3.body.data as Row[];
+      expect(data3.map((c) => c.created)).toEqual([1000]);
+      expect(page3.body.more).toBe(false);
+      // 三页 id 互不重复
+      const ids = [...data1, ...data2, ...data3].map((c) => c.id);
+      expect(new Set(ids).size).toBe(5);
+    });
+
+    it("COMMENT_GET_FOR_ADMIN：分页参数 + data + count（含 HIDDEN 筛选形态）", async () => {
       const id = await seed({ isSpam: true });
       void id;
       const res = await postAdmin({
@@ -132,6 +168,9 @@ export function runContractSuite(name: string, fixture: ContractFixture): void {
       });
       expect(res.body.code).toBe(0);
       expect(Array.isArray(res.body.data)).toBe(true);
+      // 管理端分页控件依赖 count（1.x res.count 语义；缺失则永远只有 1 页）
+      expect(typeof res.body.count).toBe("number");
+      expect(res.body.count).toBe((res.body.data as unknown[]).length);
       expect((res.body.data as unknown[]).length).toBe(1);
     });
 

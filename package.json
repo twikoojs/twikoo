@@ -22,7 +22,8 @@
     "check:workflows": "node scripts/check-workflows.mjs",
     "release:check": "node scripts/release-set-version.mjs --check",
     "check:baseline": "node scripts/check-baseline.mjs",
-    "check:agents": "node scripts/check-agents-staleness.mjs"
+    "check:agents": "node scripts/check-agents-staleness.mjs",
+    "e2e:b2": "node scripts/e2e-b2.mjs"
   },
   "lint-staged": {
     "*.{js,mjs,cjs,ts,vue}": [
@@ -49,6 +50,7 @@
     "eslint-plugin-vue": "^10.11.0",
     "globals": "^17.12.0",
     "happy-dom": "^20.14.5",
+    "jsdom": "^30.0.1",
     "lint-staged": "^17.5.1",
     "mongodb-memory-server": "^11.2.0",
     "prettier": "^3.9.7",

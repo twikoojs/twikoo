@@ -15,7 +15,7 @@
  *   公共库不感知平台 SDK——单测用内存 fake 即可覆盖。
  */
 import { randomUUID } from "node:crypto";
-import { ABSENT, GT, NOT } from "../ports/database";
+import { ABSENT, GT, LT, NOT } from "../ports/database";
 import type {
   CommentDoc,
   ConfigData,
@@ -84,6 +84,10 @@ function matchCondition(doc: CommentDoc, key: string, expected: unknown): boolea
   }
   if (typeof expected === "object" && expected !== null && GT in expected) {
     return typeof actual === "number" && actual > ((expected as { [GT]?: number })[GT] as number);
+  }
+  if (typeof expected === "object" && expected !== null && LT in expected) {
+    // 「小于」：流式分页游标（缺失/非数值字段不匹配）
+    return typeof actual === "number" && actual < ((expected as { [LT]?: number })[LT] as number);
   }
   return actual === expected;
 }

@@ -38,7 +38,16 @@ export const NOT: unique symbol = Symbol.for("twikoo.db.not");
  */
 export const GT: unique symbol = Symbol.for("twikoo.db.gt");
 
-/** 单字段条件：标量等值，或 NOT/GT 哨兵对象 */
+/**
+ * 「小于」哨兵：`{ created: { [LT]: before } }`（数值比较，1.x commentGet 的
+ * `created: { $lt: event.before }` 语义——流式分页「加载更多」的游标条件）。
+ *
+ * 为什么必须进语义层：`before` 是**比较**而非等值，用标量表达会退化为
+ * `created === before`（T44 端到端回归实测：加载更多恒为 0 条）。
+ */
+export const LT: unique symbol = Symbol.for("twikoo.db.lt");
+
+/** 单字段条件：标量等值，或 NOT/GT/LT 哨兵对象 */
 export type FieldCondition =
   | string
   | number
@@ -47,7 +56,8 @@ export type FieldCondition =
   | Array<string | number>
   | typeof ABSENT
   | { [NOT]?: unknown }
-  | { [GT]?: string | number };
+  | { [GT]?: string | number }
+  | { [LT]?: string | number };
 
 /** 语义查询的字段取值：标量 / 数组之一，或 {@link ABSENT} 哨兵（「字段不存在/为空」语义） */
 export type FieldValue = FieldCondition;

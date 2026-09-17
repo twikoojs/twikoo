@@ -22,7 +22,7 @@
 import { existsSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { randomUUID } from "node:crypto";
-import { ABSENT, GT, NOT } from "../ports/database";
+import { ABSENT, GT, LT, NOT } from "../ports/database";
 import type {
   CommentDoc,
   ConfigData,
@@ -95,6 +95,9 @@ function splitLokiQuery(query: SemanticQuery): {
     } else if (typeof value === "object" && value !== null && GT in value) {
       // Loki 原生 $gt
       base[key] = { $gt: value[GT] };
+    } else if (typeof value === "object" && value !== null && LT in value) {
+      // Loki 原生 $lt（流式分页游标）
+      base[key] = { $lt: value[LT] };
     } else {
       base[key] = value;
     }

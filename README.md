@@ -121,7 +121,7 @@ Icon design：[Maemo Lee](https://www.maemo.cc)
 
 ## Development
 
-This repository is a pnpm monorepo (Node 24). To hack on it locally:
+This repository is a pnpm monorepo (Node 26). To hack on it locally:
 
 ```sh
 pnpm install # install dependencies

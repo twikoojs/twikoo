@@ -40,11 +40,10 @@
 
 ### 发布说明 / 已知问题
 
-- **pkg SEA 可执行产物（`publish-pkg` 附件）当前不可用**：单文件产物中 14 个经
-  `loadLib()` 惰性加载的依赖未被内联（jsdom / DOMPurify / nodemailer / ip2region 等），
-  表现为「发评论、邮件通知、反垃圾、UA/属地解析、Markdown、推送」报「缺少依赖」，
-  存储与查询正常。修复方案（pkg 入口静态 import + `setLibImporter` 注入）与验证步骤见
-  `VERIFICATION.md` §6；**修复前不应对外发布该附件**。
+- **pkg SEA 可执行产物（`publish-pkg` 附件）已修复并实测可用**：单文件产物通过「pkg 入口静态
+  import 全部重依赖 + `setLibImporter` 注入」完成内联（详见 `VERIFICATION.md` §6），宿主 Node 26.9.0
+  下生成四平台 exe，win-x64 在干净目录实跑 26 事件关键路径 10/10 通过（发评论 / XSS 消毒 / 邮件 /
+  点赞 / 图床 / 优雅退出）。linux / darwin 两平台仅完成构建、未跨平台运行（本机 Windows）。
 - 平台真机验证（CloudBase / Vercel / Netlify / AWS Lambda / Deta / EdgeOne Makers / 自托管 /
   Docker / pkg / HF Space / CDN 四产物）与 GitHub 侧工作流验证，需真实账号与推送后执行，
   清单见 `VERIFICATION.md` 与 `.omo/evidence/deferred-github-verifications.md`。
@@ -139,7 +138,7 @@ Twikoo 2.0 的首个预发布版本。仓库重构为 pnpm monorepo，源码全�
 
 - `release.yml`：`release: published` 触发、8 包矩阵、**两阶段发布**（4 + 4）与 `verify-npm` 轮询 gate、
   版本单调性校验、禁止自动创建 Release（D-21）。
-- `ci.yml` 全门禁；`docs.yml` 支持 Release 触发同步部署；Docker 多阶段镜像；pkg（Node 24 SEA）作为 Release 附件。
+- `ci.yml` 全门禁；`docs.yml` 支持 Release 触发同步部署；Docker 多阶段镜像；pkg（Node 26 SEA）作为 Release 附件。
 
 #### 开发与文档
 
@@ -179,4 +178,4 @@ Twikoo 2.0 的首个预发布版本。仓库重构为 pnpm monorepo，源码全�
 - docs 站点部署到 gh-pages 与 `twikoo.js.org` 生效；
 - Release 工作流实际触发与 npm 发布（8 包 `@beta` dist-tag）；
 - Docker 镜像构建与容器冒烟（本机无 Docker）；
-- pkg SEA 可执行产物的生成与运行（需宿主 Node ≥ 25.7），以及 SEA 产物缺失惰性加载重依赖的问题修复验证。
+- pkg SEA 产物的跨平台运行验证（linux / darwin 仅完成构建、未跨平台运行，本机 Windows）。

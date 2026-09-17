@@ -1,7 +1,9 @@
 /**
  * `twikoo-pkg` 打包配置（1.x `src/server/pkg/tsdown.config.mjs` 的移植，D-13）。
  *
- * **D-13 关键变更**：SEA 的 `nodeVersion` 由 `26.8.1` 改为 **`24`**（跟随仓库基线）。
+ * **D-13 基线**：SEA 的 `nodeVersion` 跟随仓库基线——1.x 曾写死 `26.8.1`，
+ * 2.0 曾定为 `24`（且以主版本号形式，实际无法通过 `@tsdown/exe` 校验），
+ * 现统一为 **`26.9.0`**（Node 26 线；与 `.nvmrc` / CI / Docker 同一基线）。
  *
  * 单配置、单产物：把 tkserver 及其全部依赖内联进一个文件，再交给 @tsdown/exe 生成
  * 四个平台的可执行文件（linux-x64 / darwin-arm64 / darwin-x64 / win-x64）。
@@ -25,8 +27,16 @@
 import { readFileSync } from "node:fs";
 import { defineConfig } from "tsdown";
 
-/** SEA 目标平台（D-13：nodeVersion 统一为仓库基线 Node 24） */
-const NODE_VERSION = "24";
+/**
+ * SEA 目标运行时版本（D-13：跟随仓库基线 Node 26 线）。
+ *
+ * **必须是完整版本号**（`x.y.z`）：`@tsdown/exe` 用 `node-v<version>-<platform>-<arch>`
+ * 拼下载路径并做 `>= 25.7.0` 的 SEA 可用性校验（见其 `resolveNodeVersion`），
+ * 传 `"26"` 会直接报 `Invalid Node.js version: 26`（T47 实测；1.x 写 `26.8.1` 正是此因，
+ * 2.0 曾写 `"24"` 从未被真正执行到，属潜伏配置错误）。
+ * 这里钉住基线线的具体补丁版本以保证产物可复现（升级时同步 `.nvmrc` 与 CI）。
+ */
+const NODE_VERSION = "26.9.0";
 
 export default defineConfig({
   dts: false,
@@ -52,8 +62,8 @@ export default defineConfig({
   exe: {
     /**
      * SEA 生成开关。`tsdown` 的 `exe` 选项要求**宿主** Node ≥ 25.7（用到较新的 SEA API），
-     * 而 SEA 产物的**目标运行时**由下面的 `nodeVersion` 决定（D-13 = 24）。
-     * 在旧宿主（如本机 Node 22/24）上设 `TWIKOO_PKG_BUNDLE_ONLY=1` 可只验证打包链路
+     * 而 SEA 产物的**目标运行时**由下面的 `nodeVersion` 决定（D-13 = 26，与宿主基线一致）。
+     * 宿主低于 25.7 时可设 `TWIKOO_PKG_BUNDLE_ONLY=1` 只验证打包链路
      * （单文件产物 + 两个插件替换），不生成可执行文件。
      */
     enabled: process.env.TWIKOO_PKG_BUNDLE_ONLY !== "1",

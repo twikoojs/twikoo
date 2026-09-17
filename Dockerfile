@@ -11,7 +11,7 @@
 ARG NODE_IMAGE=node
 
 # ---- 构建阶段 ----
-FROM ${NODE_IMAGE}:24-alpine AS build
+FROM ${NODE_IMAGE}:26-alpine AS build
 WORKDIR /app
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME:$PATH
@@ -25,7 +25,7 @@ RUN pnpm install --frozen-lockfile
 RUN pnpm --filter "tkserver..." build
 
 # ---- 运行阶段 ----
-FROM ${NODE_IMAGE}:24-alpine
+FROM ${NODE_IMAGE}:26-alpine
 WORKDIR /app
 ENV NODE_ENV=production
 # 运行期只需要 workspace 的 node_modules 链接结构与已构建的产物

@@ -144,7 +144,7 @@ Twikoo 2.0 drops IE / ES5 support (the build target is **ES2022**). Use a modern
 
 ## Development
 
-This repository is a pnpm monorepo and requires **Node 24** (`.nvmrc` = 24, build target ES2022).
+This repository is a pnpm monorepo and requires **Node 26** (`.nvmrc` = 26, build target ES2022).
 
 ```sh
 pnpm install # install dependencies

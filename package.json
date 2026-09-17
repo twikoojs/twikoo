@@ -4,7 +4,7 @@
   "type": "module",
   "packageManager": "pnpm@12.3.4",
   "engines": {
-    "node": ">=20"
+    "node": ">=26"
   },
   "scripts": {
     "dev": "echo \"TODO: wire up dev server in a later wave (T9)\"",

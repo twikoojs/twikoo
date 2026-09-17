@@ -10,11 +10,26 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
+    "@imaegoo/node-ip2region": "^2.1.1",
+    "@twikoojs/common": "workspace:*",
+    "@twikoojs/shared": "workspace:*",
+    "@xsai/generate-text": "^0.2.2",
+    "akismet-api": "^5.1.0",
+    "axios": "^1.6.2",
+    "bowser": "^2.11.0",
     "commander": "15.0.0",
-    "tkserver": "workspace:*"
+    "dompurify": "^3.4.14",
+    "form-data": "^4.0.0",
+    "html-to-text": "^9.0.5",
+    "jsdom": "^22.1.0",
+    "marked": "^18.0.4",
+    "nodemailer": "^9.0.5",
+    "pushoo": "workspace:^",
+    "tencentcloud-sdk-nodejs-tms": "^4.1.293",
+    "tkserver": "workspace:*",
+    "xml2js": "^0.6.0"
   },
   "devDependencies": {
-    "@imaegoo/node-ip2region": "^2.1.1",
     "@tsdown/exe": "0.23.0",
     "@types/node": "^22.20.2",
     "tsdown": "0.23.0"

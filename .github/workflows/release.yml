@@ -23,7 +23,7 @@ on:
     types: [published]
 
 env:
-  NODE_VERSION: "24"
+  NODE_VERSION: "26"
   NPM_REGISTRY: https://registry.npmjs.org
 
 jobs:
@@ -208,10 +208,15 @@ jobs:
         with:
           # 宿主 Node 必须 ≥ 25.7（tsdown 的 exe 选项依赖较新的 SEA API）；
           # SEA 产物的**目标运行时**由 packages/pkg/tsdown.config.ts 的
-          # exe.targets[].nodeVersion 决定，D-13 规定为 24。两者含义不同，勿混淆。
+          # exe.targets[].nodeVersion 决定（D-13 = 26.9.0，须为完整 x.y.z）。
+          # 两者含义不同（宿主 vs 目标运行时），当前都落在 Node 26 线。
           node-version: "26"
           registry-url: ${{ env.NPM_REGISTRY }}
       - run: corepack enable && pnpm install --frozen-lockfile
+      - name: 覆写版本号（SEA 产物内的版本号取自 @twikoojs/shared，须与本次发布一致）
+        run: node scripts/release-set-version.mjs "${{ needs.validate.outputs.version }}"
+      - name: 构建 SEA 依赖的 workspace 产物（shared / pushoo / common / tkserver 等）
+        run: pnpm -r --if-present --filter "twikoo-pkg..." run build
       - name: 构建 SEA 产物（目标运行时 nodeVersion 见 packages/pkg/tsdown.config.ts）
         run: pnpm --filter twikoo-pkg build:exe
       - name: 上传产物到已有 Release（不创建 Release）

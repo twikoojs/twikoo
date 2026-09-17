@@ -445,12 +445,29 @@ export async function getPushoo(): Promise<PushooLike> {
 
 /**
  * 获取 @xsai/generate-text（ai 能力）。
+ *
+ * 注意该包**只有具名导出** `generateText`（无 default），因此**不能**走
+ * {@link pickDefault}——直接把模块命名空间当函数用会在调用时抛
+ * `TypeError: ... is not a function`（AI 垃圾检测整体失效，且只在真实密钥下才暴露）。
  * @param caps 平台能力声明
  * @returns generateText 函数
  */
 export async function getGenerateText(caps: Capabilities): Promise<GenerateTextLike> {
   requireCapability(caps, "ai", "@xsai/generate-text");
-  return (await loadLib("@xsai/generate-text")) as GenerateTextLike;
+  const mod = (await loadLib("@xsai/generate-text")) as {
+    /** 具名导出（该包的实际形态） */
+    generateText?: unknown;
+    /** 兼容形态：某些打包器会把它摊到 default */
+    default?: unknown;
+  };
+  const impl = mod.generateText ?? mod.default;
+  if (typeof impl !== "function") {
+    throw new LibLoadError(
+      "@xsai/generate-text",
+      new TypeError("模块未导出 generateText 函数（期望具名导出 generateText）"),
+    );
+  }
+  return impl as GenerateTextLike;
 }
 
 /**

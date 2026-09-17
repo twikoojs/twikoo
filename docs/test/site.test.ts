@@ -102,7 +102,7 @@ describe("T38 §11.3 内容更新", () => {
     for (const file of ["intro.md", "en/intro.md"]) {
       const src = readFileSync(resolve(DOCS_ROOT, file), "utf8");
       expect(src, `${file} 缺少 pnpm demo`).toContain("pnpm demo");
-      expect(src, `${file} 未说明 Node 版本`).toMatch(/Node 24/);
+      expect(src, `${file} 未说明 Node 版本`).toMatch(/Node 26/);
     }
   });
 
@@ -128,7 +128,7 @@ describe("T38 §11.3 内容更新", () => {
     const src = readFileSync(resolve(DOCS_ROOT, "..", "DEVELOPMENT.md"), "utf8");
     expect(src).toContain("pnpm demo");
     expect(src).toContain("pnpm install");
-    expect(src).toMatch(/Node\.js[\s|]*\*\*24\*\*/);
+    expect(src).toMatch(/Node\.js[\s|]*\*\*26\*\*/);
     expect(src).toContain(".env.example");
   });
 

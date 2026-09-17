@@ -10,7 +10,7 @@ Twikoo 是一个开源的静态网站评论系统。本仓库为 **2.0 重构**�
 
 - **包管理器**：pnpm（`packageManager` 字段锁定 12.3.4）+ `pnpm-workspace.yaml`
 - **工作区规模**：17 个项目（根 + `packages/*` 下 15 包 + `docs`）
-- **Node 基线**：Node **24**（`.nvmrc` = 24；`engines.node` = `>=20`；产物语法目标 **ES2022**）
+- **Node 基线**：Node **26**（`.nvmrc` = 26；`engines.node` = `>=26`；产物语法目标 **ES2022**）
 - **测试规模**：35 个测试文件、360 条用例（`pnpm test`）
 
 ### 目录 ↔ 包名对照表
@@ -79,7 +79,7 @@ pnpm check:products       # B.3 客户端四产物逐一 init + 形态断言 + t
 ## 环境准备
 
 ```bash
-node -v                     # 应为 v24.x（engines >=20）
+node -v                     # 应为 v26.x（engines >=26；CI 与 Docker 同基线）
 corepack enable && corepack prepare pnpm@12 --activate
 pnpm config set registry https://registry.npmmirror.com --global   # 可选，仅全局配置
 cd twikoo2 && pnpm install
@@ -245,7 +245,7 @@ push 到 `main` 且改动 `docs/**`、或 Release published、或手动触发 �
 ### Docker / pkg
 
 - `Dockerfile`：**从 workspace 构建**（多阶段，`pnpm --filter "tkserver..." build`），运行 `node packages/server-self-hosted/dist/server.js`，`TWIKOO_DATA=/app/data`
-- `packages/pkg`：tsdown + SEA，`exe.targets[].nodeVersion` = **24**（D-13，目标运行时）；**构建宿主需 Node ≥ 25.7**（两者含义不同）
+- `packages/pkg`：tsdown + SEA，`exe.targets[].nodeVersion` = **26.9.0**（D-13，目标运行时 = 仓库基线；**必须是完整 `x.y.z`**，写主版本会被 `@tsdown/exe` 拒绝）；**构建宿主需 Node ≥ 25.7**
 
 ---
 

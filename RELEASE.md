@@ -122,12 +122,9 @@ node -e "require.resolve('@twikoojs/common'); console.log('common resolvable ✓
   重构期两轮回归发现的问题清单见 `.omo/evidence/t44-fail.md` / `t45-fail.md`）；
 - `CHANGELOG.md` 的版本号与日期为终稿（**创建 Release 前核对 `2.0.0` 小节的日期与实际发布日一致**）；
 - `git tag -l` 仍为空（tag 由本次 Release 创建）；
-- **SEA 可执行产物（`publish-pkg`）是当前唯一未关闭项**，必须先做决策并记录：
-  该附件目前缺少 14 个惰性加载依赖，发评论等能力不可用（详见 `VERIFICATION.md` §6）。两条合法路径：
-  - **(A) 推荐**：先修复（pkg 入口静态 import 全部重依赖 + `setLibImporter` 注入）→
-    在宿主 Node ≥ 25.7 上生成 SEA 产物并按 `VERIFICATION.md` §2.9 跑通四平台 → 正常发布；
-  - **(B) 显式放弃本次附件**：同步调整 `.github/workflows/release.yml` 中 `publish-pkg` 的
-    job 条件，跑 `pnpm check:workflows` 复验，并在 Release notes 注明「本版本不提供 SEA 可执行产物」。
+- **SEA 可执行产物（`publish-pkg`）已修复并实测可用**（宿主 Node 26.9.0 下生成四平台 exe，
+  win-x64 实跑 10/10 通过；linux / darwin 仅完成构建未跨平台运行）。发布前只需在宿主 Node ≥ 25.7 的
+  runner 上跑通该 job 即可，无需做 (A)/(B) 决策折中（详见 `VERIFICATION.md` §6 与 §2.9）。
 
 ### 正式版发布后用户验证项清单
 

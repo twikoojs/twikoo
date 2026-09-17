@@ -141,7 +141,7 @@ A simple, safe, free comment system.
 
 ## 开发
 
-本仓库是 pnpm monorepo，要求 **Node 24**（`.nvmrc` = 24，产物语法目标 ES2022）。本地二次开发命令：
+本仓库是 pnpm monorepo，要求 **Node 26**（`.nvmrc` = 26，产物语法目标 ES2022）。本地二次开发命令：
 
 ```sh
 pnpm install # 安装依赖

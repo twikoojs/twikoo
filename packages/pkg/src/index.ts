@@ -8,15 +8,29 @@
  * 与 1.x 的差异：1.x 用 `require('tkserver')` 直接启动（当时 tkserver 的 main 即服务入口），
  * 2.0 的 tkserver 是纯库（main 为 index，bin 为 server.js），故改为显式调用
  * `startTkserver()`；其余行为（.env 覆盖语义、IIS/ASPNETCORE_PORT 映射、SEA 资源释放）逐条对齐。
+ *
+ * **重依赖内联**：SEA 单文件产物没有 `node_modules`，而 `@twikoojs/common` 的重依赖是
+ * 变量间接的动态加载（D-2）——因此必须先经 {@link installBundledLibs} 把静态内联的
+ * 模块命名空间注入 common 的库加载器，再启动服务。原因与维护约定见 `./bundled-libs.ts`。
+ *
+ * **CLI 元信息不得运行时读文件**（T47 修复）：1.x 用 `require("../package.json")`，该写法会被
+ * 打包器**内联**；2.0 曾改写成运行时的 `readFileSync(join(appDir, "package.json"))`，
+ * 而 SEA 产物目录里没有 `package.json` → 可执行文件一启动就 ENOENT 崩溃（连 `.env` 释放都到不了）。
+ * 现改为取 `@twikoojs/shared` 的 {@link VERSION}（构建期注入，与 `GET_FUNC_VERSION` 同源）。
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { getAsset, getAssetKeys, isSea } from "node:sea";
 import { program } from "commander";
 import { startTkserver } from "tkserver";
+import { VERSION } from "@twikoojs/shared";
+import { installBundledLibs } from "./bundled-libs";
 
 /** 内置的 SEA 资源清单（与 tsdown.config.ts 的 seaConfig.assets 保持一致） */
 const SEA_ASSETS = [".env", "web.config"] as const;
+
+/** CLI 名称（常量：见文件头「CLI 元信息不得运行时读文件」） */
+const CLI_NAME = "twikoo-pkg";
 
 /** 可执行文件所在目录 */
 const appDir = __dirname;
@@ -59,15 +73,10 @@ function loadEnvFile(envFile: string): void {
   }
 }
 
-/** CLI 元信息（版本号取 tkserver 依赖版本；由 CI 与仓库统一版本对齐） */
-const pkg = JSON.parse(readFileSync(join(appDir, "package.json"), "utf8")) as {
-  name: string;
-  dependencies?: Record<string, string>;
-};
-
+/** CLI 元信息（版本号 = `@twikoojs/shared` 的构建期注入值，与 GET_FUNC_VERSION 同源） */
 program
-  .name(pkg.name)
-  .version(pkg.dependencies?.tkserver ?? "0.0.0", "-v, --version")
+  .name(CLI_NAME)
+  .version(VERSION, "-v, --version")
   .description(
     `DESCRIPTION:
   Official website: https://twikoo.js.org/`,
@@ -96,6 +105,9 @@ if (process.env.ASPNETCORE_PORT) {
   process.env.TWIKOO_PORT = process.env.ASPNETCORE_PORT;
   delete process.env.TWIKOO_LOCALHOST_ONLY;
 }
+
+/** 注入已内联的重依赖（必须先于启动：handler 首次加载依赖时即取这条通道） */
+installBundledLibs();
 
 /** 启动 tkserver（CJS 产物不支持顶层 await，故用显式 catch 而非 await） */
 startTkserver().catch((e: unknown) => {

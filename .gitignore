@@ -2,6 +2,8 @@ node_modules/
 dist/
 coverage/
 .env
+# pkg 的 SEA 内嵌配置模板必须入库（由 @tsdown/exe 打进可执行文件，运行时释放）
+!packages/pkg/.env
 *.log
 .DS_Store
 .idea/

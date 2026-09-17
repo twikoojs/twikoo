@@ -2,8 +2,8 @@
 /**
  * 基线守卫（T40 / §4.4）：把「阶段 0 约定的三条基线」固化为机器检查。
  *
- *   ① 根 `package.json` 的 `engines.node` == ">=20"
- *   ② `.nvmrc` == "24"
+ *   ① 根 `package.json` 的 `engines.node` == ">=26"
+ *   ② `.nvmrc` == "26"
  *   ③ 8 个发布包 `version` 全为 `0.0.0`（版本由 CI 从 Release tag 注入）
  *
  * 用法：node scripts/check-baseline.mjs（CI 的 baseline job 与本地均使用）
@@ -13,10 +13,10 @@ import { fileURLToPath } from "node:url";
 import { BASELINE_VERSION, PUBLISH_PACKAGES } from "./release-packages.mjs";
 
 /** 期望的 engines.node */
-const EXPECTED_ENGINES_NODE = ">=20";
+const EXPECTED_ENGINES_NODE = ">=26";
 
 /** 期望的 .nvmrc */
-const EXPECTED_NVMRC = "24";
+const EXPECTED_NVMRC = "26";
 
 /** 断言结果 */
 const failures = [];

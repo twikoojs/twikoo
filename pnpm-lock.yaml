@@ -105,6 +105,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@xsai/shared-chat': 0.2.2
+
 importers:
 
   .:
@@ -257,16 +260,61 @@ importers:
 
   packages/pkg:
     dependencies:
-      commander:
-        specifier: 15.0.0
-        version: 15.0.0
-      tkserver:
-        specifier: workspace:*
-        version: link:../server-self-hosted
-    devDependencies:
       '@imaegoo/node-ip2region':
         specifier: ^2.1.1
         version: 2.1.1
+      '@twikoojs/common':
+        specifier: workspace:*
+        version: link:../server-common
+      '@twikoojs/shared':
+        specifier: workspace:*
+        version: link:../shared
+      '@xsai/generate-text':
+        specifier: ^0.2.2
+        version: 0.2.2
+      akismet-api:
+        specifier: ^5.1.0
+        version: 5.3.0(supports-color@8.1.1)
+      axios:
+        specifier: ^1.6.2
+        version: 1.20.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
+      bowser:
+        specifier: ^2.11.0
+        version: 2.14.1
+      commander:
+        specifier: 15.0.0
+        version: 15.0.0
+      dompurify:
+        specifier: ^3.4.14
+        version: 3.4.15
+      form-data:
+        specifier: ^4.0.0
+        version: 4.0.6
+      html-to-text:
+        specifier: ^9.0.5
+        version: 9.0.5
+      jsdom:
+        specifier: ^22.1.0
+        version: 22.1.0(supports-color@8.1.1)
+      marked:
+        specifier: ^18.0.4
+        version: 18.0.13
+      nodemailer:
+        specifier: ^9.0.5
+        version: 9.1.1
+      pushoo:
+        specifier: workspace:^
+        version: link:../pushoo
+      tencentcloud-sdk-nodejs-tms:
+        specifier: ^4.1.293
+        version: 4.1.311(supports-color@8.1.1)
+      tkserver:
+        specifier: workspace:*
+        version: link:../server-self-hosted
+      xml2js:
+        specifier: ^0.6.0
+        version: 0.6.2
+    devDependencies:
       '@tsdown/exe':
         specifier: 0.23.0
         version: 0.23.0(tsdown@0.23.0)
@@ -2152,8 +2200,8 @@ packages:
   '@xsai/generate-text@0.2.2':
     resolution: {integrity: sha512-76MMlr8CXnriMh4n36NPo5nUMt8z1CZhCETo0/xm+Ge2fySCM1k2zKjhnR6IOtQtnFUVC/q0bnWyjcCiVANbEw==}
 
-  '@xsai/shared-chat@0.5.0':
-    resolution: {integrity: sha512-y3hr0vqul6BHPNmwnGEbIgC/P7eVyRgik+srdGYDJc+IsCBlD0Aw2QhmxJtQd89XrJkv0XN9GG7/5HoDLpYeOw==}
+  '@xsai/shared-chat@0.2.2':
+    resolution: {integrity: sha512-0t4HwbK2jm5Lrixg9RnIsYTtAvlQNUdJXs2taW7PFaXfL5ktMy2IwZwW2nqK+Ig0RcLCMp3sScZujERHSDMtmg==}
 
   '@xsai/shared@0.5.0':
     resolution: {integrity: sha512-o8arA7Lew9pedOG2bmbLLpmjLU9DyYqW6ByvHK1pxQdhLDRRngyDA8PeEFHwn1SZ0shuedNhI5vYfYIGaUvJ5w==}
@@ -5843,9 +5891,9 @@ snapshots:
   '@xsai/generate-text@0.2.2':
     dependencies:
       '@xsai/shared': 0.5.0
-      '@xsai/shared-chat': 0.5.0
+      '@xsai/shared-chat': 0.2.2
 
-  '@xsai/shared-chat@0.5.0':
+  '@xsai/shared-chat@0.2.2':
     dependencies:
       '@xsai/shared': 0.5.0
 

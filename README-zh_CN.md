@@ -114,7 +114,7 @@ A **simple**, **safe**, **free** comment system.
 
 ## 开发 | Development
 
-本仓库是 pnpm monorepo（Node 24）。本地二次开发命令：
+本仓库是 pnpm monorepo（Node 26）。本地二次开发命令：
 
 ```sh
 pnpm install # 安装依赖

@@ -54,13 +54,20 @@ pnpm run check:agents     # AGENTS.md 滞后检查（CI 在 PR 上自动跑）
 pnpm env:check            # 环境变量清单校验（对照 .env.example）
 pnpm release:check        # 发布基线：8 个发布包 version 必须为 0.0.0
 pnpm e2e:b2               # 附录 B.2 前端清单端到端回归（真启 tkserver + jsdom 驱动构建产物）
+pnpm check:products       # B.3 客户端四产物逐一 init + 形态断言 + tkserver 启动/shutdown
 ```
 
-> `pnpm e2e:b2` 需要先 `pnpm build`（消费 `packages/client/dist/twikoo.min.js` 与
-> `packages/server-self-hosted/dist/server.js`），非 `pnpm test` 的一部分（耗时约 20s，
-> 且会起真实端口）。它覆盖「加载更多 / 排序 / 点赞 / 提交 / 错误卡片 / i18n /
-> 管理员登录与配置读写 / 管理端检索」等 B.2 检查项，是服务端语义层回归的**第一道防线**
-> （T44 即由它发现 `created $lt` 分页与 `COMMENT_GET_FOR_ADMIN` 缺 `count` 两个真实缺陷）。
+> `pnpm e2e:b2` 与 `pnpm check:products` 都需要先 `pnpm build`（消费 `packages/client/dist/*`
+> 与 `packages/server-self-hosted/dist/server.js`），**不属于** `pnpm test`（各自耗时约 20s，
+> 且会起真实端口 8123 / 8124）。
+>
+> - `e2e:b2` 覆盖「加载更多 / 排序 / 点赞 / 提交 / 错误卡片 / i18n / 管理员登录与配置读写 /
+>   管理端检索」等 B.2 检查项，是服务端语义层回归的**第一道防线**（T44 即由它发现
+>   `created $lt` 分页与 `COMMENT_GET_FOR_ADMIN` 缺 `count` 两个真实缺陷）；
+> - `check:products` 覆盖 B.3「CDN 四产物」与「自托管启动/全功能/SIGTERM shutdown」。
+>
+> 真机平台（CloudBase/Vercel/Netlify/AWS/Deta/EO/Docker/pkg/HF Space）的**人工**验证清单见
+> 仓库根 `VERIFICATION.md`（含回填栏与失败登记区）。
 
 单包命令：`pnpm --filter <包名> <script>`（如 `pnpm --filter tkserver test`、`pnpm --filter twikoo build`、`pnpm --filter twikoo-docs docs:build`）。
 

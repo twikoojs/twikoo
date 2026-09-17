@@ -101,7 +101,9 @@ node -e "require.resolve('@twikoojs/common'); console.log('common resolvable ✓
 - docs 站点：`https://twikoo.js.org`（`docs.yml` 由 Release 触发同步部署）可访问，英文章节齐全；
 - 客户端 CDN：`https://cdn.jsdelivr.net/npm/twikoo@2.0.0-beta.1/dist/twikoo.min.js` 可下载，
   `twikoo.min.js` 自带样式、`twikoo.nocss.js` 需配合 `twikoo.css`；
-- 真机平台：按 `packages/*/README.md` 的「平台核对清单」与 `.omo/evidence/` 的 B.3 清单回填。
+- 真机平台：按 **`VERIFICATION.md`**（B.3 十一形态 + 4 特别项，含回填栏与判定标准）逐项执行回填，
+  必要时配合 `packages/*/README.md` 的平台核对清单；本地已自动核对项（`pnpm check:products`、
+  `pnpm e2e:b2`、Node 20 加载探针）无需人工重复，见该文档 §4。
 
 ## 3. 发布 `2.0.0`（正式版）
 
@@ -110,6 +112,11 @@ node -e "require.resolve('@twikoojs/common'); console.log('common resolvable ✓
 1. Release 勾选框**不勾** pre-release → dist-tag 为 `latest`；
 2. `Docker 镜像` 与 `SEA 可执行产物` 两个 job 会执行（需要 Docker Hub secrets）；
 3. 发布后确认 `npm view twikoo dist-tags` 的 `latest` 已更新，且 `imaegoo/twikoo:latest` 镜像已推送。
+
+正式版**前置**额外要求：
+
+- `VERIFICATION.md` §6 的已知缺口（pkg SEA 重依赖缺失）必须先关闭，再执行 §2.9 的 pkg 多平台实测；
+- 若 beta 期间收到的高优先级反馈未关闭，按 `t46` 约定**阻断发布**。
 
 正式版发布前的额外前置检查：
 

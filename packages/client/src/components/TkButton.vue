@@ -1,12 +1,12 @@
 <!--
-  tk-button（参考 Element UI Button 改写，D-1：纯 tk- 类名；MIT NOTICE 随包声明）。
+  tk-button（参考 Element UI Button 改写，D-1：纯 tk- 类名；组合式 API）。
   Props：type（primary/default）/ size（mini/small/default）/ disabled / loading / native type。
 -->
 <template>
   <button
     class="tk-button"
     :class="[
-      type ? `tk-button--${type}` : '',
+      type === 'primary' ? 'tk-button--primary' : '',
       size ? `tk-button--${size}` : '',
       { 'is-disabled': disabled, 'is-loading': loading },
     ]"
@@ -14,36 +14,39 @@
     :type="nativeType"
     @click="handleClick"
   >
-    <span v-if="loading" class="tk-button__spinner"></span>
+    <TkIcon v-if="loading" name="spinner" class="tk-button__spinner" />
     <span class="tk-button__label"><slot></slot></span>
   </button>
 </template>
 
-<script lang="ts">
-/** 按钮点击事件 */
-export default {
-  name: "TkButton",
-  props: {
-    /** 视觉类型 */
-    type: { type: String, default: "default" },
+<script setup lang="ts">
+import TkIcon from "./TkIcon.vue";
+
+/** 按钮视觉类型 */
+const props = withDefaults(
+  defineProps<{
+    type?: "primary" | "default";
     /** 尺寸（mini 与 small 有可见差异，§5.3） */
-    size: { type: String, default: "" },
-    /** 是否禁用 */
-    disabled: { type: Boolean, default: false },
-    /** 是否加载中 */
-    loading: { type: Boolean, default: false },
+    size?: "mini" | "small" | "default" | "";
+    disabled?: boolean;
+    loading?: boolean;
     /** 原生 type */
-    nativeType: { type: String, default: "button" },
-  },
-  emits: ["click"],
-  methods: {
-    /** 点击转发（禁用/加载中不触发） */
-    handleClick(evt: MouseEvent): void {
-      if (this.disabled || this.loading) return;
-      this.$emit("click", evt);
-    },
-  },
-};
+    nativeType?: "button" | "submit" | "reset";
+  }>(),
+  { type: "default", size: "", disabled: false, loading: false, nativeType: "button" },
+);
+
+/** 点击事件（禁用/加载中不触发） */
+const emit = defineEmits<{ (e: "click", evt: MouseEvent): void }>();
+
+/**
+ * 点击转发（禁用/加载中不触发）。
+ * @param evt 点击事件
+ */
+function handleClick(evt: MouseEvent): void {
+  if (props.disabled || props.loading) return;
+  emit("click", evt);
+}
 </script>
 
 <style>
@@ -80,13 +83,10 @@ export default {
   cursor: wait;
 }
 .twikoo .tk-button__spinner {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border: 2px solid currentColor;
-  border-top-color: transparent;
-  border-radius: 50%;
   margin-right: 4px;
+  animation: tk-spin 0.8s linear infinite;
+}
+.twikoo .tk-button__spinner svg {
   animation: tk-spin 0.8s linear infinite;
 }
 @keyframes tk-spin {

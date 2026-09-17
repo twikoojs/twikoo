@@ -1,9 +1,8 @@
 /**
- * tk-* 组件单测（T29 / §5.3.2 路线 B）。
+ * tk-* 组件单测（T29 / §5.3.2 路线 B；组合式 API 组件）。
  *
- * 覆盖 Acceptance：input 全 prop 组合 + focus() + textarea 字数统计；
- * button type×size×disabled×loading；loading 遮罩显隐；icon 类名透传；
- * mini 与 small 尺寸有可见差异（QA−：mini 不得映射为 small）。
+ * 覆盖：button type×size×disabled×loading；input v-model/textarea/字数统计/focus()；
+ * loading 遮罩显隐；icon 按需 SVG（含未注册告警）；mini 与 small 尺寸有可见差异（QA−）。
  */
 import { describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
@@ -12,35 +11,36 @@ import TkInput from "../src/components/TkInput.vue";
 import TkLoading from "../src/components/TkLoading.vue";
 import TkIcon from "../src/components/TkIcon.vue";
 
-describe("TkButton（T29）", () => {
-  it("type×size 类名组合", () => {
+describe("TkButton（T29 组合式）", () => {
+  it("type×size 类名组合；mini 与 small 有可见差异（类名互斥）", () => {
     const primary = mount(TkButton, { props: { type: "primary", size: "small" } });
     expect(primary.classes()).toContain("tk-button--primary");
     expect(primary.classes()).toContain("tk-button--small");
     const mini = mount(TkButton, { props: { size: "mini" } });
     expect(mini.classes()).toContain("tk-button--mini");
-    // mini 与 small 有可见差异（类名不同，§5.3）
     expect(mini.classes()).not.toContain("tk-button--small");
   });
 
-  it("disabled 与 loading 状态类 + 原生禁用", async () => {
+  it("disabled 与 loading 状态类 + 原生禁用 + loading 时渲染 spinner 图标", () => {
     const wrapper = mount(TkButton, { props: { disabled: true, loading: true } });
     expect(wrapper.classes()).toContain("is-disabled");
     expect(wrapper.classes()).toContain("is-loading");
     expect(wrapper.attributes("disabled")).toBeDefined();
-    // 禁用态点击不触发 click 事件
-    await wrapper.trigger("click");
-    expect(wrapper.emitted("click")).toBeUndefined();
+    // loading 时渲染 fontawesome SVG（按需引入）
+    expect(wrapper.find(".tk-button__spinner svg").exists()).toBe(true);
   });
 
-  it("click 事件转发", async () => {
-    const wrapper = mount(TkButton);
-    await wrapper.trigger("click");
-    expect(wrapper.emitted("click")).toHaveLength(1);
+  it("click 事件转发；禁用态点击不触发", async () => {
+    const enabled = mount(TkButton);
+    await enabled.trigger("click");
+    expect(enabled.emitted("click")).toHaveLength(1);
+    const disabled = mount(TkButton, { props: { disabled: true } });
+    await disabled.trigger("click");
+    expect(disabled.emitted("click")).toBeUndefined();
   });
 });
 
-describe("TkInput（T29）", () => {
+describe("TkInput（T29 组合式）", () => {
   it("v-model 输入转发", async () => {
     const wrapper = mount(TkInput, { props: { modelValue: "" } });
     await wrapper.find("input").setValue("hello");
@@ -55,7 +55,7 @@ describe("TkInput（T29）", () => {
     expect(wrapper.find(".tk-input__count").text()).toBe("3/100");
   });
 
-  it("focus() 方法聚焦原生输入框", () => {
+  it("focus() 经 defineExpose 暴露并聚焦原生输入框", () => {
     const wrapper = mount(TkInput, { props: { modelValue: "" } });
     const input = wrapper.find("input").element as HTMLInputElement;
     const focusSpy = vi.spyOn(input, "focus");
@@ -69,23 +69,30 @@ describe("TkInput（T29）", () => {
   });
 });
 
-describe("TkLoading（T29）", () => {
+describe("TkLoading（T29 组合式）", () => {
   it("visible 控制遮罩显隐（v-show）", () => {
     const shown = mount(TkLoading, { props: { visible: true } });
-    // happy-dom 下 v-show=false 渲染 display:none
-    const hidden = mount(TkLoading, { props: { visible: false } });
     const shownEl = shown.find(".tk-loading-mask").element as HTMLElement;
+    const hidden = mount(TkLoading, { props: { visible: false } });
     const hiddenEl = hidden.find(".tk-loading-mask").element as HTMLElement;
     expect(hiddenEl.style.display).toBe("none");
     expect(shownEl.style.display).not.toBe("none");
   });
 });
 
-describe("TkIcon（T29）", () => {
-  it("fontawesome 类名透传（禁自写 SVG：组件内无 <svg> 元素）", () => {
-    const wrapper = mount(TkIcon, { props: { name: "fa-solid fa-paper-plane" } });
-    expect(wrapper.classes()).toContain("tk-icon");
-    expect(wrapper.find("svg").exists()).toBe(false);
-    expect(wrapper.html()).toContain("fa-paper-plane");
+describe("TkIcon（T29 组合式，按需 SVG）", () => {
+  it("注册图标：渲染 fontawesome 官方 SVG 内容（按需引入，非字体）", () => {
+    const wrapper = mount(TkIcon, { props: { name: "heart" } });
+    // 渲染的是内联 <svg>（来自 svgs/solid/heart.svg 原文件）
+    expect(wrapper.find("svg").exists()).toBe(true);
+    expect(wrapper.find("svg").attributes("viewBox")).toBe("0 0 512 512");
+  });
+
+  it("未注册图标：渲染空并告警", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const wrapper = mount(TkIcon, { props: { name: "no-such-icon" } });
+    expect(wrapper.text()).toBe("");
+    expect(warnSpy).toHaveBeenCalled();
+    warnSpy.mockRestore();
   });
 });

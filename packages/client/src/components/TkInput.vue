@@ -1,5 +1,5 @@
 <!--
-  tk-input（参考 Element UI Input 改写；v-model + textarea + 字数统计 + focus()）。
+  tk-input（参考 Element UI Input 改写；v-model + textarea + 字数统计 + focus()；组合式 API）。
 -->
 <template>
   <div class="tk-input" :class="{ 'is-disabled': disabled }">
@@ -26,48 +26,67 @@
       @input="handleInput"
     />
     <span v-if="showWordLimit && maxlength" class="tk-input__count">
-      {{ String(modelValue || "").length }}/{{ maxlength }}
+      {{ (modelValue ?? "").length }}/{{ maxlength }}
     </span>
   </div>
 </template>
 
-<script lang="ts">
-export default {
-  name: "TkInput",
-  props: {
+<script setup lang="ts">
+import { ref } from "vue";
+
+withDefaults(
+  defineProps<{
     /** v-model 值 */
-    modelValue: { type: String, default: "" },
-    /** 输入类型 */
-    type: { type: String, default: "text" },
-    /** 占位文本 */
-    placeholder: { type: String, default: "" },
+    modelValue?: string;
+    type?: string;
+    placeholder?: string;
     /** textarea 行数 */
-    rows: { type: Number, default: 3 },
-    /** 是否禁用 */
-    disabled: { type: Boolean, default: false },
+    rows?: number;
+    disabled?: boolean;
     /** 最大长度（字数统计用） */
-    maxlength: { type: Number, default: undefined },
+    maxlength?: number;
     /** 显示字数统计 */
-    showWordLimit: { type: Boolean, default: false },
-  },
-  emits: ["update:modelValue", "input", "focus", "blur"],
-  methods: {
-    /** 输入转发（v-model） */
-    handleInput(evt: Event): void {
-      const value = (evt.target as HTMLInputElement).value;
-      this.$emit("update:modelValue", value);
-      this.$emit("input", value);
-    },
-    /** 聚焦（1.x focus() 方法对齐） */
-    focus(): void {
-      (this.$refs.inputRef as HTMLInputElement | undefined)?.focus();
-    },
-    /** 失焦转发 */
-    handleBlur(evt: FocusEvent): void {
-      this.$emit("blur", evt);
-    },
-  },
-};
+    showWordLimit?: boolean;
+  }>(),
+  { modelValue: "", type: "text", placeholder: "", rows: 3, disabled: false, showWordLimit: false },
+);
+
+/** v-model 与 input 事件 */
+const emit = defineEmits<{
+  (e: "update:modelValue", value: string): void;
+  (e: "input", value: string): void;
+  (e: "blur", evt: FocusEvent): void;
+}>();
+
+/** 原生输入框引用（focus() 用） */
+const inputRef = ref<HTMLInputElement | HTMLTextAreaElement>();
+
+/**
+ * 输入转发（v-model）。
+ * @param evt 输入事件
+ */
+function handleInput(evt: Event): void {
+  const value = (evt.target as HTMLInputElement).value;
+  emit("update:modelValue", value);
+  emit("input", value);
+}
+
+/**
+ * 聚焦（1.x focus() 方法对齐，供父组件经 ref 调用）。
+ */
+function focus(): void {
+  inputRef.value?.focus();
+}
+
+/**
+ * 失焦转发。
+ * @param evt 失焦事件
+ */
+function handleBlur(evt: FocusEvent): void {
+  emit("blur", evt);
+}
+
+defineExpose({ focus, handleBlur });
 </script>
 
 <style>

@@ -79,6 +79,14 @@ export function setAppState(tcb: Tcb, options: Record<string, unknown>): void {
 }
 
 /**
+ * 读取应用状态（组合式组件经此获取 tcb 与前端选项，替代 1.x 的 this.$tcb）。
+ * @returns 应用状态
+ */
+export function getAppState(): { tcb: Tcb; options: Record<string, unknown> } {
+  return appState;
+}
+
+/**
  * 判断是否 URL（1.x isUrl 对齐）。
  * @param s 待测字符串
  * @returns 是否 http(s):// 开头

@@ -9,3 +9,9 @@ declare module "*.vue" {
 declare const process: {
   env: Record<string, string | undefined>;
 };
+
+/** Vite ?raw 导入（SVG 按需内联） */
+declare module "*.svg?raw" {
+  const content: string;
+  export default content;
+}

@@ -1,25 +1,27 @@
 <!--
-  tk-loading（参考 Element UI Loading 指令改写：v-loading 遮罩）。
+  tk-loading（参考 Element UI Loading 指令改写：v-loading 遮罩；组合式 API）。
 -->
 <template>
   <div v-show="visible" class="tk-loading-mask">
     <div class="tk-loading-spinner">
-      <div class="tk-loading-spinner__circle"></div>
+      <TkIcon name="spinner" class="tk-loading-spinner__circle" />
       <p v-if="text" class="tk-loading-text">{{ text }}</p>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-export default {
-  name: "TkLoading",
-  props: {
+<script setup lang="ts">
+import TkIcon from "./TkIcon.vue";
+
+withDefaults(
+  defineProps<{
     /** 是否显示遮罩 */
-    visible: { type: Boolean, default: false },
+    visible?: boolean;
     /** 加载文案 */
-    text: { type: String, default: "" },
-  },
-};
+    text?: string;
+  }>(),
+  { visible: false, text: "" },
+);
 </script>
 
 <style>
@@ -33,15 +35,21 @@ export default {
   z-index: 10;
 }
 .twikoo .tk-loading-spinner__circle {
+  color: #12addb;
+  animation: tk-spin 0.8s linear infinite;
+  display: inline-block;
+}
+.twikoo .tk-loading-spinner__circle svg {
   width: 28px;
   height: 28px;
-  border: 3px solid #12addb;
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: tk-spin 0.8s linear infinite;
 }
 .twikoo .tk-loading-text {
   color: #12addb;
   font-size: 0.8125rem;
+}
+@keyframes tk-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

@@ -105,9 +105,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@xsai/shared-chat': 0.2.2
-
 importers:
 
   .:
@@ -267,8 +264,8 @@ importers:
         specifier: workspace:*
         version: link:../shared
       '@xsai/generate-text':
-        specifier: ^0.2.2
-        version: 0.2.2
+        specifier: ^0.5.0
+        version: 0.5.0
       akismet-api:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@8.1.1)
@@ -356,8 +353,8 @@ importers:
         specifier: workspace:*
         version: link:../shared
       '@xsai/generate-text':
-        specifier: ^0.2.2
-        version: 0.2.2
+        specifier: ^0.5.0
+        version: 0.5.0
       akismet-api:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@7.2.0)
@@ -420,8 +417,8 @@ importers:
         specifier: workspace:*
         version: link:../shared
       '@xsai/generate-text':
-        specifier: ^0.2.2
-        version: 0.2.2
+        specifier: ^0.5.0
+        version: 0.5.0
       akismet-api:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@7.2.0)
@@ -475,8 +472,8 @@ importers:
         specifier: workspace:*
         version: link:../shared
       '@xsai/generate-text':
-        specifier: ^0.2.2
-        version: 0.2.2
+        specifier: ^0.5.0
+        version: 0.5.0
       akismet-api:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@8.1.1)
@@ -539,8 +536,8 @@ importers:
         specifier: workspace:*
         version: link:../shared
       '@xsai/generate-text':
-        specifier: ^0.2.2
-        version: 0.2.2
+        specifier: ^0.5.0
+        version: 0.5.0
       akismet-api:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@7.2.0)
@@ -634,8 +631,8 @@ importers:
         specifier: workspace:*
         version: link:../shared
       '@xsai/generate-text':
-        specifier: ^0.2.2
-        version: 0.2.2
+        specifier: ^0.5.0
+        version: 0.5.0
       akismet-api:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@7.2.0)
@@ -695,8 +692,8 @@ importers:
         specifier: workspace:*
         version: link:../shared
       '@xsai/generate-text':
-        specifier: ^0.2.2
-        version: 0.2.2
+        specifier: ^0.5.0
+        version: 0.5.0
       akismet-api:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@7.2.0)
@@ -759,8 +756,8 @@ importers:
         specifier: workspace:*
         version: link:../shared
       '@xsai/generate-text':
-        specifier: ^0.2.2
-        version: 0.2.2
+        specifier: ^0.5.0
+        version: 0.5.0
       akismet-api:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@7.2.0)
@@ -2079,11 +2076,11 @@ packages:
   '@vueuse/shared@12.8.2':
     resolution: {integrity: sha512-dznP38YzxZoNloI0qpEfpkms8knDtaoQ6Y/sfS0L7Yki4zh40LFHEhur0odJC6xTHG5dxWVPiUWBXn+wCG2s5w==}
 
-  '@xsai/generate-text@0.2.2':
-    resolution: {integrity: sha512-76MMlr8CXnriMh4n36NPo5nUMt8z1CZhCETo0/xm+Ge2fySCM1k2zKjhnR6IOtQtnFUVC/q0bnWyjcCiVANbEw==}
+  '@xsai/generate-text@0.5.0':
+    resolution: {integrity: sha512-VONNlaayHgijhovG6cv8FGe0fpwRu+vB35IR4hhLKUQqBUHUrLczf6Mc9PyfbRniyKFwYO8icD0YbYCgGKa2Yg==}
 
-  '@xsai/shared-chat@0.2.2':
-    resolution: {integrity: sha512-0t4HwbK2jm5Lrixg9RnIsYTtAvlQNUdJXs2taW7PFaXfL5ktMy2IwZwW2nqK+Ig0RcLCMp3sScZujERHSDMtmg==}
+  '@xsai/shared-chat@0.5.0':
+    resolution: {integrity: sha512-y3hr0vqul6BHPNmwnGEbIgC/P7eVyRgik+srdGYDJc+IsCBlD0Aw2QhmxJtQd89XrJkv0XN9GG7/5HoDLpYeOw==}
 
   '@xsai/shared@0.5.0':
     resolution: {integrity: sha512-o8arA7Lew9pedOG2bmbLLpmjLU9DyYqW6ByvHK1pxQdhLDRRngyDA8PeEFHwn1SZ0shuedNhI5vYfYIGaUvJ5w==}
@@ -2715,10 +2712,6 @@ packages:
         optional: true
       '@typescript-eslint/parser':
         optional: true
-
-  eslint-scope@8.4.0:
-    resolution: {integrity: sha512-sNXOfKCn74rt8RICKMvJS7XKV/Xk9kA7DyJr8mJik3S7Cwgy3qlkkmyS2uQB3jiJg6VNdZd/pDBJu0nvG2NlTg==}
-    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   eslint-scope@9.1.2:
     resolution: {integrity: sha512-xS90H51cKw0jltxmvmHy2Iai1LIqrfbw57b79w/J7MfvDfkIkFZ+kj6zC3BjtUwh150HsSSdxXZcsuv72miDFQ==}
@@ -5433,12 +5426,12 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@xsai/generate-text@0.2.2':
+  '@xsai/generate-text@0.5.0':
     dependencies:
       '@xsai/shared': 0.5.0
-      '@xsai/shared-chat': 0.2.2
+      '@xsai/shared-chat': 0.5.0
 
-  '@xsai/shared-chat@0.2.2':
+  '@xsai/shared-chat@0.5.0':
     dependencies:
       '@xsai/shared': 0.5.0
 
@@ -6042,11 +6035,6 @@ snapshots:
       xml-name-validator: 5.0.0
     optionalDependencies:
       '@typescript-eslint/parser': 8.70.0(eslint@10.10.0(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)
-
-  eslint-scope@8.4.0:
-    dependencies:
-      esrecurse: 4.3.0
-      estraverse: 5.3.0
 
   eslint-scope@9.1.2:
     dependencies:
@@ -7613,7 +7601,7 @@ snapshots:
     dependencies:
       debug: 4.4.3(supports-color@7.2.0)
       eslint: 10.10.0(supports-color@7.2.0)
-      eslint-scope: 8.4.0
+      eslint-scope: 9.1.2
       eslint-visitor-keys: 5.0.1
       espree: 11.2.0
       esquery: 1.7.0

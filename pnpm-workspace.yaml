@@ -13,10 +13,6 @@ allowBuilds:
   simple-git-hooks: true
 minimumReleaseAgeExclude:
   - prettier@3.9.7
-# T47 修复：`@xsai/generate-text@0.2.2` 的 dependencies 把 `@xsai/shared-chat` 写成**空范围**（""），
-# pnpm 因而解析到最新的 0.5.0——但 0.5.0 已移除 `determineStepType`（更名 resolvePrepareStep 等，
-# 见其 dist 导出），`import("@xsai/generate-text")` 会直接抛
-# "does not provide an export named 'determineStepType'"（AI 垃圾检测整体不可用）。
-# @xsai 各包按同一版本线成对发布，故钉住与 generate-text 版本号一致的 shared-chat。
-overrides:
-  "@xsai/shared-chat": "0.2.2"
+# 说明：曾为 T47 钉住 `@xsai/shared-chat`（当时 generate-text@0.2.2 把该依赖写成空范围 ""，
+# 解析到新的 0.5.0 后会缺 determineStepType 而崩溃）。generate-text 升到 0.5.0 后其依赖已写明
+# `"@xsai/shared-chat": "0.5.0"`，上游问题消失，故移除该 override，交回其自身版本约束。

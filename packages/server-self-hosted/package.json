@@ -30,7 +30,7 @@
     "@imaegoo/node-ip2region": "^2.1.1",
     "@twikoojs/common": "workspace:*",
     "@twikoojs/shared": "workspace:*",
-    "@xsai/generate-text": "^0.2.2",
+    "@xsai/generate-text": "^0.5.0",
     "akismet-api": "^6.0.0",
     "axios": "^1.6.2",
     "bowser": "^2.11.0",

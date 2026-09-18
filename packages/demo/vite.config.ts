@@ -6,12 +6,17 @@
  *
  * 路径推导放在本文件（Vite 会把配置打包到同级临时文件，相对推导仍然正确），
  * 不使用 `src/index.ts` 里的 `import.meta.url`（会被打包错位，见该文件头注释）。
+ *
+ * 注意：本地导入**必须带 `.ts` 扩展名**。Vite 计划把 `configLoader` 默认值切到
+ * `'native'`（Node 原生加载 + 类型擦除），该模式下 ESM 解析不接受无扩展名导入，
+ * Vite 8 会就此告警；带扩展名后两种 loader 均可加载（tsconfig 需开
+ * `allowImportingTsExtensions`，本包 `noEmit` 已满足其前提）。
  */
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig, type Plugin } from "vite";
-import { CLIENT_PRODUCT_FILES, DEMO_PORT, VENDOR_DIR_NAME } from "./src/index";
+import { CLIENT_PRODUCT_FILES, DEMO_PORT, VENDOR_DIR_NAME } from "./src/index.ts";
 
 /** demo 包目录（`packages/demo`） */
 const DEMO_ROOT = fileURLToPath(new URL(".", import.meta.url));

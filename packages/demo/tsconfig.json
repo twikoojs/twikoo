@@ -3,7 +3,10 @@
   "compilerOptions": {
     "noEmit": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["node"]
+    "types": ["node"],
+    // vite.config.ts 以 `./src/index.ts` 带扩展名导入（Vite configLoader:'native' 兼容要求，
+    // 见该文件头注释）。本包 noEmit 已满足该选项的前提条件。
+    "allowImportingTsExtensions": true
   },
   "include": ["src", "test", "vite.config.ts"]
 }

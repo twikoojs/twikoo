@@ -91,6 +91,12 @@ for (const { entry, file, inlineCss } of PRODUCTS) {
       },
       rollupOptions: {
         output: {
+          // 入口同时有命名导出（init / version …）与默认导出（`export default init`），
+          // 显式声明 named：UMD 全局 `twikoo` 即导出命名空间（`twikoo.init(...)`、
+          // `twikoo.version`，默认导出落在 `twikoo.default`）——这正是 1.x 的调用形态，
+          // 也让 `check:products` 的 `window.twikoo.init` 断言成立。
+          // 不写则会由 `auto` 推断出同样结果，但每次构建打印两条 [MIXED_EXPORTS] 告警。
+          exports: "named",
           // 1.x 的 BannerPlugin 等价物（版本号取自 @twikoojs/shared 的构建期注入值）。
           // 必须是块注释：Rollup 原样插入，`/*!` 前缀可在压缩中保留。
           banner:

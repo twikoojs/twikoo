@@ -363,7 +363,9 @@ defineExpose({ focus, blur, inputEl: inputRef });
   right: 10px;
   bottom: 5px;
   font-size: 0.75rem;
-  color: #909399;
+  /* 1.x 覆盖段把字数统计改成 currentColor（跟随正文颜色，夜间模式自动适配），
+     而非 element-ui 默认的灰色 #909399 */
+  color: currentColor;
   background: transparent;
 }
 .twikoo .tk-input-group__prepend,
@@ -394,9 +396,11 @@ defineExpose({ focus, blur, inputEl: inputRef });
 .twikoo .tk-input--group .tk-input__inner {
   border-radius: 0;
 }
-.twikoo .tk-input-group__prepend + .tk-input__inner {
-  border-left: 0;
-}
+/*
+ * 输入框保留自己的左边框（与 1.x element-ui 一致）：prepend 已经去掉右边框，
+ * 这条 1px 边框既是分组内的分隔线，也是聚焦时左侧那一道蓝色描边。
+ * 若去掉它，聚焦态会缺左边、且与 1.x 视觉不一致。
+ */
 .twikoo .tk-input--small .tk-input-group__prepend,
 .twikoo .tk-input--small .tk-input-group__append {
   height: 28px;

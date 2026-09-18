@@ -17,11 +17,27 @@ const MASK_FLAG = "data-tk-loading";
 const CLICKOUTSIDE_FLAG = "data-tk-clickoutside";
 
 /**
+ * 查找宿主**直接子节点**中的遮罩。
+ *
+ * 必须限定直接子节点：`.tk-admin` 里还嵌着同样使用 `v-loading` 的
+ * `.tk-admin-comment` / `.tk-admin-config`，用后代查询会命中嵌套宿主的遮罩，
+ * 结果是「删掉别人的、留下自己的」——遮罩再也去不掉（一直在转圈）。
+ * @param el 宿主元素
+ * @returns 遮罩元素（不存在时为 undefined）
+ */
+function findMask(el: HTMLElement): Element | null {
+  for (const child of Array.from(el.children)) {
+    if (child.hasAttribute(MASK_FLAG)) return child;
+  }
+  return null;
+}
+
+/**
  * 创建并插入加载遮罩。
  * @param el 宿主元素
  */
 function insertMask(el: HTMLElement): void {
-  if (el.querySelector(`[${MASK_FLAG}]`)) return;
+  if (findMask(el)) return;
   const mask = document.createElement("div");
   mask.setAttribute(MASK_FLAG, "1");
   mask.className = "tk-loading-mask";
@@ -39,7 +55,7 @@ function insertMask(el: HTMLElement): void {
  * @param el 宿主元素
  */
 function removeMask(el: HTMLElement): void {
-  el.querySelector(`[${MASK_FLAG}]`)?.remove();
+  findMask(el)?.remove();
   el.classList.remove("tk-loading-parent--relative");
 }
 

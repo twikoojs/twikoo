@@ -181,6 +181,8 @@ watch(() => props.pageSize, onTotalChange);
 }
 .twikoo .tk-pagination .tk-input__inner {
   padding: 0;
+  /* 1.x 分页输入框显式压到 28px（比普通输入框矮一档），2.0 需保留同一观感 */
+  height: 28px;
   text-align: center;
 }
 </style>

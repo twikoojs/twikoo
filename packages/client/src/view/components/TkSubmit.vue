@@ -37,14 +37,17 @@
     </div>
     <div class="tk-row actions">
       <div class="tk-row-actions-start">
+        <!-- 表情按钮：首屏先渲染图标，随后由 OwO 面板以同样的 logo 接管容器内容 -->
+        <!-- 图标为构建期内联的 fontawesome 官方 SVG，非运行时用户数据 -->
+        <!-- eslint-disable vue/no-v-html -->
         <div
           v-show="config.SHOW_EMOTION === 'true'"
           ref="owoRef"
           v-clickoutside="closeOwo"
           class="tk-submit-action-icon OwO"
-        >
-          <TkIcon name="laugh-regular" />
-        </div>
+          v-html="emotionIcon"
+        ></div>
+        <!-- eslint-enable vue/no-v-html -->
         <div v-show="showImage" class="tk-submit-action-icon" @click="openSelectImage">
           <TkIcon name="image-regular" />
         </div>
@@ -108,6 +111,7 @@ import TkButton from "../../components/TkButton.vue";
 import TkInput from "../../components/TkInput.vue";
 import TkIcon from "../../components/TkIcon.vue";
 import TkError from "../../components/TkError.vue";
+import { ICONS } from "../../components/icons";
 import OwO from "../../lib/owo";
 import { TwikooError, call, getAppState } from "../../utils/api";
 import {
@@ -132,6 +136,15 @@ import type { ServerConfig } from "../../types";
 
 /** 可上传的图片扩展名（1.x imageTypes 同表） */
 const imageTypes = ["apng", "bmp", "gif", "jpeg", "jpg", "png", "svg", "tif", "tiff", "webp"];
+
+/**
+ * 表情按钮图标（fontawesome regular/laugh 的 SVG 源码）。
+ *
+ * OwO 面板会用它重写容器内容为 `<div class="OwO-logo">…</div>`，所以必须把图标
+ * 交给 OwO 的 `logo` 选项；留空会让 OwO 回退到文案 logo（"OwO表情"），
+ * 在 1.25em 宽的按钮里折行并与右侧图标重叠。
+ */
+const emotionIcon = ICONS["laugh-regular"];
 
 /** TkInput 经 defineExpose 暴露的结构面 */
 interface TkInputExposed {
@@ -265,7 +278,7 @@ async function initOwo(): Promise<void> {
   initMarkedOwo(odata);
   if (!owoRef.value || !textarea.value) return;
   owo.value = new OwO({
-    logo: "",
+    logo: emotionIcon,
     container: owoRef.value,
     target: textarea.value,
     odata,
@@ -1003,6 +1016,18 @@ onUnmounted(() => {
 }
 .twikoo .tk-submit-action-icon svg:hover {
   opacity: 0.8;
+}
+/*
+ * 提交栏图标按按钮宽度等比铺开（1.x 由全局 `.twikoo svg { width:100%; height:100% }` 达成）。
+ * tk-icon 默认按 1em 定高，会让图片 / Markdown 图标比 1.x 小一圈；
+ * 这里改成宽度撑满、高度按 SVG 比例自适应。
+ */
+.twikoo .tk-submit-action-icon .tk-icon,
+.twikoo .tk-submit-action-icon .tk-icon svg {
+  width: 100%;
+}
+.twikoo .tk-submit-action-icon .tk-icon svg {
+  height: auto;
 }
 .twikoo .tk-submit-action-icon.__markdown {
   color: #909399;

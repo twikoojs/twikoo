@@ -9,13 +9,13 @@
     <div v-if="clientVersion !== serverVersion" class="tk-admin-warn">
       <span>{{ t("ADMIN_CLIENT_VERSION") }}{{ clientVersion }}，</span>
       <span>{{ t("ADMIN_SERVER_VERSION") }}{{ serverVersion }}，</span>
-      <span>
-        请参考&nbsp;
-        <a href="https://twikoo.js.org/update.html" target="_blank" rel="noopener noreferrer">
-          版本更新
-        </a>
-        &nbsp;进行升级
-      </span>
+      <!--
+        用 prettier-ignore 保持单行：这一段的换行/缩进空白会被 Vue 3 的 condense 折叠成
+        一个空格（Vue 2 保留、HTML 同样折叠），与两侧的 &nbsp; 叠加后会让「版本更新」
+        链接左右各宽约一个空格，而 1.x 只有 &nbsp;。所以必须让 &nbsp; 与 <a> 紧贴。
+      -->
+      <!-- prettier-ignore -->
+      <span>请参考&nbsp;<a href="https://twikoo.js.org/update.html" target="_blank" rel="noopener noreferrer">版本更新</a>&nbsp;进行升级</span>
     </div>
     <form @submit.prevent="saveConfig">
       <div class="tk-admin-config-groups">

@@ -72,6 +72,10 @@ async function buildLocaleShards() {
          */
         fileName: (_format, entryName) => `${entryName}.js`,
       },
+      // 与下方产物构建一致：仅 --watch 时开启。缺了它，`--watch` 下这次 build 返回
+      // 的是一次性的 RollupOutput（没有 `.on`），下面的 watcher 监听会直接抛错，
+      // 导致 `pnpm demo` 的客户端进程退出。null 表示显式关闭（Vite 语义）。
+      watch: WATCH ? {} : null,
     },
   });
   if (WATCH) {

@@ -151,6 +151,31 @@ describe("directives（Wave 4）", () => {
     expect(el.querySelector(".tk-loading-mask")).toBeNull();
   });
 
+  it("v-loading：宿主内还有嵌套的 v-loading 时，各自只移除自己的遮罩", () => {
+    // 回归：管理面板 `.tk-admin` 内嵌 `.tk-admin-comment` / `.tk-admin-config`，
+    // 三者都用 v-loading。若用后代查询找遮罩，外层会误删内层的、自己那份永远留着
+    // （表现为面板一直转圈）。这里锁定「只认直接子节点」。
+    const outer = document.createElement("div");
+    const inner = document.createElement("div");
+    const innerBody = document.createElement("p");
+    outer.appendChild(inner);
+    inner.appendChild(innerBody);
+    document.body.appendChild(outer);
+
+    const mounted = vLoading.mounted as (el: HTMLElement, binding: unknown) => void;
+    const updated = vLoading.updated as (el: HTMLElement, binding: unknown) => void;
+    mounted(outer, { value: true });
+    mounted(inner, { value: true });
+    expect(outer.querySelectorAll(".tk-loading-mask")).toHaveLength(2);
+
+    updated(outer, { value: false });
+    expect(outer.children.length).toBe(1); // 只剩 inner
+    expect(inner.querySelector(".tk-loading-mask")).not.toBeNull();
+
+    updated(inner, { value: false });
+    expect(outer.querySelectorAll(".tk-loading-mask")).toHaveLength(0);
+  });
+
   it("v-clickoutside：点击外部触发回调，内部不触发", async () => {
     const el = document.createElement("div");
     const child = document.createElement("span");

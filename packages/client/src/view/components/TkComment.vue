@@ -580,6 +580,20 @@ onMounted(() => {
 .twikoo .tk-comment:hover .tk-actions {
   display: inline;
 }
+/*
+ * 间距补丁：1.x 的昵称 / tag / 时间、以及悬停出现的管理按钮之间，都靠模板里的
+ * 换行空白分隔（Vue 2 会保留成一个空格）。Vue 3 默认把「两侧都是元素且含换行」
+ * 的纯空白节点整段删除，间距随之消失，故改用 CSS 显式给出。
+ */
+.twikoo .tk-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25em;
+}
+.twikoo .tk-actions button + button {
+  margin-left: 0.25em;
+}
 .twikoo .tk-extras {
   color: #999999;
   font-size: 0.875em;

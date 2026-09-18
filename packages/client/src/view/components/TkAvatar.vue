@@ -80,6 +80,17 @@ function onClick(): void {
   line-height: 2.5rem;
   color: #c0c4cc;
 }
+/*
+ * 无头像时回退的 user-circle 图标要铺满整个头像框（1.x 由全局
+ * `.twikoo svg { width: 100%; height: 100% }` 作用于 .tk-avatar-img 达成）。
+ * tk-icon 默认高度是 1em，在 2.5rem / 1.6rem 的头像框里会明显偏小，故此处显式撑满。
+ */
+.twikoo .tk-avatar .tk-avatar-img .tk-icon,
+.twikoo .tk-avatar .tk-avatar-img .tk-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
 .twikoo .tk-avatar .tk-avatar-img img,
 .twikoo .tk-avatar img.tk-avatar-img {
   width: 100%;

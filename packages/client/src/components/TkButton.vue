@@ -83,11 +83,20 @@ function handleClick(evt: MouseEvent): void {
   border-color: #409eff;
   color: #ffffff;
 }
-.twikoo .tk-button--primary:not(.is-disabled):active,
 .twikoo .tk-button--primary:not(.is-disabled):focus,
 .twikoo .tk-button--primary:not(.is-disabled):hover {
   background: #66b1ff;
   border-color: #66b1ff;
+  color: #ffffff;
+}
+/*
+ * 主按钮的**按下**态：element-ui 用独立的 `.el-button--primary:active{background:#3a8ee6}`，
+ * 比悬停的 #66b1ff 更深，形成「按下去」的反馈。1.x 的覆盖段带 `:not(.el-button--primary)`，
+ * 特意把主按钮排除在外，所以这条在 v1 里**是生效的**，必须单独还原。
+ */
+.twikoo .tk-button--primary:not(.is-disabled):active {
+  background: #3a8ee6;
+  border-color: #3a8ee6;
   color: #ffffff;
 }
 .twikoo .tk-button--primary.is-disabled,
@@ -98,22 +107,26 @@ function handleClick(evt: MouseEvent): void {
   background-color: rgba(64, 158, 255, 0.5);
   border-color: transparent;
 }
+/*
+ * `type="info"` 对齐 1.x 的**实际渲染结果**，而不是 element-ui 的原始值。
+ *
+ * 1.x 的覆盖段 `.twikoo .el-button:not(.el-button--primary):not(.el-button--text)`
+ * 含 4 个类（特异性 0,4,0），高于 element-ui 的 `.el-button--info`（0,1,0，连
+ * `:focus`/`:hover`/`.is-disabled` 也只有 0,2,0~0,3,0），所以 info 按钮在 v1 里
+ * 从头到尾都渲染成「默认按钮」：半透明灰底 + currentColor + 常规边框。
+ * 保持这里的取值与 `.tk-button` 基础规则一致，就是为了复现这个结果。
+ */
 .twikoo .tk-button--info {
-  color: #ffffff;
-  background-color: #909399;
-  border-color: #909399;
+  color: currentColor;
+  background-color: rgba(144, 147, 153, 0.063);
+  border-color: rgba(144, 147, 153, 0.31);
 }
-.twikoo .tk-button--text {
-  border-color: transparent;
-  background: transparent;
-  padding-left: 0;
-  padding-right: 0;
-  color: #409eff;
-}
-.twikoo .tk-button--text:not(.is-disabled):hover {
-  color: #66b1ff;
-  background: transparent;
-}
+/*
+ * 尺寸与类型修饰符的**顺序**照 element-ui 原样：尺寸在前、`--text` 在后。
+ * 因为尺寸类用的是 `padding` 简写（会一并重置纵向/横向），`--text` 只清左右内边距
+ * （`padding-left/right: 0`），必须排在后面才能生效，否则会被尺寸类覆盖回去——
+ * 那正是「mini 按钮本该 `7px 0`、却变成 `0 7px`」的原因。
+ */
 .twikoo .tk-button--large {
   height: 40px;
   font-size: 0.9375rem;
@@ -123,10 +136,31 @@ function handleClick(evt: MouseEvent): void {
   padding: 0 11px;
   font-size: 0.8125rem;
 }
+/* mini 用 1.x 的 padding 驱动尺寸（`.el-button--mini { padding: 7px 15px }`），
+   12px 字号 + 1px 边框 → 高 28px；不再写死 height，纵向内边距才能保留 7px */
 .twikoo .tk-button--mini {
-  height: 24px;
-  padding: 0 7px;
+  padding: 7px 15px;
   font-size: 0.75rem;
+}
+.twikoo .tk-button--text {
+  border-color: transparent;
+  background: transparent;
+  padding-left: 0;
+  padding-right: 0;
+  color: #409eff;
+}
+.twikoo .tk-button--text:not(.is-disabled):focus,
+.twikoo .tk-button--text:not(.is-disabled):hover {
+  color: #66b1ff;
+  background: transparent;
+}
+/*
+ * 文字按钮的**按下**态：同主按钮，element-ui 有独立的 `.el-button--text:active{color:#3a8ee6}`，
+ * 且 1.x 的覆盖段用 `:not(.el-button--text)` 排除在外 → v1 里生效。管理面板的查看/隐藏/
+ * 置顶/删除都是这一类，缺了它按下去就没有任何反馈。
+ */
+.twikoo .tk-button--text:not(.is-disabled):active {
+  color: #3a8ee6;
 }
 .twikoo .tk-button.is-disabled {
   opacity: 0.5;
@@ -142,6 +176,14 @@ function handleClick(evt: MouseEvent): void {
 }
 .twikoo .tk-button__spinner svg {
   animation: tk-spin 0.8s linear infinite;
+}
+/*
+ * 相邻按钮间距：1.x element-ui 里是 `.el-button + .el-button { margin-left: 10px }`，
+ * 这里取与本组件 `.tk-meta-input .tk-input + .tk-input` 一致的 0.5rem，保持站内统一。
+ * （`.tk-row.actions` 是 flex，元素间的模板空白本来就被忽略，间距只能靠 margin 给。）
+ */
+.twikoo .tk-button + .tk-button {
+  margin-left: 0.5rem;
 }
 /* 输入框 append 插槽内的按钮：与输入框合为一体（1.x element-ui 行为） */
 .twikoo .tk-input-group__append .tk-button {

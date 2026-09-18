@@ -17,7 +17,6 @@
     "lint:fix": "eslint --fix .",
     "check:no-js": "node scripts/check-no-js-sources.mjs",
     "typecheck": "pnpm -r --if-present run typecheck",
-    "prepare": "simple-git-hooks",
     "env:check": "node scripts/env-check.mjs",
     "check:workflows": "node scripts/check-workflows.mjs",
     "release:check": "node scripts/release-set-version.mjs --check",
@@ -26,18 +25,6 @@
     "check:adapter-deps": "node scripts/check-adapter-deps.mjs",
     "e2e:b2": "node scripts/e2e-b2.mjs",
     "check:products": "node scripts/check-cdn-products.mjs"
-  },
-  "lint-staged": {
-    "*.{js,mjs,cjs,ts,vue}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,md,yml,yaml}": [
-      "prettier --write"
-    ]
-  },
-  "simple-git-hooks": {
-    "pre-commit": "pnpm exec lint-staged"
   },
   "devDependencies": {
     "@twikoojs/tsdown-config": "workspace:*",
@@ -54,10 +41,8 @@
     "globals": "^17.12.0",
     "happy-dom": "^20.14.5",
     "jsdom": "^30.0.1",
-    "lint-staged": "^17.5.1",
     "mongodb-memory-server": "^11.2.0",
     "prettier": "^3.9.7",
-    "simple-git-hooks": "^2.14.0",
     "tsdown": "^0.23.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.70.0",

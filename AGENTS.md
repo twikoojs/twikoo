@@ -160,7 +160,11 @@ cd twikoo2 && pnpm install
 
 - **ESLint 9** flat（`vue3-recommended` + `typescript-eslint` type-checked + `eslint-plugin-jsdoc`）
 - **Prettier**（`semi` · 双引号 · `trailingComma: "all"` · `printWidth: 100` · `tabWidth: 2`）
-- **lint-staged + simple-git-hooks**（pre-commit 钩子，T7 接线；`pnpm exec lint-staged`）
+- **无本地提交钩子**：`lint-staged` / `simple-git-hooks` 及 `prepare` 生命周期脚本已移除，仓库不再安装
+  pre-commit 钩子——规范一律由 **GitHub Actions 的 CI 门禁**把关（`lint` / `typecheck` / `test` /
+  `build` + `baseline` / `agents-staleness` 两个守卫 job）。本地提交前请自行跑 `pnpm lint`（必要时
+  `pnpm lint:fix`）与 `pnpm prettier --write <files>`。`prettier` 依赖与 `.prettierrc.json` 保留，
+  供手动格式化（注意本机 `pnpm exec <bin>` 不可用，见「常见坑」第 4 条）。
 - **Vitest 5**（工作区模式：根 `vitest.config.ts` 的 `projects` 发现各包 `vitest.config.ts`）
 
 ---
@@ -322,7 +326,7 @@ push 到 `main` 且改动 `docs/**`、或 Release published、或手动触发 �
 1. **`twikoo-func` 的 `main` 导出名不可改**：CloudBase 控制台通过 `require("twikoo-func").main` 加载入口，改名或删除会导致所有 CloudBase 部署失效。
 2. **目录名 ≠ 包名**：见上方对照表；`server-cloudbase` → `twikoo-func`、`server-common` → `@twikoojs/common`。
 3. **重依赖在 common 侧不可见**：只把重依赖写进适配器 `dependencies` 不够——common 的动态 `import()` 以自身位置解析，必须同时在 common 的 `peerDependencies`(+`optional`) 中声明（T35 实测：`COMMENT_SUBMIT` 曾因 jsdom 解析失败返回 1000）。
-4. **`pnpm exec <bin>` 在部分环境失效**：改用 `node_modules/.bin/<bin>` 或 `pnpm run <script>`；pre-commit 钩子若因此无法运行，先手动执行等价检查（eslint + prettier）再提交。
+4. **`pnpm exec <bin>` 在部分环境失效**：改用 `node_modules/.bin/<bin>` 或 `pnpm run <script>`。仓库已不装 pre-commit 钩子，提交前请手动执行等价检查（`pnpm lint` + `pnpm prettier --write`）。
 5. **`version` 字段禁止人为修改**：保持 `0.0.0`，由 CI 从 Release tag 注入；`pnpm release:check` 与 CI `baseline` job 会拦。
 6. **新增 env 变量必须同步 `.env.example`**：否则 `pnpm env:check` 会不一致。
 7. **CSS 不得用 `<style scoped>`、不得出现 `.el-*`**：见 CSS 规范（均有 ESLint 规则）。

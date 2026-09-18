@@ -21,10 +21,10 @@
     "@twikoojs/shared": "workspace:*"
   },
   "devDependencies": {
-    "@cloudbase/js-sdk": "^3.3.10",
+    "@cloudbase/js-sdk": "^3.9.4",
     "@fortawesome/fontawesome-free": "^7.3.1",
     "@types/jsdom": "^30.0.0",
-    "@types/node": "^22.20.3",
+    "@types/node": "^26.6.1",
     "@vitejs/plugin-vue": "^6.0.9",
     "blueimp-md5": "^2.19.0",
     "dompurify": "^3.4.15",

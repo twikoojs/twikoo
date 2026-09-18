@@ -23,7 +23,7 @@
     "jsdom": "^30.0.1",
     "lokijs": "^1.5.12",
     "marked": "^18.0.4",
-    "mongodb": "^6.3.0",
+    "mongodb": "^7.6.0",
     "nodemailer": "^10.0.10",
     "pushoo": "workspace:^",
     "tencentcloud-sdk-nodejs-tms": "^4.1.293",
@@ -80,7 +80,7 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^22.20.3",
+    "@types/node": "^26.6.1",
     "lokijs": "^1.5.12",
     "mongodb": "^7.6.0"
   },

@@ -58,7 +58,7 @@
     "prettier": "^3.9.7",
     "simple-git-hooks": "^2.14.0",
     "tsup": "^8.5.1",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.70.0",
     "vitest": "^5.0.1",
     "vue": "^3.5.42",

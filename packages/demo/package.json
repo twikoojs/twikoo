@@ -11,7 +11,7 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@types/node": "^22.20.3",
+    "@types/node": "^26.6.1",
     "bulma": "^1.0.4",
     "katex": "^0.18.7",
     "vite": "^8.3.0"

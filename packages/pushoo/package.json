@@ -29,13 +29,13 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "axios": "^1.6.2",
-    "lodash": "^4.17.21",
+    "axios": "^1.20.0",
+    "lodash": "^4.18.1",
     "markdown-to-txt": "^2.0.1",
-    "marked": "^18.0.4"
+    "marked": "^18.0.13"
   },
   "devDependencies": {
-    "@types/node": "^22.20.3"
+    "@types/node": "^26.6.1"
   },
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

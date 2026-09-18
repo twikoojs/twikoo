@@ -38,6 +38,56 @@ const PRODUCTS = [
 const CSS_MARKER = "/*! twikoo:inlined-css */";
 
 /**
+ * 需按需加载的语言（§7.2；与 `src/i18n/index.ts` 的 `LAZY_LOCALES` 保持一致）。
+ * `zh-CN` / `en` 内置进主产物，不在此列。
+ */
+const LAZY_LOCALES = ["zh-HK", "zh-TW", "uz-UZ", "ja-JP", "ko-KR", "vi-VN", "id-ID"];
+
+/**
+ * 构建语言分片（§7.2）：每个非内置语言产出 `dist/locales/<lang>.js`（ESM，default 导出词表）。
+ *
+ * 主产物是 UMD（不支持代码分割），故分片单独构建；运行时由 `i18n/index.ts` 以变量
+ * specifier 动态 `import()` 按需拉取，失败回退英文（R-8/R-9）。
+ */
+async function buildLocaleShards() {
+  const result = await build({
+    configFile: false,
+    // 词表只需 default 导出；关掉具名导出可省掉 191 个键的导出映射（每片约 −5KB）
+    json: { namedExports: false },
+    build: {
+      outDir: "dist/locales",
+      emptyOutDir: true,
+      minify: true,
+      target: "es2022",
+      lib: {
+        entry: Object.fromEntries(
+          LAZY_LOCALES.map((lang) => [lang, resolve(`src/i18n/locales/${lang}.json`)]),
+        ),
+        formats: ["es"],
+        /**
+         * 分片文件名 = 语言标识（`i18n/index.ts` 按 `<lang>.js` 拼接 URL）。
+         * @param _format 输出格式（恒为 es）
+         * @param entryName 入口名（语言标识）
+         * @returns 文件名
+         */
+        fileName: (_format, entryName) => `${entryName}.js`,
+      },
+    },
+  });
+  if (WATCH) {
+    result.on("event", (event) => {
+      if (event.code === "END") console.log("[twikoo] rebuilt locales/*.js");
+      if (event.code === "ERROR") console.error("[twikoo] build error in locales");
+    });
+    console.log("[twikoo] watching for locales/*.js");
+  } else {
+    console.log(`[twikoo] built locales/*.js（${LAZY_LOCALES.length} 个分片）`);
+  }
+}
+
+await buildLocaleShards();
+
+/**
  * 生成「运行时注入 <style>」的代码片段（1.x `vue-style-loader` 行为的等价物）。
  * @param css 样式文本
  * @returns 注入用 JS 片段
@@ -97,6 +147,11 @@ for (const { entry, file, inlineCss } of PRODUCTS) {
           // 也让 `check:products` 的 `window.twikoo.init` 断言成立。
           // 不写则会由 `auto` 推断出同样结果，但每次构建打印两条 [MIXED_EXPORTS] 告警。
           exports: "named",
+          // 语言分片靠运行时动态 `import()` 拉取（§7.2），而 UMD 产物是在浏览器里跑的：
+          // Rollup 对 CJS/UMD 输出默认会把 `import()` 改写成 `require()` 包装，
+          // 浏览器没有 `require` 会直接失败（分片永远加载不到、只能一直兜底英文）。
+          // 显式关闭，保证产物里保留原生 `import()`。
+          dynamicImportInCjs: false,
           // 1.x 的 BannerPlugin 等价物（版本号取自 @twikoojs/shared 的构建期注入值）。
           // 必须是块注释：Rollup 原样插入，`/*!` 前缀可在压缩中保留。
           banner:

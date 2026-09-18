@@ -199,6 +199,47 @@ async function main() {
   }
   assert(existsSync(join(DIST, "twikoo.css")), "缺少 twikoo.css（.nocss 产物必须与之一同使用）");
 
+  /**
+   * §7.2 语言分片守卫：
+   * ① 7 个非内置语言必须各自产出 `dist/locales/<lang>.js`（按需加载）；
+   * ② 内置语言 `zh-CN` / `en` 不应有分片（它们应内联在主产物里）；
+   * ③ 分片语言的文案**不得**出现在主产物中——防止有人把 7 个分片重新静态 import
+   *    （那会让主产物体积回涨约 120KB）。
+   */
+  const LAZY_LOCALES = ["zh-HK", "zh-TW", "uz-UZ", "ja-JP", "ko-KR", "vi-VN", "id-ID"];
+  for (const lang of LAZY_LOCALES) {
+    assert(
+      existsSync(join(DIST, "locales", `${lang}.js`)),
+      `缺少语言分片 dist/locales/${lang}.js（§7.2：非内置语言必须按需加载）`,
+    );
+  }
+  for (const lang of ["zh-CN", "en"]) {
+    assert(
+      !existsSync(join(DIST, "locales", `${lang}.js`)),
+      `内置语言 ${lang} 不应产出分片（应内联进主产物）`,
+    );
+  }
+  {
+    const readLocale = (lang) =>
+      JSON.parse(
+        readFileSync(join(ROOT, "packages/client/src/i18n/locales", `${lang}.json`), "utf8"),
+      );
+    const ja = readLocale("ja-JP");
+    const zh = readLocale("zh-CN");
+    const en = readLocale("en");
+    /** 取一个「日文与中/英均不同」的值作为探针（自动选取，不硬编码） */
+    const probe = Object.entries(ja).find(
+      ([key, value]) => value && value !== zh[key] && value !== en[key],
+    )?.[1];
+    assert(probe !== undefined, "无法从 ja-JP 词表取到与中/英不同的探针文案");
+    for (const { file } of PRODUCTS) {
+      assert(
+        !readFileSync(join(DIST, file), "utf8").includes(probe),
+        `${file} 内联了语言分片文案（§7.2：非内置语言必须按需加载，勿静态 import 回 i18n/index.ts）`,
+      );
+    }
+  }
+
   const dataDir = mkdtempSync(join(tmpdir(), "twikoo-products-"));
   const server = spawn(process.execPath, [TSERVER_ENTRY], {
     env: {

@@ -288,11 +288,28 @@ outputOptions: (options, format) => (format === "cjs" ? { ...options, exports: "
 
 ## 国际化（i18n）
 
-- **一语言一文件**：`packages/client/src/i18n/locales/*.json`，共 **9 个 locale**（zh-CN、zh-HK、zh-TW、en、ja-JP、ko-KR、vi-VN、id-ID、uz-UZ）
+- **一语言一文件**：`packages/client/src/i18n/locales/*.json`，共 **9 个 locale**（zh-CN、zh-HK、zh-TW、en、ja-JP、ko-KR、vi-VN、id-ID、uz-UZ），各 **196 键**
 - **真相源**：`locales/_keys.json`（键集合），`TranslationKey` 类型保证缺键时 tsc 报错
 - **兜底**：`en`——缺键或分片加载失败时降级英文，绝不阻塞渲染
 - **语言别名**：`zh` → `zh-CN`、`en-GB` → `en` 等（1.x langs 表语义）
 - 新增 UI 文本须同步补齐全部 9 种语言
+
+### 打包与按需加载（§7.2）
+
+| 语言           | 打包方式                                                                |
+| -------------- | ----------------------------------------------------------------------- |
+| `zh-CN` / `en` | **内置**进主产物（`en` 同时是 fallback 源）                             |
+| 其余 7 种      | 各自一个独立分片 `dist/locales/<lang>.js`（ESM），运行时按需 `import()` |
+
+- 分片由 `packages/client/build.mjs` 的 `buildLocaleShards()` 单独构建——主产物是 UMD，**不支持代码分割**，
+  故分片不能与主产物同批产出。
+- 主产物里必须保留**原生 `import()`**：`rollupOptions.output.dynamicImportInCjs: false`
+  （Rollup 对 UMD 输出默认把 `import()` 改写成 `require()` 包装，浏览器没有 `require` 会直接失败）。
+- 分片基址从**主脚本自身 URL** 推导（UMD 无 `import.meta.url`）：`document.currentScript.src` →
+  回退扫描 `script[src]` 中含 `twikoo` 者；可用 `init({ localeBaseUrl })` 或 `setLocaleBaseUrl()` 显式覆写。
+- 任何加载失败（网络 / 404 / 解析 / 基址推导失败）**一律回退英文并记 warn，绝不抛出**（R-8）。
+- `init()` 在挂载前 `await loadLanguage(options)`，因此组件渲染时语言已就位，**无需「加载后重渲染」**。
+- ⚠️ **不要把 7 个分片重新静态 import 回 `i18n/index.ts`**——那会让全部语言重新进主产物（体积 +120KB）。
 
 ---
 

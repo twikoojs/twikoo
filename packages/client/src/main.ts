@@ -15,7 +15,7 @@ import { install, type TcbInstance } from "./utils/tcb";
 import { render } from "./view";
 import {
   logger,
-  setLanguage,
+  loadLanguage,
   isUrl,
   getCommentsCountApi,
   getRecentCommentsApi,
@@ -37,6 +37,11 @@ export interface TwikooOptions {
   href?: string;
   /** 语言（缺省自动检测） */
   lang?: string;
+  /**
+   * 语言分片基址（§7.2；缺省从主脚本自身 URL 推导）。
+   * CDN / 子路径部署自动推导失准时可显式指定，如 `https://cdn.example.com/twikoo`。
+   */
+  localeBaseUrl?: string;
   /** 其他前端配置项（管理面板透传） */
   [key: string]: unknown;
 }
@@ -75,7 +80,9 @@ async function initTcbIfNeeded(options: TwikooOptions): Promise<TcbInstance> {
  */
 export async function init(options: TwikooOptions = {}): Promise<void> {
   const tcb = await initTcbIfNeeded(options);
-  setLanguage(options);
+  // 先按需加载语言分片再挂载（§7.2）：失败回退英文、绝不阻塞渲染，
+  // 因此在挂载前 await 即可，组件渲染时语言已就位，无需「加载后重渲染」。
+  await loadLanguage({ lang: options.lang, localeBaseUrl: options.localeBaseUrl });
   render(tcb, options);
   await updateVisitorsCount(tcb, options);
 }

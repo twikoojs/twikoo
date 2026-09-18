@@ -14,7 +14,7 @@ import { logger } from "./logger";
 import { t } from "../i18n";
 
 export { logger } from "./logger";
-export { t, setLanguage, getLanguage } from "../i18n";
+export { t, setLanguage, getLanguage, loadLanguage, setLocaleBaseUrl } from "../i18n";
 export { sanitizeHtml } from "./sanitize";
 export { renderCode } from "./highlight";
 export { getQQAvatar, resolveAvatarUrl } from "./avatar";

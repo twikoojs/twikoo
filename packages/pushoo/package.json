@@ -1,0 +1,47 @@
+{
+  "name": "pushoo",
+  "version": "0.1.12",
+  "description": "Instant Messaging Pushing SDK",
+  "keywords": [
+    "pushoojs",
+    "push",
+    "instant",
+    "message",
+    "notification",
+    "twikoo"
+  ],
+  "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imaegoo/pushoo.git"
+  },
+  "homepage": "https://pushoo.js.org/",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src/**",
+    "test": "ts-node src/test.ts"
+  },
+  "dependencies": {
+    "axios": "^0.26.1",
+    "lodash": "^4.17.21",
+    "markdown-to-txt": "^2.0.1",
+    "marked": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/marked": "^4.0.7",
+    "@types/node": "^22.14.1",
+    "@typescript-eslint/eslint-plugin": "^5.38.0",
+    "@typescript-eslint/parser": "5.38.0",
+    "eslint": "8.10.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "2.25.4",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.8.3"
+  }
+}

@@ -201,6 +201,12 @@ pnpm check:products # B.3 客户端四产物逐一 init + 形态断言 + tkserve
   `build` 四个并行 job）。本地提交前请自行跑 `pnpm lint`（必要时
   `pnpm lint:fix`）与 `pnpm prettier --write <files>`。`prettier` 依赖与 `.prettierrc.json` 保留，
   供手动格式化（注意本机 `pnpm exec <bin>` 不可用，见「常见坑」第 4 条）。
+- **草稿 PR 不跑 CI**：4 个 job 均带 `if: github.event.pull_request.draft == false`，
+  且 `on.pull_request.types` 显式含 `ready_for_review`。**这两者缺一不可**——
+  少了 `types` 里的 `ready_for_review`，草稿点「Ready for review」不会触发工作流，
+  CI 要等下一次 push 才启动（静默空档）。`push` 事件下 `github.event.pull_request` 为 null，
+  GitHub 表达式为宽松相等（null→0、false→0），故 `null == false` 求值为 true，
+  push 到 main 不受影响。
 - **Vitest 5**（工作区模式：根 `vitest.config.ts` 的 `projects` 发现各包 `vitest.config.ts`）
 
 ---
@@ -431,7 +437,7 @@ push 到 `main` 且改动 `docs/**`、或 Release published、或手动触发 �
 7. **CSS 不得用 `<style scoped>`、不得出现 `.el-*`**：见 CSS 规范（均有 ESLint 规则）。
 8. **`packages/*/src` 不得新增 `.js`**：重写模式全量 TS（人工约定，无自动守卫）。
 9. **Windows 开发**：pnpm 脚本可能遇到 shell 兼容问题，可用 `bash -lc "pnpm ..."`。
-10. **workflow 改动需人工核对**：留意 `type:` / `types:` 这类易错点（原 actionlint + 结构断言守卫已移除）。
+10. **workflow 改动需人工核对**：留意 `type:` / `types:` 这类易错点（原 actionlint + 结构断言守卫已移除）。典型陷阱：给 CI 加「草稿 PR 不跑」时只加 `if: github.event.pull_request.draft == false` 而漏了 `on.pull_request.types` 里的 `ready_for_review`——草稿转可评审时**不会触发工作流**，CI 要等下一次 push 才启动，属静默失效。
 
 ---
 

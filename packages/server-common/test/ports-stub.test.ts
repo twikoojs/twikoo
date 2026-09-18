@@ -109,6 +109,13 @@ const stubAdapters = {
   },
   mailer: { send: noop },
   notifier: { notify: noop },
+  postSubmit: {
+    /**
+     * 端口形态 stub：本用例只打通 GET_FUNC_VERSION，不触发副作用派发
+     * @returns 立即 resolve
+     */
+    async dispatch(): Promise<void> {},
+  },
   capabilities: {
     mail: false,
     domPurify: false,

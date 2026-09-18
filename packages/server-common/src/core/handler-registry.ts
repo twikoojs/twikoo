@@ -1,7 +1,7 @@
 /**
  * 事件处理器注册表（规范 §6.2 handlers/ 的装配机制）。
  *
- * dispatcher 通过本表把 26 事件名解析到 handler 实现：T13 只注册
+ * dispatcher 通过本表把事件名解析到 handler 实现：T13 只注册
  * GET_FUNC_VERSION 与三个兼容分支（D-4），其余 24 个常规事件随 T18 迁移
  * 逐个登记。注册表同时是契约测试（T19）的接缝——测试可注册替身 handler
  * 验证 dispatcher 转发逻辑，或注入真实实现跑全事件断言。

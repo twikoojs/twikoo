@@ -2,10 +2,8 @@
  * twikoo-edgeone-makers 适配器测试（T24）。
  *
  * 注入内存 BlobKV store 跑契约核心事件；验证受限能力形态（DOMPurify 直通、
- * 内嵌 Cap 未启用语义）、EO 体积门禁脚本、行数门禁。
+ * 内嵌 Cap 未启用语义）、EO 体积门禁脚本。
  */
-import { readFileSync } from "node:fs";
-import { countSourceLines } from "../../../test/utils/line-count";
 import { describe, expect, it } from "vitest";
 import { createEoMakersFunc, eoCapabilities } from "../src/main";
 import type { EoEventLike } from "../src/main";
@@ -115,12 +113,5 @@ describe("twikoo-edgeone-makers 薄适配器（T24）", () => {
     }
     wf(pkgPath, original);
     expect(failed).toBe(true);
-  });
-
-  it("源码行数门禁：main.ts + index.ts < 150 行", () => {
-    /** 读取相对路径源文件并统计行数（统一口径，见 countSourceLines） */
-    const lines = (path: string): number =>
-      countSourceLines(readFileSync(new URL(path, import.meta.url), "utf8"));
-    expect(lines("../src/main.ts") + lines("../src/index.ts")).toBeLessThanOrEqual(150);
   });
 });

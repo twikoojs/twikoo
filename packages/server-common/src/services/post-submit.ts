@@ -1,17 +1,20 @@
 /**
- * postSubmit 服务（D-4 双支持的核心接缝，规范 §6.6）。
+ * postSubmit 服务（§6.6 后置副作用链的唯一实现）。
  *
- * 1.x 现状：vercel 在 COMMENT_SUBMIT 成功后通过 **HTTP 递归**（自调用
- * POST_SUBMIT 事件 + x-twikoo-recursion 头）异步执行垃圾检测与通知；
- * self-hosted / eo-makers 直接进程内调用 postSubmit。三者实现各自复制。
+ * 职责：执行「后置垃圾检测 → 回写检测结果 → 发送评论通知」这条耗时链。
+ * 它**只是逻辑**，不关心自己被谁触发、在哪个执行单元里运行：
  *
- * 2.0 统一：postSubmit 为**进程内服务**——COMMENT_SUBMIT 成功后直接调用
- * （不再 HTTP 递归）；POST_SUBMIT 兼容事件分支（@deprecated，2.2.0 移除）
- * 也转发到本服务，保证「事件可调用」行为与「成功副作用」完全一致。
+ * - 单次执行平台（cloudbase / vercel / netlify / aws-lambda）：由适配器的
+ *   {@link PostSubmitDispatcher} 递归自调用，经 POST_SUBMIT 事件处理器进入；
+ * - 常驻进程平台（self-hosted / deta）与 eo-makers：由适配器的派发端口
+ *   进程内直接调用，不 await。
  *
- * T13 接缝说明：本波提供默认空实现与服务注册机制（沿用 1.x
- * setCustomLibs 的覆写范式）；真实的垃圾检测（postCheckSpam）+ 通知
- * （sendNotice）实现随 T18 注入。
+ * 两条路径调用的是同一个服务，因此副作用完全一致。
+ *
+ * 1.x 对照：vercel 在 COMMENT_SUBMIT 成功后用 **HTTP 递归**（自调用
+ * POST_SUBMIT 事件 + `x-twikoo-recursion` 头）异步执行本链；CloudBase 用
+ * `app.callFunction`；self-hosted / eo-makers 进程内直调。三者实现各自复制。
+ * 2.0 把「链本身」收敛到本服务，「触发方式」收敛到适配器的派发端口。
  */
 import type { CommentDoc } from "../ports/database";
 import type { PipelineContext } from "../core/types";

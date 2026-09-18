@@ -232,7 +232,7 @@ function httpCall(url: string, payload: Record<string, unknown>): Promise<Record
 /**
  * 统一事件调用（1.x call 语义对齐；BC-4：0.1.x 旧函数名 fallback 已移除）。
  * @param tcb 云开发实例（可选）
- * @param event 事件名（26 事件之一）
+ * @param event 事件名（24 个客户端事件之一）
  * @param data 事件参数
  * @returns 响应体
  */

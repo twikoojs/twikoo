@@ -1,6 +1,9 @@
 /**
  * twikoo-vercel 主逻辑（Vercel 薄适配器，规范 §6.6）。
  * 业务逻辑全部在 @twikoojs/common；平台核对（§6.8）：vercel.com/docs/functions（查阅 2026-09-17）。
+ *
+ * 后置副作用（垃圾检测 + 通知）经 {@link vercelPostSubmitDispatcher} 以
+ * HTTP 递归自调用派发到独立执行单元，见 `./dispatch.ts`。
  */
 import {
   FULL_CAPABILITIES,
@@ -11,6 +14,7 @@ import {
   type TkRequest,
   type TkResponse,
 } from "@twikoojs/common";
+import { vercelPostSubmitDispatcher } from "./dispatch";
 
 /** Vercel 平台能力：全能力（§6.5 能力矩阵） */
 const vercelCapabilities = FULL_CAPABILITIES;
@@ -102,6 +106,7 @@ export function createVercelFunc(
         },
         database: await getDatabase(),
         capabilities: vercelCapabilities,
+        postSubmit: vercelPostSubmitDispatcher,
       }),
     );
     fromTkResponse(res, await handler(request));

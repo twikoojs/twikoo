@@ -5,6 +5,9 @@
  * { statusCode, headers, body(string) }；IP 头 x-nf-client-connection-ip——
  * docs.netlify.com/functions（查阅 2026-09-17）。1.x 的 TWIKOO_IP_HEADERS
  * 环境变量机制由本适配器消化（§6.3：公共库不感知该变量）。
+ *
+ * 后置副作用（垃圾检测 + 通知）经 {@link netlifyPostSubmitDispatcher} 以
+ * HTTP 递归自调用派发到独立执行单元，见 `./dispatch.ts`。
  */
 import {
   FULL_CAPABILITIES,
@@ -15,6 +18,7 @@ import {
   type TkRequest,
   type TkResponse,
 } from "@twikoojs/common";
+import { netlifyPostSubmitDispatcher } from "./dispatch";
 
 /** Netlify 平台能力：全能力（§6.5 能力矩阵） */
 const netlifyCapabilities = FULL_CAPABILITIES;
@@ -111,6 +115,7 @@ export function createNetlifyFunc(
         },
         database: await getDatabase(),
         capabilities: netlifyCapabilities,
+        postSubmit: netlifyPostSubmitDispatcher,
       }),
     );
     return fromTkResponse(await handler(request));

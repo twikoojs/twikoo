@@ -5,8 +5,10 @@
  * 1. GET_FUNC_VERSION 走通（含 accessToken 回填语义）；
  * 2. OPTIONS → 204（且 CORS 头已产出）；
  * 3. 超限流 → 429；
- * 4. POST_SUBMIT 与 COMMENT_SUBMIT 成功副作用一致（同一 postSubmit 服务）；
- * 5. HIDDEN 分支等价于 COMMENT_GET_FOR_ADMIN 的 type 参数（见 dispatcher.test.ts）。
+ * 4. COMMENT_SUBMIT 只**派发**副作用，POST_SUBMIT（带内部令牌）才执行副作用链，
+ *    两条路径命中同一 postSubmit 服务；
+ * 5. 事件清单完整性（25 标识符）与 COMMENT_GET_FOR_ADMIN 的 type 筛选
+ *    （见 dispatcher.test.ts）。
  * 另覆盖 QA−（未知事件统一错误体）与 CORS 白名单 / 校验失败 / handler 异常路径。
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -17,12 +19,14 @@ import {
   resetHandlers,
   resetRequestTimes,
   setPostSubmitService,
+  RECURSION_HEADER,
+  getRecursionToken,
   RES_CODE,
 } from "../../src/index";
 import type { CommentDoc, TkAdapters } from "../../src/index";
 import { registerDefaultHandlers } from "../../src/handlers";
 import { getPostSubmitService } from "../../src/services/post-submit";
-import { createMemoryAdapters, makeRequest } from "../utils/memory-adapters";
+import { RecordingDispatcher, createMemoryAdapters, makeRequest } from "../utils/memory-adapters";
 
 afterEach(() => {
   // 复位注册表 / 限流计数 / 环境变量 stub，避免用例间污染
@@ -80,24 +84,83 @@ describe("pipeline 八步编排（T13）", () => {
     expect(third.body.message).toBe("Too Many Requests");
   });
 
-  it("验收 4：POST_SUBMIT 与 COMMENT_SUBMIT 成功副作用一致（同一 postSubmit 服务）", async () => {
+  it("验收 4：COMMENT_SUBMIT 只派发，POST_SUBMIT（带令牌）才执行副作用链——同一 postSubmit 服务", async () => {
     // 记录 postSubmit 服务的全部调用（副作用证据）
     const calls: CommentDoc[] = [];
     setPostSubmitService(async (comment) => {
       calls.push(comment);
       return { code: RES_CODE.SUCCESS };
     });
-    // 注册 COMMENT_SUBMIT 替身：遵循 T18 契约——保存成功后调用同一 postSubmit 服务
+    const dispatcher = new RecordingDispatcher();
+    const config = { ADMIN_PASS: "stored-hash" };
+    const handler = createHandler(
+      createMemoryAdapters({ database: config, postSubmit: dispatcher }),
+    );
+    // 注册 COMMENT_SUBMIT 替身：遵循契约——保存成功后**派发**，不内联等待
     registerHandler(COMMENT_SUBMIT, async (ctx) => {
       const comment = (ctx.request.body.comment ?? {}) as CommentDoc;
-      await getPostSubmitService()({ ...comment, _id: "c1" }, ctx);
+      await ctx.adapters.postSubmit.dispatch({ ...comment, _id: "c1" }, ctx);
       return { code: RES_CODE.SUCCESS, id: "c1" };
     });
-    const handler = createHandler(createMemoryAdapters());
     await handler(makeRequest({ body: { event: COMMENT_SUBMIT, comment: { nick: "提交者" } } }));
-    await handler(makeRequest({ body: { event: "POST_SUBMIT", comment: { nick: "直接调用" } } }));
-    // 两条路径命中同一服务、副作用（垃圾检测 + 通知）输入同构
+    // 派发端口被调用，且派发触达同一 postSubmit 服务
+    expect(dispatcher.dispatched.map((c) => c.nick)).toEqual(["提交者"]);
+    expect(calls.map((c) => c.nick)).toEqual(["提交者"]);
+
+    // POST_SUBMIT：无内部派发令牌 → 1403 拒绝（防外部滥用）
+    const forbidden = await handler(
+      makeRequest({ body: { event: "POST_SUBMIT", comment: { nick: "外部调用" } } }),
+    );
+    expect(forbidden.body.code).toBe(RES_CODE.FORBIDDEN);
+    expect(calls.map((c) => c.nick)).toEqual(["提交者"]);
+
+    // POST_SUBMIT：带令牌 → 执行副作用链，与 COMMENT_SUBMIT 路径同一服务
+    await handler(
+      makeRequest({
+        body: { event: "POST_SUBMIT", comment: { nick: "直接调用" } },
+        headers: { [RECURSION_HEADER]: getRecursionToken(config) },
+      }),
+    );
     expect(calls.map((c) => c.nick)).toEqual(["提交者", "直接调用"]);
+  });
+
+  it("回归：COMMENT_SUBMIT 不等待副作用链（云函数超时 / 用户等待防护）", async () => {
+    const previous = getPostSubmitService();
+    /** 副作用闸门：未放行前副作用链一直挂起，模拟耗时的垃圾检测 + 通知 */
+    let releaseEffects: () => void = () => {};
+    const gate = new Promise<void>((resolve) => {
+      releaseEffects = resolve;
+    });
+    const effects: string[] = [];
+    setPostSubmitService(async () => {
+      await gate;
+      effects.push("done");
+      return { code: RES_CODE.SUCCESS };
+    });
+    try {
+      const dispatcher = new RecordingDispatcher();
+      dispatcher.awaitEffects = false;
+      const adapters = createMemoryAdapters({
+        database: { ADMIN_PASS: "h" },
+        postSubmit: dispatcher,
+      });
+      registerHandler(COMMENT_SUBMIT, async (ctx) => {
+        const comment = (ctx.request.body.comment ?? {}) as CommentDoc;
+        await ctx.adapters.postSubmit.dispatch({ ...comment, _id: "c1" }, ctx);
+        return { code: RES_CODE.SUCCESS, id: "c1" };
+      });
+      // 副作用仍挂起，提交响应必须已经返回（否则云函数会超时）
+      const res = await createHandler(adapters)(
+        makeRequest({ body: { event: COMMENT_SUBMIT, comment: { nick: "提交者" } } }),
+      );
+      expect(res.body.code).toBe(RES_CODE.SUCCESS);
+      expect(effects).toEqual([]);
+      // 放行后副作用完成（证明它确实在后台继续跑，而不是被丢弃）
+      releaseEffects();
+      await vi.waitFor(() => expect(effects).toEqual(["done"]));
+    } finally {
+      setPostSubmitService(previous);
+    }
   });
 
   it("QA−：未知事件名返回统一错误体（不抛未捕获异常）", async () => {

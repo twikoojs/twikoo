@@ -99,6 +99,9 @@ export function createDetaHandler(
         },
         database: await getDatabase(),
         capabilities: detaCapabilities,
+        // 后置副作用派发**刻意不传**：deta 形态是常驻 Node 服务（本文件末尾
+        // createServer + listen），scaffoldAdapters 的默认实现即「进程内直调
+        // postSubmit 服务且不 await」，无需自调用。
       }),
     );
     fromTkResponse(res, await handler(request));

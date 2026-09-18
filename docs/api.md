@@ -141,16 +141,32 @@ twikoo.init({
 { "code": 0, "data": [], "more": false, "count": 0 }
 ```
 
-2.0 保持 1.x 的 26 个事件名不变（`COMMENT_GET` / `COMMENT_SUBMIT` / `COMMENT_LIKE` / `COUNTER_GET` / `GET_CONFIG` / `SET_CONFIG` / `LOGIN` / `COMMENT_IMPORT_FOR_ADMIN` 等）。
+2.0 保持 1.x 的事件名不变（`COMMENT_GET` / `COMMENT_SUBMIT` / `COMMENT_LIKE` / `COUNTER_GET` / `GET_CONFIG` / `SET_CONFIG` / `LOGIN` / `COMMENT_IMPORT_FOR_ADMIN` 等），共 **24 个客户端事件**，另有 1 个服务端内部事件 `POST_SUBMIT`（见下）。
 
-### 兼容事件（计划 2.2.0 移除）
+> **关于 `HIDDEN` / `VISIBLE`**：它们**不是事件名**。管理端按「垃圾 / 已通过」筛选时，是把 `HIDDEN` / `VISIBLE` 作为 `COMMENT_GET_FOR_ADMIN` 请求体的 **`type` 参数**传入：
+>
+> ```json
+> { "event": "COMMENT_GET_FOR_ADMIN", "type": "HIDDEN", "per": 10, "page": 1 }
+> ```
+>
+> 1.x 与 2.0 都是这个机制（1.x 的 `getCommentSearchCondition` 按 `event.type` 过滤）。
 
-为兼容旧客户端，2.0 **同时支持**下列旧事件名与新写法，并在 2.2.0 移除旧名：
+### `POST_SUBMIT`（服务端内部事件，非兼容分支）
 
-| 旧事件名      | 等价新写法                                  | 说明                         |
-| ------------- | ------------------------------------------- | ---------------------------- |
-| `POST_SUBMIT` | `COMMENT_SUBMIT`                            | 提交评论（0.1.x 时代的名字） |
-| `HIDDEN`      | `COMMENT_GET_FOR_ADMIN` + `type: "HIDDEN"`  | 管理员读取垃圾评论列表       |
-| `VISIBLE`     | `COMMENT_GET_FOR_ADMIN` + `type: "VISIBLE"` | 管理员读取已通过评论列表     |
+`POST_SUBMIT` **不是** `COMMENT_SUBMIT` 的旧名，**也不会在 2.2.0 移除**。它是服务端的
+**后置副作用事件**：`COMMENT_SUBMIT` 保存评论后，由各平台自己的机制把本事件送到一个
+独立执行单元，在那里执行耗时的垃圾检测与邮件 / 即时消息通知。
 
-> 若您自行调用云函数或写了自动化脚本，请在升级到 2.2.0 前把上述三个旧事件名替换为新写法；仅使用 Twikoo 前端与主题的用户无需改动。
+这样做是因为这些操作依赖外部网络、耗时不可控。如果内联在提交请求里：一是用户要等
+很久，二是超出云函数执行时间上限时**整个提交都会失败**——而评论其实已经入库，客户端
+却收到错误，用户重试还会产生重复评论。
+
+| 平台                           | 派发机制                                   |
+| ------------------------------ | ------------------------------------------ |
+| 自托管 / Deta / EdgeOne Makers | 进程内直接调用，不等待                     |
+| 腾讯云 CloudBase               | `callFunction` 递归自调用                  |
+| Vercel / Netlify               | HTTP 递归自调用                            |
+| AWS Lambda                     | 原生异步 Invoke（`InvocationType: Event`） |
+
+> 本事件带内部派发令牌校验（`x-twikoo-recursion` 请求头）：外部直接调用会被拒绝
+> （`code` 1403）。因此**不要在自定义客户端里调用它**。

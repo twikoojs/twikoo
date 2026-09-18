@@ -1,12 +1,12 @@
 /**
- * 26 事件 handler 全量测试（T18）。
+ * 25 事件 handler 全量测试（T18）。
  *
  * 每个 handler 至少 1 happy + 1 failure 用例；重依赖经 setCustomLibs /
  * setLibImporter 替身注入（无真实密钥、无真实网络——§9.4 停机协议不触发）。
  * 管理员 token = md5(ADMIN_PASS)（1.x 客户端本地计算语义）。
  */
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { createHandler } from "../../src/index";
+import { createHandler, RECURSION_HEADER, RES_CODE } from "../../src/index";
 import { createMemoryAdapters, makeRequest } from "../utils/memory-adapters";
 import type { TkAdapters } from "../../src/index";
 import { md5 } from "../../src/utils/crypto";
@@ -484,13 +484,27 @@ describe("CAP_CHALLENGE / CAP_REDEEM（内嵌 Cap）", () => {
   });
 });
 
-describe("POST_SUBMIT 兼容分支（真实副作用链，D-4）", () => {
-  it("调用后执行垃圾检测+通知（空配置下安全跳过）并返回成功", async () => {
+describe("POST_SUBMIT（后置副作用链执行入口 + 内部派发令牌校验）", () => {
+  it("带内部派发令牌：执行垃圾检测+通知（空配置下安全跳过）并返回成功", async () => {
     await adapters.database.saveConfig({ NOTIFY_SPAM: "false" });
+    const res = await handler(
+      makeRequest({
+        body: {
+          event: "POST_SUBMIT",
+          comment: { _id: "c1", nick: "n", mail: "a@b.com", comment: "c" },
+        },
+        // 令牌 = config.ADMIN_PASS；本文件 beforeEach 存入的是 md5(ADMIN_PASS)
+        headers: { [RECURSION_HEADER]: md5(ADMIN_PASS) },
+      }),
+    );
+    expect(res.body.code).toBe(RES_CODE.SUCCESS);
+  });
+
+  it("无令牌（外部直接调用）：1403 拒绝，不触发垃圾检测与通知", async () => {
     const res = await post({
       event: "POST_SUBMIT",
       comment: { _id: "c1", nick: "n", mail: "a@b.com", comment: "c" },
     });
-    expect(res.body.code).toBe(0);
+    expect(res.body.code).toBe(RES_CODE.FORBIDDEN);
   });
 });

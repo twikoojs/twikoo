@@ -1,10 +1,17 @@
 /**
- * 后端事件名常量（Scope E：26 事件 + 1.x 兼容分支）。
+ * 后端事件名常量（Scope E：24 个客户端事件 + 1 个服务端内部事件）。
  *
- * 口径说明：计划 Scope E 列出 26 个后端事件槽位，其中 `HIDDEN` / `VISIBLE` 合并占用
- * 一个槽位（2.0 已统一为 `COMMENT_GET_FOR_ADMIN` 的 `type` 参数，但按 BC 策略保留独立
- * 分支至 2.2.0），加上内部钩子 `POST_SUBMIT` 的兼容分支，因此本文件共导出 **27 个**
- * 标识符。客户端的 `api.ts`、`@twikoojs/common` 的事件分发器与契约测试均以此为单一事实来源。
+ * 口径说明：1.x 各平台的顶层事件 switch 并集共 **25 个**标识符——24 个由客户端
+ * 发起，另加服务端内部事件 `POST_SUBMIT`（`COMMENT_SUBMIT` 保存评论后触发
+ * 垃圾检测与通知，只有 vercel / CloudBase 的顶层 switch 里有它）。本文件即导出
+ * 这 25 个，客户端的 `api.ts`、`@twikoojs/common` 的事件分发器与契约测试均以此
+ * 为单一事实来源。
+ *
+ * ⚠️ 订正记录：重构期曾把 `HIDDEN` / `VISIBLE` 也当作 1.x 事件分支导出（`ALL_EVENTS`
+ * 一度为 27 项）。经核对 1.x 源码，二者**从来不是事件名**——它们只是
+ * `COMMENT_GET_FOR_ADMIN` 请求体里 `type` 字段的取值（1.x
+ * `getCommentSearchCondition` 的嵌套 switch，客户端 TkAdminComment.vue 的筛选下拉
+ * 即传 `type`）。故 2.0 已删除这两个假事件，`type` 参数机制保持不变。
  */
 
 /** 获取后端函数版本号，客户端用于探测服务端能力与版本兼容性 */
@@ -82,26 +89,14 @@ export const CAP_REDEEM = "CAP_REDEEM";
 /**
  * 提交后内部钩子（评论提交成功后触发通知 / 反垃圾等后续动作）。
  *
- * 2.0 起同时作为 1.x 调用方的兼容入口，按 BC 策略保留至 **2.2.0**。
+ * 这是**服务端内部事件**，长期保留（不是 1.x 兼容分支）：`COMMENT_SUBMIT` 保存评论后，
+ * 由各适配器把本事件派发到独立执行单元，使垃圾检测与通知不占用用户请求的执行预算。
+ * 处理器校验内部派发令牌（`x-twikoo-recursion`），外部直接调用返回 1403。
  */
 export const POST_SUBMIT = "POST_SUBMIT";
 
 /**
- * 隐藏评论（1.x 独立事件）。
- *
- * 2.0 已统一为 `COMMENT_GET_FOR_ADMIN` 的 `type` 参数，按 BC 策略保留独立分支至 **2.2.0**。
- */
-export const HIDDEN = "HIDDEN";
-
-/**
- * 显示评论（1.x 独立事件）。
- *
- * 2.0 已统一为 `COMMENT_GET_FOR_ADMIN` 的 `type` 参数，按 BC 策略保留独立分支至 **2.2.0**。
- */
-export const VISIBLE = "VISIBLE";
-
-/**
- * 后端事件名清单（27 个标识符，含 1.x 兼容分支）。
+ * 后端事件名清单（25 个标识符：24 客户端事件 + 服务端内部事件 POST_SUBMIT）。
  *
  * 由上述常量聚合而成，字符串值不重复书写；供契约测试遍历与分发器覆盖度校验使用，
  * 保证新增事件时只需维护一处常量与一处聚合。
@@ -132,8 +127,6 @@ export const ALL_EVENTS = [
   CAP_CHALLENGE,
   CAP_REDEEM,
   POST_SUBMIT,
-  HIDDEN,
-  VISIBLE,
 ] as const;
 
 /** 后端事件名的字面量联合类型，取自 {@link ALL_EVENTS} 的成员 */

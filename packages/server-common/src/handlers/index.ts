@@ -1,9 +1,9 @@
 /**
  * 事件处理器装配（规范 §6.2 handlers/）。
  *
- * 26 事件全量注册（一事件一文件）；POST_SUBMIT / HIDDEN / VISIBLE 为
- * @deprecated 兼容分支（D-4 双支持，2.2.0 移除）。dispatcher 模块加载时
- * import 本文件触发默认注册。
+ * 25 事件全量注册（一事件一文件）：24 个客户端事件 + 服务端内部事件 `POST_SUBMIT`
+ * （后置副作用链的执行入口，见 `./post-submit.ts` 头注释，长期保留）。
+ * dispatcher 模块加载时 import 本文件触发默认注册。
  */
 import {
   CAP_CHALLENGE,
@@ -26,13 +26,11 @@ import {
   GET_PASSWORD_STATUS,
   GET_QQ_NICK,
   GET_RECENT_COMMENTS,
-  HIDDEN,
   LOGIN,
   POST_SUBMIT,
   SET_CONFIG,
   SET_PASSWORD,
   UPLOAD_IMAGE,
-  VISIBLE,
 } from "@twikoojs/shared";
 import { registerHandler } from "../core/handler-registry";
 import { setPostSubmitService } from "../services/post-submit";
@@ -40,8 +38,6 @@ import { postCheckSpam, saveSpamCheckResult } from "../services/spam";
 import { sendNotice } from "../services/notify";
 import { getFuncVersion } from "./get-func-version";
 import { postSubmitEvent } from "./post-submit";
-import { hiddenEvent } from "./hidden";
-import { visibleEvent } from "./visible";
 import { commentGet } from "./comment-get";
 import { commentGetForAdmin } from "./comment-get-for-admin";
 import { commentSetForAdmin } from "./comment-set-for-admin";
@@ -67,8 +63,11 @@ import { capChallengeEvent, capRedeemEvent } from "./cap-challenge";
 
 /**
  * 接线真实 postSubmit 服务（T18）：后置垃圾检测 → 回写结果 → 三路通知。
- * 1.x vercel 的 HTTP 递归（POST_SUBMIT 自调用 + x-twikoo-recursion 头）在
- * 2.0 进程内直调架构下不再需要。
+ *
+ * 本服务是「副作用链的唯一实现」，被两条路径共用：
+ * 1. 单次执行平台：适配器的派发端口递归自调用 → POST_SUBMIT 事件 → 本服务
+ *    （1.x 的 HTTP 递归 / `callFunction` 语义，2.0 收敛到 postSubmit 端口）；
+ * 2. 常驻进程平台与 eo-makers：适配器进程内直调本服务（不 await）。
  */
 setPostSubmitService(async (comment, ctx) => {
   // 垃圾检测
@@ -125,10 +124,8 @@ export function registerDefaultHandlers(): void {
   registerHandler(GET_QQ_NICK, getQQNickEvent);
   registerHandler(CAP_CHALLENGE, capChallengeEvent);
   registerHandler(CAP_REDEEM, capRedeemEvent);
-  // 以下三个为 @deprecated 兼容分支（D-4 双支持，2.2.0 移除）
+  // POST_SUBMIT：后置副作用链的执行入口（长期保留，非兼容分支）
   registerHandler(POST_SUBMIT, postSubmitEvent);
-  registerHandler(HIDDEN, hiddenEvent);
-  registerHandler(VISIBLE, visibleEvent);
 }
 
 registerDefaultHandlers();

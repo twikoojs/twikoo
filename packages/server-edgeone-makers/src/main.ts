@@ -124,6 +124,10 @@ export function createEoMakersFunc(
         },
         database: db,
         capabilities: eoCapabilities,
+        // 后置副作用派发**刻意不传**：scaffoldAdapters 的默认实现即「进程内
+        // 直调 postSubmit 服务且不 await」，与 1.x eo-makers
+        // `postSubmit(...).catch(...)` 行为一致（见
+        // src/server/eo-makers/cloud-functions/index.js）。
       }),
     );
     return fromTkResponse(await handler(request));

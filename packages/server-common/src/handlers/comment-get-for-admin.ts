@@ -1,6 +1,10 @@
 /**
  * COMMENT_GET_FOR_ADMIN 事件处理器（1.x commentGetForAdmin + getCommentSearchCondition
- * 语义对齐）。HIDDEN / VISIBLE 兼容事件（D-4）转发至此，注入 type 参数。
+ * 语义对齐）。
+ *
+ * 筛选走请求体的 `type` 字段（1.x 语义）：`"VISIBLE"` / `"HIDDEN"` / 空（全部）。
+ * ⚠️ 这两个值是**参数取值，不是事件名**——1.x 从未把 HIDDEN / VISIBLE 作为事件分发，
+ * 2.0 亦如此（重构期曾误加为事件分支，已删除）。
  */
 import { NOT } from "../ports/database";
 import type { CommentDoc } from "../ports/database";

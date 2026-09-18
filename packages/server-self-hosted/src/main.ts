@@ -103,6 +103,9 @@ export function createTkserverHandler(
         },
         database: await getDatabase(),
         capabilities: tkserverCapabilities,
+        // 后置副作用派发**刻意不传**：tkserver 是常驻进程，scaffoldAdapters 的
+        // 默认实现即「进程内直调 postSubmit 服务且不 await」——1.x
+        // `postSubmit(comment)` 语义（见 src/server/self-hosted/index.js）。
       }),
     );
     fromTkResponse(res, await handler(request));

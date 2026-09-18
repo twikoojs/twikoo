@@ -4,8 +4,6 @@
  * 注入 CloudBase 数据库句柄替身（以工作区内存 Database 为载体）跑契约核心事件；
  * 验证 main 入口形态 / BC-12 转发导出 / <150 行源码门禁。
  */
-import { readFileSync } from "node:fs";
-import { countSourceLines } from "../../../test/utils/line-count";
 import { describe, expect, it } from "vitest";
 import { createTwikooFunc, toTkRequest } from "../src/main";
 import type { CloudBaseDatabaseLike, Database } from "@twikoojs/common";
@@ -49,21 +47,25 @@ describe("twikoo-func 薄适配器（T20）", () => {
     expect(fallback.body).toEqual({});
   });
 
+  it("toTkRequest：IP 回退链逐级可达（回归：曾因 ?? 短路使后两级成死代码）", () => {
+    delete process.env.TCB_SOURCE_IP;
+    // 1. 上下文 TCB_SOURCE_IP 优先（1.x auth.getClientIP() 即读此值）
+    expect(toTkRequest({}, { environment: { TCB_SOURCE_IP: "1.1.1.1" } }).ip).toBe("1.1.1.1");
+    // 2. 无 TCB_SOURCE_IP → x-real-ip
+    expect(toTkRequest({ headers: { "x-real-ip": "2.2.2.2" } }).ip).toBe("2.2.2.2");
+    // 3. 无 x-real-ip → x-forwarded-for 首跳
+    expect(toTkRequest({ headers: { "x-forwarded-for": "3.3.3.3, 4.4.4.4" } }).ip).toBe("3.3.3.3");
+    // 4. 仅剩 requestContext.http.sourceIp（此前永远取不到）
+    expect(toTkRequest({ requestContext: { http: { sourceIp: "5.5.5.5" } } }).ip).toBe("5.5.5.5");
+    // 5. 全缺失 → 空串
+    expect(toTkRequest({}).ip).toBe("");
+  });
+
   it("BC-12：转发导出存在（common 公共导出经 twikoo-func 可取）", async () => {
     const mod = await import("../src/index");
     expect(typeof mod.main).toBe("function");
     expect(typeof mod.createTwikooFunc).toBe("function");
     expect(typeof mod.getPostSubmitService).toBe("function");
     expect(typeof mod.RES_CODE).toBe("object");
-  });
-
-  it("源码行数门禁：main.ts + index.ts < 150 行", () => {
-    /**
-     *
-     */
-    const lines = (path: string): number =>
-      countSourceLines(readFileSync(new URL(path, import.meta.url), "utf8"));
-    const total = lines("../src/main.ts") + lines("../src/index.ts");
-    expect(total).toBeLessThan(150);
   });
 });

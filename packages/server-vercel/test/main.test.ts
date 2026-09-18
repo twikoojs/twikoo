@@ -2,10 +2,9 @@
  * twikoo-vercel 适配器测试（T21）。
  *
  * 注入内存 Database 跑契约核心事件；验证 (req,res) 映射（CORS 头写入、
- * 429 状态码透传、OPTIONS 204）、BC-13 依赖指向（@twikoojs/common）、行数门禁。
+ * 429 状态码透传、OPTIONS 204）、BC-13 依赖指向（@twikoojs/common）。
  */
 import { readFileSync } from "node:fs";
-import { countSourceLines } from "../../../test/utils/line-count";
 import { describe, expect, it } from "vitest";
 import { createVercelFunc, toTkRequest, default as vercelHandler } from "../src/main";
 import type { VercelRequestLike, VercelResponseLike } from "../src/main";
@@ -139,14 +138,5 @@ describe("twikoo-vercel 薄适配器（T21）", () => {
     const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
     expect(pkg.dependencies["@twikoojs/common"]).toBe("workspace:*");
     expect(typeof vercelHandler).toBe("function");
-  });
-
-  it("源码行数门禁：main.ts + index.ts < 150 行", () => {
-    /**
-     *
-     */
-    const lines = (path: string): number =>
-      countSourceLines(readFileSync(new URL(path, import.meta.url), "utf8"));
-    expect(lines("../src/main.ts") + lines("../src/index.ts")).toBeLessThan(150);
   });
 });

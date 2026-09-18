@@ -15,9 +15,14 @@ describe("@twikoojs/shared 导出冒烟", () => {
     expect(new Set(PUSHOO_CHANNELS).size).toBe(PUSHOO_CHANNELS.length);
   });
 
-  it("ALL_EVENTS 恰为 27 个事件标识符（26 槽位 + 1.x 兼容分支），且值唯一", () => {
-    expect(ALL_EVENTS.length).toBe(27);
+  it("ALL_EVENTS 恰为 25 个事件标识符（24 客户端事件 + 服务端内部事件 POST_SUBMIT），且值唯一", () => {
+    expect(ALL_EVENTS.length).toBe(25);
     expect(new Set(ALL_EVENTS).size).toBe(ALL_EVENTS.length);
+  });
+
+  it("不含臆造的事件名 HIDDEN / VISIBLE（二者只是 COMMENT_GET_FOR_ADMIN 的 type 取值）", () => {
+    expect(ALL_EVENTS).not.toContain("HIDDEN");
+    expect(ALL_EVENTS).not.toContain("VISIBLE");
   });
 
   it("VERSION 是非空字符串（构建期占位符机制）", () => {

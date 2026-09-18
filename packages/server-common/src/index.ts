@@ -12,6 +12,7 @@ export * from "./ports/storage";
 export * from "./ports/mailer";
 export * from "./ports/notifier";
 export * from "./ports/capabilities";
+export * from "./ports/post-submit";
 
 // `export *` 只对外转发、不引入本模块作用域——TkAdapters / TwikooHandler 引用的
 // 端口名必须显式 import；Storage 尤其必须显式引入，否则会静默解析到 DOM 全局的
@@ -23,12 +24,13 @@ import type { Storage } from "./ports/storage";
 import type { Mailer } from "./ports/mailer";
 import type { Notifier } from "./ports/notifier";
 import type { Capabilities } from "./ports/capabilities";
+import type { PostSubmitDispatcher } from "./ports/post-submit";
 import { createPipeline } from "./core/pipeline";
 
 /**
  * 适配器聚合端口（§6.2「适配器契约」全集）：
  * 适配器以单一对象向 {@link createHandler} 注入请求/响应转换、数据库、
- * 验证码存储、邮件、通知与平台能力声明。
+ * 验证码存储、邮件、通知、后置副作用派发与平台能力声明。
  */
 export interface TkAdapters {
   /** 平台原始载荷 → TkRequest 的转换（toTkRequest，§6.3） */
@@ -43,6 +45,12 @@ export interface TkAdapters {
   mailer: Mailer;
   /** 通知发送（pushoo / webhook，§6.2 notifier） */
   notifier: Notifier;
+  /**
+   * 后置副作用派发（§6.6）：把 COMMENT_SUBMIT 之后的垃圾检测 + 通知移出
+   * 当前请求的执行预算。平台机制不同，故由适配器实现（见
+   * {@link PostSubmitDispatcher} 头注释的 1.x 机制对照表）。
+   */
+  postSubmit: PostSubmitDispatcher;
   /** 平台能力声明（§6.5 八项能力） */
   capabilities: Capabilities;
 }

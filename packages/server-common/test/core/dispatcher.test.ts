@@ -1,9 +1,13 @@
 /**
  * dispatcher 分发测试（T13）。
  *
- * 重点：验收 5「HIDDEN 分支等价于 COMMENT_GET_FOR_ADMIN 的 type」——
- * 兼容分支派生的请求体与客户端显式携带 type 参数的请求体完全一致；
- * 以及 switch 全量枚举（26 事件清单）与注册表解析行为。
+ * 重点：switch 全量枚举（25 事件标识符清单）与注册表解析行为；以及
+ * `COMMENT_GET_FOR_ADMIN` 的 `type` 筛选。
+ *
+ * ⚠️ `HIDDEN` / `VISIBLE` 是 `type` 的**参数取值，不是事件名**——1.x 从未把二者作为
+ * 事件分发（见 1.x `getCommentSearchCondition` 的嵌套 switch 与客户端
+ * TkAdminComment.vue 的筛选下拉）。重构期曾误加为兼容事件分支，已删除；本文件保留
+ * 「当事件发送 → 事件不存在」的断言作为回归守卫。
  */
 import { afterEach, describe, expect, it } from "vitest";
 import { COMMENT_GET_FOR_ADMIN, type TwikooEvent } from "@twikoojs/shared";
@@ -37,41 +41,24 @@ function makeCtx(body: TkRequestBody): PipelineContext {
 }
 
 describe("dispatcher 分发（T13）", () => {
-  it("验收 5：HIDDEN 分支等价于 COMMENT_GET_FOR_ADMIN 携带 type=HIDDEN", async () => {
+  it("COMMENT_GET_FOR_ADMIN 按 type 参数筛选，且 HIDDEN / VISIBLE 不是事件名", async () => {
     const seen: Record<string, unknown>[] = [];
     registerHandler(COMMENT_GET_FOR_ADMIN, async (ctx) => {
       seen.push({ ...ctx.request.body });
       return { code: RES_CODE.SUCCESS, count: 0, data: [] };
     });
     const handler = createHandler(createMemoryAdapters());
-    // 兼容事件分支调用
-    await handler(
-      makeRequest({ body: { event: "HIDDEN" as unknown as TwikooEvent, per: 5, page: 1 } }),
-    );
-    // 客户端显式 type 参数调用
-    await handler(
-      makeRequest({
-        body: { event: COMMENT_GET_FOR_ADMIN, type: "HIDDEN", per: 5, page: 1 },
-      }),
-    );
-    // 两者到达 handler 的请求体完全一致（type 注入 + 其余字段透传）
-    expect(seen[0]).toEqual(seen[1]);
-    expect(seen[0].type).toBe("HIDDEN");
-  });
+    // 真实机制：type 参数（VISIBLE / HIDDEN / 空 = 全部）
+    for (const type of ["HIDDEN", "VISIBLE", undefined]) {
+      await handler(makeRequest({ body: { event: COMMENT_GET_FOR_ADMIN, type, per: 5, page: 1 } }));
+    }
+    expect(seen.map((body) => body.type)).toEqual(["HIDDEN", "VISIBLE", undefined]);
 
-  it("VISIBLE 分支同理等价于 type=VISIBLE", async () => {
-    const seen: Record<string, unknown>[] = [];
-    registerHandler(COMMENT_GET_FOR_ADMIN, async (ctx) => {
-      seen.push({ ...ctx.request.body });
-      return { code: RES_CODE.SUCCESS, count: 0, data: [] };
-    });
-    const handler = createHandler(createMemoryAdapters());
-    await handler(
-      makeRequest({ body: { event: "VISIBLE" as unknown as TwikooEvent, per: 10, page: 2 } }),
-    );
-    expect(seen[0].type).toBe("VISIBLE");
-    expect(seen[0].per).toBe(10);
-    expect(seen[0].page).toBe(2);
+    // 回归守卫：把 HIDDEN / VISIBLE 当事件名发送 → 未注册，走 default（事件不存在）
+    for (const legacy of ["HIDDEN", "VISIBLE"]) {
+      const res = await handler(makeRequest({ body: { event: legacy as unknown as TwikooEvent } }));
+      expect(res.body.code, `${legacy} 不应是事件名`).toBe(RES_CODE.EVENT_NOT_EXIST);
+    }
   });
 
   it("已枚举但未注册的常规事件：dispatch 抛 HandlerNotRegisteredError（T18 迁移守卫）", async () => {
@@ -81,11 +68,11 @@ describe("dispatcher 分发（T13）", () => {
     );
   });
 
-  it("switch 全量枚举 24 个常规事件 + 3 个兼容分支（清单完整性）", async () => {
-    // 从源码静态核对 switch 分支数（26 事件清单守卫）
+  it("switch 全量枚举 25 个事件标识符（清单完整性）", async () => {
+    // 从源码静态核对 switch 分支数（24 客户端事件 + 服务端内部事件 POST_SUBMIT）
     const { readFileSync } = await import("node:fs");
     const source = readFileSync(new URL("../../src/core/dispatcher.ts", import.meta.url), "utf8");
     const caseCount = source.match(/case [A-Z_]+:/g)?.length ?? 0;
-    expect(caseCount).toBe(27);
+    expect(caseCount).toBe(25);
   });
 });

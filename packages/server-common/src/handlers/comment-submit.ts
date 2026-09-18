@@ -3,8 +3,10 @@
  *
  * 步骤（1.x 注释原样保留）：
  * 1. 参数校验；2. 预检测垃圾评论（限流、验证码、人工审核、违禁词）；
- * 3. 保存到数据库；4. 触发 postSubmit 副作用（IM 通知、邮件通知、
- * 第三方垃圾检测——进程内直调，1.x 的 HTTP 递归机制随公共库消亡）。
+ * 3. 保存到数据库；4. **派发** postSubmit 副作用（IM 通知、邮件通知、
+ * 第三方垃圾检测）到独立执行单元——不等待其完成，见 `ports/post-submit.ts`
+ * 的 PostSubmitDispatcher（1.x 各平台分别用 HTTP 递归 / callFunction /
+ * 进程内直调，2.0 把这层平台差异收敛到适配器的 postSubmit 端口）。
  */
 import type { CommentDoc } from "../ports/database";
 import type { EventHandler } from "../core/types";
@@ -28,7 +30,6 @@ import {
   limitFilter,
   preCheckSpam,
 } from "../services/spam";
-import { getPostSubmitService } from "../services/post-submit";
 // 静态导入而非 `await import(...)`：cap.ts 已被 cap-challenge.ts 静态引入（其处理器在
 // handlers/index.ts 注册），构建器必然把它放进主 chunk，动态导入只会得到
 // [INEFFECTIVE_DYNAMIC_IMPORT]（无法拆出独立 chunk）。@cap.js/server 是本包常规
@@ -179,10 +180,12 @@ export const commentSubmit: EventHandler = async (ctx) => {
   const comment = await ctx.adapters.database.addComment(data);
   res.id = comment._id;
   res.code = RES_CODE.SUCCESS;
-  // 异步垃圾检测、发送评论通知（2.0：进程内直调同一 postSubmit 服务）
-  ctx.logger.verbose("开始垃圾检测、发送评论通知");
-  await getPostSubmitService()(comment, ctx).catch((e) => {
-    ctx.logger.error("POST_SUBMIT 失败", e instanceof Error ? e.message : String(e));
+  // 派发后置副作用（垃圾检测 + 通知）到独立执行单元，**不等待**其完成。
+  // 内联 await 会导致两个问题：用户提交要等整条链跑完；超出云函数超时时间时
+  // 整个调用失败——而评论其实已入库，客户端却报错、重试还会产生重复评论。
+  ctx.logger.verbose("派发 POST_SUBMIT（垃圾检测 + 通知）");
+  await ctx.adapters.postSubmit.dispatch(comment, ctx).catch((e: unknown) => {
+    ctx.logger.error("POST_SUBMIT 派发失败", e instanceof Error ? e.message : String(e));
   });
   return res;
 };

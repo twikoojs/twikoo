@@ -17,11 +17,13 @@ import type {
   Database,
   Mailer,
   Notifier,
+  PostSubmitDispatcher,
   SemanticQuery,
   Storage,
   TkAdapters,
   TkRequest,
 } from "../../src/index";
+import { getPostSubmitService } from "../../src/services/post-submit";
 
 /** 内存 Database 的最小实现形态（方法集与端口一致，语义从简） */
 class MemoryDatabase implements Database {
@@ -229,15 +231,50 @@ class RecordingStorage implements Storage {
 }
 
 /**
+ * 记录型派发器（测试用）。
+ *
+ * 记录每次 `dispatch` 的评论，并**执行真实 postSubmit 服务**——这样断言
+ * 「副作用链跑过」的既有用例无需改动。
+ *
+ * 与生产默认实现（`scaffoldAdapters` 的进程内不等待）的差别：本替身默认
+ * `await` 副作用，保证用例的确定性；需要验证「不阻塞响应」时用
+ * {@link RecordingDispatcher} 的 `awaitEffects = false` 或注入自定义实现。
+ */
+export class RecordingDispatcher implements PostSubmitDispatcher {
+  /** 已派发的评论（按调用顺序） */
+  readonly dispatched: CommentDoc[] = [];
+
+  /** 是否等待副作用完成（默认 true，测试确定性优先） */
+  awaitEffects = true;
+
+  /**
+   * 记录并执行 postSubmit 服务。
+   * @param comment 已入库的评论
+   * @param ctx 请求上下文
+   */
+  async dispatch(comment: CommentDoc, ctx: Parameters<PostSubmitDispatcher["dispatch"]>[1]) {
+    this.dispatched.push(comment);
+    const run = getPostSubmitService()(comment, ctx);
+    if (this.awaitEffects) {
+      await run;
+    } else {
+      void run.catch(() => {});
+    }
+  }
+}
+
+/**
  * 创建内存适配器聚合。
  * @param options.database 预置配置或自定义 Database 实例
  * @param options.capabilities 自定义能力声明（默认全关）
- * @returns 适配器聚合（database.config 可读写；mailer/notifier/storage 为记录型实例）
+ * @param options.postSubmit 自定义派发实现（默认记录型）
+ * @returns 适配器聚合（database.config 可读写；mailer/notifier/storage/postSubmit 为记录型实例）
  */
 export function createMemoryAdapters(
   options: {
     database?: Database | ConfigData | null;
     capabilities?: Partial<Capabilities>;
+    postSubmit?: PostSubmitDispatcher;
   } = {},
 ): TkAdapters & {
   mailer: RecordingMailer;
@@ -266,6 +303,7 @@ export function createMemoryAdapters(
     storage: new RecordingStorage(),
     mailer: new RecordingMailer(),
     notifier: new RecordingNotifier(),
+    postSubmit: options.postSubmit ?? new RecordingDispatcher(),
     capabilities: {
       mail: false,
       domPurify: false,

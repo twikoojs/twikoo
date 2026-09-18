@@ -1,5 +1,5 @@
 /**
- * 26 事件契约套件（规范 §6.7 / §9.2 P0；T19）。
+ * 25 事件契约套件（规范 §6.7 / §9.2 P0；T19）。
  *
  * 可复用 runner：参数化注入「数据库实现 + 适配器元数据」，把 26 个事件的
  * 请求/响应断言跑在同一套用例上——任何实现漏注册 handler / 漏实现事件，
@@ -7,7 +7,7 @@
  * Mongo 与 Loki 两实现均接入；适配器（T20-T24）以各自的 DB 实现接入同一套。
  */
 import { expect, describe, it, beforeEach } from "vitest";
-import { createHandler } from "../../src/index";
+import { createHandler, RECURSION_HEADER, RES_CODE } from "../../src/index";
 import { createMemoryAdapters, makeRequest } from "../utils/memory-adapters";
 import type { Database, TkAdapters } from "../../src/index";
 import { md5 } from "../../src/utils/crypto";
@@ -28,7 +28,7 @@ export interface ContractFixture {
 }
 
 /**
- * 运行 26 事件契约套件。
+ * 运行 25 事件契约套件。
  * @param name 实现名（展示用）
  * @param fixture 夹具
  */
@@ -95,7 +95,7 @@ export function runContractSuite(name: string, fixture: ContractFixture): void {
     return doc._id as string;
   }
 
-  describe(`${name} 契约套件（26 事件，§6.7）`, () => {
+  describe(`${name} 契约套件（25 事件，§6.7）`, () => {
     // ---- 元事件与健康检查 ----
     it("GET_FUNC_VERSION：code 0 + version", async () => {
       const res = await post({ event: "GET_FUNC_VERSION" });
@@ -346,33 +346,51 @@ export function runContractSuite(name: string, fixture: ContractFixture): void {
       expect(redeem.body.message).toBe("内嵌 Cap 未启用");
     });
 
-    // ---- 兼容分支（D-4） ----
-    it("POST_SUBMIT 兼容分支：code 0（副作用链执行）", async () => {
+    // ---- POST_SUBMIT（后置副作用链执行入口）与兼容分支（D-4） ----
+    it("POST_SUBMIT：带内部派发令牌 → code 0（副作用链执行）", async () => {
+      const res = await handler(
+        makeRequest({
+          body: { event: "POST_SUBMIT", comment: { _id: "c1", nick: "n", comment: "c" } },
+          // 令牌 = config.ADMIN_PASS；本套件预置的是 md5(ADMIN_PASS)
+          headers: { [RECURSION_HEADER]: md5(ADMIN_PASS) },
+        }),
+      );
+      expect(res.body.code).toBe(RES_CODE.SUCCESS);
+    });
+
+    it("POST_SUBMIT：无内部派发令牌 → 1403（拒绝外部直接调用）", async () => {
       const res = await post({
         event: "POST_SUBMIT",
         comment: { _id: "c1", nick: "n", comment: "c" },
       });
-      expect(res.body.code).toBe(0);
+      expect(res.body.code).toBe(RES_CODE.FORBIDDEN);
     });
 
-    it("HIDDEN / VISIBLE 兼容分支：等价于 COMMENT_GET_FOR_ADMIN 的 type", async () => {
+    it("COMMENT_GET_FOR_ADMIN 的 type 筛选（HIDDEN / VISIBLE / 全部）", async () => {
       await seed({ isSpam: true });
-      const viaCompat = await postAdmin({
-        event: "HIDDEN",
-        per: 10,
-        page: 1,
-      });
-      const viaType = await postAdmin({
+      const hidden = await postAdmin({
         event: "COMMENT_GET_FOR_ADMIN",
         type: "HIDDEN",
         per: 10,
         page: 1,
       });
-      expect(viaCompat.body.code).toBe(0);
-      expect(viaCompat.body.data).toEqual(viaType.body.data);
-      const visible = await postAdmin({ event: "VISIBLE", per: 10, page: 1 });
+      expect(hidden.body.code).toBe(0);
+      expect(hidden.body.data).toHaveLength(1);
+      const visible = await postAdmin({
+        event: "COMMENT_GET_FOR_ADMIN",
+        type: "VISIBLE",
+        per: 10,
+        page: 1,
+      });
       expect(visible.body.code).toBe(0);
       expect(visible.body.data).toEqual([]);
+    });
+
+    it("HIDDEN / VISIBLE 不是事件名（1.x 亦从未作为事件分发）", async () => {
+      for (const legacy of ["HIDDEN", "VISIBLE"]) {
+        const res = await postAdmin({ event: legacy, per: 10, page: 1 });
+        expect(res.body.code, `${legacy} 不应是事件名`).toBe(RES_CODE.EVENT_NOT_EXIST);
+      }
     });
   });
 }

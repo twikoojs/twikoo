@@ -75,18 +75,18 @@ pnpm check:products # B.3 客户端四产物逐一 init + 形态断言 + tkserve
 ## 架构说明
 
 ```
-客户端 (packages/client)              服务端公共层 (packages/server-common)        适配器 (8 个，各 <150 行)
+客户端 (packages/client)              服务端公共层 (packages/server-common)        适配器 (8 个)
 ┌──────────────────────────────┐  ┌────────────────────────────────────────┐  ┌────────────────────────┐
 │ Vue3 + TS + Vite             │─▶│ @twikoojs/common                       │─▶│ twikoo-func (CloudBase)│
 │ 4 个 UMD 产物（文件名沿用 1.x）│  │ ├ ports（request/response/database/     │  │ twikoo-vercel          │
 │ twikoo[.all][.nocss].min.js  │  │ │  storage/mailer/notifier/capabilities)│  │ tkserver               │
-│ + twikoo.css                 │  │ ├ pipeline + dispatcher（26 事件）      │  │ twikoo-netlify         │
+│ + twikoo.css                 │  │ ├ pipeline + dispatcher（25 事件）      │  │ twikoo-netlify         │
 └──────────────────────────────┘  │ ├ 4 DB：Mongo/Loki/BlobKV/CloudBase     │  │ aws-lambda / deta / EO │
                                   │ └ handlers / services                   │  │ vercel-min（转发壳）    │
                                   └────────────────────────────────────────┘  └────────────────────────┘
 ```
 
-### 26 事件机制
+### 25 事件机制
 
 客户端通过 HTTP POST 发送事件名，服务端 dispatcher 分发到对应 handler：
 
@@ -100,7 +100,7 @@ pnpm check:products # B.3 客户端四产物逐一 init + 形态断言 + tkserve
   - `COMMENT_SET_FOR_ADMIN`
   - `COMMENT_DELETE_FOR_ADMIN`
   - `COMMENT_IMPORT_FOR_ADMIN`
-  - `COMMENT_EXPORT_FOR_ADMIN` 
+  - `COMMENT_EXPORT_FOR_ADMIN`
 - 统计
   - `COUNTER_GET`
   - `GET_COMMENTS_COUNT`
@@ -121,12 +121,40 @@ pnpm check:products # B.3 客户端四产物逐一 init + 形态断言 + tkserve
   - `GET_QQ_NICK`
 - 版本
   - `GET_FUNC_VERSION`
-- 兼容分支
+- 服务端内部事件（**非兼容分支，长期保留**）
   - `POST_SUBMIT`
-  - `HIDDEN`
-  - `VISIBLE`
 
 > 新增事件须在客户端 `api.ts`、`@twikoojs/common` dispatcher 中同步添加；适配器经 common 统一分发，只需声明 capabilities。
+>
+> **共 25 个事件标识符**：24 个由客户端发起 + 1 个服务端内部事件 `POST_SUBMIT`。
+> ⚠️ 曾一度把 `HIDDEN` / `VISIBLE` 也列为事件（`ALL_EVENTS` 达 27 项），**那是臆造**——
+> 二者只是 `COMMENT_GET_FOR_ADMIN` 请求体里 `type` 字段的取值（1.x
+> `getCommentSearchCondition` 的嵌套 switch + 客户端 `TkAdminComment.vue` 的筛选下拉），
+> 1.x 从未把它们作为事件分发。已删除，`type` 参数机制不变。
+
+#### `POST_SUBMIT`：把耗时副作用移出用户请求预算
+
+`COMMENT_SUBMIT` 保存评论后的垃圾检测（Akismet / 腾讯云 TMS）与通知（SMTP + pushoo）
+**绝不能内联 `await`**——否则一是用户要等整条链，二是超出云函数执行时间上限时
+**整个调用失败**，而评论其实已经入库：客户端报错、用户重试还会产生重复评论。
+
+因此 common 只负责**逻辑**（`services/post-submit.ts`），**触发方式**由适配器经
+`TkAdapters.postSubmit` 端口决定（见 `ports/post-submit.ts` 的机制对照表）：
+
+| 平台                           | 机制                                                      | 用户等待 |
+| ------------------------------ | --------------------------------------------------------- | -------- |
+| self-hosted / deta / eo-makers | 进程内直调服务，不 `await`（`scaffoldAdapters` 默认实现） | 0        |
+| CloudBase                      | `app.callFunction` 递归自调用（`timeout: 300` 实现异步）  | ~300ms   |
+| Vercel / Netlify               | HTTP 递归自调用（有界竞速 5s）                            | ≤5s      |
+| AWS Lambda                     | `InvokeCommand` + `InvocationType: "Event"`（平台级异步） | ~0       |
+
+目标执行单元经 `POST_SUBMIT` 事件进入，处理器会**校验内部派发令牌**
+（`x-twikoo-recursion` 头 === `config.ADMIN_PASS || "true"`，1.x 语义）——
+不符即 1403 拒绝，防止外部凭空触发垃圾检测与邮件/IM 通知。
+
+> 各平台的具体机制与 1.x 对照见 `ports/post-submit.ts` 头注释；netlify / aws-lambda
+> 在 1.x 是 `require('twikoo-vercel')` 转发壳、自调用实际发不出去，2.0 已改为
+> 各自的正确机制。
 
 ### 适配器能力矩阵（§6.5 八项能力）
 
@@ -147,8 +175,8 @@ pnpm check:products # B.3 客户端四产物逐一 init + 形态断言 + tkserve
 
 ## 适配器开发指南
 
-- **Ports 注入**：`request` / `response` / `database` / `storage` / `mailer` / `notifier` / `capabilities`
-- **行数约束**：适配器 < **150 行**（`tkserver` 的 `main.ts` 有测试固化；`pkg` 是打包流水线，不适用）
+- **Ports 注入**：`request` / `response` / `database` / `storage` / `mailer` / `notifier` / `postSubmit` / `capabilities`
+- **保持薄**：适配器只做「入口 + 适配器注入 + 平台载荷转换」，业务逻辑一律进 `@twikoojs/common`。原「< 150 行」硬门禁已移除（过严，妨碍平台机制落地），改为**人工约定**；平台专属代码多时按职责拆文件（如 cloudbase 的 `transform.ts` / `dispatch.ts` / `types.ts`）。
 - **入口约定**：`createXxxFunc({ database? })` / `createXxxHandler()`；`twikoo-func` 必须保留 `exports.main`（CloudBase 硬依赖）
 - **依赖完整性**：重依赖在适配器 `dependencies` 中声明，按 capabilities 人工核对（8 个适配器；无自动守卫）
 - **懒加载解析**：common 的重依赖经 `await import(specifier)` 加载，解析基准是**适配器所在位置**——`@twikoojs/common` 已把 16 个重依赖声明为 `peerDependenciesMeta.optional`，pnpm isolated 链接下才会在 common 侧可见（T35 修复的真实缺陷）
@@ -309,7 +337,7 @@ push 到 `main` 且改动 `docs/**`、或 Release published、或手动触发 �
 
 - **Vitest 5**；各包 `vitest.config.ts` 由根配置 `projects` 自动发现（含 `docs/vitest.config.ts`）
 - 测试与实现同包：`packages/*/test/**`、`docs/test/**`
-- 契约测试：`@twikoojs/common` 的共享契约套件覆盖全部 26 事件，各适配器复用
+- 契约测试：`@twikoojs/common` 的共享契约套件覆盖全部 25 事件，各适配器复用
 
 ### 覆盖率门禁
 
@@ -363,11 +391,15 @@ push 到 `main` 且改动 `docs/**`、或 Release published、或手动触发 �
 
 | 兼容项                 | 当前行为                                                                 | 移除时间  |
 | ---------------------- | ------------------------------------------------------------------------ | --------- |
-| `POST_SUBMIT`          | 作为内部钩子 + 1.x 调用方兼容分支（与 `COMMENT_SUBMIT` 并存）            | **2.2.0** |
-| `HIDDEN` / `VISIBLE`   | 统一为 `COMMENT_GET_FOR_ADMIN` 参数，保留独立分支                        | **2.2.0** |
 | `twikoo-func` 转发导出 | 保留 `export * from "@twikoojs/common"` + `console.warn` 过渡壳（BC-12） | **2.2.0** |
-| `README.en.md`         | 已删除（BC-5，中文移至 `README-zh_CN.md`）——外部死链需公告               | 已发生    |
+| `README.en.md`         | 已删除（BC-5，中文移至 `README_zh_CN.md`）——外部死链需公告               | 已发生    |
 | CloudBase CLI 部署     | 已移除（BC-14，仅保留控制台流程）——CLI 用户需改用控制台                  | 已发生    |
+
+> `POST_SUBMIT` **不在此列**：它曾被误判为兼容分支，实际是后置副作用链的执行入口
+> （见「25 事件机制」小节），长期保留。
+>
+> `HIDDEN` / `VISIBLE` **也不在此列**：二者从来不是事件，只是 `COMMENT_GET_FOR_ADMIN`
+> 的 `type` 取值（重构期曾被误加为兼容事件分支，已删除）。
 
 ---
 
@@ -390,12 +422,12 @@ push 到 `main` 且改动 `docs/**`、或 Release published、或手动触发 �
 
 以下为 2.0 **有意保留**的向后兼容项，计划在 **2.2.0 移除**；移除前需提前公告（属 breaking change）：
 
-| #   | 待移除项                                 | 位置                                                        | 移除前置动作                                      |
-| --- | ---------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------- |
-| 1   | `POST_SUBMIT` 兼容分支                   | `@twikoojs/common` dispatcher（`post-submit.ts`）           | CHANGELOG 公告 + 文档「服务端事件」章节更新       |
-| 2   | `HIDDEN` / `VISIBLE` 兼容分支            | `@twikoojs/common` dispatcher（`hidden.ts` / `visible.ts`） | 同上                                              |
-| 3   | `twikoo-func` 转发导出过渡壳（BC-12）    | `packages/server-cloudbase` 入口                            | 确认无外部依赖后移除 `export *` 与 `console.warn` |
-| 4   | `pushoo` 旧独立版本线（`0.1.x`）兼容说明 | `packages/pushoo/README.md` / CHANGELOG                     | 2.0 已并入统一版本线，2.2.0 起可删除迁移公告      |
-| 5   | `README.en.md` 死链公告                  | CHANGELOG（BC-5）                                           | 公告期结束后可移出「最近变更」区                  |
+| #   | 待移除项                                 | 位置                                    | 移除前置动作                                      |
+| --- | ---------------------------------------- | --------------------------------------- | ------------------------------------------------- |
+| 1   | `twikoo-func` 转发导出过渡壳（BC-12）    | `packages/server-cloudbase` 入口        | 确认无外部依赖后移除 `export *` 与 `console.warn` |
+| 2   | `pushoo` 旧独立版本线（`0.1.x`）兼容说明 | `packages/pushoo/README.md` / CHANGELOG | 2.0 已并入统一版本线，2.2.0 起可删除迁移公告      |
+| 3   | `README.en.md` 死链公告                  | CHANGELOG（BC-5）                       | 公告期结束后可移出「最近变更」区                  |
 
 > 维护约定：任何兼容分支都必须在**本文档与 CHANGELOG 同时登记**并注明移除版本；移除时同步更新文档站「服务端事件」与 README 迁移说明。
+> **不要把 `POST_SUBMIT` 登记为兼容分支**——它是长期机制（见「25 事件机制」小节）。
+> **也不要把 `HIDDEN` / `VISIBLE` 登记进来**——它们不是事件，只是 `type` 取值。

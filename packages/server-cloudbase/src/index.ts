@@ -6,6 +6,8 @@
  * 为 1.x 引用路径的过渡壳（打印弃用警告）。
  */
 export { main, createTwikooFunc, toTkRequest, fromTkResponse } from "./main";
+export { createCloudBaseDispatcher } from "./dispatch";
+export type { TcbAppLike, TcbContextLike, TcbSdkStatic } from "./types";
 
 /**
  * BC-12 整包转发：`export *` 到 @twikoojs/common。

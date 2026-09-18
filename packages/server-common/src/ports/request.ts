@@ -11,12 +11,12 @@ import type { TwikooEvent } from "@twikoojs/shared";
 /**
  * 内部统一请求体（§6.3 承载内容：body，含 event、accessToken）。
  *
- * 已解析的 JSON 请求体：event 为 26 事件槽位之一（类型引用 @twikoojs/shared 的
+ * 已解析的 JSON 请求体：event 为 25 事件标识符之一（类型引用 @twikoojs/shared 的
  * TwikooEvent），accessToken 为匿名/管理员鉴权令牌；其余事件参数由各事件 handler
  * 自行解构，契约层不做收窄（索引签名兜底）。
  */
 export interface TkRequestBody {
-  /** 事件名（@twikoojs/shared 事件常量的字面量联合，27 标识符含 1.x 兼容分支） */
+  /** 事件名（@twikoojs/shared 事件常量的字面量联合，25 标识符 = 24 客户端事件 + POST_SUBMIT） */
   event: TwikooEvent;
   /** 客户端回传的鉴权令牌；请求未携带且本次成功时，响应体会回填新令牌（1.x 语义） */
   accessToken?: string;

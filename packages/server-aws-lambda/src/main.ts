@@ -5,6 +5,9 @@
  * httpMethod 顶层 + requestContext.identity.sourceIp）与 HTTP API（v2：
  * requestContext.http.method/sourceIp + isBase64Encoded）双形态均处理；
  * 返回体 body 必须字符串化——docs.aws.amazon.com/lambda（查阅 2026-09-17）。
+ *
+ * 后置副作用（垃圾检测 + 通知）经 {@link lambdaPostSubmitDispatcher} 以
+ * 原生异步 Invoke 派发到独立执行单元，见 `./dispatch.ts`。
  */
 import {
   FULL_CAPABILITIES,
@@ -15,6 +18,7 @@ import {
   type TkRequest,
   type TkResponse,
 } from "@twikoojs/common";
+import { lambdaPostSubmitDispatcher } from "./dispatch";
 
 /** AWS Lambda 平台能力：全能力（§6.5 能力矩阵） */
 const lambdaCapabilities = FULL_CAPABILITIES;
@@ -118,6 +122,7 @@ export function createLambdaFunc(
         },
         database: await getDatabase(),
         capabilities: lambdaCapabilities,
+        postSubmit: lambdaPostSubmitDispatcher,
       }),
     );
     return fromTkResponse(await handler(request));

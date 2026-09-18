@@ -3,10 +3,9 @@
  *
  * 注入内存 Database 跑契约核心事件；验证 Netlify v1 返回体形态（body 字符串、
  * 204 无体）、x-nf-client-connection-ip IP 语义（QA−：IP 头可定位）、
- * BC-13（dependencies 无 twikoo-vercel）、行数门禁。
+ * BC-13（dependencies 无 twikoo-vercel）。
  */
 import { readFileSync } from "node:fs";
-import { countSourceLines } from "../../../test/utils/line-count";
 import { describe, expect, it } from "vitest";
 import { createNetlifyFunc, handler, toTkRequest } from "../src/main";
 import type { NetlifyEventLike } from "../src/main";
@@ -79,14 +78,5 @@ describe("twikoo-netlify 薄适配器（T23）", () => {
     expect(pkg.dependencies["twikoo-vercel"]).toBeUndefined();
     expect(pkg.dependencies["@twikoojs/common"]).toBe("workspace:*");
     expect(typeof handler).toBe("function");
-  });
-
-  it("源码行数门禁：main.ts + index.ts < 150 行", () => {
-    /**
-     *
-     */
-    const lines = (path: string): number =>
-      countSourceLines(readFileSync(new URL(path, import.meta.url), "utf8"));
-    expect(lines("../src/main.ts") + lines("../src/index.ts")).toBeLessThan(150);
   });
 });

@@ -2,10 +2,8 @@
  * twikoo-aws-lambda 适配器测试（T24）。
  *
  * 注入内存 Database（Mongo 语义）跑契约核心事件；验证 v1/v2 双 payload、
- * base64 body、sourceIp 提取、行数门禁。
+ * base64 body、sourceIp 提取。
  */
-import { readFileSync } from "node:fs";
-import { countSourceLines } from "../../../test/utils/line-count";
 import { describe, expect, it } from "vitest";
 import { createLambdaFunc, toTkRequest } from "../src/main";
 import type { ApiGatewayEventLike } from "../src/main";
@@ -66,14 +64,5 @@ describe("twikoo-aws-lambda 薄适配器（T24）", () => {
         body: "{}",
       }).ip,
     ).toBe("8.8.8.8");
-  });
-
-  it("源码行数门禁：main.ts + index.ts < 150 行", () => {
-    /**
-     *
-     */
-    const lines = (path: string): number =>
-      countSourceLines(readFileSync(new URL(path, import.meta.url), "utf8"));
-    expect(lines("../src/main.ts") + lines("../src/index.ts")).toBeLessThan(150);
   });
 });

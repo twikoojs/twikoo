@@ -88,13 +88,14 @@ describe("T38 §11.3 内容更新", () => {
     }
   });
 
-  it("④ api 页已记录 POST_SUBMIT / HIDDEN / VISIBLE 兼容事件", () => {
+  it("④ api 页已记录服务端事件语义（POST_SUBMIT 为内部事件；HIDDEN/VISIBLE 是 type 取值而非事件名）", () => {
     for (const file of ["api.md", "en/api.md"]) {
       const src = readFileSync(resolve(DOCS_ROOT, file), "utf8");
-      for (const event of ["POST_SUBMIT", "HIDDEN", "VISIBLE"]) {
-        expect(src, `${file} 缺少 ${event}`).toContain(event);
+      for (const token of ["POST_SUBMIT", "HIDDEN", "VISIBLE"]) {
+        expect(src, `${file} 缺少 ${token}`).toContain(token);
       }
-      expect(src).toMatch(/2\.2\.0/);
+      // 关键：HIDDEN / VISIBLE 必须被说明为 type 参数取值，而不是事件名
+      expect(src, `${file} 未把 HIDDEN 说明为 type 取值`).toContain('"type": "HIDDEN"');
     }
   });
 

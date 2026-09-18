@@ -1,9 +1,9 @@
 /**
  * 事件分发器（规范 §6.2 core/dispatcher.ts）。
  *
- * 26 事件全量显式 switch（Scope E 清单）：每个常规事件解析到注册表中的
- * handler 实现；POST_SUBMIT / HIDDEN / VISIBLE 为 @deprecated 兼容分支，
- * 内部转发到新逻辑（D-4 双支持，2.2.0 移除）。事件清单在这里**显式枚举**
+ * 25 事件全量显式 switch（Scope E 清单）：24 个客户端事件解析到注册表中的
+ * handler 实现；POST_SUBMIT 是服务端内部事件——后置副作用链的执行入口
+ * （长期保留，带内部派发令牌校验）。事件清单在这里**显式枚举**
  * 正是契约保障：任何事件漏实现/漏断言，T19 契约套件与 switch 清单的 diff
  * 立即可见（替代 1.x「各后端 switch 保持一致」的人工约定）。
  */
@@ -28,20 +28,17 @@ import {
   GET_PASSWORD_STATUS,
   GET_QQ_NICK,
   GET_RECENT_COMMENTS,
-  HIDDEN,
   LOGIN,
   POST_SUBMIT,
   SET_CONFIG,
   SET_PASSWORD,
   UPLOAD_IMAGE,
-  VISIBLE,
   type TwikooEvent,
 } from "@twikoojs/shared";
-// 副作用导入：触发默认处理器注册（GET_FUNC_VERSION + 3 个兼容分支）
+// 副作用导入：触发默认处理器注册
 import "../handlers/index";
 import { HandlerNotRegisteredError } from "./errors";
 import { resolveHandler } from "./handler-registry";
-import { forwardAdminCommentGet } from "../handlers/forward-admin-comment-get";
 import type { PipelineContext } from "./types";
 import type { TkResponseBody } from "../ports/response";
 import { RES_CODE } from "../utils/constants";
@@ -63,9 +60,8 @@ async function runRegistered(ctx: PipelineContext, event: TwikooEvent): Promise<
 /**
  * 分发事件到对应处理器（§2.3 标准流程第 8 步）。
  *
- * 兼容分支说明（D-4 双支持，均 @deprecated 计划 2.2.0 移除）：
- * - POST_SUBMIT：转发到 postSubmit 服务（与 COMMENT_SUBMIT 成功副作用同源）；
- * - HIDDEN / VISIBLE：转发到 COMMENT_GET_FOR_ADMIN 并注入 type 参数。
+ * POST_SUBMIT 是唯一非客户端事件：后置副作用链的执行入口（长期保留），
+ * 处理器内校验内部派发令牌以防外部滥用。
  * @param ctx 请求上下文
  * @returns 事件响应体
  */
@@ -129,15 +125,10 @@ export async function dispatch(ctx: PipelineContext): Promise<TkResponseBody> {
       return runRegistered(ctx, CAP_CHALLENGE);
     case CAP_REDEEM:
       return runRegistered(ctx, CAP_REDEEM);
-    // ---- 以下为 @deprecated 兼容分支（D-4 双支持，2.2.0 移除）----
-    // POST_SUBMIT 的转发实现见 handlers/post-submit.ts（与 COMMENT_SUBMIT
-    // 成功副作用同源的 postSubmit 服务）
+    // POST_SUBMIT：后置副作用链的执行入口（长期保留）。实现见
+    // handlers/post-submit.ts，内部校验 x-twikoo-recursion 内部派发令牌。
     case POST_SUBMIT:
       return runRegistered(ctx, POST_SUBMIT);
-    case HIDDEN:
-      return forwardAdminCommentGet(ctx, "HIDDEN");
-    case VISIBLE:
-      return forwardAdminCommentGet(ctx, "VISIBLE");
     default:
       // 1.x 语义对齐：未知事件返回统一错误体（客户端提示升级），不抛未捕获异常
       return {

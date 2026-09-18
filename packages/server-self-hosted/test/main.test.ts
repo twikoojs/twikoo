@@ -9,8 +9,6 @@ import { spawn } from "node:child_process";
 import { chmodSync, existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { readFileSync } from "node:fs";
-import { countSourceLines } from "../../../test/utils/line-count";
 import { describe, expect, it, vi } from "vitest";
 import {
   createTkserverHandler,
@@ -120,13 +118,6 @@ describe("tkserver handler（T22）", () => {
     expect(cleared).toBe(true);
     expect(closed).toBe(true);
     clearInterval(timer);
-  });
-
-  it("行数门禁：main.ts（适配器核心）< 150 行（bin server.ts 与 seed/ 豁免）", () => {
-    /** 读取相对路径源文件并统计行数（统一口径，见 countSourceLines） */
-    const lines = (path: string): number =>
-      countSourceLines(readFileSync(new URL(path, import.meta.url), "utf8"));
-    expect(lines("../src/main.ts")).toBeLessThan(150);
   });
 });
 

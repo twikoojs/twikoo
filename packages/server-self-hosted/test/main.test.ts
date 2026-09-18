@@ -7,9 +7,11 @@
  */
 import { spawn } from "node:child_process";
 import { chmodSync, existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { createServer, type AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it, vi } from "vitest";
+import { LokiDatabase } from "@twikoojs/common";
 import {
   createTkserverHandler,
   fromTkResponse,
@@ -66,7 +68,11 @@ function makeRes(): {
 describe("tkserver handler（T22）", () => {
   it("happy：GET_FUNC_VERSION → 200 JSON（Loki 临时目录自动建库）", async () => {
     const dir = mkdtempSync(join(tmpdir(), "tkserver-"));
-    const handler = createTkserverHandler({ dataDir: join(dir, "data") });
+    // 注入 Loki 实例（而不是只传 dataDir）是为了能在删临时目录前 close()：Loki 带
+    // `autosaveInterval: 4000`，目录被 rmSync 掉之后那个定时器仍会写 db.json 并抛出
+    // 未捕获的 ENOENT —— 用例本身是通过的，文件却被判 FAIL。
+    const db = new LokiDatabase({ dataDir: join(dir, "data") });
+    const handler = createTkserverHandler({ database: db });
     const req: ServerRequestLike = {
       method: "POST",
       headers: {},
@@ -74,6 +80,7 @@ describe("tkserver handler（T22）", () => {
     };
     const { res, out } = makeRes();
     await handler(req, res);
+    await db.close();
     rmSync(dir, { recursive: true, force: true });
     const body = JSON.parse(out.body as string);
     expect(body.code).toBe(0);
@@ -131,7 +138,9 @@ describe("tkserver handler（T22）", () => {
 describe("tkserver 真实重依赖解析（D-2 / §6.5.1 回归）", () => {
   it("COMMENT_SUBMIT：真实 jsdom+DOMPurify 加载成功且 XSS 内容被清洗", async () => {
     const dir = mkdtempSync(join(tmpdir(), "tkserver-real-libs-"));
-    const handler = createTkserverHandler({ dataDir: join(dir, "data") });
+    // 同 happy 用例：注入实例以便收尾 close()，避免 Loki autosave 在目录删除后写盘
+    const db = new LokiDatabase({ dataDir: join(dir, "data") });
+    const handler = createTkserverHandler({ database: db });
     const submit = makeRes();
     await handler(
       {
@@ -160,6 +169,7 @@ describe("tkserver 真实重依赖解析（D-2 / §6.5.1 回归）", () => {
     const listed = get.out.body as string;
     expect(listed).toContain("回归评论");
     expect(listed).not.toContain("<script");
+    await db.close();
     rmSync(dir, { recursive: true, force: true });
   }, 30000);
 });
@@ -201,26 +211,61 @@ describe("fromTkResponse CORS 头回写与状态码透传（跨源回归）", ()
   });
 });
 
-/** QA+ 全流程辅助：spawn dist/server.js（随机端口）→ HTTP 请求 → SIGTERM */
-function spawnServer(env: NodeJS.ProcessEnv): {
+/**
+ * 取一个当前空闲的端口。
+ *
+ * 不能图省事写 `TWIKOO_PORT=0`：`startTkserver` 里是
+ * `parseInt(process.env.TWIKOO_PORT ?? "", 10) || 8080`，**0 是假值 → 回落到 8080**，
+ * 而本地经常同时跑着 `pnpm demo`（tkserver 占 8080）→ 本用例以 EADDRINUSE 收场。
+ * 先探一个空闲端口再显式传入，才是名副其实的「随机端口」。
+ * @returns 空闲端口
+ */
+async function findFreePort(): Promise<number> {
+  return await new Promise<number>((resolve, reject) => {
+    const probe = createServer();
+    probe.on("error", reject);
+    probe.listen(0, "127.0.0.1", () => {
+      const { port } = probe.address() as AddressInfo;
+      probe.close(() => resolve(port));
+    });
+  });
+}
+
+/** QA+ 全流程辅助：spawn dist/server.js（指定端口）→ HTTP 请求 → SIGTERM */
+function spawnServer(
+  env: NodeJS.ProcessEnv,
+  port: number,
+): {
   proc: ReturnType<typeof spawn>;
   ready: Promise<number>;
 } {
-  const proc = spawn(process.execPath, [join(__dirname, "../dist/server.js")], {
-    env: {
-      ...process.env,
-      TWIKOO_PORT: "0",
-      TWIKOO_DATA: join(mkdtempSync(join(tmpdir(), "tkserver-e2e-")), "data"),
-      ...env,
-    },
-  });
+  const childEnv: NodeJS.ProcessEnv = {
+    ...process.env,
+    TWIKOO_PORT: String(port),
+    TWIKOO_DATA: join(mkdtempSync(join(tmpdir(), "tkserver-e2e-")), "data"),
+    ...env,
+  };
+  // 本文件前三个用例为「进程内装配」把 TWIKOO_SKIP_BOOT=1 写进了 process.env，而这里会把
+  // process.env 整个传给子进程 —— 带着它 `dist/server.js` 走 factory-export-only 模式
+  // **静默退出**（src/bin.ts 的 `if (process.env.TWIKOO_SKIP_BOOT !== "1")`），
+  // 永远打印不出 "port N"，用例只能等到超时。故显式剔除（§17.2 同类坑：工厂模块的
+  // 「不启动」开关会被父进程环境继承）。
+  delete childEnv.TWIKOO_SKIP_BOOT;
+  const proc = spawn(process.execPath, [join(__dirname, "../dist/server.js")], { env: childEnv });
   const ready = new Promise<number>((resolve, reject) => {
+    // 定时器要在落定后清掉：否则 15s 的挂起定时器会一直吊着测试进程（拖长整轮时间）
+    const timer = setTimeout(() => reject(new Error("server start timeout")), 15000);
     proc.stdout?.on("data", (chunk: Buffer) => {
       const match = chunk.toString().match(/port (\d+)/);
-      if (match) resolve(Number(match[1]));
+      if (match) {
+        clearTimeout(timer);
+        resolve(Number(match[1]));
+      }
     });
-    proc.stderr?.on("data", (chunk: Buffer) => reject(new Error(chunk.toString())));
-    setTimeout(() => reject(new Error("server start timeout")), 15000);
+    proc.stderr?.on("data", (chunk: Buffer) => {
+      clearTimeout(timer);
+      reject(new Error(chunk.toString()));
+    });
   });
   return { proc, ready };
 }
@@ -280,7 +325,7 @@ describe("tkserver 优雅退出全流程（T22 QA+）", () => {
   it.runIf(process.platform !== "win32")(
     "spawn 全流程：SIGTERM → 进程 0 退出（Windows SIGTERM 为硬杀，跳过）",
     async () => {
-      const { proc, ready } = spawnServer({});
+      const { proc, ready } = spawnServer({}, await findFreePort());
       const port = await ready;
       const response = await fetch(`http://127.0.0.1:${port}/`, {
         method: "POST",

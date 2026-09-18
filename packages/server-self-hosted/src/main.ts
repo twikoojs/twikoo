@@ -59,14 +59,18 @@ export function toTkRequest(req: ServerRequestLike): TkRequest {
   };
 }
 
-/** 内部统一响应 → Node 响应（204 无体；业务 JSON；垫片语义对齐 1.x）。 */
+/**
+ * 内部统一响应 → Node 响应（204 无体；业务 JSON 透传 tkRes.status；
+ * headers 原样回写——CORS 由 pipeline 算好，§6.3，业务分支在其后补 Content-Type；
+ * 垫片语义对齐 1.x）。
+ */
 export function fromTkResponse(res: ServerResponseLike, tkRes: TkResponse): void {
   if (tkRes.status === 204) {
-    res.writeHead(204, {});
+    res.writeHead(204, tkRes.headers);
     res.end();
     return;
   }
-  res.writeHead(200, { "Content-Type": "application/json" });
+  res.writeHead(tkRes.status, { ...tkRes.headers, "Content-Type": "application/json" });
   res.end(JSON.stringify(tkRes.body));
 }
 

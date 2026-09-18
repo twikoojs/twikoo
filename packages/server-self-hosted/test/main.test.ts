@@ -12,21 +12,30 @@ import { join } from "node:path";
 import { readFileSync } from "node:fs";
 import { countSourceLines } from "../../../test/utils/line-count";
 import { describe, expect, it, vi } from "vitest";
-import { createTkserverHandler, shutdown, startRequestTimesTimer } from "../src/main";
+import {
+  createTkserverHandler,
+  fromTkResponse,
+  shutdown,
+  startRequestTimesTimer,
+} from "../src/main";
 import type { ServerRequestLike, ServerResponseLike } from "../src/main";
-import type { Database } from "@twikoojs/common";
+import type { Database, TkResponse } from "@twikoojs/common";
 
 /** 记录型响应（status/json 垫片后形态） */
-function makeRes(): { res: ServerResponseLike; out: { status: number; body?: string } } {
-  const out: { status: number; body?: string } = { status: 0 };
+function makeRes(): {
+  res: ServerResponseLike;
+  out: { status: number; headers?: Record<string, string>; body?: string };
+} {
+  const out: { status: number; headers?: Record<string, string>; body?: string } = { status: 0 };
   const res: ServerResponseLike = {
     statusCode: 0,
     writableEnded: false,
     /**
      *
      */
-    writeHead: (code: number) => {
+    writeHead: (code: number, headers?: Record<string, string>) => {
       out.status = code;
+      out.headers = headers ?? {};
       return res;
     },
     /**
@@ -164,6 +173,43 @@ describe("tkserver 真实重依赖解析（D-2 / §6.5.1 回归）", () => {
   }, 30000);
 });
 
+/**
+ * 回归（浏览器跨源实测暴露）：pipeline 已把 5 个 CORS 头算进 tkRes.headers（§6.3
+ * 「适配器只负责把 headers 写进平台响应」），但 fromTkResponse 曾把 headers 整个丢弃、
+ * 且状态码硬编码 200（限流 429 被吞）。vercel 适配器为正确参照。
+ */
+describe("fromTkResponse CORS 头回写与状态码透传（跨源回归）", () => {
+  it("204 预检分支：writeHead 收到 tkRes.headers（CORS 头不被丢弃）", () => {
+    const { res, out } = makeRes();
+    const tkRes: TkResponse = {
+      status: 204,
+      body: {},
+      headers: {
+        "Access-Control-Allow-Origin": "http://localhost:9820",
+        "Access-Control-Allow-Methods": "POST",
+      },
+    };
+    fromTkResponse(res, tkRes);
+    expect(out.status).toBe(204);
+    expect(out.headers?.["Access-Control-Allow-Origin"]).toBe("http://localhost:9820");
+    expect(out.headers?.["Access-Control-Allow-Methods"]).toBe("POST");
+  });
+
+  it("JSON 业务分支：状态码透传 tkRes.status（429 不被硬编码吞掉）且 headers 带 CORS + Content-Type", () => {
+    const { res, out } = makeRes();
+    const tkRes: TkResponse = {
+      status: 429,
+      body: { code: 1000, message: "too many requests" },
+      headers: { "Access-Control-Allow-Origin": "http://localhost:9820" },
+    };
+    fromTkResponse(res, tkRes);
+    expect(out.status).toBe(429);
+    expect(out.headers?.["Access-Control-Allow-Origin"]).toBe("http://localhost:9820");
+    expect(out.headers?.["Content-Type"]).toBe("application/json");
+    expect(JSON.parse(out.body as string)).toEqual({ code: 1000, message: "too many requests" });
+  });
+});
+
 /** QA+ 全流程辅助：spawn dist/server.js（随机端口）→ HTTP 请求 → SIGTERM */
 function spawnServer(env: NodeJS.ProcessEnv): {
   proc: ReturnType<typeof spawn>;
@@ -206,6 +252,28 @@ describe("tkserver 优雅退出全流程（T22 QA+）", () => {
     // 优雅关闭：请求 → 关监听 → 排空连接 → 停定时器
     await inst.gracefulShutdown();
     await expect(fetch(`http://127.0.0.1:${port}/`)).rejects.toThrow();
+  }, 20000);
+
+  it("OPTIONS 预检：204 且携带 Access-Control-Allow-Origin（真实 HTTP 跨源回归）", async () => {
+    process.env.TWIKOO_SKIP_BOOT = "1";
+    const { createTkserverServer } = await import("../src/server");
+    const inst = createTkserverServer();
+    await new Promise<void>((resolve) => inst.server.listen(0, "127.0.0.1", resolve));
+    const port = (inst.server.address() as import("node:net").AddressInfo).port;
+    try {
+      const response = await fetch(`http://127.0.0.1:${port}/`, {
+        method: "OPTIONS",
+        headers: {
+          Origin: "http://localhost:9820",
+          "Access-Control-Request-Method": "POST",
+          "Access-Control-Request-Headers": "content-type",
+        },
+      });
+      expect(response.status).toBe(204);
+      expect(response.headers.get("access-control-allow-origin")).not.toBeNull();
+    } finally {
+      await inst.gracefulShutdown();
+    }
   }, 20000);
 
   it("SIGTERM 信号处理：已注册（全平台）", async () => {

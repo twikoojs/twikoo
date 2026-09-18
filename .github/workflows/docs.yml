@@ -23,6 +23,22 @@ jobs:
         # VitePress 需要完整提交历史来生成贡献者信息与最后更新时间
         with:
           fetch-depth: 0
+      # 文档站内嵌的 twikoo 客户端版本（`theme/Twikoo.vue` 的 CDN 地址，不写死在源码里）：
+      #   - release 触发 → 用发布 tag（本仓库 tag 即 twikoo 版本号）
+      #   - push docs / 手动触发 → 取 registry 最新稳定版（`npm view` 读的是 latest dist-tag）
+      # 必须注入为 `VITE_TWIKOO_VERSION`：Vite 只把 VITE_ 前缀的**进程环境变量**暴露给
+      # `import.meta.env`，因此在 BUILD_SCRIPT 之前先写进 $GITHUB_ENV。
+      - name: 解析文档站内嵌的 twikoo 版本
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          version="${RELEASE_TAG}"
+          if [ -z "${version}" ]; then
+            version="$(npm view twikoo version)"
+          fi
+          echo "文档站将内嵌 twikoo@${version}"
+          echo "VITE_TWIKOO_VERSION=${version}" >> "$GITHUB_ENV"
       - uses: imaegoo/vuepress-deploy@master
         env:
           ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}

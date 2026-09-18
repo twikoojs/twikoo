@@ -3,6 +3,16 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vitepress";
 
 const envId = "https://twikoojsorg.imaegoo.com";
+/**
+ * 站点内嵌的 twikoo 客户端版本。
+ *
+ * **不写死版本号**：构建时由 `VITE_TWIKOO_VERSION` 注入（`.github/workflows/docs.yml` 在
+ * release 触发时取发布 tag，push / 手动触发时取 registry 最新稳定版）。本地 `docs:dev`
+ * 未设置该变量时回退 `latest`（jsDelivr 支持的版本标签）。
+ */
+const twikooVersion = import.meta.env.VITE_TWIKOO_VERSION || "latest";
+/** twikoo 客户端 CDN 地址（版本见上） */
+const twikooSrc = `https://cdn.jsdelivr.net/npm/twikoo@${twikooVersion}/dist/twikoo.min.js`;
 const twikooJs = ref(null);
 const router = useRouter();
 
@@ -100,11 +110,6 @@ onMounted(() => {
 
     <!-- Twikoo -->
     <div id="twikoo"></div>
-    <component
-      :is="'script'"
-      src="https://cdn.jsdelivr.net/npm/twikoo@1.7.24/dist/twikoo.min.js"
-      crossorigin="anonymous"
-      ref="twikooJs"
-    ></component>
+    <component :is="'script'" :src="twikooSrc" crossorigin="anonymous" ref="twikooJs"></component>
   </div>
 </template>

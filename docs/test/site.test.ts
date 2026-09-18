@@ -150,4 +150,16 @@ describe("T38 §11.3 内容更新", () => {
     expect(wf).toMatch(/release:\s*\n\s*types:\s*\[published\]/);
     expect(wf).toContain("pnpm --filter twikoo-docs docs:build");
   });
+
+  it("站点内嵌的 twikoo 版本由构建注入（不写死在源码里）", () => {
+    const theme = readFileSync(resolve(DOCS_ROOT, ".vitepress/theme/Twikoo.vue"), "utf8");
+    expect(theme).toContain("import.meta.env.VITE_TWIKOO_VERSION");
+    // 源码里不得再出现写死版本的 CDN 地址（twikoo@1.7.24 这类）
+    expect(theme).not.toMatch(/npm\/twikoo@\d/);
+    const wf = readFileSync(resolve(DOCS_ROOT, "..", ".github", "workflows", "docs.yml"), "utf8");
+    // release 触发用发布 tag，其余取 registry 最新稳定版；两者都写进 VITE_TWIKOO_VERSION
+    expect(wf).toContain("github.event.release.tag_name");
+    expect(wf).toContain("npm view twikoo version");
+    expect(wf).toContain("VITE_TWIKOO_VERSION");
+  });
 });

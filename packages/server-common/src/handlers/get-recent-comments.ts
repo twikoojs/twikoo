@@ -3,6 +3,8 @@
  */
 import { ABSENT, NOT } from "../ports/database";
 import type { EventHandler } from "../core/types";
+// lib-loader 静态导入即可（惰性在它内部完成，见其头注释「消费方约定」）
+import { getHtmlToText } from "../utils/lib-loader";
 import { getAvatar, getMailMd5, getUrlsQuery } from "../services/comment-dto";
 
 /**
@@ -27,8 +29,7 @@ export const getRecentComments: EventHandler = async (ctx) => {
       sort: { created: -1 },
       limit: pageSize,
     });
-    const htmlToText = (await import("../utils/lib-loader")).getHtmlToText;
-    const toText = await htmlToText();
+    const toText = await getHtmlToText();
     res.data = result.map((comment) => ({
       id: String(comment._id),
       url: comment.url,

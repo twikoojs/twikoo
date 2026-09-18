@@ -14,6 +14,12 @@ import type { Capabilities } from "../ports/capabilities";
  *
  * 依赖安装契约（§6.5.1）：本包以 peerDependenciesMeta(optional) 声明接口约束，
  * 重依赖由声明对应能力的适配器自行安装（CI 依赖完整性检查见 T25）。
+ *
+ * **消费方约定：本模块一律静态导入，不要写 `await import("../utils/lib-loader")`。**
+ * 它是「薄取用层」——自身没有任何第三方静态导入（上面第 3 层的 specifier 经变量间接，
+ * 构建器不解析），所以静态导入它既无额外体积代价，也不破坏重依赖的惰性。反之，由于同包
+ * 多个文件已静态引入本模块，构建器必然把它放进主 chunk，再写动态导入只会得到
+ * `[INEFFECTIVE_DYNAMIC_IMPORT]`（无法拆出独立 chunk，惰性收益为零）。
  */
 
 /** 库模块的最小结构类型面（仅声明 handlers 实际使用的成员） */

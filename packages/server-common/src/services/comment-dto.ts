@@ -7,7 +7,8 @@
  */
 import type { Capabilities } from "../ports/capabilities";
 import type { CommentDoc, ConfigData } from "../ports/database";
-import { getBowser, getIpToRegion } from "../utils/lib-loader";
+// lib-loader 静态导入即可（惰性在它内部完成，见其头注释「消费方约定」）
+import { getAxios, getBowser, getIpToRegion } from "../utils/lib-loader";
 import { md5, sha256 } from "../utils/crypto";
 
 /** 前端评论 DTO（1.x toCommentDto 返回形态） */
@@ -313,7 +314,6 @@ export function addQQMailSuffix(mail: string): string {
  */
 export async function getQQAvatar(qq: string): Promise<string | null> {
   try {
-    const { getAxios } = await import("../utils/lib-loader");
     const axios = await getAxios();
     const qqNum = qq.replace(/@qq.com/gi, "");
     const result = await axios.get(
@@ -335,7 +335,6 @@ export async function getQQAvatar(qq: string): Promise<string | null> {
  */
 export async function getQQNick(qq: string, qqApiKey?: string): Promise<string | null> {
   try {
-    const { getAxios } = await import("../utils/lib-loader");
     const axios = await getAxios();
     const qqNum = qq.replace(/@qq.com/gi, "");
     /** 请求头（API Key 鉴权可选） */

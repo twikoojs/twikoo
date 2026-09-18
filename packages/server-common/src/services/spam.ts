@@ -12,7 +12,14 @@ import { createHmac } from "node:crypto";
 import type { Capabilities } from "../ports/capabilities";
 import type { CommentDoc, ConfigData, Database } from "../ports/database";
 import type { RequestLogger } from "../utils/logger";
-import { getAkismetClient, getFormData, getTencentcloudTms } from "../utils/lib-loader";
+// lib-loader 静态导入即可（惰性在它内部完成，见其头注释「消费方约定」）
+import {
+  getAkismetClient,
+  getAxios,
+  getFormData,
+  getGenerateText,
+  getTencentcloudTms,
+} from "../utils/lib-loader";
 import { GT } from "../ports/database";
 import { equalsMail } from "./comment-dto";
 
@@ -85,7 +92,6 @@ export async function checkTurnstileCaptcha(params: {
 }): Promise<void> {
   try {
     const FormData = await getFormData(params.caps);
-    const { getAxios } = await import("../utils/lib-loader");
     const axios = await getAxios();
     const formData = new FormData();
     formData.append("secret", params.turnstileTokenSecretKey);
@@ -118,7 +124,6 @@ export async function checkGeeTestCaptcha(params: {
   geeTestGenTime: string;
 }): Promise<void> {
   try {
-    const { getAxios } = await import("../utils/lib-loader");
     const axios = await getAxios();
     const signToken = createHmac("sha256", params.geeTestCaptchaKey)
       .update(params.geeTestLotNumber)
@@ -166,7 +171,6 @@ export async function checkCapCaptcha(
       return;
     }
     // 外部 Cap Standalone：HTTP siteverify
-    const { getAxios } = await import("../utils/lib-loader");
     const axios = await getAxios();
     const endpoint = (params.capApiEndpoint ?? "").replace(/\/$/, "");
     const response = await axios.post(
@@ -309,8 +313,7 @@ async function checkByLLM(
     if (attempt > 1) await new Promise((resolve) => setTimeout(resolve, 1000));
     try {
       if (!generateText) {
-        // @xsai/generate-text 为 ai 能力外部依赖（D-2），动态加载
-        const { getGenerateText } = await import("../utils/lib-loader");
+        // @xsai/generate-text 为 ai 能力外部依赖（D-2）：惰性在 lib-loader 内部完成
         generateText = await getGenerateText(caps);
       }
       const messages = buildMessages(comment, lastError, String(config.LLM_SPAM_PROMPT ?? ""));

@@ -29,7 +29,11 @@ import {
   preCheckSpam,
 } from "../services/spam";
 import { getPostSubmitService } from "../services/post-submit";
-import { isBuiltinCap } from "../services/cap";
+// 静态导入而非 `await import(...)`：cap.ts 已被 cap-challenge.ts 静态引入（其处理器在
+// handlers/index.ts 注册），构建器必然把它放进主 chunk，动态导入只会得到
+// [INEFFECTIVE_DYNAMIC_IMPORT]（无法拆出独立 chunk）。@cap.js/server 是本包常规
+// dependency（非 optional peer），无「未安装则加载失败」顾虑，故无需惰性装载。
+import { createCap, databaseCapStorage, isBuiltinCap, validateToken } from "../services/cap";
 
 /**
  * 安全字符串化（字段值非字符串时 JSON 化，避免 [object Object]）。
@@ -130,7 +134,6 @@ async function checkCaptcha(ctx: Parameters<EventHandler>[0]): Promise<void> {
     if (!comment.capToken) {
       throw new Error("验证码 token 缺失，请刷新页面重试");
     }
-    const { createCap, databaseCapStorage, validateToken } = await import("../services/cap");
     await checkCapCaptcha(
       {
         capToken: comment.capToken as string,

@@ -15,7 +15,7 @@
  *     ① jsdoc/require-jsdoc——函数/类方法/对象方法/箭头函数常量/导出常量必须带注释
  *     ② 本地规则 twikoo/no-scoped-style——禁 <style scoped>
  *     ③ no-restricted-imports（仅 server-common）——重依赖顶层静态 import 禁令
- *     （规则二「禁新 .js 源码」由 scripts/check-no-js-sources.mjs + check:no-js 脚本承担）
+ *     （规则二「禁新 .js 源码」为人工约定，无自动守卫）
  *  9. T10 测试目录疑似密钥字面量禁令（.env 机制配套，同在 prettier 末层之前）
  *
  * 重写模式说明：client 尚无源码，本配置直接按 Vue 3 设定，无任何 Vue2 过渡降级；
@@ -278,8 +278,8 @@ export default defineConfigWithVueTs(
 
   {
     // 规则一作用域排除：scripts/** 工具脚本不属于包源码，不参与 jsdoc 强制
-    // （docs/** 已在全局 ignores 中）。守卫脚本 check-no-js-sources.mjs 以头部
-    // 块注释自释用途，不依赖本豁免，但豁免保证未来脚本无需为此补注释。
+    // （docs/** 已在全局 ignores 中）。脚本以头部块注释自释用途，不依赖本豁免，
+    // 但豁免保证未来脚本无需为此补注释。
     name: "twikoo/no-jsdoc-on-tooling-scripts",
     files: ["scripts/**"],
     rules: { "jsdoc/require-jsdoc": "off" },

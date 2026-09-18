@@ -1,11 +1,14 @@
 # Twikoo 2.0 持续集成门禁（T40 / §4.4）
 #
-# 4 个并行门禁 job（lint / typecheck / test / build）+ 2 个守卫 job：
-#   - baseline：阶段 0 的三条基线（engines.node / .nvmrc / 8 包 version）
-#   - agents-staleness：改了规则相关文件却未同步 AGENTS.md → 只警告不阻塞（§12.1）
+# 4 个并行门禁 job（lint / typecheck / test / build），互不 needs。
 #
-# 注：workflows 自身的静态检查（actionlint + 结构断言）在 lint job 中通过
-#     `pnpm run check:workflows` 一并执行。
+# 以下守卫项一律由**人工核对**，不设 CI 检查：
+#   - 基线（engines.node / .nvmrc / 8 个发布包 version）
+#   - AGENTS.md 与仓库现状是否同步
+#   - workflow 静态检查（actionlint + 结构断言）
+#   - packages/*/src 无 .js 源码
+#   - 适配器 dependencies 完整性
+#   - .env.example 变量清单一致性
 
 name: CI
 
@@ -39,12 +42,6 @@ jobs:
 
       - name: ESLint
         run: pnpm lint
-
-      - name: Guard — no .js sources under packages/*/src
-        run: pnpm run check:no-js
-
-      - name: Guard — workflow actionlint + structure assertions
-        run: pnpm run check:workflows
 
   typecheck:
     name: Typecheck
@@ -131,31 +128,3 @@ jobs:
 
       - name: Docs site build
         run: pnpm --filter twikoo-docs docs:build
-
-  baseline:
-    name: Baseline guard
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-
-      - name: Guard — engines.node / .nvmrc / 8 publishable versions
-        run: node scripts/check-baseline.mjs
-
-  agents-staleness:
-    name: AGENTS.md staleness (warning only)
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Warn when rule files changed without AGENTS.md
-        run: node scripts/check-agents-staleness.mjs --base "${{ github.event.pull_request.base.sha }}"

@@ -9,7 +9,7 @@
  * （非 failed），CI 无 Secrets 照常绿，fork PR 也能通过。
  *
  * 本地有 .env 且填了真实凭据时，这些用例会真实发信 / 推送 / 上传 / 检测——存在真实副作用，
- * 请仅在需要时启用（详见根 .env 与 scripts/env-check.mjs）。
+ * 请仅在需要时启用（变量清单见根 `.env.example`）。
  */
 import { describe, expect, it } from "vitest";
 import { emailTest } from "../../src/services/notify";

@@ -6,7 +6,7 @@
  * （等价 describe.skip，运行结果显示 skipped 而非 failed），保证 fork PR 在
  * 无 Secrets 的 CI 上照样跑绿。变量清单见根 .env.example。
  *
- * 空字符串与未定义同样视为「未配置」，与 scripts/env-check.mjs 判定语义一致。
+ * 空字符串与未定义同样视为「未配置」。
  * @param name 环境变量名（如 "TEST_SMTP_HOST"）
  * @returns true 表示已配置，可执行真实外部依赖用例
  */

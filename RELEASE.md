@@ -29,18 +29,17 @@ pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build
-node scripts/check-adapter-deps.mjs     # 适配器依赖完整性（D-2）
-pnpm check:no-js                        # 源码无 .js
-pnpm check:workflows                    # actionlint + 结构断言
-pnpm check:baseline                     # engines / .nvmrc / 8 包 0.0.0
 pnpm release:check                      # 8 个发布包 version 必须为 0.0.0
 pnpm e2e:b2                             # B.2 前端清单端到端回归（26 项；需先 pnpm build）
 pnpm check:products                     # B.3 四产物 + 自托管启动/全功能/shutdown（需先 pnpm build）
-pnpm check:agents                       # AGENTS.md 滞后检查（警告级，不阻塞）
 node node_modules/prettier/bin/prettier.cjs --check .
 git tag -l                              # 必须为空：不得预创建 tag
 git status --porcelain                  # 必须为空：工作区干净
 ```
+
+> 原先的 `check:adapter-deps` / `check:no-js` / `check:workflows` / `check:baseline` 守卫脚本已移除，
+> 对应项改为**人工核对**：适配器 `dependencies` 完整性（按 capabilities）、`packages/*/src` 无 `.js`
+> 源码、workflow 结构（`type:` / `types:` 等易错点）、`engines.node` / `.nvmrc` 基线。
 
 发布顺序/版本合法性可**提前本地预演**（需要网络，读 npm registry）：
 

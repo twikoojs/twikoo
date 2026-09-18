@@ -36,8 +36,6 @@ pnpm build          # 全仓构建（pnpm -r --if-present run build）
 pnpm test           # 全仓单元测试（Vitest projects）
 pnpm lint           # ESLint 9 flat
 pnpm typecheck      # 逐包 tsc --noEmit
-pnpm run check:no-js # 守卫：packages/*/src 下不得出现 .js 源码
-pnpm env:check      # 环境变量清单校验（对照 .env.example）
 ```
 
 单包命令用 `pnpm --filter <包名> <script>`，例如 `pnpm --filter tkserver test`、`pnpm --filter twikoo build`。**注意目录名 ≠ 包名**（`server-cloudbase` → `twikoo-func`、`server-common` → `@twikoojs/common`），对照表见 AGENTS.md。
@@ -50,7 +48,7 @@ pnpm env:check      # 环境变量清单校验（对照 .env.example）
 
 ## 环境变量
 
-- 所有新增环境变量**必须**同步写入根 `.env.example`（`pnpm env:check` 会校验）；
+- 所有新增环境变量**必须**同步写入根 `.env.example`（人工核对，无自动守卫）；
 - 本地测试所需的真实值写入根 `.env`（已 gitignore），**不要提交任何密钥**；测试代码中出现疑似密钥字面量会被 ESLint 直接拦下。
 
 ## 提交

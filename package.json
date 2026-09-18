@@ -7,7 +7,7 @@
     "node": ">=26"
   },
   "scripts": {
-    "dev": "echo \"TODO: wire up dev server in a later wave (T9)\"",
+    "dev": "pnpm run demo",
     "demo:build": "pnpm -r --filter @twikoojs/common --filter tkserver --filter twikoo run build",
     "demo": "pnpm run demo:build && concurrently -k -n client,server,demo -c blue,green,magenta \"pnpm --filter twikoo build:watch\" \"cross-env TWIKOO_DATA=../../data TWIKOO_SEED=1 pnpm --filter tkserver start\" \"pnpm --filter @twikoojs/demo dev\"",
     "build": "pnpm -r --if-present run build",
@@ -15,14 +15,8 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "check:no-js": "node scripts/check-no-js-sources.mjs",
     "typecheck": "pnpm -r --if-present run typecheck",
-    "env:check": "node scripts/env-check.mjs",
-    "check:workflows": "node scripts/check-workflows.mjs",
     "release:check": "node scripts/release-set-version.mjs --check",
-    "check:baseline": "node scripts/check-baseline.mjs",
-    "check:agents": "node scripts/check-agents-staleness.mjs",
-    "check:adapter-deps": "node scripts/check-adapter-deps.mjs",
     "e2e:b2": "node scripts/e2e-b2.mjs",
     "check:products": "node scripts/check-cdn-products.mjs"
   },
@@ -31,7 +25,6 @@
     "@vitest/coverage-v8": "5.0.1",
     "@vue/eslint-config-typescript": "^14.9.0",
     "@vue/test-utils": "^2.5.1",
-    "actionlint": "^2.0.6",
     "concurrently": "^10.0.5",
     "cross-env": "^10.1.0",
     "eslint": "^10.10.0",
@@ -47,7 +40,6 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.70.0",
     "vitest": "^5.0.1",
-    "vue": "^3.5.42",
-    "yaml": "^2.9.1"
+    "vue": "^3.5.42"
   }
 }

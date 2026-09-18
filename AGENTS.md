@@ -1,60 +1,58 @@
-# Twikoo 2.0 开发者指引（AGENTS.md）
+# Twikoo 2.0 开发者指引
 
-> **本文档已随 Wave 5 定稿（T42），与实现、CI 配置逐节核对。** 若发现与仓库现状不符，以仓库实际状态为准并及时订正；改动规则相关文件（`eslint.config.js`、`vitest.config.ts`、`scripts/check-*`、`.github/workflows/*`、`pnpm-workspace.yaml`、`.env.example`）时，CI 会提示同步本文档（非阻塞警告）。
-
----
+本文面向本地二次开发，文档站内容见 `docs/`。
 
 ## 项目速览
 
-Twikoo 是一个开源的静态网站评论系统。本仓库为 **2.0 重构**（monorepo 架构），基于 twikoo **1.7.24**（commit `62f9a93`）参考重写——参考行为与要点，非代码复制。
+Twikoo 是一个开源的静态网站评论系统。
 
-- **包管理器**：pnpm（`packageManager` 字段锁定 12.3.4）+ `pnpm-workspace.yaml`
-- **工作区规模**：17 个项目（根 + `packages/*` 下 15 包 + `docs`）
-- **Node 基线**：Node **26**（`.nvmrc` = 26；`engines.node` = `>=26`；产物语法目标 **ES2022**）
-- **测试规模**：38 个测试文件、431 条用例（`pnpm test`）
+## 环境要求
+
+- Node.js 26
+- pnpm
+
+## 快速开始
+
+```sh
+pnpm install # 安装工作区依赖
+pnpm demo # 一键启动本地演示（客户端、私有部署服务端、演示页）
+```
 
 ### 目录 ↔ 包名对照表
 
-| 目录                             | 包名                      | 类型 | 说明                                                              |
-| -------------------------------- | ------------------------- | ---- | ----------------------------------------------------------------- |
-| `packages/client`                | **`twikoo`**              | 发布 | 客户端（Vue3 + TS + Vite，UMD 输出）                              |
-| `packages/server-cloudbase`      | **`twikoo-func`** ⚠️      | 发布 | CloudBase 适配器（入口 `exports.main`，CloudBase 控制台依赖此名） |
-| `packages/server-common`         | **`@twikoojs/common`** ⚠️ | 发布 | 服务端公共逻辑（pipeline + 事件分发 + ports + 4 DB 实现）         |
-| `packages/server-vercel`         | `twikoo-vercel`           | 发布 | Vercel 适配器                                                     |
-| `packages/server-netlify`        | `twikoo-netlify`          | 发布 | Netlify 适配器                                                    |
-| `packages/server-self-hosted`    | `tkserver`                | 发布 | 自托管（Node.js HTTP；bin = `dist/server.js`）                    |
-| `packages/pushoo`                | `pushoo`                  | 发布 | 推送通道库（独立仓库源迁入，版本跟随统一版本线）                  |
-| `packages/shared`                | `@twikoojs/shared`        | 发布 | 版本占位符、事件常量、共享类型                                    |
-| `packages/server-edgeone-makers` | `twikoo-edgeone-makers`   | 私有 | EdgeOne Makers 适配器（不发布）                                   |
-| `packages/server-aws-lambda`     | `twikoo-aws-lambda`       | 私有 | AWS Lambda 适配器（不发布）                                       |
-| `packages/server-deta`           | `twikoo-deta`             | 私有 | Deta 适配器（不发布）                                             |
-| `packages/server-vercel-min`     | `twikoo-vercel-min`       | 私有 | Vercel 精简适配器（不发布，转发壳）                               |
-| `packages/pkg`                   | `twikoo-pkg`              | 私有 | SEA 可执行产物打包流水线（不发布；`version` 为占位值）            |
-| `packages/tsdown-config`         | `@twikoojs/tsdown-config` | 私有 | tsdown 共享构建积木（产物命名契约、版本占位符插件）               |
-| `packages/demo`                  | `@twikoojs/demo`          | 私有 | 本地演示工程（`pnpm demo`）                                       |
-| `docs`                           | `twikoo-docs`             | 私有 | VitePress 文档站                                                  |
+目录名 ≠ 包名，所有代码中引用包名必须使用 `package.json` 里的 `name`，不可凭目录名推断。
 
-> **⚠️ 最大陷阱**：目录名 ≠ 包名——`server-cloudbase` → **`twikoo-func`**、`server-common` → **`@twikoojs/common`**。所有代码中引用包名必须使用 `package.json` 里的 `name`，不可凭目录名推断。
-
----
+```
+twikoo/
+├── packages/
+│   ├── shared/                # @twikoojs/shared        ← 前后端共享类型与常量
+│   ├── tsdown-config/         # @twikoojs/tsdown-config ← 共享构建积木
+│   ├── client/                # twikoo                  ← 前端库
+│   ├── server-common/         # @twikoojs/common        ← 公共后端库，核心交付
+│   ├── server-aws-lambda/     # twikoo-aws-lambda       ← AWS Lambda 适配器
+│   ├── server-cloudbase/      # twikoo-func             ← 腾讯云 CloudBase 适配器
+│   ├── server-deta/           # twikoo-deta             ← Deta 适配器
+│   ├── server-edgeone-makers/ # twikoo-edgeone-makers   ← EdgeOne Makers 适配器
+│   ├── server-netlify/        # twikoo-netlify          ← Netlify 适配器
+│   ├── server-vercel/         # twikoo-vercel           ← Vercel 适配器
+│   ├── server-vercel-min/     # twikoo-vercel-min       ← Vercel 精简适配器
+│   ├── server-self-hosted/    # tkserver                ← 私有部署适配器
+│   ├── pkg/                   # twikoo-pkg              ← SEA 可执行产物打包流水线，产出私有部署可执行程序
+│   ├── demo/                  # @twikoojs/demo          ← 本地演示工程
+│   └── pushoo/                # pushoo                  ← 推送通道库
+└── docs/                      # twikoo-docs             ← VitePress 文档站
+```
 
 ## 常用命令
 
 ```bash
-pnpm install              # 安装工作区依赖
-pnpm demo                 # 一键本地演示（客户端 watch + tkserver + demo 页，离线可用）
-pnpm build                # 全仓构建（pnpm -r --if-present run build）
-pnpm test                 # 全仓单元测试（Vitest projects）
-pnpm lint                 # ESLint 9 flat
-pnpm typecheck            # 逐包 tsc --noEmit
-pnpm run check:no-js      # 守卫：packages/*/src 下不得出现 .js/.mjs/.cjs 源码
-pnpm run check:workflows  # 守卫：actionlint（wasm）+ workflow 结构断言
-pnpm run check:baseline   # 守卫：engines.node / .nvmrc / 8 包 version
-pnpm run check:agents     # AGENTS.md 滞后检查（CI 在 PR 上自动跑）
-pnpm env:check            # 环境变量清单校验（对照 .env.example）
-pnpm release:check        # 发布基线：8 个发布包 version 必须为 0.0.0
-pnpm e2e:b2               # 附录 B.2 前端清单端到端回归（真启 tkserver + jsdom 驱动构建产物）
-pnpm check:products       # B.3 客户端四产物逐一 init + 形态断言 + tkserver 启动/shutdown
+pnpm build # 全仓构建
+pnpm test # 全仓单元测试
+pnpm lint # ESLint
+pnpm typecheck # 逐包 tsc --noEmit
+pnpm release:check # 发布基线：8 个发布包 version 必须为 0.0.0
+pnpm e2e:b2 # 端到端回归
+pnpm check:products # B.3 客户端四产物逐一 init + 形态断言 + tkserver 启动/shutdown
 ```
 
 > `pnpm e2e:b2` 与 `pnpm check:products` 都需要先 `pnpm build`（消费 `packages/client/dist/*`
@@ -74,21 +72,6 @@ pnpm check:products       # B.3 客户端四产物逐一 init + 形态断言 + t
 > `dev` 仍为占位（本地开发统一走 `pnpm demo`）。
 > **Windows 开发者**：如遇脚本 shell 兼容问题，可用 `bash -lc "pnpm build"` 通过 Git Bash 执行。
 
----
-
-## 环境准备
-
-```bash
-node -v                     # 应为 v26.x（engines >=26；CI 与 Docker 同基线）
-corepack enable && corepack prepare pnpm@12 --activate
-pnpm config set registry https://registry.npmmirror.com --global   # 可选，仅全局配置
-cd twikoo2 && pnpm install
-```
-
-> **D-10**：镜像源只在**开发者全局**配置。仓库内 `.npmrc` **不写** `registry`——CI 默认使用 npm 官方源。若依赖带构建脚本（esbuild 等）触发 `ERR_PNPM_IGNORED_BUILDS`，需在 `pnpm-workspace.yaml` 的 `allowBuilds` 中显式授权。
-
----
-
 ## 架构说明
 
 ```
@@ -107,16 +90,41 @@ cd twikoo2 && pnpm install
 
 客户端通过 HTTP POST 发送事件名，服务端 dispatcher 分发到对应 handler：
 
-| 类别             | 事件名                                                                                                                                   |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| 评论操作         | `COMMENT_SUBMIT` · `COMMENT_GET` · `COMMENT_LIKE` · `COMMENT_DELETE_FOR_USER`                                                            |
-| 管理员操作       | `COMMENT_GET_FOR_ADMIN` · `COMMENT_SET_FOR_ADMIN` · `COMMENT_DELETE_FOR_ADMIN` · `COMMENT_IMPORT_FOR_ADMIN` · `COMMENT_EXPORT_FOR_ADMIN` |
-| 统计             | `COUNTER_GET` · `GET_COMMENTS_COUNT` · `GET_RECENT_COMMENTS`                                                                             |
-| 配置/登录        | `GET_CONFIG` · `GET_CONFIG_FOR_ADMIN` · `SET_CONFIG` · `LOGIN` · `GET_PASSWORD_STATUS` · `SET_PASSWORD`                                  |
-| 验证码           | `CAP_CHALLENGE` · `CAP_REDEEM`                                                                                                           |
-| 邮件/上传/反垃圾 | `EMAIL_TEST` · `UPLOAD_IMAGE` · `GET_QQ_NICK`                                                                                            |
-| 版本             | `GET_FUNC_VERSION`                                                                                                                       |
-| 兼容分支         | `POST_SUBMIT` · `HIDDEN` · `VISIBLE`（1.x 兼容，**2.2.0 移除**，见文末清单）                                                             |
+- 评论操作
+  - `COMMENT_SUBMIT`
+  - `COMMENT_GET`
+  - `COMMENT_LIKE`
+  - `COMMENT_DELETE_FOR_USER`
+- 管理员操作
+  - `COMMENT_GET_FOR_ADMIN`
+  - `COMMENT_SET_FOR_ADMIN`
+  - `COMMENT_DELETE_FOR_ADMIN`
+  - `COMMENT_IMPORT_FOR_ADMIN`
+  - `COMMENT_EXPORT_FOR_ADMIN` 
+- 统计
+  - `COUNTER_GET`
+  - `GET_COMMENTS_COUNT`
+  - `GET_RECENT_COMMENTS`
+- 配置/登录
+  - `GET_CONFIG`
+  - `GET_CONFIG_FOR_ADMIN`
+  - `SET_CONFIG`
+  - `LOGIN`
+  - `GET_PASSWORD_STATUS`
+  - `SET_PASSWORD`
+- 验证码
+  - `CAP_CHALLENGE`
+  - `CAP_REDEEM`
+- 邮件/上传/反垃圾
+  - `EMAIL_TEST`
+  - `UPLOAD_IMAGE`
+  - `GET_QQ_NICK`
+- 版本
+  - `GET_FUNC_VERSION`
+- 兼容分支
+  - `POST_SUBMIT`
+  - `HIDDEN`
+  - `VISIBLE`
 
 > 新增事件须在客户端 `api.ts`、`@twikoojs/common` dispatcher 中同步添加；适配器经 common 统一分发，只需声明 capabilities。
 
@@ -142,7 +150,7 @@ cd twikoo2 && pnpm install
 - **Ports 注入**：`request` / `response` / `database` / `storage` / `mailer` / `notifier` / `capabilities`
 - **行数约束**：适配器 < **150 行**（`tkserver` 的 `main.ts` 有测试固化；`pkg` 是打包流水线，不适用）
 - **入口约定**：`createXxxFunc({ database? })` / `createXxxHandler()`；`twikoo-func` 必须保留 `exports.main`（CloudBase 硬依赖）
-- **依赖完整性**：重依赖在适配器 `dependencies` 中声明，由 `node scripts/check-adapter-deps.mjs` 校验（8 个适配器）
+- **依赖完整性**：重依赖在适配器 `dependencies` 中声明，按 capabilities 人工核对（8 个适配器；无自动守卫）
 - **懒加载解析**：common 的重依赖经 `await import(specifier)` 加载，解析基准是**适配器所在位置**——`@twikoojs/common` 已把 16 个重依赖声明为 `peerDependenciesMeta.optional`，pnpm isolated 链接下才会在 common 侧可见（T35 修复的真实缺陷）
 
 ---
@@ -153,7 +161,7 @@ cd twikoo2 && pnpm install
 
 - **每个函数、类方法、导出常量上方必须写中文注释**（ESLint `jsdoc/require-jsdoc` 强制，含 `export const` 与对象方法）
 - TypeScript `strict`；语法目标 **ES2022**（浏览器基线 Chrome/Edge 94+、Firefox 93+、Safari 15.4+）
-- **`packages/*/src` 下不得出现 `.js`/`.mjs`/`.cjs` 源码**（`pnpm run check:no-js` 守卫，白名单为空）
+- **`packages/*/src` 下不得出现 `.js`/`.mjs`/`.cjs` 源码**（人工约定，无自动守卫）
 - 提交信息：Conventional Commits（`feat|fix|chore|docs|test|build|ci|refactor` + scope）
 
 ### 工具链
@@ -162,7 +170,7 @@ cd twikoo2 && pnpm install
 - **Prettier**（`semi` · 双引号 · `trailingComma: "all"` · `printWidth: 100` · `tabWidth: 2`）
 - **无本地提交钩子**：`lint-staged` / `simple-git-hooks` 及 `prepare` 生命周期脚本已移除，仓库不再安装
   pre-commit 钩子——规范一律由 **GitHub Actions 的 CI 门禁**把关（`lint` / `typecheck` / `test` /
-  `build` + `baseline` / `agents-staleness` 两个守卫 job）。本地提交前请自行跑 `pnpm lint`（必要时
+  `build` 四个并行 job）。本地提交前请自行跑 `pnpm lint`（必要时
   `pnpm lint:fix`）与 `pnpm prettier --write <files>`。`prettier` 依赖与 `.prettierrc.json` 保留，
   供手动格式化（注意本机 `pnpm exec <bin>` 不可用，见「常见坑」第 4 条）。
 - **Vitest 5**（工作区模式：根 `vitest.config.ts` 的 `projects` 发现各包 `vitest.config.ts`）
@@ -239,7 +247,7 @@ outputOptions: (options, format) => (format === "cjs" ? { ...options, exports: "
 
 ### 声明方式
 
-- **适配器**：按需在 `dependencies` 中声明实际使用的重依赖（`check-adapter-deps.mjs` 按 capabilities 校验，`marked` 亦在通用清单内）
+- **适配器**：按需在 `dependencies` 中声明实际使用的重依赖（按 capabilities 人工核对，`marked` 亦在通用清单内）
 - **`@twikoojs/common`**：16 个重依赖统一以 `peerDependencies` + `peerDependenciesMeta.optional` 声明——既表达接口约束，又让 pnpm 把它们链接到 common 侧（否则 isolated 链接下动态 import 必然 MODULE_NOT_FOUND）
 
 ### 禁止事项
@@ -264,7 +272,7 @@ outputOptions: (options, format) => (format === "cjs" ? { ...options, exports: "
 
 ### 版本号规则
 
-- **8 个发布包的 `version` 恒为 `0.0.0`**，禁止任何改动（`pnpm release:check` 与 CI `baseline` job 会拦）
+- **8 个发布包的 `version` 恒为 `0.0.0`**，禁止任何改动（`pnpm release:check` 与 `release.yml` 的基线校验步骤会拦）
 - 版本号由 CI 在发布时从 **Release tag** 注入（`strip /^v/`），不进入 git
 - `pushoo` 不再维护独立版本线（BC-11）：与 `twikoo` 同版本发布，其变更随 twikoo 版本一起出去
 
@@ -278,7 +286,7 @@ outputOptions: (options, format) => (format === "cjs" ? { ...options, exports: "
    - 第二批：`twikoo-func` · `twikoo-vercel` · `tkserver` · `twikoo-netlify`
    - gate：8 包全部可见
 4. 收尾（仅正式版）：`publish-docker`（`imaegoo/twikoo:latest` / `:VERSION` / `:arm32v7`）、`publish-pkg`（SEA 产物用 `gh release upload` 挂到**已有** Release）
-5. 发布脚本：`scripts/release-set-version.mjs`（基线校验 / 覆写）、`release-version-check.mjs`（单调性 / 未发布过）、`verify-npm.mjs`（可见性 gate）、`check-workflows.mjs`（actionlint + 结构断言）
+5. 发布脚本：`scripts/release-set-version.mjs`（基线校验 / 覆写）、`release-version-check.mjs`（单调性 / 未发布过）、`verify-npm.mjs`（可见性 gate）
 
 > **实际操作请照 `RELEASE.md` 走**（发布前本地检查清单 → 网页创建 Release → 观察两阶段 →
 > 发布后核验 → **回滚**）。前置条件（仓库 secrets）以 `RELEASE.md` §0 为准，其中
@@ -315,7 +323,7 @@ push 到 `main` 且改动 `docs/**`、或 Release published、或手动触发 �
 ### `.env` 机制（硬规则）
 
 - 变量清单的**唯一真相源是根 `.env.example`**（当前 23 个：A 类密钥 14 + B 类默认值 9）
-- **硬规则：新增任何环境变量，必须同步更新 `.env.example`**（含用途注释与「缺失时哪些用例会 skip」）；`pnpm env:check` 校验清单一致性
+- **硬规则：新增任何环境变量，必须同步更新 `.env.example`**（含用途注释与「缺失时哪些用例会 skip」；人工核对，无自动守卫）
 - 测试通过 `hasEnv()` 判定「空字符串 = 未配置」→ 对应用例**整体 skip**（不失败、不伪造密钥）；本地真实值写入根 `.env`（已 gitignore）
 - 测试代码中出现疑似密钥字面量会被 ESLint 直接拦下（`test-secret-literal-ban`）
 
@@ -369,12 +377,12 @@ push 到 `main` 且改动 `docs/**`、或 Release published、或手动触发 �
 2. **目录名 ≠ 包名**：见上方对照表；`server-cloudbase` → `twikoo-func`、`server-common` → `@twikoojs/common`。
 3. **重依赖在 common 侧不可见**：只把重依赖写进适配器 `dependencies` 不够——common 的动态 `import()` 以自身位置解析，必须同时在 common 的 `peerDependencies`(+`optional`) 中声明（T35 实测：`COMMENT_SUBMIT` 曾因 jsdom 解析失败返回 1000）。
 4. **`pnpm exec <bin>` 在部分环境失效**：改用 `node_modules/.bin/<bin>` 或 `pnpm run <script>`。仓库已不装 pre-commit 钩子，提交前请手动执行等价检查（`pnpm lint` + `pnpm prettier --write`）。
-5. **`version` 字段禁止人为修改**：保持 `0.0.0`，由 CI 从 Release tag 注入；`pnpm release:check` 与 CI `baseline` job 会拦。
-6. **新增 env 变量必须同步 `.env.example`**：否则 `pnpm env:check` 会不一致。
+5. **`version` 字段禁止人为修改**：保持 `0.0.0`，由 CI 从 Release tag 注入；`pnpm release:check` 与 `release.yml` 的基线校验步骤会拦。
+6. **新增 env 变量必须同步 `.env.example`**：无自动守卫，需人工核对。
 7. **CSS 不得用 `<style scoped>`、不得出现 `.el-*`**：见 CSS 规范（均有 ESLint 规则）。
-8. **`packages/*/src` 不得新增 `.js`**：重写模式全量 TS；`pnpm run check:no-js` 守卫。
+8. **`packages/*/src` 不得新增 `.js`**：重写模式全量 TS（人工约定，无自动守卫）。
 9. **Windows 开发**：pnpm 脚本可能遇到 shell 兼容问题，可用 `bash -lc "pnpm ..."`。
-10. **workflow 改动要过 actionlint**：`pnpm run check:workflows`（含 `type:` / `types:` 这类易错点的结构断言）。
+10. **workflow 改动需人工核对**：留意 `type:` / `types:` 这类易错点（原 actionlint + 结构断言守卫已移除）。
 
 ---
 

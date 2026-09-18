@@ -23,7 +23,7 @@
   },
   "homepage": "https://pushoo.js.org/",
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "lint": "eslint src/**",
     "test": "vitest run"

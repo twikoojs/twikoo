@@ -5,7 +5,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
-    "build": "tsup"
+    "build": "tsdown"
   },
   "dependencies": {
     "@cap.js/server": "^4.0.5",

@@ -17,7 +17,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "check:size": "node scripts/check-eo-size.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run"

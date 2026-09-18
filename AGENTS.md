@@ -11,7 +11,7 @@ Twikoo 是一个开源的静态网站评论系统。本仓库为 **2.0 重构**�
 - **包管理器**：pnpm（`packageManager` 字段锁定 12.3.4）+ `pnpm-workspace.yaml`
 - **工作区规模**：17 个项目（根 + `packages/*` 下 15 包 + `docs`）
 - **Node 基线**：Node **26**（`.nvmrc` = 26；`engines.node` = `>=26`；产物语法目标 **ES2022**）
-- **测试规模**：35 个测试文件、360 条用例（`pnpm test`）
+- **测试规模**：38 个测试文件、431 条用例（`pnpm test`）
 
 ### 目录 ↔ 包名对照表
 
@@ -30,7 +30,7 @@ Twikoo 是一个开源的静态网站评论系统。本仓库为 **2.0 重构**�
 | `packages/server-deta`           | `twikoo-deta`             | 私有 | Deta 适配器（不发布）                                             |
 | `packages/server-vercel-min`     | `twikoo-vercel-min`       | 私有 | Vercel 精简适配器（不发布，转发壳）                               |
 | `packages/pkg`                   | `twikoo-pkg`              | 私有 | SEA 可执行产物打包流水线（不发布；`version` 为占位值）            |
-| `packages/tsup-config`           | `@twikoojs/tsup-config`   | 私有 | tsup 共享配置                                                     |
+| `packages/tsdown-config`         | `@twikoojs/tsdown-config` | 私有 | tsdown 共享构建积木（产物命名契约、版本占位符插件）               |
 | `packages/demo`                  | `@twikoojs/demo`          | 私有 | 本地演示工程（`pnpm demo`）                                       |
 | `docs`                           | `twikoo-docs`             | 私有 | VitePress 文档站                                                  |
 

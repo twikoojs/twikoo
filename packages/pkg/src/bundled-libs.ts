@@ -18,7 +18,7 @@
  * 2. 查表命中即返回该命名空间；**未命中的 specifier 仍回落到动态 import**，
  *    保留 D-2 的「可扩展、不静态绑定未知依赖」性质。
  *
- * **两个 1.x 打包补丁因此重新生效**（见 `tsdown.config.ts`）：
+ * **两个 1.x 打包补丁因此重新生效**（见 `tsdown.config.mts`）：
  * - jsdom 的 `require.resolve("./xhr-sync-worker.js")` → 置 null（整棵树无同步 XHR）；
  * - `@imaegoo/node-ip2region` 的 `DEFAULT_DB_PATH` → 内联 base64 数据库并落到临时目录。
  *

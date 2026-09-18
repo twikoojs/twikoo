@@ -26,7 +26,7 @@ import { startTkserver } from "tkserver";
 import { VERSION } from "@twikoojs/shared";
 import { installBundledLibs } from "./bundled-libs";
 
-/** 内置的 SEA 资源清单（与 tsdown.config.ts 的 seaConfig.assets 保持一致） */
+/** 内置的 SEA 资源清单（与 tsdown.config.mts 的 seaConfig.assets 保持一致） */
 const SEA_ASSETS = [".env", "web.config"] as const;
 
 /** CLI 名称（常量：见文件头「CLI 元信息不得运行时读文件」） */

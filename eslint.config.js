@@ -160,9 +160,13 @@ export default defineConfigWithVueTs(
     // 5. 配置文件与测试文件不需要 type-aware 规则——且多数不在任何 tsconfig 项目内
     //    （根 vitest.config.ts、packages/shared/vitest.config.ts、packages/*/test/**；
     //    tsconfig 由 T11 冻结，不在本任务范围改动）。
+    //    `.mts` 变体必须一并列出：未声明 `type: "module"` 的包（pushoo 与各适配器）其
+    //    tsdown 配置为 `tsdown.config.mts`（消除 Node 的 MODULE_TYPELESS_PACKAGE_JSON 告警，
+    //    见 AGENTS.md「构建配置文件名」），漏掉就会被 projectService 判为「不属于任何项目」
+    //    而直接解析失败。
     //    纯 .js 文件（含本文件）由 @vue/eslint-config-typescript 自动套 disableTypeChecked。
     name: "twikoo/skip-typecheck-configs-and-tests",
-    files: ["**/*.config.ts", "**/test/**"],
+    files: ["**/*.config.ts", "**/*.config.mts", "**/test/**"],
     extends: [tseslint.configs.disableTypeChecked],
   },
 

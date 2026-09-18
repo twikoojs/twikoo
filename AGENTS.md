@@ -187,6 +187,48 @@ cd twikoo2 && pnpm install
 | 客户端        | ESM + TS | UMD（`twikoo.all.min.js` 等，文件名沿用 1.x） |
 | 共享配置      | ESM + TS | 纯 TS（被其他包直接引用）                     |
 
+### 构建配置文件名（`.ts` / `.mts`）必须与 `package.json` 的 `type` 对齐
+
+| `package.json` `type` | 配置文件名          |
+| --------------------- | ------------------- |
+| `"module"`            | `tsdown.config.ts`  |
+| 未声明（CJS 侧）      | `tsdown.config.mts` |
+
+tsdown 用 Node 原生加载器 import 配置文件；未声明 `type` 的包里 `.ts` 属「模块类型未指定」，
+Node 会打印 `[MODULE_TYPELESS_PACKAGE_JSON]` 告警（并按 CJS 解析失败）。改扩展名即可消除。
+
+⚠️ **不要**改为给这些包补 `"type": "module"`：`outExtensions()` 的产物命名契约正是按 `type` 分档的
+（未声明时 CJS 产物为 `dist/index.js`，`tkserver` 的 `bin` 依赖 `dist/server.js`），补上会变成 `.cjs`
+而破坏 `exports` / `bin` / CloudBase 的 `exports.main`。
+
+改名时要同步两处（漏了 lint 会直接失败，不是告警）：
+
+1. 该包 `tsconfig.json` 的 `include`（`tsdown.config.mts`）——否则 typescript-eslint 的
+   projectService 判定「不属于任何项目」而解析失败；
+2. `eslint.config.js` 第 5 段 `twikoo/skip-typecheck-configs-and-tests` 的 `files` glob
+   （已含 `**/*.config.ts` 与 `**/*.config.mts`）。
+
+### 双格式产物的 `exports: "named"`
+
+入口同时有命名导出与 `export default` 时，rolldown 对 **CJS** 输出打印 `[MIXED_EXPORTS]`。
+属此形态的包（`pushoo`、`server-vercel`）在配置里显式声明：
+
+```ts
+outputOptions: (options, format) => (format === "cjs" ? { ...options, exports: "named" } : options),
+```
+
+这只是把 `auto` 的既有推断结果写实（**产物逐字节不变**），并锁住 `.notice` / `.default` 两个访问形态。
+不要写成 `"default"`，也不要加到「只有默认导出」的包上——那会改变 CJS 互操作形态。
+
+### 动态 import 的纪律
+
+- **只对重依赖用动态 `import()`**（`@twikoojs/common` 经 `utils/lib-loader.ts` 的变量 specifier 间接加载，
+  见其头注释），目的是能力门 + 「未安装也不在加载期崩」；
+- `utils/lib-loader.ts` 自身是薄取用层，**一律静态导入**——动态导入它只会得到
+  `[INEFFECTIVE_DYNAMIC_IMPORT]`（同包多处已静态引入，无法拆 chunk），惰性收益为零；
+- 常规 `dependencies`（如 `@cap.js/server`）**不要**用动态导入假装惰性：其消费方处理器若已被
+  静态注册（`handlers/index.ts`），模块必然进主 chunk，动态导入同样无效。
+
 ---
 
 ## 依赖规则

@@ -1,0 +1,39 @@
+{
+  "name": "twikoo-edgeone-makers",
+  "version": "0.0.0",
+  "description": "Twikoo 2.0 腾讯云 EdgeOne Makers 适配器（受限能力形态；业务逻辑在 @twikoojs/common）",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "check:size": "node scripts/check-eo-size.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@cap.js/server": "^4.0.5",
+    "@edgeone/pages-blob": "latest",
+    "@twikoojs/common": "workspace:*",
+    "@twikoojs/shared": "workspace:*",
+    "axios": "^1.20.0",
+    "bowser": "^2.14.1",
+    "html-to-text": "^10.0.1",
+    "marked": "^18.0.13",
+    "xml2js": "^0.6.2"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.1"
+  }
+}

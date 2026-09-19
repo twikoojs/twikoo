@@ -1,0 +1,52 @@
+{
+  "name": "pushoo",
+  "version": "0.0.0",
+  "description": "Instant Messaging Pushing SDK",
+  "keywords": [
+    "pushoojs",
+    "push",
+    "instant",
+    "message",
+    "notification",
+    "twikoo"
+  ],
+  "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
+  "license": "MIT",
+  "main": "./dist/index.cjs",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imaegoo/pushoo.git"
+  },
+  "homepage": "https://pushoo.js.org/",
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint src/**",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "axios": "^1.20.0",
+    "lodash": "^4.18.1",
+    "markdown-to-txt": "^2.0.1",
+    "marked": "^18.0.13"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.1"
+  },
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ]
+}

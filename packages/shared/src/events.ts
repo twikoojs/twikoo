@@ -1,0 +1,133 @@
+/**
+ * 后端事件名常量（Scope E：24 个客户端事件 + 1 个服务端内部事件）。
+ *
+ * 口径说明：1.x 各平台的顶层事件 switch 并集共 **25 个**标识符——24 个由客户端
+ * 发起，另加服务端内部事件 `POST_SUBMIT`（`COMMENT_SUBMIT` 保存评论后触发
+ * 垃圾检测与通知，只有 vercel / CloudBase 的顶层 switch 里有它）。本文件即导出
+ * 这 25 个，客户端的 `api.ts`、`@twikoojs/common` 的事件分发器与契约测试均以此
+ * 为单一事实来源。
+ *
+ * ⚠️ 订正记录：重构期曾把 `HIDDEN` / `VISIBLE` 也当作 1.x 事件分支导出（`ALL_EVENTS`
+ * 一度为 27 项）。经核对 1.x 源码，二者**从来不是事件名**——它们只是
+ * `COMMENT_GET_FOR_ADMIN` 请求体里 `type` 字段的取值（1.x
+ * `getCommentSearchCondition` 的嵌套 switch，客户端 TkAdminComment.vue 的筛选下拉
+ * 即传 `type`）。故 2.0 已删除这两个假事件，`type` 参数机制保持不变。
+ */
+
+/** 获取后端函数版本号，客户端用于探测服务端能力与版本兼容性 */
+export const GET_FUNC_VERSION = "GET_FUNC_VERSION";
+
+/** 获取评论列表（前台，按 URL / 分页 / 排序返回可见评论） */
+export const COMMENT_GET = "COMMENT_GET";
+
+/** 获取评论列表（管理员视图，含待审核与隐藏评论） */
+export const COMMENT_GET_FOR_ADMIN = "COMMENT_GET_FOR_ADMIN";
+
+/** 管理员更新单条评论（审核状态、可见性、置顶等） */
+export const COMMENT_SET_FOR_ADMIN = "COMMENT_SET_FOR_ADMIN";
+
+/** 管理员删除评论 */
+export const COMMENT_DELETE_FOR_ADMIN = "COMMENT_DELETE_FOR_ADMIN";
+
+/** 用户删除自己的评论 */
+export const COMMENT_DELETE_FOR_USER = "COMMENT_DELETE_FOR_USER";
+
+/** 管理员批量导入评论 */
+export const COMMENT_IMPORT_FOR_ADMIN = "COMMENT_IMPORT_FOR_ADMIN";
+
+/** 管理员导出评论 */
+export const COMMENT_EXPORT_FOR_ADMIN = "COMMENT_EXPORT_FOR_ADMIN";
+
+/** 点赞 / 取消点赞评论 */
+export const COMMENT_LIKE = "COMMENT_LIKE";
+
+/** 提交新评论 */
+export const COMMENT_SUBMIT = "COMMENT_SUBMIT";
+
+/** 获取页面评论计数 */
+export const COUNTER_GET = "COUNTER_GET";
+
+/** 查询是否已设置管理密码（不返回密码本身） */
+export const GET_PASSWORD_STATUS = "GET_PASSWORD_STATUS";
+
+/** 首次设置管理密码 */
+export const SET_PASSWORD = "SET_PASSWORD";
+
+/** 获取前台可公开的配置项 */
+export const GET_CONFIG = "GET_CONFIG";
+
+/** 获取管理员完整配置项 */
+export const GET_CONFIG_FOR_ADMIN = "GET_CONFIG_FOR_ADMIN";
+
+/** 保存配置 */
+export const SET_CONFIG = "SET_CONFIG";
+
+/** 管理员登录，校验密码并返回鉴权令牌 */
+export const LOGIN = "LOGIN";
+
+/** 获取评论总数（用于统计展示） */
+export const GET_COMMENTS_COUNT = "GET_COMMENTS_COUNT";
+
+/** 获取最近评论列表 */
+export const GET_RECENT_COMMENTS = "GET_RECENT_COMMENTS";
+
+/** 发送测试邮件，验证 SMTP 配置是否正确 */
+export const EMAIL_TEST = "EMAIL_TEST";
+
+/** 上传图片到图床/存储 */
+export const UPLOAD_IMAGE = "UPLOAD_IMAGE";
+
+/** 获取 QQ 昵称（用于评论者昵称自动填充） */
+export const GET_QQ_NICK = "GET_QQ_NICK";
+
+/** 申请验证码（生成 challenge） */
+export const CAP_CHALLENGE = "CAP_CHALLENGE";
+
+/** 兑换验证码（校验 challenge 答案） */
+export const CAP_REDEEM = "CAP_REDEEM";
+
+/**
+ * 提交后内部钩子（评论提交成功后触发通知 / 反垃圾等后续动作）。
+ *
+ * 这是**服务端内部事件**，长期保留（不是 1.x 兼容分支）：`COMMENT_SUBMIT` 保存评论后，
+ * 由各适配器把本事件派发到独立执行单元，使垃圾检测与通知不占用用户请求的执行预算。
+ * 处理器校验内部派发令牌（`x-twikoo-recursion`），外部直接调用返回 1403。
+ */
+export const POST_SUBMIT = "POST_SUBMIT";
+
+/**
+ * 后端事件名清单（25 个标识符：24 客户端事件 + 服务端内部事件 POST_SUBMIT）。
+ *
+ * 由上述常量聚合而成，字符串值不重复书写；供契约测试遍历与分发器覆盖度校验使用，
+ * 保证新增事件时只需维护一处常量与一处聚合。
+ */
+export const ALL_EVENTS = [
+  GET_FUNC_VERSION,
+  COMMENT_GET,
+  COMMENT_GET_FOR_ADMIN,
+  COMMENT_SET_FOR_ADMIN,
+  COMMENT_DELETE_FOR_ADMIN,
+  COMMENT_DELETE_FOR_USER,
+  COMMENT_IMPORT_FOR_ADMIN,
+  COMMENT_EXPORT_FOR_ADMIN,
+  COMMENT_LIKE,
+  COMMENT_SUBMIT,
+  COUNTER_GET,
+  GET_PASSWORD_STATUS,
+  SET_PASSWORD,
+  GET_CONFIG,
+  GET_CONFIG_FOR_ADMIN,
+  SET_CONFIG,
+  LOGIN,
+  GET_COMMENTS_COUNT,
+  GET_RECENT_COMMENTS,
+  EMAIL_TEST,
+  UPLOAD_IMAGE,
+  GET_QQ_NICK,
+  CAP_CHALLENGE,
+  CAP_REDEEM,
+  POST_SUBMIT,
+] as const;
+
+/** 后端事件名的字面量联合类型，取自 {@link ALL_EVENTS} 的成员 */
+export type TwikooEvent = (typeof ALL_EVENTS)[number];

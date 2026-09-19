@@ -11,9 +11,11 @@
   "homepage": "https://twikoo.js.org",
   "scripts": {
     "docs:dev": "vitepress",
-    "docs:build": "vitepress build"
+    "docs:build": "vitepress build",
+    "test": "vitest run"
   },
   "devDependencies": {
-    "vitepress": "^1.0.0-rc.29"
+    "vitepress": "^1.6.4",
+    "vitest": "^5.0.1"
   }
 }

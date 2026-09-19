@@ -20,7 +20,7 @@ Visitors can also comment by entering their digital QQ email address and using t
 
 You can add where you need to show the number of article visits：
 
-``` html
+```html
 <span id="twikoo_visitors">0</span>
 ```
 
@@ -36,8 +36,8 @@ Note that due to the slow response time of the Akismet service (about 6 seconds)
 
 [环境总览](https://console.cloud.tencent.com/tcb/env/overview)See resource usage. twikoo consumes **database** and **cloud functions**, both with a free usage of -
 
-* Database: 50,000 reads/day, 50,000 writes/day
-* Cloud functions: 40,000 GBs/month
+- Database: 50,000 reads/day, 50,000 writes/day
+- Cloud functions: 40,000 GBs/month
 
 The memory consumption of Twikoo cloud functions is constant at 0.1GB, which means that Twikoo cloud functions have a running time of up to 400,000 seconds per month, and the bottleneck of free resources is mainly in the daily read limit of the database. It is recommended that webmasters pay attention to the usage of free resources.
 
@@ -47,11 +47,26 @@ Twikoo supports Katex formulas, but to limit the package size of Twikoo, Twikoo 
 
 example
 
-``` html
+```html
 <head>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js" integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js" integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+    integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X"
+    crossorigin="anonymous"
+  />
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+    integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+    integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa"
+    crossorigin="anonymous"
+  ></script>
 </head>
 ```
 
@@ -61,19 +76,19 @@ After loading, you can send `$$c = \pm\sqrt{a^2 + b^2}$$` to test the effect.
 
 You can also pass in a custom katex configuration during `twikoo.init`, see [Katex Auto-render Extension](https://katex.org/docs/autorender.html) for details.
 
-``` js
+```js
 twikoo.init({
-  envId: 'Environment id',
-  el: '#tcomment',
+  envId: "Environment id",
+  el: "#tcomment",
   katex: {
     delimiters: [
-      { left: '$$', right: '$$', display: true },
-      { left: '$', right: '$', display: false },
-      { left: '\\(', right: '\\)', display: false },
-      { left: '\\[', right: '\\]', display: true }
+      { left: "$$", right: "$$", display: true },
+      { left: "$", right: "$", display: false },
+      { left: "\\(", right: "\\)", display: false },
+      { left: "\\[", right: "\\]", display: true },
     ],
-    throwOnError: false
-  }
+    throwOnError: false,
+  },
 });
 ```
 
@@ -129,16 +144,16 @@ In order to avoid performance problems caused by frequent mailbox checking, the 
 
 The Tencent Cloud environment comes with cloud storage, so you can upload images directly in the Tencent Cloud environment, and the images are saved in the cloud storage. However, Vercel environment does not, the upload image function relies on third party image bed, please configure the image bed in the admin panel, Twikoo supports the following image bed:
 
-| Bed | Address | Features |
-| ---- | ---- | ---- |
-| qcloud | None | Tencent Cloud environment comes with it, can be viewed in Cloud Development - Cloud Storage |
-| 7bu | https://7bu.top | Go to No Bed, powered by 杜老师, no free packages |
-| see | https://s.ee | S.EE image bed, there is a free package, please register your account, `IMAGE_CDN_TOKEN` can be obtained in [Dashboard](https://s.ee/user/developers/) |
-| [lsky-pro](https://www.lsky.pro) | Private Deployment | LankenGraphics 2.0 version, `IMAGE_CDN` please configure the URL address of the home page of the graph bed (such as `https://7bu.top`), `IMAGE_CDN_TOKEN` get way please refer to the tutorial [杜老师 said the graph bed: new version Go not to the bed Token acquisition and emptying](https://dusays.com/454/), the format of the obtained token should be `1\|1bJbwlqBfnggmOMEZqXT5XusaIwqiZjCDs7r1Ob5`) |
-| [PicList](https://piclist.cn/) | Self-hosted | Set `IMAGE_CDN_URL` to the service URL. For `IMAGE_CDN_TOKEN`, see [PicList docs: API Authentication](https://piclist.cn/advanced.html#%E6%8E%A5%E5%8F%A3%E9%89%B4%E6%9D%83) |
-| [EasyImage2.0](https://github.com/icret/EasyImages2.0) | Self-hosted | Set `IMAGE_CDN_URL` to the API URL and `IMAGE_CDN_TOKEN` to your token |
-| [Chevereto](https://chevereto.com) | Self-hosted | Set `IMAGE_CDN_URL` to your Chevereto site (e.g. `https://your-chevereto.com`) and `IMAGE_CDN_TOKEN` to your API Key (found in Dashboard → Settings → API). Requires a paid Chevereto license or a fork that supports API v1 |
-| S3 / R2 / MinIO | S3-compatible service | Set `IMAGE_CDN` to `s3`, then configure `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, and related options; configure `S3_FORCE_PATH_STYLE` according to endpoint type: keep it empty or `true` for Cloudflare R2, MinIO, and other path-style endpoints, and set it to `false` for bucket-bound custom domains, such as Tencent Cloud COS custom domains |
+| Bed                                                    | Address               | Features                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------------------------------ | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| qcloud                                                 | None                  | Tencent Cloud environment comes with it, can be viewed in Cloud Development - Cloud Storage                                                                                                                                                                                                                                                                                                                  |
+| 7bu                                                    | https://7bu.top       | Go to No Bed, powered by 杜老师, no free packages                                                                                                                                                                                                                                                                                                                                                            |
+| see                                                    | https://s.ee          | S.EE image bed, there is a free package, please register your account, `IMAGE_CDN_TOKEN` can be obtained in [Dashboard](https://s.ee/user/developers/)                                                                                                                                                                                                                                                       |
+| [lsky-pro](https://www.lsky.pro)                       | Private Deployment    | LankenGraphics 2.0 version, `IMAGE_CDN` please configure the URL address of the home page of the graph bed (such as `https://7bu.top`), `IMAGE_CDN_TOKEN` get way please refer to the tutorial [杜老师 said the graph bed: new version Go not to the bed Token acquisition and emptying](https://dusays.com/454/), the format of the obtained token should be `1\|1bJbwlqBfnggmOMEZqXT5XusaIwqiZjCDs7r1Ob5`) |
+| [PicList](https://piclist.cn/)                         | Self-hosted           | Set `IMAGE_CDN_URL` to the service URL. For `IMAGE_CDN_TOKEN`, see [PicList docs: API Authentication](https://piclist.cn/advanced.html#%E6%8E%A5%E5%8F%A3%E9%89%B4%E6%9D%83)                                                                                                                                                                                                                                 |
+| [EasyImage2.0](https://github.com/icret/EasyImages2.0) | Self-hosted           | Set `IMAGE_CDN_URL` to the API URL and `IMAGE_CDN_TOKEN` to your token                                                                                                                                                                                                                                                                                                                                       |
+| [Chevereto](https://chevereto.com)                     | Self-hosted           | Set `IMAGE_CDN_URL` to your Chevereto site (e.g. `https://your-chevereto.com`) and `IMAGE_CDN_TOKEN` to your API Key (found in Dashboard → Settings → API). Requires a paid Chevereto license or a fork that supports API v1                                                                                                                                                                                 |
+| S3 / R2 / MinIO                                        | S3-compatible service | Set `IMAGE_CDN` to `s3`, then configure `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, and related options; configure `S3_FORCE_PATH_STYLE` according to endpoint type: keep it empty or `true` for Cloudflare R2, MinIO, and other path-style endpoints, and set it to `false` for bucket-bound custom domains, such as Tencent Cloud COS custom domains                                          |
 
 ## Can self-hosted deployments connect to an external database?
 
@@ -159,6 +174,23 @@ On a page with the comment box, open your browser's developer tools (F12 on Wind
 **`No 'Access-Control-Allow-Origin' header is present`** — Visit your `envId` URL directly to check whether the cloud function is running. If not, redeploy it carefully. If it is running, start the site on localhost, go to **Admin Panel → Configuration → General**, clear the `CORS_ALLOW_ORIGIN` field, save, and refresh.
 
 For any other error, please [open an issue](https://github.com/twikoojs/twikoo/issues/new) and include the full error message.
+
+## Troubleshooting by error type
+
+Since 2.0 the frontend classifies network and API failures into 8 kinds. The comment area shows an **inline error card** you can expand to inspect the HTTP status, the request id and a snippet of the raw response. Use the table below to narrow down the cause:
+
+| kind           | Typical symptom                                 | What to check                                                                                                                 |
+| -------------- | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `NETWORK`      | Request never leaves the browser, HTTP status 0 | Domain / network unreachable; ad-blocking extensions; check that the `envId` URL is reachable                                 |
+| `CORS`         | `No 'Access-Control-Allow-Origin' header`       | Clear the `CORS_ALLOW_ORIGIN` config item; make sure the function runs                                                        |
+| `TIMEOUT`      | No response for a long time                     | Slow cold start or backend timeout; Vercel and similar platforms may time out from mainland China — consider another platform |
+| `REJECTED`     | Request rejected by the platform                | Quota exhausted, function not deployed successfully, or the gateway CORS settings are missing your domain                     |
+| `NOT_FOUND`    | 404                                             | Wrong `envId` / deployment URL, or the function is not named `twikoo`                                                         |
+| `CLIENT_ERROR` | 4xx                                             | Invalid request parameters (e.g. out-of-range `per` / `page`, missing required fields)                                        |
+| `SERVER_ERROR` | 5xx                                             | Exception inside the function: check the function logs; usually a wrong database URI or a runtime older than Node 20          |
+| `UNKNOWN`      | Anything else                                   | Expand the error card for the raw response snippet, or [open an issue](https://github.com/twikoojs/twikoo/issues/new)         |
+
+> Related: `ERR_BLOCKED_BY_CLIENT` → disable ad blockers; `FUNCTIONS_EXECUTE_FAIL` → function runtime version or permissions.
 
 ## Can it be deployed privately?
 

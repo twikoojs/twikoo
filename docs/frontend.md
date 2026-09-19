@@ -22,7 +22,7 @@
 
 **暂不支持 NexT 8 以下的版本**，请先升级到 NexT 8。然后在 Hexo 项目根目录执行
 
-``` sh
+```sh
 # For NexT version >= 8.0.0 && < 8.4.0
 npm install hexo-next-twikoo@1.0.0
 # For NexT version >= 8.4.0
@@ -31,7 +31,7 @@ npm install hexo-next-twikoo@1.0.3
 
 然后在配置中添加
 
-``` yml
+```yml
 twikoo:
   enable: true
   visitor: true
@@ -91,57 +91,71 @@ twikoo:
 如果您使用的博客主题不支持 Twikoo，并且您不知道如何引入 Twikoo，您可以向博客主题开发者提交适配请求
 :::
 
-``` html
+```html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.7.24/dist/twikoo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@__TWIKOO_VERSION__/dist/twikoo.min.js"></script>
 <script>
-twikoo.init({
-  envId: '您的环境id', // 腾讯云环境填 envId；Vercel 环境填地址（https://xxx.vercel.app）
-  el: '#tcomment', // 容器元素
-  // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，腾讯云环境填 ap-shanghai 或 ap-guangzhou；Vercel 环境不填
-  // path: location.pathname, // 用于区分不同文章的自定义 js 路径，如果您的文章路径不是 location.pathname，需传此参数
-  // lang: 'zh-CN', // 用于手动设定评论区语言，支持的语言列表 https://github.com/twikoojs/twikoo/blob/main/src/client/utils/i18n/index.js
-})
+  twikoo.init({
+    envId: "您的环境id", // 腾讯云环境填 envId；Vercel 环境填地址（https://xxx.vercel.app）
+    el: "#tcomment", // 容器元素
+    // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，腾讯云环境填 ap-shanghai 或 ap-guangzhou；Vercel 环境不填
+    // path: location.pathname, // 用于区分不同文章的自定义 js 路径，如果您的文章路径不是 location.pathname，需传此参数
+    // lang: 'zh-CN', // 用于手动设定评论区语言，支持的语言列表 https://github.com/twikoojs/twikoo/blob/main/packages/client/src/i18n/index.ts
+  });
 </script>
 ```
 
 ### 不同版本之间的区别
 
-* `twikoo.all.min.js`: 包含腾讯云云开发（tcb）的完整版本，如果您使用腾讯云云开发部署，请选择此版本
-* `twikoo.min.js`: 去除了腾讯云云开发（tcb）的精简版本，体积更小，适合所有非腾讯云云开发部署的用户
-* `twikoo.nocss.js`: 在完整版本的基础上剥离了样式，需要同时引入 `twikoo.css` 才能正常显示，适合想要魔改评论区样式的用户
+- `twikoo.all.min.js`: 包含腾讯云云开发（tcb）的完整版本，如果您使用腾讯云云开发部署，请选择此版本
+- `twikoo.min.js`: 去除了腾讯云云开发（tcb）的精简版本，体积更小，适合所有非腾讯云云开发部署的用户
+- `twikoo.nocss.js`: 在完整版本的基础上剥离了样式，需要同时引入 `twikoo.css` 才能正常显示，适合想要魔改评论区样式的用户
 
 ### 更换 CDN 镜像
 
-如果遇到默认 CDN 加载速度缓慢，可更换其他 CDN 镜像。以下为可供选择的公共 CDN，其中一些 CDN 可能需要数天时间同步最新版本：
+如果遇到默认 CDN 加载速度缓慢，可更换其他 CDN 镜像。以下为可供选择的公共 CDN，**其中部分镜像会滞后**（新版本要等数天甚至更久才同步），若某个链接 404，请改用「推荐在全球使用」里的 jsDelivr 地址。
 
 #### 推荐在中国使用
 
-* `https://registry.npmmirror.com/twikoo/1.7.24/files/dist/twikoo.min.js`
-* `https://s4.zstatic.net/npm/twikoo@1.7.24/dist/twikoo.min.js`
+- `https://registry.npmmirror.com/twikoo/__TWIKOO_VERSION__/files/dist/twikoo.min.js`
+- `https://s4.zstatic.net/npm/twikoo@__TWIKOO_VERSION__/dist/twikoo.min.js`
 
 #### 推荐在全球使用
 
-* `https://cdn.jsdelivr.net/npm/twikoo@1.7.24/dist/twikoo.min.js`
+- `https://cdn.jsdelivr.net/npm/twikoo@__TWIKOO_VERSION__/dist/twikoo.min.js`
 
 #### 备用选项
 
-* `https://s4.zstatic.net/ajax/libs/twikoo/1.6.41/twikoo.min.js`
-* `https://lib.baomitu.com/twikoo/1.6.39/twikoo.min.js`
+- `https://s4.zstatic.net/ajax/libs/twikoo/__TWIKOO_VERSION__/twikoo.min.js`
+- `https://lib.baomitu.com/twikoo/__TWIKOO_VERSION__/twikoo.min.js`
 
 ::: warning 注意
 建议使用 CDN 引入 Twikoo 的用户在链接地址上锁定版本，以免将来 Twikoo 升级时受到非兼容性更新的影响。
 :::
 
+::: tip 浏览器基线
+2.0 起前端产物语法目标为 **ES2022**，不再兼容 IE / ES5。最低版本：Chrome 94+、Edge 94+、Firefox 93+、Safari 15.4+、iOS Safari 15.4+。
+:::
+
 ::: warning 注意
 建议使用 CDN 引入 Twikoo 的用户在代码中加入 [SRI](https://developer.mozilla.org/zh-CN/docs/Web/Security/Subresource_Integrity) 以确保完整性，例：
+
 ```html
 <script
-  src="https://cdn.jsdelivr.net/npm/twikoo@1.6.36/dist/twikoo.all.min.js"
-  integrity="sha384-4KfOjEinLSkv1i1J8TzlkC/RTnuiLoR1OLerVgjEKoH5djYtbf7mzEFsz9p3nfuA"
-  crossorigin="anonymous"></script>
+  src="https://cdn.jsdelivr.net/npm/twikoo@__TWIKOO_VERSION__/dist/twikoo.all.min.js"
+  integrity="sha384-此处填该版本的哈希"
+  crossorigin="anonymous"
+></script>
 ```
-其中 `integrity` 的值可以在 [SRI Hash Generator](https://www.srihash.org/) 查询。
+
+其中 `integrity` 的值可以在 [SRI Hash Generator](https://www.srihash.org/) 查询（把上面的地址粘进去），也可以用命令行生成：
+
+```sh
+curl -sL "https://cdn.jsdelivr.net/npm/twikoo@__TWIKOO_VERSION__/dist/twikoo.all.min.js" \
+  | openssl dgst -sha384 -binary | openssl base64 -A
+```
+
+注意：**哈希与版本一一对应**，升级版本后要重新生成，否则浏览器会拒绝加载。
 :::
 
 ## 开启管理面板（腾讯云环境）

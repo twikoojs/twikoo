@@ -1,8 +1,11 @@
 {
-  "name": "twikoo-aws-lambda",
+  "name": "@twikoojs/aws-lambda",
   "version": "0.0.0",
   "description": "Twikoo 2.0 AWS Lambda 适配器（API Gateway v1/v2；业务逻辑在 @twikoojs/common）",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

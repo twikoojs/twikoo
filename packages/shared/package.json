@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "description": "Twikoo 2.0 共享常量与类型（版本占位符、推送渠道、后端事件）",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",

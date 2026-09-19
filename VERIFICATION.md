@@ -50,13 +50,13 @@
 
 - [ ] Pass　[ ] Fail　证据/备注：
 
-### 2.4 AWS Lambda（`twikoo-aws-lambda`，不发布：源码内嵌部署）
+### 2.4 AWS Lambda（`@twikoojs/aws-lambda`，已发布；`templates/aws-lambda` 模板 + Terraform）
 
-| 步骤                                          | 预期     |
-| --------------------------------------------- | -------- |
-| 1. 按 README 打包上传（运行时 Node 24 或 20） | 部署成功 |
-| 2. API Gateway 触发路径                       | 五步全通 |
-| 3. `mongodb` 连接串                           | 生效     |
+| 步骤                                                                                         | 预期     |
+| -------------------------------------------------------------------------------------------- | -------- |
+| 1. `templates/aws-lambda/src` 先 `npm install`，再 `terraform apply`（运行时 Node 24 或 20） | 部署成功 |
+| 2. API Gateway 触发路径                                                                      | 五步全通 |
+| 3. `mongodb` 连接串                                                                          | 生效     |
 
 - [ ] Pass　[ ] Fail　证据/备注：
 
@@ -148,7 +148,7 @@
 | ----------------------------------------------------------------- | ------------------------------ |
 | 1. 空目录 `npm init -y && npm install twikoo-vercel@2.0.0-beta.1` | 安装成功                       |
 | 2. `node -e "require.resolve('@twikoojs/common')"`                | 可解析（两阶段发布的直接验收） |
-| 3. 对 8 个包逐一 `npm install <pkg>@2.0.0-beta.1`                 | 全部可安装                     |
+| 3. 对 9 个包逐一 `npm install <pkg>@2.0.0-beta.1`                 | 全部可安装                     |
 
 - [ ] Pass　[ ] Fail　证据/备注： 　**本地前置版已完成**：`pnpm pack` 产物中
       `dependencies["@twikoojs/common"] = 0.0.0`、`pushoo = ^0.0.0`（发布时被 pnpm 重写为 `^2.0.0-beta.1`），见 `t43-happy.md`。

@@ -1,5 +1,5 @@
 /**
- * twikoo-aws-lambda 适配器测试。
+ * @twikoojs/aws-lambda 适配器测试。
  *
  * 注入内存 Database（Mongo 语义）跑契约核心事件；验证 v1/v2 双 payload、
  * base64 body、sourceIp 提取。
@@ -30,7 +30,7 @@ function makeEventV2(overrides: Partial<ApiGatewayEventLike> = {}): ApiGatewayEv
   };
 }
 
-describe("twikoo-aws-lambda 薄适配器", () => {
+describe("@twikoojs/aws-lambda 薄适配器", () => {
   it("happy：v2 payload → GET_FUNC_VERSION code 0 + body 字符串", async () => {
     const result = await makeFunc()(makeEventV2());
     expect(result.statusCode).toBe(200);

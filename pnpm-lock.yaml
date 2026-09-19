@@ -793,16 +793,6 @@ importers:
         specifier: ^26.6.1
         version: 26.6.1
 
-  packages/server-vercel-min:
-    dependencies:
-      twikoo-vercel:
-        specifier: workspace:*
-        version: link:../server-vercel
-    devDependencies:
-      '@types/node':
-        specifier: ^26.6.1
-        version: 26.6.1
-
   packages/shared:
     devDependencies:
       '@types/node':

@@ -1,10 +1,14 @@
 /**
  * 发布包清单（Scope C 单一真相源）。
  *
- * 8 个包共享同一版本号；仓库内 `version` 恒为 `0.0.0`，仅由 release.yml 在 CI 中覆写后发布。
+ * 9 个包共享同一版本号；仓库内 `version` 恒为 `0.0.0`，仅由 publish.yml 在 CI 中覆写后发布。
  * 分批顺序：
  * - 第一批：@twikoojs/shared、@twikoojs/common、pushoo、twikoo（无服务端依赖）
- * - 第二批：twikoo-func、twikoo-vercel、tkserver、twikoo-netlify（依赖 common，必须等第一批可见）
+ * - 第二批：twikoo-func、twikoo-vercel、tkserver、twikoo-netlify、@twikoojs/aws-lambda
+ *   （依赖 common，必须等第一批可见）
+ *
+ * 注：`@twikoojs/aws-lambda` 于 2026-09-19 由「私有」改为发布 —— AWS Lambda 的一键部署模板
+ * （`templates/aws-lambda`）要靠 npm 上的 `latest` 取实现，不发包就没有可部署产物。
  */
 
 /** 基线版本（仓库内所有发布包必须保持此值） */
@@ -22,6 +26,7 @@ export const PUBLISH_PACKAGES = [
   { name: "twikoo-vercel", dir: "packages/server-vercel", batch: 2 },
   { name: "tkserver", dir: "packages/server-self-hosted", batch: 2 },
   { name: "twikoo-netlify", dir: "packages/server-netlify", batch: 2 },
+  { name: "@twikoojs/aws-lambda", dir: "packages/server-aws-lambda", batch: 2 },
 ];
 
 /**

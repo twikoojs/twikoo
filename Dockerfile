@@ -2,7 +2,7 @@
 #
 # 与 1.x 的差异：**从 workspace 构建**（pnpm install + 构建本仓 tkserver），
 # 而不是 `npm install tkserver@latest` 拉取 npm 上的已发布版本——保证镜像内的
-# 代码与本次 Release 的 tag 一致（release.yml 的 docker job 会先覆写版本号再 build）。
+# 代码与本次 Release 的 tag 一致（publish.yml 的 docker job 会先覆写版本号再 build）。
 #
 # 多阶段：build 阶段装依赖并构建；runtime 阶段只保留运行所需内容。
 # 镜像体积优化（`pnpm deploy --prod` / 裁剪 devDependencies）留待容器冒烟时验证，

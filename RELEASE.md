@@ -5,8 +5,8 @@
 > **核心约定**：Release 与 tag **由人**在 GitHub 网页创建，CI **只响应**，
 > 不提供 `workflow_dispatch`，也不会自动创建 Release/tag。因此本地仓库**不得**预创建 tag。
 
-- 工作流：`.github/workflows/release.yml`（触发：`release: types: [published]`）
-- 版本来源：**唯一**取自 Release tag（`v` 前缀会被 strip），仓库内 8 个发布包恒为 `0.0.0`
+- 工作流：`.github/workflows/publish.yml`（触发：`release: types: [published]`）
+- 版本来源：**唯一**取自 Release tag（`v` 前缀会被 strip），仓库内 9 个发布包恒为 `0.0.0`
 - dist-tag：勾选「Set as a pre-release」→ `beta`；未勾 → `latest`
 
 ## 0. 前置条件（一次性，仓库管理员）
@@ -14,10 +14,10 @@
 | 项                                            | 要求                                                                                                                                            |
 | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | GitHub 权限                                   | 仓库 write（创建 Release、上传 pkg 附件）；Actions 可运行                                                                                       |
-| `NPM_TOKEN` secret                            | npm **Automation** 类型 PAT，具备 8 个包（含 `@twikoojs/*` scope）的 publish 权限。工作流把它注入 `NODE_AUTH_TOKEN`（`release.yml` 的发布步骤） |
+| `NPM_TOKEN` secret                            | npm **Automation** 类型 PAT，具备 9 个包（含 `@twikoojs/*` scope）的 publish 权限。工作流把它注入 `NODE_AUTH_TOKEN`（`publish.yml` 的发布步骤） |
 | `DOCKER_USERNAME` / `DOCKER_PASSWORD` secrets | Docker Hub 推送 `imaegoo/twikoo`（仅正式版需要）                                                                                                |
-| `TEST_*` secrets（可选）                      | 供 `ci.yml` 的 test job 使用；缺失时相关用例 `describe.skip`，不影响发布                                                                        |
-| npm 包所有权                                  | 8 个发布包均须已在 npm 上归属同一维护者账号/组织                                                                                                |
+| `TEST_*` secrets（可选）                      | 供 `build.yml` 的 test job 使用；缺失时相关用例 `describe.skip`，不影响发布                                                                     |
+| npm 包所有权                                  | 9 个发布包均须已在 npm 上归属同一维护者账号/组织（`@twikoojs/aws-lambda` 为 2026-09-19 新增的发布包，首次发布前需先在 npm 上认领该名字）        |
 
 ## 1. 发布前本地检查（每次发布都必须全绿）
 
@@ -29,7 +29,7 @@ pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build
-pnpm release:check                      # 8 个发布包 version 必须为 0.0.0
+pnpm release:check                      # 9 个发布包 version 必须为 0.0.0
 pnpm e2e:b2                             # 前端清单端到端回归（26 项；需先 pnpm build）
 pnpm check:products                     # 四产物 + 自托管启动/全功能/shutdown（需先 pnpm build）
 node node_modules/prettier/bin/prettier.cjs --check .
@@ -45,7 +45,7 @@ git status --porcelain                  # 必须为空：工作区干净
 
 ```bash
 node scripts/release-version-check.mjs monotonic 2.0.0-beta.1     # 大于同线已发布最高版本
-node scripts/release-version-check.mjs unpublished 2.0.0-beta.1   # 8 包均未发布过该版本
+node scripts/release-version-check.mjs unpublished 2.0.0-beta.1   # 9 包均未发布过该版本
 ```
 
 > `verify-npm.mjs` 的轮询/超时逻辑可在本地做负路径预演（用一个不存在的版本）：
@@ -69,14 +69,14 @@ GitHub → Releases → **Draft a new release**：
 
 ### 步骤 2 — 观察工作流
 
-Actions → Release 工作流，依次确认：
+Actions → Publish 工作流，依次确认：
 
 1. `校验版本（格式 / 基线 / 单调性 / 未发布过）` —— 4 步全绿（含 `version` / `npm_tag=beta` 输出）；
 2. `第一批发布`（4 个矩阵项并行，`fail-fast: true`）：
    `@twikoojs/shared` → `@twikoojs/common` → `pushoo` → `twikoo`；
 3. `Gate · 第一批在 npm 可见` —— `verify-npm.mjs <version> beta 1` 轮询（600s / 15s）；
-4. `第二批发布`（4 个矩阵项）：`twikoo-func` → `twikoo-vercel` → `tkserver` → `twikoo-netlify`；
-5. `Gate · 8 个包在 npm 可见` —— `verify-npm.mjs <version> beta 2`；
+4. `第二批发布`（5 个矩阵项）：`twikoo-func` → `twikoo-vercel` → `tkserver` → `twikoo-netlify` → `@twikoojs/aws-lambda`；
+5. `Gate · 9 个包在 npm 可见` —— `verify-npm.mjs <version> beta 2`；
 6. `Docker 镜像` / `SEA 可执行产物` —— **预发布版会被跳过**（`if: !prerelease`），属预期。
 
 任何一步失败：**不要**手动重跑「第二批」绕过 gate——先看日志定位（见第 5 节）。
@@ -84,8 +84,8 @@ Actions → Release 工作流，依次确认：
 ### 步骤 3 — 发布后核验
 
 ```bash
-# 8 个包都能在 beta tag 下取到该版本
-for p in twikoo @twikoojs/common @twikoojs/shared twikoo-func twikoo-vercel tkserver twikoo-netlify pushoo; do
+# 9 个包都能在 beta tag 下取到该版本
+for p in twikoo @twikoojs/common @twikoojs/shared twikoo-func twikoo-vercel tkserver twikoo-netlify @twikoojs/aws-lambda pushoo; do
   echo -n "$p@beta = "; npm view "$p@beta" version
 done
 
@@ -131,7 +131,7 @@ node -e "require.resolve('@twikoojs/common'); console.log('common resolvable ✓
 
 | #   | 验证项            | 判定标准                                                                                                  |
 | --- | ----------------- | --------------------------------------------------------------------------------------------------------- |
-| 1   | npm 8 包 `latest` | `npm view twikoo dist-tags` 的 `latest = 2.0.0`；8 包 `npm view <pkg>@latest version` 均为 `2.0.0`        |
+| 1   | npm 9 包 `latest` | `npm view twikoo dist-tags` 的 `latest = 2.0.0`；9 包 `npm view <pkg>@latest version` 均为 `2.0.0`        |
 | 2   | 传递依赖解析      | 空目录 `npm install twikoo-vercel@2.0.0` → `require.resolve("@twikoojs/common")` 可解析                   |
 | 3   | CDN 四产物        | jsDelivr 上 4 个产物均可下载；页面引入任一形态后能渲染评论（`.nocss` 需配 `twikoo.css`）                  |
 | 4   | docs 站点         | `https://twikoo.js.org` 可访问且版本说明为 2.0.0                                                          |
@@ -148,12 +148,12 @@ npm 允许在发布后 **72 小时**内 `unpublish` 未被依赖的版本。窗�
 
 ```bash
 # ① 先预告警：把已发布的 beta 标记为废弃，避免新用户踩到
-for p in twikoo @twikoojs/common @twikoojs/shared twikoo-func twikoo-vercel tkserver twikoo-netlify pushoo; do
+for p in twikoo @twikoojs/common @twikoojs/shared twikoo-func twikoo-vercel tkserver twikoo-netlify @twikoojs/aws-lambda pushoo; do
   npm deprecate "$p@2.0.0-beta.1" "该版本存在问题，请勿使用，等待 2.0.0-beta.2"
 done
 
 # ② 若必须彻底下线（仅在 72h 内、且无第三方依赖该版本时可行）
-for p in twikoo @twikoojs/common @twikoojs/shared twikoo-func twikoo-vercel tkserver twikoo-netlify pushoo; do
+for p in twikoo @twikoojs/common @twikoojs/shared twikoo-func twikoo-vercel tkserver twikoo-netlify @twikoojs/aws-lambda pushoo; do
   npm unpublish "$p@2.0.0-beta.1" --force
 done
 ```
@@ -180,13 +180,13 @@ done
 | 第一批部分包失败                            | 修因后点击 **Re-run failed jobs**；已成功的包不会重复发布（`unpublished` 校验会拦住重复版本） |
 | `Gate · 第一批` 超时                        | npm 侧可能有延迟；先 `npm view <包>@beta version` 手工确认，再 Re-run failed jobs             |
 | 第二批部分包失败                            | 同上；**不要**跳过 gate 手工发布，`verify-batch-2` 是必要门禁                                 |
-| `npm publish` 报 `ENEEDAUTH` / `E403`       | 检查 `NPM_TOKEN` secret 是否存在且未过期、是否有 8 个包的 publish 权限                        |
+| `npm publish` 报 `ENEEDAUTH` / `E403`       | 检查 `NPM_TOKEN` secret 是否存在且未过期、是否有 9 个包的 publish 权限                        |
 
 ## 5. 常见问题
 
 | 现象                                                        | 原因与处理                                                                                                    |
 | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `ENEEDAUTH` / `Failed to replace env in config`             | `NPM_TOKEN` secret 缺失或未注入到 `NODE_AUTH_TOKEN`（`release.yml` 发布步骤已显式注入，检查 secret 是否存在） |
+| `ENEEDAUTH` / `Failed to replace env in config`             | `NPM_TOKEN` secret 缺失或未注入到 `NODE_AUTH_TOKEN`（`publish.yml` 发布步骤已显式注入，检查 secret 是否存在） |
 | `E403 You do not have permission to publish`                | token 权限不足（需 Automation 类型 PAT）或包归属不在该账号下                                                  |
 | `EPUBLISHCONFLICT` / `cannot publish over existing version` | 该版本已存在（`unpublished` 校验未拦住说明是并发操作）→ 换版本号                                              |
 | `verify-npm` 超时但 npm 上可见                              | npm registry 缓存延迟，Re-run failed jobs 即可                                                                |
@@ -197,8 +197,8 @@ done
 
 | 文件                                             | 作用                                           |
 | ------------------------------------------------ | ---------------------------------------------- |
-| `.github/workflows/release.yml`                  | 发布工作流（两阶段 + gate）                    |
-| `scripts/release-packages.mjs`                   | 8 个发布包的单一事实来源（名称 / 目录 / 批次） |
+| `.github/workflows/publish.yml`                  | 发布工作流（两阶段 + gate）                    |
+| `scripts/release-packages.mjs`                   | 9 个发布包的单一事实来源（名称 / 目录 / 批次） |
 | `scripts/release-set-version.mjs`                | 覆写/校验仓库内版本基线（恒 `0.0.0`）          |
 | `scripts/release-version-check.mjs`              | 单调性与「未发布过」校验                       |
 | `scripts/verify-npm.mjs`                         | npm 可见性轮询 gate                            |

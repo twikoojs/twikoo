@@ -1,4 +1,4 @@
-# twikoo-aws-lambda
+# @twikoojs/aws-lambda
 
 Twikoo 2.0 服务端适配器。业务逻辑在 `@twikoojs/common`，本包仅做平台入口与注入。
 

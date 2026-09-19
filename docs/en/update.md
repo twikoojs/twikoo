@@ -11,9 +11,15 @@ Open 环境 → 我的应用 in the CloudBase console and enter:
 
 Leave the application directory empty and confirm; the deployment runs automatically.
 
+::: tip No version number to change
+The one-click deployment depends on `twikoo-func@latest` (see [`templates/cloudbase/twikoo/package.json`](https://github.com/twikoojs/twikoo/blob/main/templates/cloudbase/twikoo/package.json)), so a single redeploy picks up the newest stable release.
+
+If the version does not change after redeploying, open 环境 → 云函数, open `package.json` and click **保存并安装依赖** once to force a fresh install.
+:::
+
 ## CloudBase, manual deployment
 
-Open 环境 → 云函数 in the CloudBase console, click the `twikoo` function, open the code editor, edit `package.json`, change the version of `"twikoo-func"` to the latest release, then click **保存并安装依赖** (save and install dependencies).
+Open 环境 → 云函数 in the CloudBase console, click the `twikoo` function, open the code editor, check that `package.json` depends on `"twikoo-func": "latest"` (1.x pinned an exact version here — switching it to `latest` means you never have to edit it again), then click **保存并安装依赖** (save and install dependencies).
 
 ::: tip
 If your function is older than 1.0.0, recreate it following the manual deployment guide first (the deployment steps changed in 1.0.0).
@@ -33,35 +39,47 @@ yarn deploy -e your-env-id
 
 ## Vercel
 
-1. Open the [Vercel dashboard](https://vercel.com/dashboard) → twikoo → Settings → Git.
-2. Click the repository link under **Connected Git Repository**.
-3. Open `package.json` and edit it.
-4. Change `"twikoo-vercel": "latest"` to the latest version number, then commit the change.
-5. The deployment is triggered automatically; check its status in the [Vercel dashboard](https://vercel.com/dashboard).
+::: tip No version number to change
+The one-click deployment depends on `twikoo-vercel@latest` (see [`templates/vercel-min/package.json`](https://github.com/twikoojs/twikoo/blob/main/templates/vercel-min/package.json)), so a redeploy picks up the newest stable release.
+
+Vercel reuses the build cache by default, and a cache hit means `latest` is not re-resolved — **clear the "Use existing Build Cache" checkbox when redeploying**, otherwise the old dependency is kept.
+:::
+
+1. Open the [Vercel dashboard](https://vercel.com/dashboard) → twikoo → Deployments.
+2. Open the menu (three dots) of the latest deployment → Redeploy.
+3. Uncheck **Use existing Build Cache** and confirm.
+4. Once deployed, open your domain: if the environment is configured correctly you should see "Twikoo 云函数运行正常".
 
 ## Railway and Zeabur
 
-1. On GitHub, open the `twikoo-zeabur` repository you forked.
-2. Edit `package.json`.
-3. Change `"tkserver": "latest"` to the latest version number and commit.
-4. The deployment is triggered automatically.
+The template repository [`twikoojs/twikoo-zeabur`](https://github.com/twikoojs/twikoo-zeabur) depends on `tkserver@latest`, so **there is no version number to change**.
+
+1. On GitHub, open the `twikoo-zeabur` repository you forked and click **Sync fork**.
+2. The deployment is triggered automatically; if it is not, or the version does not change, redeploy manually from the Railway / Zeabur dashboard.
+
+::: tip If your fork pins an exact version
+Change `"tkserver": "x.x.x"` to `"tkserver": "latest"` in `package.json` — from then on you only need to sync the fork and redeploy.
+:::
 
 ## Netlify
 
 1. On GitHub, open the `twikoo-netlify` repository you forked.
-2. Edit `package.json`. Because `twikoo-netlify` reuses the `twikoo-vercel` implementation, update both versions (replace `new version` with the latest release):
+2. Check that `package.json` depends on `latest` (change it to the following if not):
 
 ```json
 {
   "dependencies": {
-    "twikoo-netlify": "new version",
-    "twikoo-vercel": "new version"
+    "twikoo-netlify": "latest"
   }
 }
 ```
 
-3. Commit the change.
-4. The deployment is triggered automatically.
+::: tip Only one dependency since 2.0
+1.x's `twikoo-netlify` reused the `twikoo-vercel` implementation, so both had to be listed. Since 2.0 they are independent implementations — `twikoo-netlify` alone is enough.
+:::
+
+3. Click **Sync fork**, then in the Netlify dashboard go to Deploys → Trigger deploy → **Clear cache and deploy site** (clearing the cache is what makes `latest` resolve again).
+4. The deployment runs automatically.
 
 ## Hugging Face
 

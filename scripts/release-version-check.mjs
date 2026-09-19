@@ -8,7 +8,7 @@
  *
  * - `monotonic`：新版本必须**大于** npm 上已发布的「同 major.minor」最高版本
  *   （防手误把序号写小，例如 beta.1 之后再发 beta.1）；
- * - `unpublished`：8 个包都不能已经存在该版本（防重复发布导致 npm 403 半途失败）。
+ * - `unpublished`：9 个包都不能已经存在该版本（防重复发布导致 npm 403 半途失败）。
  *
  * 需要网络（npm registry）；失败一律 exit 1（fail loudly，不静默跳过）。
  */
@@ -104,7 +104,7 @@ if (mode === "unpublished") {
     for (const name of duplicated) console.error("  - " + name);
     process.exit(1);
   }
-  console.log(`✓ 未发布过校验通过：8 个包均无 ${version}`);
+  console.log(`✓ 未发布过校验通过：${PUBLISH_PACKAGES.length} 个包均无 ${version}`);
   process.exit(0);
 }
 

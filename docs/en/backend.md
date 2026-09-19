@@ -14,18 +14,19 @@
 
 ## 2.0 adapters and capability matrix
 
-Twikoo 2.0 splits the server side into **8 adapters**. All business logic lives in `@twikoojs/common`; each adapter only provides the platform entry point and dependency injection. Five of them are published to npm:
+Twikoo 2.0 splits the server side into **7 adapters**. All business logic lives in `@twikoojs/common`; each adapter only provides the platform entry point and dependency injection. Five of them are published to npm:
 
-| Adapter                          | Package                 | Platform                | Capabilities           |
-| -------------------------------- | ----------------------- | ----------------------- | ---------------------- |
-| `packages/server-cloudbase`      | `twikoo-func`           | Tencent CloudBase       | full                   |
-| `packages/server-vercel`         | `twikoo-vercel`         | Vercel                  | full                   |
-| `packages/server-netlify`        | `twikoo-netlify`        | Netlify                 | full                   |
-| `packages/server-self-hosted`    | `tkserver`              | own server / Docker     | full                   |
-| `packages/server-aws-lambda`     | `twikoo-aws-lambda`     | AWS Lambda              | full                   |
-| `packages/server-deta`           | `twikoo-deta`           | Deta Space              | full                   |
-| `packages/server-edgeone-makers` | `twikoo-edgeone-makers` | EdgeOne Pages Makers    | **restricted**         |
-| `packages/server-vercel-min`     | `twikoo-vercel-min`     | Vercel (thin forwarder) | reuses `twikoo-vercel` |
+> One-click deployment templates live in [`templates/`](https://github.com/twikoojs/twikoo/tree/main/templates): plain-JS forwarders whose dependency is `latest`, so the platform installs and loads them without running this repository's build.
+
+| Adapter                          | Package                 | Platform             | Capabilities   |
+| -------------------------------- | ----------------------- | -------------------- | -------------- |
+| `packages/server-cloudbase`      | `twikoo-func`           | Tencent CloudBase    | full           |
+| `packages/server-vercel`         | `twikoo-vercel`         | Vercel               | full           |
+| `packages/server-netlify`        | `twikoo-netlify`        | Netlify              | full           |
+| `packages/server-self-hosted`    | `tkserver`              | own server / Docker  | full           |
+| `packages/server-aws-lambda`     | `@twikoojs/aws-lambda`  | AWS Lambda           | full           |
+| `packages/server-deta`           | `twikoo-deta`           | Deta Space           | full           |
+| `packages/server-edgeone-makers` | `twikoo-edgeone-makers` | EdgeOne Pages Makers | **restricted** |
 
 | Capability  | Meaning                       | Full adapters | EdgeOne Makers                                                                     |
 | ----------- | ----------------------------- | ------------- | ---------------------------------------------------------------------------------- |
@@ -58,10 +59,14 @@ On CloudBase, upgrade the function runtime to **Node 20 or newer (24 recommended
 5. Replace `package.json` with the following, then let the console install dependencies online (在线装依赖):
 
    ```json
-   { "dependencies": { "twikoo-func": "^2.0.0-beta.1" } }
+   { "dependencies": { "twikoo-func": "latest" } }
    ```
 
+   `latest` always points at the newest stable release, so upgrading is just hitting 保存并安装依赖 again — no version number to remember. Pin an explicit version instead if you prefer, at the cost of editing it on every upgrade.
+
 6. Name the function `twikoo`, create it, and wait until its status becomes normal. The `envId` is shown as `<environment name>-<random suffix>` — without the `https://` prefix.
+
+> One-click alternative: the Chinese page has a 部署到云开发 button that deploys straight from this repository's `cloudbaserc.json`. The function code is the thin forwarder in `templates/cloudbase/twikoo` and its dependency follows `twikoo-func@latest`, so upgrading is a redeploy.
 
 ## Command line deployment — no longer supported
 

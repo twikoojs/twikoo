@@ -1,6 +1,10 @@
 {
   "name": "@twikoojs/common",
   "version": "0.0.0",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",

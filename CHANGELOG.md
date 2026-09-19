@@ -50,16 +50,17 @@
 
 ### 包版本矩阵（2.0.0）
 
-| 包                 | 版本  | 说明                             |
-| ------------------ | ----- | -------------------------------- |
-| `twikoo`           | 2.0.0 | 客户端（UMD）                    |
-| `@twikoojs/common` | 2.0.0 | 服务端公共库                     |
-| `@twikoojs/shared` | 2.0.0 | 共享常量与类型                   |
-| `twikoo-func`      | 2.0.0 | CloudBase 适配器                 |
-| `twikoo-vercel`    | 2.0.0 | Vercel 适配器                    |
-| `tkserver`         | 2.0.0 | 自托管服务                       |
-| `twikoo-netlify`   | 2.0.0 | Netlify 适配器                   |
-| `pushoo`           | 2.0.0 | 消息推送（版本策略变更见 BC-11） |
+| 包                     | 版本  | 说明                                                                  |
+| ---------------------- | ----- | --------------------------------------------------------------------- |
+| `twikoo`               | 2.0.0 | 客户端（UMD）                                                         |
+| `@twikoojs/common`     | 2.0.0 | 服务端公共库                                                          |
+| `@twikoojs/shared`     | 2.0.0 | 共享常量与类型                                                        |
+| `twikoo-func`          | 2.0.0 | CloudBase 适配器                                                      |
+| `twikoo-vercel`        | 2.0.0 | Vercel 适配器                                                         |
+| `tkserver`             | 2.0.0 | 自托管服务                                                            |
+| `twikoo-netlify`       | 2.0.0 | Netlify 适配器                                                        |
+| `@twikoojs/aws-lambda` | 2.0.0 | AWS Lambda 适配器（2026-09-19 由 `twikoo-aws-lambda` 改名并转为发布） |
+| `pushoo`               | 2.0.0 | 消息推送（版本策略变更见 BC-11）                                      |
 
 ---
 
@@ -109,15 +110,15 @@ Twikoo 2.0 的首个预发布版本。仓库重构为 pnpm monorepo，源码全�
 
 #### 仓库与工程化
 
-- 仓库重构为 **pnpm monorepo**（`twikoo2/`，单分支 `main`），8 个发布包统一版本号（仓库内恒为 `0.0.0`，发布时由 CI 从 Release tag 注入）。
+- 仓库重构为 **pnpm monorepo**（`twikoo2/`，单分支 `main`），9 个发布包统一版本号（仓库内恒为 `0.0.0`，发布时由 CI 从 Release tag 注入）。
 - 源码全面 **TypeScript**；ESLint 9 flat + Prettier + Vitest（含覆盖率门禁）+ `env:check`。
 - `pnpm-lock.yaml` 入库；CI 拆分为 lint / typecheck / test / build 四个并行门禁 + 基线守卫。
 
 #### 服务端
 
 - 新增 **`@twikoojs/common`**：ports 契约层、pipeline + 26 事件 dispatcher、4 种数据库实现（Mongo / Loki / BlobKV / CloudBase）、capabilities + 惰性 `import()` 重依赖加载、全部 handler/services。
-- 8 个服务端适配器重构为**薄封装**（每个目标 < 150 行），对外包名全部不变：
-  `twikoo-func` / `twikoo-vercel` / `tkserver` / `twikoo-netlify` / `twikoo-edgeone-makers`（不发布）/ `twikoo-aws-lambda`（不发布）/ `twikoo-deta`（不发布）/ `twikoo-vercel-min`（不发布）。
+- 7 个服务端适配器重构为**薄封装**（每个目标 < 150 行），对外包名基本不变：
+  `twikoo-func` / `twikoo-vercel` / `tkserver` / `twikoo-netlify` / `twikoo-edgeone-makers`（不发布）/ `twikoo-deta`（不发布）/ `@twikoojs/aws-lambda`（2026-09-19 由 `twikoo-aws-lambda` 改名并转为发布）。
 - 契约测试套件：26 事件共享断言，逐适配器注入自家数据库实现。
 - 依赖完整性 CI 检查（按 capabilities 校验 Scope F 依赖声明）。
 
@@ -136,9 +137,9 @@ Twikoo 2.0 的首个预发布版本。仓库重构为 pnpm monorepo，源码全�
 
 #### 发布工程
 
-- `release.yml`：`release: published` 触发、8 包矩阵、**两阶段发布**（4 + 4）与 `verify-npm` 轮询 gate、
+- `publish.yml`：`release: published` 触发、9 包矩阵、**两阶段发布**（4 + 5）与 `verify-npm` 轮询 gate、
   版本单调性校验、禁止自动创建 Release（D-21）。
-- `ci.yml` 全门禁；`docs.yml` 支持 Release 触发同步部署；Docker 多阶段镜像；pkg（Node 26 SEA）作为 Release 附件。
+- `build.yml` 全门禁；`docs.yml` 支持 Release 触发同步部署；Docker 多阶段镜像；pkg（Node 26 SEA）作为 Release 附件。
 
 #### 开发与文档
 
@@ -176,6 +177,6 @@ Twikoo 2.0 的首个预发布版本。仓库重构为 pnpm monorepo，源码全�
 
 - CI 工作流在 GitHub 上的实际执行结果；
 - docs 站点部署到 gh-pages 与 `twikoo.js.org` 生效；
-- Release 工作流实际触发与 npm 发布（8 包 `@beta` dist-tag）；
+- Release 工作流实际触发与 npm 发布（9 包 `@beta` dist-tag）；
 - Docker 镜像构建与容器冒烟（本机无 Docker）；
 - pkg SEA 产物的跨平台运行验证（linux / darwin 仅完成构建、未跨平台运行，本机 Windows）。

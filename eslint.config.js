@@ -16,6 +16,7 @@
  *     ② 本地规则 twikoo/no-scoped-style——禁 <style scoped>
  *     ③ no-restricted-imports（仅 server-common）——重依赖顶层静态 import 禁令
  *     （规则二「禁新 .js 源码」为人工约定，无自动守卫）
+ *  8b. templates/**（一键部署模板）按平台要求写 CommonJS，豁免 no-require-imports
  *  9. 测试目录疑似密钥字面量禁令（.env 机制配套，同在 prettier 末层之前）
  *
  * 重写模式说明：client 尚无源码，本配置直接按 Vue 3 设定，无任何 Vue2 过渡降级；
@@ -283,6 +284,15 @@ export default defineConfigWithVueTs(
     name: "twikoo/no-jsdoc-on-tooling-scripts",
     files: ["scripts/**"],
     rules: { "jsdoc/require-jsdoc": "off" },
+  },
+
+  {
+    // 一键部署模板（templates/**）是按平台要求写的 CommonJS：云平台只做「克隆目录 →
+    // npm install → 直接加载入口」，没有构建步骤（详见 templates/README.md），
+    // 因此 require() 是必需品而非待迁移写法，关掉该规则。
+    name: "twikoo/templates-are-cjs-by-design",
+    files: ["templates/**"],
+    rules: { "@typescript-eslint/no-require-imports": "off" },
   },
 
   // ===== 9. 测试目录疑似密钥字面量禁令 =====

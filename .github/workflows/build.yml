@@ -1,5 +1,7 @@
 # Twikoo 2.0 持续集成门禁
 #
+# 文件名与显示名和 1.x 对齐：`build.yml` / `Build`（1.x 为 `.github/workflows/build.yml`）。
+#
 # 4 个并行门禁 job（lint / typecheck / test / build），互不 needs。
 #
 # 草稿 PR 不跑 CI：每个 job 带 `if: github.event.pull_request.draft == false`，
@@ -13,14 +15,14 @@
 #     （null→0、false→0），故 `null == false` 求值为 **true** —— push 到 main 不受影响。
 #
 # 以下守卫项一律由**人工核对**，不设 CI 检查：
-#   - 基线（engines.node / .nvmrc / 8 个发布包 version）
+#   - 基线（engines.node / .nvmrc / 9 个发布包 version）
 #   - AGENTS.md 与仓库现状是否同步
 #   - workflow 静态检查（actionlint + 结构断言）
 #   - packages/*/src 无 .js 源码
 #   - 适配器 dependencies 完整性
 #   - .env.example 变量清单一致性
 
-name: CI
+name: Build
 
 on:
   push:

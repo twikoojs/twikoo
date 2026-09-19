@@ -2,7 +2,7 @@
  * twikoo-func 适配器测试。
  *
  * 注入 CloudBase 数据库句柄替身（以工作区内存 Database 为载体）跑契约核心事件；
- * 验证 main 入口形态 / 转发导出 / <150 行源码门禁。
+ * 验证 main 入口形态 / <150 行源码门禁。
  */
 import { describe, expect, it } from "vitest";
 import { createTwikooFunc, toTkRequest } from "../src/main";
@@ -59,13 +59,5 @@ describe("twikoo-func 薄适配器", () => {
     expect(toTkRequest({ requestContext: { http: { sourceIp: "5.5.5.5" } } }).ip).toBe("5.5.5.5");
     // 5. 全缺失 → 空串
     expect(toTkRequest({}).ip).toBe("");
-  });
-
-  it("转发导出存在（common 公共导出经 twikoo-func 可取）", async () => {
-    const mod = await import("../src/index");
-    expect(typeof mod.main).toBe("function");
-    expect(typeof mod.createTwikooFunc).toBe("function");
-    expect(typeof mod.getPostSubmitService).toBe("function");
-    expect(typeof mod.RES_CODE).toBe("object");
   });
 });

@@ -1,5 +1,5 @@
 /**
- * twikoo-aws-lambda 主逻辑（AWS Lambda 薄适配器）。
+ * @twikoojs/aws-lambda 主逻辑（AWS Lambda 薄适配器）。
  * 业务逻辑全部在 @twikoojs/common；数据库 MONGODB_URI→Mongo。
  * 平台核对：API Gateway 代理集成 payload——REST API（v1：
  * httpMethod 顶层 + requestContext.identity.sourceIp）与 HTTP API（v2：

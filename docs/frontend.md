@@ -93,7 +93,7 @@ twikoo:
 
 ```html
 <div id="tcomment"></div>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@2.0.0-beta.1/dist/twikoo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@__TWIKOO_VERSION__/dist/twikoo.min.js"></script>
 <script>
   twikoo.init({
     envId: "您的环境id", // 腾讯云环境填 envId；Vercel 环境填地址（https://xxx.vercel.app）
@@ -113,21 +113,21 @@ twikoo:
 
 ### 更换 CDN 镜像
 
-如果遇到默认 CDN 加载速度缓慢，可更换其他 CDN 镜像。以下为可供选择的公共 CDN，其中一些 CDN 可能需要数天时间同步最新版本：
+如果遇到默认 CDN 加载速度缓慢，可更换其他 CDN 镜像。以下为可供选择的公共 CDN，**其中部分镜像会滞后**（新版本要等数天甚至更久才同步），若某个链接 404，请改用「推荐在全球使用」里的 jsDelivr 地址。
 
 #### 推荐在中国使用
 
-- `https://registry.npmmirror.com/twikoo/2.0.0-beta.1/files/dist/twikoo.min.js`
-- `https://s4.zstatic.net/npm/twikoo@2.0.0-beta.1/dist/twikoo.min.js`
+- `https://registry.npmmirror.com/twikoo/__TWIKOO_VERSION__/files/dist/twikoo.min.js`
+- `https://s4.zstatic.net/npm/twikoo@__TWIKOO_VERSION__/dist/twikoo.min.js`
 
 #### 推荐在全球使用
 
-- `https://cdn.jsdelivr.net/npm/twikoo@2.0.0-beta.1/dist/twikoo.min.js`
+- `https://cdn.jsdelivr.net/npm/twikoo@__TWIKOO_VERSION__/dist/twikoo.min.js`
 
 #### 备用选项
 
-- `https://s4.zstatic.net/ajax/libs/twikoo/1.6.41/twikoo.min.js`
-- `https://lib.baomitu.com/twikoo/1.6.39/twikoo.min.js`
+- `https://s4.zstatic.net/ajax/libs/twikoo/__TWIKOO_VERSION__/twikoo.min.js`
+- `https://lib.baomitu.com/twikoo/__TWIKOO_VERSION__/twikoo.min.js`
 
 ::: warning 注意
 建议使用 CDN 引入 Twikoo 的用户在链接地址上锁定版本，以免将来 Twikoo 升级时受到非兼容性更新的影响。
@@ -142,13 +142,20 @@ twikoo:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/npm/twikoo@1.6.36/dist/twikoo.all.min.js"
-  integrity="sha384-4KfOjEinLSkv1i1J8TzlkC/RTnuiLoR1OLerVgjEKoH5djYtbf7mzEFsz9p3nfuA"
+  src="https://cdn.jsdelivr.net/npm/twikoo@__TWIKOO_VERSION__/dist/twikoo.all.min.js"
+  integrity="sha384-此处填该版本的哈希"
   crossorigin="anonymous"
 ></script>
 ```
 
-其中 `integrity` 的值可以在 [SRI Hash Generator](https://www.srihash.org/) 查询。
+其中 `integrity` 的值可以在 [SRI Hash Generator](https://www.srihash.org/) 查询（把上面的地址粘进去），也可以用命令行生成：
+
+```sh
+curl -sL "https://cdn.jsdelivr.net/npm/twikoo@__TWIKOO_VERSION__/dist/twikoo.all.min.js" \
+  | openssl dgst -sha384 -binary | openssl base64 -A
+```
+
+注意：**哈希与版本一一对应**，升级版本后要重新生成，否则浏览器会拒绝加载。
 :::
 
 ## 开启管理面板（腾讯云环境）

@@ -17,18 +17,17 @@
 
 ## 2.0 服务端适配器与能力矩阵
 
-Twikoo 2.0 的服务端拆分为 **8 个适配器**（业务逻辑统一在 `@twikoojs/common`，适配器只做平台入口与注入），其中 5 个发布到 npm：
+Twikoo 2.0 的服务端拆分为 **7 个适配器**（业务逻辑统一在 `@twikoojs/common`，适配器只做平台入口与注入），其中 5 个发布到 npm：
 
-| 适配器                           | 包名                    | 平台                        | 能力限制             |
-| -------------------------------- | ----------------------- | --------------------------- | -------------------- |
-| `packages/server-cloudbase`      | `twikoo-func`           | 腾讯云 CloudBase            | 全能力               |
-| `packages/server-vercel`         | `twikoo-vercel`         | Vercel                      | 全能力               |
-| `packages/server-netlify`        | `twikoo-netlify`        | Netlify                     | 全能力               |
-| `packages/server-self-hosted`    | `tkserver`              | 自有服务器 / Docker         | 全能力               |
-| `packages/server-aws-lambda`     | `twikoo-aws-lambda`     | AWS Lambda                  | 全能力               |
-| `packages/server-deta`           | `twikoo-deta`           | Deta Space                  | 全能力               |
-| `packages/server-edgeone-makers` | `twikoo-edgeone-makers` | 腾讯云 EdgeOne Pages Makers | **受限**，见下表     |
-| `packages/server-vercel-min`     | `twikoo-vercel-min`     | Vercel（精简转发壳）        | 复用 `twikoo-vercel` |
+| 适配器                           | 包名                    | 平台                        | 能力限制         |
+| -------------------------------- | ----------------------- | --------------------------- | ---------------- |
+| `packages/server-cloudbase`      | `twikoo-func`           | 腾讯云 CloudBase            | 全能力           |
+| `packages/server-vercel`         | `twikoo-vercel`         | Vercel                      | 全能力           |
+| `packages/server-netlify`        | `twikoo-netlify`        | Netlify                     | 全能力           |
+| `packages/server-self-hosted`    | `tkserver`              | 自有服务器 / Docker         | 全能力           |
+| `packages/server-aws-lambda`     | `@twikoojs/aws-lambda`  | AWS Lambda                  | 全能力           |
+| `packages/server-deta`           | `twikoo-deta`           | Deta Space                  | 全能力           |
+| `packages/server-edgeone-makers` | `twikoo-edgeone-makers` | 腾讯云 EdgeOne Pages Makers | **受限**，见下表 |
 
 能力矩阵（八项能力）：
 
@@ -52,7 +51,12 @@ CloudBase 请将云函数运行时升级到 **Node 20 及以上（推荐 24）**
 ## 腾讯云一键部署
 
 1. 点击以下按钮将 Twikoo 一键部署到云开发<br>
-   [![部署到云开发](https://main.qcloudimg.com/raw/67f5a389f1ac6f3b4d04c7256438e44f.svg)](https://console.cloud.tencent.com/tcb/env/index?action=CreateAndDeployCloudBaseProject&appUrl=https%3A%2F%2Fgithub.com%2Fimaegoo%2Ftwikoo&branch=main)
+   [![部署到云开发](https://main.qcloudimg.com/raw/67f5a389f1ac6f3b4d04c7256438e44f.svg)](https://console.cloud.tencent.com/tcb/env/index?action=CreateAndDeployCloudBaseProject&appUrl=https%3A%2F%2Fgithub.com%2Ftwikoojs%2Ftwikoo&branch=main)
+
+   部署来源就是本仓库 `main` 分支的 [`cloudbaserc.json`](https://github.com/twikoojs/twikoo/blob/main/cloudbaserc.json)：
+   云函数代码取 `templates/cloudbase/twikoo`（一行转发壳），依赖跟随 `twikoo-func` 的 **`latest`** 标签。
+   因此**升级只需重新部署一次，不需要改版本号**。
+
 2. 进入[环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)，启用“匿名登录”
 3. 进入[环境-安全配置](https://console.cloud.tencent.com/tcb/env/safety)，将网站域名添加到“WEB安全域名”
 
@@ -100,8 +104,13 @@ exports.main = require("twikoo-func").main;
 8. 打开 `package.json` 文件，清空输入框中的示例代码，复制以下代码、粘贴到代码框中
 
 ```json
-{ "dependencies": { "twikoo-func": "^2.0.0-beta.1" } }
+{ "dependencies": { "twikoo-func": "latest" } }
 ```
+
+::: tip 为什么写 latest
+`latest` 始终指向最新稳定版，升级时在控制台点一次「保存并安装依赖」即可，不用记版本号。
+如果你希望锁死版本，也可以改写成具体版本号，只是每次升级都要手动改。
+:::
 
 ![](./static/tcb/1787559956229.webp)
 
@@ -197,7 +206,13 @@ Vercel 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 2. 申请 [Vercel](https://vercel.com/signup) 账号
 3. 点击以下按钮将 Twikoo 一键部署到 Vercel<br>
 
-[![Deploy](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/twikoojs/twikoo/tree/main/src/server/vercel-min)
+[![Deploy](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/twikoojs/twikoo/tree/main/templates/vercel-min)
+
+::: tip 这个按钮部署的是什么
+`templates/vercel-min` 是一个**纯 JS 转发壳**（`api/index.js` 只做一件事：`require("twikoo-vercel")`
+再转发出去，Web 入口由 `vercel.json` 全量重写到 `api/index`），依赖跟随 `twikoo-vercel` 的 **`latest`** 标签。
+Vercel 侧只装这一个 npm 依赖、不跑任何构建，所以**升级只需在 Deployments 里重新部署一次**。
+:::
 
 4. 进入 Settings - Environment Variables，添加环境变量 `MONGODB_URI`，值为前面记录的数据库连接字符串
 5. 进入 Settings - Deployment Protection，设置 Vercel Authentication 为 Disabled，并 Save
@@ -328,7 +343,7 @@ EXPOSE 7860
 ![](./static/hugging-8.png)
 
 3. 添加一个 Public Hostname，回源选择 HTTP，端口选择 8080
-4. Clone Twikoo 仓库，找到 `src\server\hf-space`
+4. Clone Twikoo 仓库，找到 `templates/hf-space`
 5. 去 Hugging Face 创建一个 Space，然后 Clone 下来，将 hf-space 文件夹内的所有内容复制进去
 6. 在 Hugging Face Space 的设置中添加一个环境变量，变量名 `CF_ZERO_TRUST_TOKEN`，值是 Tunnels 给的令牌（删掉 `cloudflared.exe service install`，只保留令牌部分）
 
@@ -340,8 +355,24 @@ EXPOSE 7860
 
 1. 注册 AWS 账号并配置 Terraform CLI。
 2. 如需使用托管的 MongoDB 数据库，可申请 [MongoDB Atlas](./mongodb-atlas.md) 账号。
-3. 参考 `src/server/aws-lambda/terraform` 目录中 Terraform 代码创建 AWS 资源。
-4. 部署完成后，Terraform 会将 `lambda_function_url` 打印在屏幕上，您也可以使用 `terraform output` 获取这一 URL，如：
+3. 克隆本仓库，进入 `templates/aws-lambda`；先把依赖装进源码目录（Terraform 会把整个目录打包，云端不装 Node.js 依赖）：
+
+   ```sh
+   cd templates/aws-lambda/src
+   npm install
+   ```
+
+4. 在 `templates/aws-lambda/terraform` 下执行（`mongodb_uri` 换成您的连接字符串）：
+
+   ```sh
+   terraform init
+   terraform apply -var="mongodb_uri=mongodb+srv://..."
+   ```
+
+   该模板创建一个 Lambda 函数（入口 `index.handler`，代码就是 `src/index.js` 里一行
+   `require("@twikoojs/aws-lambda")`，实现跟随 npm 上的 `latest`）并开放函数 URL。
+
+5. 部署完成后，Terraform 会将 `lambda_function_url` 打印在屏幕上，您也可以使用 `terraform output` 获取这一 URL，如：
 
 ```
 $ terraform output

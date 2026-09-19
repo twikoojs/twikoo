@@ -29,19 +29,26 @@ twikoo/
 │   ├── tsdown-config/         # @twikoojs/tsdown-config ← 共享构建积木
 │   ├── client/                # twikoo                  ← 前端库
 │   ├── server-common/         # @twikoojs/common        ← 公共后端库，核心交付
-│   ├── server-aws-lambda/     # twikoo-aws-lambda       ← AWS Lambda 适配器
+│   ├── server-aws-lambda/     # @twikoojs/aws-lambda       ← AWS Lambda 适配器
 │   ├── server-cloudbase/      # twikoo-func             ← 腾讯云 CloudBase 适配器
 │   ├── server-deta/           # twikoo-deta             ← Deta 适配器
 │   ├── server-edgeone-makers/ # twikoo-edgeone-makers   ← EdgeOne Makers 适配器
 │   ├── server-netlify/        # twikoo-netlify          ← Netlify 适配器
 │   ├── server-vercel/         # twikoo-vercel           ← Vercel 适配器
-│   ├── server-vercel-min/     # twikoo-vercel-min       ← Vercel 精简适配器
 │   ├── server-self-hosted/    # tkserver                ← 私有部署适配器
 │   ├── pkg/                   # twikoo-pkg              ← SEA 可执行产物打包流水线，产出私有部署可执行程序
 │   ├── demo/                  # @twikoojs/demo          ← 本地演示工程
 │   └── pushoo/                # pushoo                  ← 推送通道库
-└── docs/                      # twikoo-docs             ← VitePress 文档站
+├── docs/                      # twikoo-docs             ← VitePress 文档站
+└── templates/                 # 非 workspace 包：一键部署模板（纯 JS，平台直取）
+    ├── vercel-min/            #   Vercel（api/index.js + vercel.json + package.json）
+    ├── cloudbase/twikoo/      #   腾讯云开发（仓库根 cloudbaserc.json 指向它）
+    ├── aws-lambda/src/        #   AWS Lambda（terraform/main.tf 的 source_path 指向它）
+    └── hf-space/              #   Hugging Face Space（Dockerfile + src/start.sh）
 ```
+
+> Vercel 的「精简转发壳」不再作为 workspace 包存在（原 `packages/server-vercel-min` 已于 2026-09-19 删除）：
+> 一键部署入口是 `templates/vercel-min`（纯 JS，平台直取），它就是原来那个壳。
 
 ## 常用命令
 
@@ -50,7 +57,7 @@ pnpm build # 全仓构建
 pnpm test # 全仓单元测试
 pnpm lint # ESLint
 pnpm typecheck # 逐包 tsc --noEmit
-pnpm release:check # 发布基线：8 个发布包 version 必须为 0.0.0
+pnpm release:check # 发布基线：9 个发布包 version 必须为 0.0.0
 pnpm e2e:b2 # 端到端回归
 pnpm check:products # 客户端四产物逐一 init + 形态断言 + tkserver 启动/shutdown
 ```
@@ -82,8 +89,8 @@ pnpm check:products # 客户端四产物逐一 init + 形态断言 + tkserver �
 │ twikoo[.all][.nocss].min.js  │  │ │  storage/mailer/notifier/capabilities)│  │ tkserver               │
 │ + twikoo.css                 │  │ ├ pipeline + dispatcher（25 事件）      │  │ twikoo-netlify         │
 └──────────────────────────────┘  │ ├ 4 DB：Mongo/Loki/BlobKV/CloudBase     │  │ aws-lambda / deta / EO │
-                                  │ └ handlers / services                   │  │ vercel-min（转发壳）    │
-                                  └────────────────────────────────────────┘  └────────────────────────┘
+                                  │ └ handlers / services                   │  └────────────────────────┘
+                                  └────────────────────────────────────────┘
 ```
 
 ### 25 事件机制
@@ -169,7 +176,7 @@ pnpm check:products # 客户端四产物逐一 init + 形态断言 + tkserver �
 | qqAvatar    | ✅           | ✅                                                |
 | ai          | ✅           | ✅                                                |
 
-全能力适配器：`twikoo-func` / `twikoo-vercel` / `twikoo-netlify` / `tkserver` / `twikoo-aws-lambda` / `twikoo-deta`（`twikoo-vercel-min` 转发复用 vercel）。未声明能力时 common 返回**用户友好错误**（`CapabilityError`），绝不触发模块解析。
+全能力适配器：`twikoo-func` / `twikoo-vercel` / `twikoo-netlify` / `tkserver` / `@twikoojs/aws-lambda` / `twikoo-deta`。未声明能力时 common 返回**用户友好错误**（`CapabilityError`），绝不触发模块解析。
 
 ---
 
@@ -178,7 +185,7 @@ pnpm check:products # 客户端四产物逐一 init + 形态断言 + tkserver �
 - **Ports 注入**：`request` / `response` / `database` / `storage` / `mailer` / `notifier` / `postSubmit` / `capabilities`
 - **保持薄**：适配器只做「入口 + 适配器注入 + 平台载荷转换」，业务逻辑一律进 `@twikoojs/common`。原「< 150 行」硬门禁已移除（过严，妨碍平台机制落地），改为**人工约定**；平台专属代码多时按职责拆文件（如 cloudbase 的 `transform.ts` / `dispatch.ts` / `types.ts`）。
 - **入口约定**：`createXxxFunc({ database? })` / `createXxxHandler()`；`twikoo-func` 必须保留 `exports.main`（CloudBase 硬依赖）
-- **依赖完整性**：重依赖在适配器 `dependencies` 中声明，按 capabilities 人工核对（8 个适配器；无自动守卫）
+- **依赖完整性**：重依赖在适配器 `dependencies` 中声明，按 capabilities 人工核对（7 个适配器；无自动守卫）
 - **懒加载解析**：common 的重依赖经 `await import(specifier)` 加载，解析基准是**适配器所在位置**——`@twikoojs/common` 已把 16 个重依赖声明为 `peerDependenciesMeta.optional`，pnpm isolated 链接下才会在 common 侧可见（修复的真实缺陷）
 
 ---
@@ -190,6 +197,9 @@ pnpm check:products # 客户端四产物逐一 init + 形态断言 + tkserver �
 - **每个函数、类方法、导出常量上方必须写中文注释**（ESLint `jsdoc/require-jsdoc` 强制，含 `export const` 与对象方法）
 - TypeScript `strict`；语法目标 **ES2022**（浏览器基线 Chrome/Edge 94+、Firefox 93+、Safari 15.4+）
 - **`packages/*/src` 下不得出现 `.js`/`.mjs`/`.cjs` 源码**（人工约定，无自动守卫）
+- **`templates/**` 是唯一允许纯 JS 的地方**：云平台点「一键部署」时只克隆目录/仓库后 `npm install`，
+  **不会跑本仓库的构建**，所以入口必须是 `.js` 且自包含（禁 `workspace:*` / `file:`），依赖写 `latest`
+  （发版不用回来改版本号）。改成 TS 就等于废掉一键部署，详见 `templates/README.md`
 - 提交信息：Conventional Commits（`feat|fix|chore|docs|test|build|ci|refactor` + scope）
 
 ### 工具链
@@ -323,19 +333,19 @@ outputOptions: (options, format) => (format === "cjs" ? { ...options, exports: "
 
 ### 版本号规则
 
-- **8 个发布包的 `version` 恒为 `0.0.0`**，禁止任何改动（`pnpm release:check` 与 `release.yml` 的基线校验步骤会拦）
+- **9 个发布包的 `version` 恒为 `0.0.0`**，禁止任何改动（`pnpm release:check` 与 `publish.yml` 的基线校验步骤会拦）
 - 版本号由 CI 在发布时从 **Release tag** 注入（`strip /^v/`），不进入 git
 - `pushoo` 不再维护独立版本线：与 `twikoo` 同版本发布，其变更随 twikoo 版本一起出去
 
-### 发布流程（`release.yml`）
+### 发布流程（`publish.yml`）
 
 1. **人在 GitHub 网页创建 Release**（tag 即版本号；勾选 pre-release → npm `beta` dist-tag）——CI **不创建** Release/tag，也无 `workflow_dispatch`
-2. `release: published` 触发 `release.yml`：版本格式 → 8 包基线 → **单调性**（新版本必须大于已发布的最高同线版本）→ 未发布过
+2. `release: published` 触发 `publish.yml`：版本格式 → 9 包基线 → **单调性**（新版本必须大于已发布的最高同线版本）→ 未发布过
 3. **两阶段发布**（依赖关系强制分批）：
    - 第一批：`@twikoojs/shared` · `@twikoojs/common` · `pushoo` · `twikoo`
    - gate：`verify-npm`（600s / 15s 轮询）确认第一批在 npm 可见
-   - 第二批：`twikoo-func` · `twikoo-vercel` · `tkserver` · `twikoo-netlify`
-   - gate：8 包全部可见
+   - 第二批：`twikoo-func` · `twikoo-vercel` · `tkserver` · `twikoo-netlify` · `@twikoojs/aws-lambda`
+   - gate：9 包全部可见
 4. 收尾（仅正式版）：`publish-docker`（`imaegoo/twikoo:latest` / `:VERSION` / `:arm32v7`）、`publish-pkg`（SEA 产物用 `gh release upload` 挂到**已有** Release）
 5. 发布脚本：`scripts/release-set-version.mjs`（基线校验 / 覆写）、`release-version-check.mjs`（单调性 / 未发布过）、`verify-npm.mjs`（可见性 gate）
 
@@ -408,15 +418,15 @@ push 到 `main` 且改动 `docs/**`、或 Release published、或手动触发 �
 
 ### 包名不变
 
-`twikoo` · `twikoo-func` · `twikoo-vercel` · `twikoo-netlify` · `tkserver` · `pushoo` · `@twikoojs/shared` · `@twikoojs/common`（新增）。`twikoo-edgeone-makers` 等私有包名亦不变。
+`twikoo` · `twikoo-func` · `twikoo-vercel` · `twikoo-netlify` · `tkserver` · `@twikoojs/aws-lambda`（2026-09-19 由 `twikoo-aws-lambda` 改名，并同步转为发布）· `pushoo` · `@twikoojs/shared` · `@twikoojs/common`（新增）。`twikoo-deta` / `twikoo-edgeone-makers` 等私有包名亦不变。
 
 ### 兼容分支与过渡层
 
-| 兼容项                 | 当前行为                                                        | 移除时间  |
-| ---------------------- | --------------------------------------------------------------- | --------- |
-| `twikoo-func` 转发导出 | 保留 `export * from "@twikoojs/common"` + `console.warn` 过渡壳 | **2.2.0** |
-| `README.en.md`         | 已删除（中文移至 `README_zh_CN.md`）——外部死链需公告            | 已发生    |
-| CloudBase CLI 部署     | 已移除（仅保留控制台流程）——CLI 用户需改用控制台                | 已发生    |
+| 兼容项                 | 当前行为                                                                              | 移除时间                 |
+| ---------------------- | ------------------------------------------------------------------------------------- | ------------------------ |
+| `twikoo-func` 转发导出 | **已移除**（原计划 2.2.0；2026-09-19 确认无外部依赖后提前移除 `export *` 与弃用告警） | 已发生（原定 **2.2.0**） |
+| `README.en.md`         | 已删除（中文移至 `README_zh_CN.md`）——外部死链需公告                                  | 已发生                   |
+| CloudBase CLI 部署     | 已移除（仅保留控制台流程）——CLI 用户需改用控制台                                      | 已发生                   |
 
 > `POST_SUBMIT` **不在此列**：它曾被误判为兼容分支，实际是后置副作用链的执行入口
 > （见「25 事件机制」小节），长期保留。
@@ -432,7 +442,7 @@ push 到 `main` 且改动 `docs/**`、或 Release published、或手动触发 �
 2. **目录名 ≠ 包名**：见上方对照表；`server-cloudbase` → `twikoo-func`、`server-common` → `@twikoojs/common`。
 3. **重依赖在 common 侧不可见**：只把重依赖写进适配器 `dependencies` 不够——common 的动态 `import()` 以自身位置解析，必须同时在 common 的 `peerDependencies`(+`optional`) 中声明（实测：`COMMENT_SUBMIT` 曾因 jsdom 解析失败返回 1000）。
 4. **`pnpm exec <bin>` 在部分环境失效**：改用 `node_modules/.bin/<bin>` 或 `pnpm run <script>`。仓库已不装 pre-commit 钩子，提交前请手动执行等价检查（`pnpm lint` + `pnpm prettier --write`）。
-5. **`version` 字段禁止人为修改**：保持 `0.0.0`，由 CI 从 Release tag 注入；`pnpm release:check` 与 `release.yml` 的基线校验步骤会拦。
+5. **`version` 字段禁止人为修改**：保持 `0.0.0`，由 CI 从 Release tag 注入；`pnpm release:check` 与 `publish.yml` 的基线校验步骤会拦。
 6. **新增 env 变量必须同步 `.env.example`**：无自动守卫，需人工核对。
 7. **CSS 不得用 `<style scoped>`、不得出现 `.el-*`**：见 CSS 规范（均有 ESLint 规则）。
 8. **`packages/*/src` 不得新增 `.js`**：重写模式全量 TS（人工约定，无自动守卫）。
@@ -445,11 +455,13 @@ push 到 `main` 且改动 `docs/**`、或 Release published、或手动触发 �
 
 以下为 2.0 **有意保留**的向后兼容项，计划在 **2.2.0 移除**；移除前需提前公告（属 breaking change）：
 
-| #   | 待移除项                                 | 位置                                    | 移除前置动作                                      |
-| --- | ---------------------------------------- | --------------------------------------- | ------------------------------------------------- |
-| 1   | `twikoo-func` 转发导出过渡壳             | `packages/server-cloudbase` 入口        | 确认无外部依赖后移除 `export *` 与 `console.warn` |
-| 2   | `pushoo` 旧独立版本线（`0.1.x`）兼容说明 | `packages/pushoo/README.md` / CHANGELOG | 2.0 已并入统一版本线，2.2.0 起可删除迁移公告      |
-| 3   | `README.en.md` 死链公告                  | CHANGELOG                               | 公告期结束后可移出「最近变更」区                  |
+| #   | 待移除项                                 | 位置                                    | 移除前置动作                                 |
+| --- | ---------------------------------------- | --------------------------------------- | -------------------------------------------- |
+| 1   | `pushoo` 旧独立版本线（`0.1.x`）兼容说明 | `packages/pushoo/README.md` / CHANGELOG | 2.0 已并入统一版本线，2.2.0 起可删除迁移公告 |
+| 2   | `README.en.md` 死链公告                  | CHANGELOG                               | 公告期结束后可移出「最近变更」区             |
+
+> `twikoo-func` 转发导出过渡壳原本列在本表第 1 项，**已于 2026-09-19 提前移除**——见上方
+> 「兼容分支与过渡层」表。
 
 > 维护约定：任何兼容分支都必须在**本文档与 CHANGELOG 同时登记**并注明移除版本；移除时同步更新文档站「服务端事件」与 README 迁移说明。
 > **不要把 `POST_SUBMIT` 登记为兼容分支**——它是长期机制（见「25 事件机制」小节）。

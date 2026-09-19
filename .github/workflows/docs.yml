@@ -23,7 +23,10 @@ jobs:
         # VitePress 需要完整提交历史来生成贡献者信息与最后更新时间
         with:
           fetch-depth: 0
-      # 文档站内嵌的 twikoo 客户端版本（`theme/Twikoo.vue` 的 CDN 地址，不写死在源码里）：
+      # 文档站内嵌的 twikoo 版本（两处，同一个变量驱动）：
+      #   ① `theme/Twikoo.vue` 的 CDN 地址（`import.meta.env.VITE_TWIKOO_VERSION`）
+      #   ② markdown 示例里的占位符 `__TWIKOO_VERSION__`（代码块不做 Vue 插值，
+      #      由 `.vitepress/config.ts` 的 markdown-it 规则在构建时替换）
       #   - release 触发 → 用发布 tag（本仓库 tag 即 twikoo 版本号）
       #   - push docs / 手动触发 → 取 registry 最新稳定版（`npm view` 读的是 latest dist-tag）
       # 必须注入为 `VITE_TWIKOO_VERSION`：Vite 只把 VITE_ 前缀的**进程环境变量**暴露给

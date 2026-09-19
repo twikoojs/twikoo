@@ -4,7 +4,7 @@
  *
  * 用法：
  *   node scripts/verify-npm.mjs <version> <npm-tag> <batch>
- *     batch = 1（校验第一批 4 个包）| 2（校验全部 8 个包）
+ *     batch = 1（校验第一批 4 个包）| 2（校验全部 9 个包）
  *
  * 轮询参数：超时 600s、间隔 15s（与 1.x verify-npm 一致）。
  * 任一包在超时后仍不可见 → exit 1（fail loudly）。
@@ -64,7 +64,7 @@ if (!version || !tag || !batch) {
   process.exit(1);
 }
 
-/** 校验范围：batch 2 覆盖全部 8 个包（含第一批） */
+/** 校验范围：batch 2 覆盖全部 9 个包（含第一批） */
 const targets = batch === "2" ? PUBLISH_PACKAGES : packagesOfBatch(Number(batch));
 console.log(
   `等待 ${targets.length} 个包在 npm 上可见（version=${version}, tag=${tag}, 超时 ${TIMEOUT}s）…`,

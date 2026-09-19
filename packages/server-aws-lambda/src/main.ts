@@ -1,7 +1,7 @@
 /**
- * twikoo-aws-lambda 主逻辑（AWS Lambda 薄适配器，规范 §6.6）。
+ * twikoo-aws-lambda 主逻辑（AWS Lambda 薄适配器）。
  * 业务逻辑全部在 @twikoojs/common；数据库 MONGODB_URI→Mongo。
- * 平台核对（§6.8）：API Gateway 代理集成 payload——REST API（v1：
+ * 平台核对：API Gateway 代理集成 payload——REST API（v1：
  * httpMethod 顶层 + requestContext.identity.sourceIp）与 HTTP API（v2：
  * requestContext.http.method/sourceIp + isBase64Encoded）双形态均处理；
  * 返回体 body 必须字符串化——docs.aws.amazon.com/lambda（查阅 2026-09-17）。
@@ -20,7 +20,7 @@ import {
 } from "@twikoojs/common";
 import { lambdaPostSubmitDispatcher } from "./dispatch";
 
-/** AWS Lambda 平台能力：全能力（§6.5 能力矩阵） */
+/** AWS Lambda 平台能力：全能力*/
 const lambdaCapabilities = FULL_CAPABILITIES;
 
 /** API Gateway 代理事件的最小结构面（v1 REST / v2 HTTP API 双形态） */

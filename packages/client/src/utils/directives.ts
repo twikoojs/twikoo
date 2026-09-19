@@ -1,5 +1,5 @@
 /**
- * 自定义指令（1.x 经 element-ui 引入的两个指令的 `tk-` 等价实现，§5.3/D-1）。
+ * 自定义指令（1.x 经 element-ui 引入的两个指令的 `tk-` 等价实现）。
  *
  * - `v-loading`：Element UI `Loading` 指令的等价物——在宿主元素上叠加遮罩与旋转
  *   指示器，并保证宿主 `position: relative`（否则遮罩会溢出到祖先定位上下文）。

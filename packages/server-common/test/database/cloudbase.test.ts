@@ -1,7 +1,7 @@
 /**
- * CloudBaseDatabase 测试（T16）。
+ * CloudBaseDatabase 测试。
  *
- * 以结构化 mock 模拟 @cloudbase/node-sdk 的 database() 句柄（plan T16 验收
+ * 以结构化 mock 模拟 @cloudbase/node-sdk 的 database() 句柄（验收
  * 方式：mock SDK 单测）。mock 忠实还原 TCB 行为面：
  * - where 条件里的指令对象（_.in / _.inc）在查询/更新时解释执行；
  * - `_.in` 含 null 时命中「字段缺失」（TCB/Mongo 同语义，ABSENT 翻译的根基）；
@@ -223,7 +223,7 @@ class MockTcbDatabase implements CloudBaseDatabaseLike {
   }
 }
 
-/** 语义套件接入（与 Mongo/Loki/BlobKV 同一套断言，R-3） */
+/** 语义套件接入（与 Mongo/Loki/BlobKV 同一套断言）*/
 runDatabaseSemanticSuite("CloudBaseDatabase", {
   /** 每个用例独立 mock 数据库 */
   create: async () => new CloudBaseDatabase({ database: new MockTcbDatabase() }),
@@ -231,7 +231,7 @@ runDatabaseSemanticSuite("CloudBaseDatabase", {
   dispose: async () => {},
 });
 
-describe("CloudBaseDatabase 平台语义（T16）", () => {
+describe("CloudBaseDatabase 平台语义", () => {
   it("集合名与 1.7.24 一致：全部 collection() 调用 ∈ {comment, config, counter, cap_kv}", async () => {
     const mock = new MockTcbDatabase();
     const db = new CloudBaseDatabase({ database: mock });

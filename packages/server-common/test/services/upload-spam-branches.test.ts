@@ -1,5 +1,5 @@
 /**
- * 上传图床分发 + 垃圾后检分支测试（T18 覆盖率补齐 III）。
+ * 上传图床分发 + 垃圾后检分支测试（覆盖率补齐 III）。
  */
 import { describe, expect, it } from "vitest";
 import { uploadImage } from "../../src/services/upload";

@@ -1,5 +1,5 @@
 /**
- * 图标注册表（T29 用户修正：从 `@fortawesome/fontawesome-free/svgs/` 按需引入
+ * 图标注册表（用户修正：从 `@fortawesome/fontawesome-free/svgs/` 按需引入
  * SVG 文件，替代 webfont——字体含全量图标会显著膨胀最终产物）。
  *
  * 规则：

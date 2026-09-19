@@ -1,8 +1,8 @@
 /**
- * 发布包清单（Scope C 单一真相源，§4.3.0）。
+ * 发布包清单（Scope C 单一真相源）。
  *
  * 8 个包共享同一版本号；仓库内 `version` 恒为 `0.0.0`，仅由 release.yml 在 CI 中覆写后发布。
- * 分批顺序（§4.3.2）：
+ * 分批顺序：
  * - 第一批：@twikoojs/shared、@twikoojs/common、pushoo、twikoo（无服务端依赖）
  * - 第二批：twikoo-func、twikoo-vercel、tkserver、twikoo-netlify（依赖 common，必须等第一批可见）
  */
@@ -50,7 +50,7 @@ export function compareVersions(a, b) {
   for (const key of ["major", "minor", "patch"]) {
     if (pa[key] !== pb[key]) return pa[key] > pb[key] ? 1 : -1;
   }
-  // 有预发布标识者小于同核心版本（semver §11.3）
+  // 有预发布标识者小于同核心版本（semver）
   if (pa.pre === pb.pre) return 0;
   if (pa.pre === "") return 1;
   if (pb.pre === "") return -1;

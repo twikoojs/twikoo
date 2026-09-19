@@ -1,9 +1,9 @@
 /**
- * T38 验收用例：文档站结构与 §11.3 内容更新（D-7 / §11.2 / §11.3）。
+ * 验收用例：文档站结构与内容更新。
  *
  * - 中英 sidebar 项数相等（Acceptance 的脚本断言）；
  * - sidebar 每一项都能落到真实页面文件（防止「加进导航但没有页面」）；
- * - §11.3 ② 要求的 CloudBase CLI 弃用标注必须存在（BC-14）。
+ * - ② 要求的 CloudBase CLI 弃用标注必须存在。
  */
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -32,7 +32,7 @@ function fileForLink(link: string): string {
   return resolve(DOCS_ROOT, rel === "" ? "index.md" : `${rel}.md`);
 }
 
-describe("T38 文档站结构", () => {
+describe("文档站结构", () => {
   it("中英 sidebar 项数相等且均为 9 项", () => {
     const zh = sidebarOf("root");
     const en = sidebarOf("en");
@@ -55,15 +55,15 @@ describe("T38 文档站结构", () => {
     }
   });
 
-  it("§11.2 要求的 4 个英文页存在", () => {
+  it("4 个英文页存在", () => {
     for (const page of ["cms", "configuration", "mongodb-atlas", "QQ_API"]) {
       expect(existsSync(resolve(DOCS_ROOT, "en", `${page}.md`)), `缺少 en/${page}.md`).toBe(true);
     }
   });
 });
 
-describe("T38 §11.3 内容更新", () => {
-  it("② CloudBase CLI 方式标注「2.0 起不再支持」（BC-14）", () => {
+describe("内容更新", () => {
+  it("② CloudBase CLI 方式标注「2.0 起不再支持」", () => {
     const zh = readFileSync(resolve(DOCS_ROOT, "backend.md"), "utf8");
     const en = readFileSync(resolve(DOCS_ROOT, "en/backend.md"), "utf8");
     expect(zh).toContain("2.0 起不再支持");
@@ -80,7 +80,7 @@ describe("T38 §11.3 内容更新", () => {
     expect(zh).toContain("Go SMTP Bridge");
   });
 
-  it("③ 浏览器基线（BC-2）已在 intro 与 frontend 标注", () => {
+  it("③ 浏览器基线已在 intro 与 frontend 标注", () => {
     for (const file of ["intro.md", "en/intro.md", "frontend.md", "en/frontend.md"]) {
       const src = readFileSync(resolve(DOCS_ROOT, file), "utf8");
       expect(src, `${file} 缺少浏览器基线`).toMatch(/ES2022/);

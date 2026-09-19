@@ -1,6 +1,6 @@
 /**
- * twikoo-func 主逻辑（CloudBase 薄适配器，规范 §6.6）。
- * 业务逻辑全部在 @twikoojs/common；平台核对（§6.8）：docs.cloudbase.net 云函数章节（查阅 2026-09-17）。
+ * twikoo-func 主逻辑（CloudBase 薄适配器）。
+ * 业务逻辑全部在 @twikoojs/common；平台核对：docs.cloudbase.net 云函数章节（查阅 2026-09-17）。
  *
  * 载荷转换见 `./transform.ts`，后置副作用派发见 `./dispatch.ts`，
  * 平台 SDK 结构面见 `./types.ts`。
@@ -18,7 +18,7 @@ import type { TcbAppLike, TcbContextLike, TcbSdkStatic } from "./types";
 
 export { fromTkResponse, toTkRequest } from "./transform";
 
-/** CloudBase 平台能力：全能力（§6.5 能力矩阵） */
+/** CloudBase 平台能力：全能力*/
 const cloudbaseCapabilities: Capabilities = defineCapabilities({
   mail: true,
   domPurify: true,
@@ -93,7 +93,7 @@ let mainFn:
   ((event: unknown, context?: TcbContextLike) => Promise<Record<string, unknown>>) | null = null;
 
 /**
- * 云函数入口（exports.main 导出名硬约束，D-22）。
+ * 云函数入口（exports.main 导出名硬约束）。
  * @param event 云函数事件
  * @param context 云函数上下文（IP 解析 + 递归自调用取 function_name）
  * @returns 云函数返回体

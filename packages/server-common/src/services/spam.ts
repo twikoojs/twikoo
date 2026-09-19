@@ -313,7 +313,7 @@ async function checkByLLM(
     if (attempt > 1) await new Promise((resolve) => setTimeout(resolve, 1000));
     try {
       if (!generateText) {
-        // @xsai/generate-text 为 ai 能力外部依赖（D-2）：惰性在 lib-loader 内部完成
+        // @xsai/generate-text 为 ai 能力外部依赖：惰性在 lib-loader 内部完成
         generateText = await getGenerateText(caps);
       }
       const messages = buildMessages(comment, lastError, String(config.LLM_SPAM_PROMPT ?? ""));

@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 /**
- * 解析 .env 文本为键值表（轻量自写实现，不引入 dotenv devDep——T10 选型记录：
+ * 解析 .env 文本为键值表（轻量自写实现，不引入 dotenv devDep—— 选型记录：
  * 仅需「注释/空行/KEY=VALUE/成对引号」四类语法，自写 30 行内可控，省一个依赖面）。
  * @param content .env 文件全文
  * @returns 解析出的键值表（保留原始字符串，不做类型转换）
@@ -36,7 +36,7 @@ function parseEnvFile(content: string): Record<string, string> {
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const envPath = path.join(repoRoot, ".env");
 
-// §9.4 机制要求 1：测试启动时加载 .env；CI 环境变量 / 外部 shell 已设置的变量优先，
+// 机制要求 1：测试启动时加载 .env；CI 环境变量 / 外部 shell 已设置的变量优先，
 // 仅对未设置（或设为空串）的键做 process.env 兜底，绝不覆盖显式注入。
 // .env 不存在时静默跳过——无 Secrets 的 fork PR CI 上本 setup 零副作用（用例靠 hasEnv skip）。
 if (existsSync(envPath)) {

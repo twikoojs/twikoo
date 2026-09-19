@@ -1,9 +1,9 @@
 /**
- * MongoDatabase 测试（T14）。
+ * MongoDatabase 测试。
  *
- * 默认用 mongodb-memory-server 提供的临时实例（§9.4 B 类默认值：无需用户
+ * 默认用 mongodb-memory-server 提供的临时实例（无需用户
  * 填充 TEST_MONGODB_URI）；设置了 TEST_MONGODB_URI 时改连真实实例。
- * QA− 场景（实例停机 → 连接失败错误可读）单列 describe。
+ * 场景（实例停机 → 连接失败错误可读）单列 describe。
  *
  * 内存实例在本机起不来时（如 macOS arm64 未装 Rosetta）**整组跳过**，
  * 判定与理由见 `test/utils/mongo-availability.ts`。
@@ -49,7 +49,7 @@ if (unavailable !== null) {
     await mongod?.stop();
   });
 
-  /** 语义套件接入（T15 Loki 跑同一套断言） */
+  /** 语义套件接入（Loki 跑同一套断言）*/
   runDatabaseSemanticSuite("MongoDatabase", {
     /** 每个用例独立数据库：隔离用例间数据（同一 mongod 实例上多库零成本） */
     create: async () => {
@@ -64,7 +64,7 @@ if (unavailable !== null) {
     },
   });
 
-  describe("MongoDatabase 连接语义（T14）", () => {
+  describe("MongoDatabase 连接语义", () => {
     it("init 幂等：重复调用复用同一连接不报错", async () => {
       const db = new MongoDatabase({ uri });
       await db.init();
@@ -74,7 +74,7 @@ if (unavailable !== null) {
       await db.close();
     });
 
-    it("QA−：内存实例停机后操作抛可读错误（非静默失败）", async () => {
+    it("内存实例停机后操作抛可读错误（非静默失败）", async () => {
       if (mongod === null) return; // 外部真实实例不执行本用例（不能停别人的库）
       const db = new MongoDatabase({ uri });
       await db.init();

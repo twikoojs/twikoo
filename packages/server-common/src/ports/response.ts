@@ -1,5 +1,5 @@
 /**
- * 响应端口（规范 §6.3 请求 / 响应抽象）。
+ * 响应端口（规范请求 / 响应抽象）。
  *
  * 内部统一 {@link TkResponse}，由适配器以 {@link ResponsePort.fromTkResponse}
  * 翻译为各平台返回体（含状态码、CORS 头、accessToken 的承载）。
@@ -21,7 +21,7 @@ export interface TkResponseBody {
   /** 消息：失败时必带（错误体 code + message），成功时为可选提示语 */
   message?: string;
   /**
-   * 回填的鉴权令牌（accessToken 回填，§6.3）：
+   * 回填的鉴权令牌（accessToken 回填）：
    * 仅当业务成功且请求体未携带 accessToken 时由 pipeline 回填；登录等事件直接返回。
    */
   accessToken?: string;
@@ -30,7 +30,7 @@ export interface TkResponseBody {
 }
 
 /**
- * 内部统一响应（§6.3 字段表：status、body、headers 含 CORS）。
+ * 内部统一响应（字段表：status、body、headers 含 CORS）。
  */
 export interface TkResponse {
   /** HTTP 状态码（1.x 行为：业务响应恒为 200，OPTIONS 预检为 204） */
@@ -40,7 +40,7 @@ export interface TkResponse {
   /**
    * 响应头。
    *
-   * 语义（§6.3）：allowCors / getAllowedOrigin 逻辑上移到公共库 pipeline
+   * 语义：allowCors / getAllowedOrigin 逻辑上移到公共库 pipeline
    * （保留 localhost 正则放行 + config.CORS_ALLOW_ORIGIN 逗号白名单规则），
    * CORS 头值是本 headers 的一部分；适配器只负责把 headers 写进平台响应。
    * 1.x 头集：Access-Control-Allow-Credentials / Allow-Origin / Allow-Methods(POST)
@@ -50,7 +50,7 @@ export interface TkResponse {
 }
 
 /**
- * 响应转换端口（§6.3：「适配器实现 fromTkResponse(tkRes) → 平台返回格式」）。
+ * 响应转换端口（「适配器实现 fromTkResponse(tkRes) → 平台返回格式」）。
  * 适配器把内部统一响应翻译为自家平台的返回体。
  */
 export interface ResponsePort {

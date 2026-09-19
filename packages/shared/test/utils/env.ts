@@ -1,8 +1,8 @@
 /**
  * 判断测试所需环境变量是否已配置（非空）。
  *
- * 使用约定（twikoo-2.0-refactor-plan §9.4 机制要求 2）：
- * A 类密钥/账号变量缺失时，对应用例以 `describe.skipIf(!hasEnv("..."))` 整体跳过
+ * 使用约定（机制要求 2）：
+ * /账号变量缺失时，对应用例以 `describe.skipIf(!hasEnv("..."))` 整体跳过
  * （等价 describe.skip，运行结果显示 skipped 而非 failed），保证 fork PR 在
  * 无 Secrets 的 CI 上照样跑绿。变量清单见根 .env.example。
  *

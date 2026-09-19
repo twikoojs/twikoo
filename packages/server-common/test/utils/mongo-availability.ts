@@ -1,5 +1,5 @@
 /**
- * mongodb-memory-server 的本机可用性判定（T14 / T19 内存实例的共同前置条件）。
+ * mongodb-memory-server 的本机可用性判定（内存实例的共同前置条件）。
  *
  * **背景**：测试固定 `MONGOMS_VERSION=4.4.29`（driver 6.x 支持矩阵内的最小版，且 Windows
  * 全量 zip 体积远小于 8.x），而 **MongoDB 4.4 没有 macOS arm64 构建**——mongodb-memory-server
@@ -7,7 +7,7 @@
  * `spawn Unknown system error -86`。
  *
  * 原实现把 `MongoMemoryServer.create()` 放在 `beforeAll` 里，失败会以**未捕获异常**抛出：
- * 用例全部 skipped、文件却判 FAIL（本地跑全仓 `pnpm test` 必红，见计划文档 §2.2）。
+ * 用例全部 skipped、文件却判 FAIL（本地跑全仓 `pnpm test` 必红，见计划文档）。
  *
  * **处置**：不可用时**整组跳过**而不是失败——这是环境能力问题，不是代码回归。
  * 其他环境（CI 的 linux x64、macOS x64、Windows）与装了 Rosetta 的 Apple Silicon 一律照常运行；

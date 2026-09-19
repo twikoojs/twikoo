@@ -8,7 +8,7 @@ import type { OutExtensionFactory, TsdownPlugin } from "tsdown";
  * 各包 `src/version.ts` 中 `VERSION` 常量恒为该字符串，构建时由
  * {@link createVersionPlugin} 改写为被构建包 `package.json` 的 version。
  * 本地开发构建得到 `0.0.0`；CI 发布时先由 release 流程改写 `package.json` 的
- * version，构建产物即携带真实版本号（设计决策 D-13）。
+ * version，构建产物即携带真实版本号（设计决策）。
  */
 export const VERSION_PLACEHOLDER = "__TWIKOO_VERSION__";
 

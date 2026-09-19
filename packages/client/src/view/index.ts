@@ -17,7 +17,7 @@ import "../lib/owo.css";
 let app: VueApp | null = null;
 
 /**
- * 渲染评论区（§5.1：`createApp(App).mount(el)`；全局属性 $tcb/$twikoo 注入）。
+ * 渲染评论区（`createApp(App).mount(el)`；全局属性 $tcb/$twikoo 注入）。
  * @param tcb 云开发实例
  * @param options 前端选项
  * @returns 应用实例
@@ -28,7 +28,7 @@ export function render(tcb: unknown, options: Record<string, unknown> = {}): Vue
     app = null;
   }
   app = createApp(TwikooApp);
-  // §5.1：Vue2 Vue.prototype 全局属性 → Vue3 app.config.globalProperties
+  // Vue2 Vue.prototype 全局属性 → Vue3 app.config.globalProperties
   app.config.globalProperties.$tcb = tcb;
   app.config.globalProperties.$twikoo = options;
   setAppState(tcb as never, options);

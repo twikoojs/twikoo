@@ -1,8 +1,8 @@
 /**
- * T36 验收用例：demo 数据 seed（§10.2）。
+ * 验收用例：demo 数据 seed。
  *
- * QA+：触发三态各一例（不存在→生成 / 存在但空→补 / 有数据→零改动）+ 11 场景逐项覆盖；
- * QA−：未开启 `TWIKOO_SEED` 误触达 → 抛错且不写任何数据（生产不可触达）。
+ * 触发三态各一例（不存在→生成 / 存在但空→补 / 有数据→零改动）+ 11 场景逐项覆盖；
+ * 未开启 `TWIKOO_SEED` 误触达 → 抛错且不写任何数据（生产不可触达）。
  */
 import { existsSync, mkdtempSync, readFileSync, rmSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -49,7 +49,7 @@ function collector(): { lines: string[]; log: (m: string) => void } {
   };
 }
 
-describe("T36 seed 触发三态（§10.2）", () => {
+describe("seed 触发三态", () => {
   it("态 1：数据库文件不存在 → 自动生成并打印「已生成 N 条测试评论」", async () => {
     const dir = mkdtempSync(join(tmpdir(), "tkserver-seed-new-"));
     const database = makeDatabase(dir);
@@ -123,7 +123,7 @@ describe("T36 seed 触发三态（§10.2）", () => {
   });
 });
 
-describe("T36 十一项场景覆盖（§10.2 覆盖表）", () => {
+describe("十一项场景覆盖（覆盖表）", () => {
   it("场景 1–9 + 10 + 11 逐项可断言", async () => {
     const dir = mkdtempSync(join(tmpdir(), "tkserver-seed-scene-"));
     const database = makeDatabase(dir);
@@ -206,7 +206,7 @@ describe("T36 十一项场景覆盖（§10.2 覆盖表）", () => {
   });
 });
 
-describe("T36 QA−：生产不可触达（未开启 TWIKOO_SEED）", () => {
+describe("生产不可触达（未开启 TWIKOO_SEED）", () => {
   it("误触达 → 抛 SeedNotAllowedError，且不写任何数据（连数据目录都不创建）", async () => {
     const dir = mkdtempSync(join(tmpdir(), "tkserver-seed-guard-"));
     const database = makeDatabase(dir);

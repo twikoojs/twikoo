@@ -1,5 +1,5 @@
 /**
- * demo 页 Vite dev server（§10.1）：端口 9820，同时提供
+ * demo 页 Vite dev server：端口 9820，同时提供
  *  ① demo 页（`/`、`/demo.html`，由本包根目录直供）
  *  ② 本地化 vendor 资产（`/bulma/*`、`/katex/*`，publicDir = `.vendor/`）
  *  ③ demo 自有样式与客户端构建产物（`/demo.css`、`/twikoo*.js`，见 ROOT_ASSETS）
@@ -30,7 +30,7 @@ const ROOT_ASSETS = new Map<string, { file: string; type: string }>(
   [
     // demo 自有样式。必须由本中间件直供（而非交给 Vite 的 CSS 管线）：
     // Vite 会把 .css 请求按「CSS 模块」返回 text/javascript，浏览器会因 MIME
-    // 不符拒绝应用该样式表，导致 demo 页样式丢失（T35 实测）。
+    // 不符拒绝应用该样式表，导致 demo 页样式丢失（实测）。
     { path: "/demo.css", file: resolve(DEMO_ROOT, "demo.css"), type: "text/css; charset=utf-8" },
     // 客户端产物：直供而非复制——客户端处于 watch 重建状态，页面刷新即取到最新产物
     ...CLIENT_PRODUCT_FILES.map((name) => ({

@@ -1,5 +1,5 @@
 /**
- * services 层专项测试（T18 覆盖率补齐）：
+ * services 层专项测试（覆盖率补齐）：
  * 导入器 / 通知 / 评论 DTO / 查询可见性 / Cap 存储 / 上传解析。
  * 重依赖（xml2js / marked / dompurify / nodemailer / pushoo / bowser）全部
  * 经 setLibImporter / setCustomLibs 注入替身——零真实网络、零密钥。

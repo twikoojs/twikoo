@@ -24,7 +24,7 @@ If the comment list stops loading after an upgrade, delete the `node_modules` di
 ## CloudBase, command line deployment
 
 ::: danger Removed in 2.0
-Twikoo 2.0 removes command line deployment (`tcb fn deploy` and the `yarn deploy` / `login` / `logout` scripts, BC-14). Use the console procedure above instead. The command below is kept for 1.x reference only.
+Twikoo 2.0 removes command line deployment (`tcb fn deploy` and the `yarn deploy` / `login` / `logout` scripts). Use the console procedure above instead. The command below is kept for 1.x reference only.
 :::
 
 ```sh

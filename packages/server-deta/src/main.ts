@@ -1,7 +1,7 @@
 /**
- * twikoo-deta 主逻辑（Deta Space 薄适配器，规范 §6.6）。
+ * twikoo-deta 主逻辑（Deta Space 薄适配器）。
  * 业务逻辑全部在 @twikoojs/common；Deta 走 HTTP（Express 1.x 形态 → Node http）。
- * 平台核对（§6.8）：Deta 自身无法获取评论者 IP，需经 Cloudflare CDN 部署，
+ * 平台核对：Deta 自身无法获取评论者 IP，需经 Cloudflare CDN 部署，
  * IP 取 cf-connecting-ip——deta.space/docs（查阅 2026-09-17）。
  */
 import {
@@ -16,7 +16,7 @@ import {
 } from "@twikoojs/common";
 import { createServer, type Server } from "node:http";
 
-/** Deta 平台能力：全能力（经 Cloudflare 部署形态，§6.5 矩阵同款） */
+/** Deta 平台能力：全能力（经 Cloudflare CDN 部署形态）*/
 const detaCapabilities = FULL_CAPABILITIES;
 
 /** Node 请求的最小结构面（body 已解析挂载） */

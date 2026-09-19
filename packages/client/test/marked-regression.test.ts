@@ -1,5 +1,5 @@
 /**
- * marked 升级回归套件（§9.3 九类用例；T31）。
+ * marked 升级回归套件（九类用例）。
  *
  * 1. 注册表情 → img.tk-owo-emotion
  * 2. 未知表情原样输出（不吞字符）
@@ -24,7 +24,7 @@ beforeEach(() => {
   setOwoImages(OWO_IMGS);
 });
 
-describe("§9.3 marked 回归（T31）", () => {
+describe("marked 回归", () => {
   it("1. 注册表情 :tv_taking: → img.tk-owo-emotion", () => {
     const html = parseMarkdown("看这个 :tv_taking: 好笑");
     expect(html).toContain(

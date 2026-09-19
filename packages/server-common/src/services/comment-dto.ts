@@ -3,7 +3,7 @@
  * 及其辅助函数语义对齐）。
  *
  * 职责：把数据库评论文档转换为前端展示形态（筛除隐私字段、拼接回复列表、
- * UA 解析、IP 属地、头像拼接）。bowser 与 IP 属地库经 T17 库加载器惰性装载。
+ * UA 解析、IP 属地、头像拼接）。bowser 与 IP 属地库经库加载器惰性装载。
  */
 import type { Capabilities } from "../ports/capabilities";
 import type { CommentDoc, ConfigData } from "../ports/database";

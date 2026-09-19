@@ -24,7 +24,7 @@ type ServerRequestShim = import("./main").ServerRequestLike & { body?: unknown }
 export interface TkserverInstance {
   /** HTTP 服务器（未监听；listen 由调用方执行） */
   server: Server;
-  /** 已装配的数据库实例（供启动期 seed 复用，§10.2） */
+  /** 已装配的数据库实例（供启动期 seed 复用）*/
   database: Database;
   /** 优雅关闭（关监听 → 排空连接 → 停定时器 → 关数据库） */
   gracefulShutdown: () => Promise<void>;

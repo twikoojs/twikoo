@@ -1,5 +1,5 @@
 /**
- * CloudBase 的 POST_SUBMIT 派发实现（规范 §6.6「后置副作用异步语义」）。
+ * CloudBase 的 POST_SUBMIT 派发实现（规范「后置副作用异步语义」）。
  *
  * **1.x 语义对齐**：`src/server/function/twikoo/index.js` 的 `commentSubmit`
  * 保存评论后执行

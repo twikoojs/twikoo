@@ -1,5 +1,5 @@
 /**
- * twikoo-deta 适配器测试（T24）。
+ * twikoo-deta 适配器测试。
  */
 import { describe, expect, it } from "vitest";
 import { createDetaHandler, extractIp, toTkRequest } from "../src/main";
@@ -13,7 +13,7 @@ function makeFunc() {
   return createDetaHandler({ database: db });
 }
 
-describe("twikoo-deta 薄适配器（T24）", () => {
+describe("twikoo-deta 薄适配器", () => {
   it("happy：GET_FUNC_VERSION → 200 业务 JSON", async () => {
     const handler = makeFunc();
     const chunks: string[] = [];

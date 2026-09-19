@@ -1,10 +1,10 @@
 /**
- * 事件分发器（规范 §6.2 core/dispatcher.ts）。
+ * 事件分发器（规范 core/dispatcher.ts）。
  *
  * 25 事件全量显式 switch（Scope E 清单）：24 个客户端事件解析到注册表中的
  * handler 实现；POST_SUBMIT 是服务端内部事件——后置副作用链的执行入口
  * （长期保留，带内部派发令牌校验）。事件清单在这里**显式枚举**
- * 正是契约保障：任何事件漏实现/漏断言，T19 契约套件与 switch 清单的 diff
+ * 正是契约保障：任何事件漏实现/漏断言，契约套件与 switch 清单的 diff
  * 立即可见（替代 1.x「各后端 switch 保持一致」的人工约定）。
  */
 import {
@@ -45,7 +45,7 @@ import { RES_CODE } from "../utils/constants";
 import { VERSION } from "@twikoojs/shared";
 
 /**
- * 解析注册表并执行事件处理器；未注册（T18 迁移未达）抛
+ * 解析注册表并执行事件处理器；未注册（迁移未达）抛
  * HandlerNotRegisteredError，由 pipeline catch 统一转 FAIL 错误体。
  * @param ctx 请求上下文
  * @param event 事件名
@@ -58,7 +58,7 @@ async function runRegistered(ctx: PipelineContext, event: TwikooEvent): Promise<
 }
 
 /**
- * 分发事件到对应处理器（§2.3 标准流程第 8 步）。
+ * 分发事件到对应处理器（标准流程第 8 步）。
  *
  * POST_SUBMIT 是唯一非客户端事件：后置副作用链的执行入口（长期保留），
  * 处理器内校验内部派发令牌以防外部滥用。

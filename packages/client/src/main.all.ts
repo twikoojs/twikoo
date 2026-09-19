@@ -1,5 +1,5 @@
 /**
- * twikoo.all 入口（§5.2：`twikoo.all.min.js` / `twikoo.all.nocss.js` 内置云开发 SDK）。
+ * twikoo.all 入口（`twikoo.all.min.js` / `twikoo.all.nocss.js` 内置云开发 SDK）。
  *
  * 与 1.x `main.all.js` 完全对应：1.x 用 webpack 把 `@cloudbase/js-sdk` 打进 all 产物，
  * 2.0 用同一个入口文件静态 import SDK 并由 Vite 打包——`main.ts` 不 import 该 SDK，

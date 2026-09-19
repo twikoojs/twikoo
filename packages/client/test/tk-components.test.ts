@@ -1,8 +1,8 @@
 /**
- * tk-* 组件单测（T29 / §5.3.2 路线 B；组合式 API 组件）。
+ * tk-* 组件单测（组合式 API 组件）。
  *
  * 覆盖：button type×size×disabled×loading；input v-model/textarea/字数统计/focus()；
- * loading 遮罩显隐；icon 按需 SVG（含未注册告警）；mini 与 small 尺寸有可见差异（QA−）。
+ * loading 遮罩显隐；icon 按需 SVG（含未注册告警）；mini 与 small 尺寸有可见差异。
  */
 import { describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
@@ -11,7 +11,7 @@ import TkInput from "../src/components/TkInput.vue";
 import TkLoading from "../src/components/TkLoading.vue";
 import TkIcon from "../src/components/TkIcon.vue";
 
-describe("TkButton（T29 组合式）", () => {
+describe("TkButton（组合式）", () => {
   it("type×size 类名组合；mini 与 small 有可见差异（类名互斥）", () => {
     const primary = mount(TkButton, { props: { type: "primary", size: "small" } });
     expect(primary.classes()).toContain("tk-button--primary");
@@ -40,7 +40,7 @@ describe("TkButton（T29 组合式）", () => {
   });
 });
 
-describe("TkInput（T29 组合式）", () => {
+describe("TkInput（组合式）", () => {
   it("v-model 输入转发", async () => {
     const wrapper = mount(TkInput, { props: { modelValue: "" } });
     await wrapper.find("input").setValue("hello");
@@ -69,7 +69,7 @@ describe("TkInput（T29 组合式）", () => {
   });
 });
 
-describe("TkLoading（T29 组合式）", () => {
+describe("TkLoading（组合式）", () => {
   it("visible 控制遮罩显隐（v-show）", () => {
     const shown = mount(TkLoading, { props: { visible: true } });
     const shownEl = shown.find(".tk-loading-mask").element as HTMLElement;
@@ -80,7 +80,7 @@ describe("TkLoading（T29 组合式）", () => {
   });
 });
 
-describe("TkIcon（T29 组合式，按需 SVG）", () => {
+describe("TkIcon（组合式，按需 SVG）", () => {
   it("注册图标：渲染 fontawesome 官方 SVG 内容（按需引入，非字体）", () => {
     const wrapper = mount(TkIcon, { props: { name: "heart" } });
     // 渲染的是内联 <svg>（来自 svgs/solid/heart.svg 原文件）

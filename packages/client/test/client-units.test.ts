@@ -1,5 +1,5 @@
 /**
- * Wave 4 客户端补齐模块单测：constants / avatar / emotion / directives / bus / state / highlight。
+ * 客户端补齐模块单测：constants / avatar / emotion / directives / bus / state / highlight。
  *
  * 这些模块对应 1.x 的 `utils/{avatar,emotion,highlight}.js` 与全局事件通道，
  * 在 2.0 中已抽成独立 TS 模块，因此可脱离组件直接覆盖。
@@ -33,7 +33,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("constants（T32 补齐）", () => {
+describe("constants", () => {
   it("pushooChannels 与 @twikoojs/shared 的 PUSHOO_CHANNELS 同步（20 渠道，不含 serverchain）", () => {
     expect(pushooChannels).toEqual([...PUSHOO_CHANNELS]);
     expect(pushooChannels).toHaveLength(20);
@@ -51,7 +51,7 @@ describe("constants（T32 补齐）", () => {
   });
 });
 
-describe("avatar（Wave 4）", () => {
+describe("avatar", () => {
   it("getQQAvatar：去掉 @qq.com 后拼第三方头像地址", () => {
     expect(getQQAvatar("12345@qq.com")).toBe("https://thirdqq.qlogo.cn/g?b=sdk&nk=12345&s=140");
     expect(getQQAvatar("12345")).toContain("nk=12345");
@@ -83,7 +83,7 @@ describe("avatar（Wave 4）", () => {
   });
 });
 
-describe("emotion（Wave 4：setOwoImages 的调用方）", () => {
+describe("emotion（setOwoImages 的调用方）", () => {
   /** XHR 替身：按 URL 返回固定 OwO 数据 */
   function mockOwoXhr(payload: unknown, status = 200): void {
     class FakeXhr {
@@ -140,7 +140,7 @@ describe("emotion（Wave 4：setOwoImages 的调用方）", () => {
   });
 });
 
-describe("directives（Wave 4）", () => {
+describe("directives", () => {
   it("v-loading：true 插入遮罩并补 relative，false 移除", () => {
     const el = document.createElement("div");
     document.body.appendChild(el);
@@ -193,7 +193,7 @@ describe("directives（Wave 4）", () => {
   });
 });
 
-describe("bus / state（Wave 4）", () => {
+describe("bus / state", () => {
   it("on/emit/off：按事件名分发并可取消", () => {
     const spy = vi.fn();
     on(EVENT_CONFIG_UPDATED, spy);
@@ -212,7 +212,7 @@ describe("bus / state（Wave 4）", () => {
   });
 });
 
-describe("highlight（Wave 4）", () => {
+describe("highlight", () => {
   it("renderCode：空元素 / 无代码块时安全返回（不抛）", async () => {
     renderCode(null, "tomorrow", "");
     const el = document.createElement("div");
@@ -339,7 +339,7 @@ describe("tcb（云开发实例装配）", () => {
   });
 });
 
-describe("OwO 表情面板（Wave 4）", () => {
+describe("OwO 表情面板", () => {
   /** 等待构造函数里的 setTimeout(() => init()) 执行 */
   function tick(): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, 0));
@@ -417,7 +417,7 @@ describe("OwO 表情面板（Wave 4）", () => {
   });
 });
 
-describe("version（BC-9）", () => {
+describe("version", () => {
   it("客户端版本来自 @twikoojs/shared", () => {
     expect(typeof VERSION).toBe("string");
     expect(VERSION.length).toBeGreaterThan(0);

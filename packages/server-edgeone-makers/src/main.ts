@@ -1,6 +1,6 @@
 /**
- * twikoo-edgeone-makers 主逻辑（EdgeOne Makers 薄适配器，规范 §6.6）。
- * 受限能力（§6.5）：mail restricted（SendGrid/MailChannels/Go SMTP Bridge）、domPurify false
+ * twikoo-edgeone-makers 主逻辑（EdgeOne Makers 薄适配器）。
+ * 受限能力：mail restricted（SendGrid/MailChannels/Go SMTP Bridge）、domPurify false
  * （直通注入）、akismet/tencentTms false；BlobKV 注入 BlobKvDatabase。核对：EdgeOne Pages 官方文档（2026-09-17）。
  */
 import {
@@ -15,7 +15,7 @@ import {
   type TkResponse,
 } from "@twikoojs/common";
 
-/** EO Makers 受限能力声明（§6.5 能力矩阵 EO 行） */
+/** EO Makers 受限能力声明（EO 行，能力受限）*/
 export const eoCapabilities: Capabilities = {
   mail: "restricted",
   domPurify: false,

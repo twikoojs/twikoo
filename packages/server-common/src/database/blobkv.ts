@@ -1,5 +1,5 @@
 /**
- * BlobKvDatabase（规范 §6.4；1.x `src/server/eo-makers/cloud-functions/index.js`
+ * BlobKvDatabase（规范；1.x `src/server/eo-makers/cloud-functions/index.js`
  * 的 createBlobDatabase 语义对齐）。
  *
  * 语义要点：
@@ -7,7 +7,7 @@
  *   1.x commentsCache 语义）；配置 `config:main`；计数器
  *   `counter:${encodeURIComponent(url)}`（1.x key 设计逐字对齐）；
  * - 语义查询在 JS 层过滤（ABSENT = 缺失/null/空串，与 Mongo/Loki 等价）；
- * - 缺失 key 返回空值而非抛错（QA−：getAllComments → []、getCounter → null、
+ * - 缺失 key 返回空值而非抛错（getAllComments → []、getCounter → null、
  *   capGet → null，1.7.24 行为一致）；
  * - 配置保存为合并语义（1.x `{ ...current, ...newConfig }` 对齐）；
  * - 构造时注入 KV store 句柄（EO Makers 的 @edgeone/pages-blob

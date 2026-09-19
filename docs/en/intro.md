@@ -136,7 +136,7 @@ Twikoo 2.0 drops IE / ES5 support (the build target is **ES2022**). Use a modern
 | --------- | ------- | ------ | ------ | ---------- |
 | Edge 94+  | 93+     | 94+    | 15.4+  | 15.4+      |
 
-> IE and ES5 engines are no longer supported; the minimum versions follow from ES2022 syntax support (BC-2).
+> IE and ES5 engines are no longer supported; the minimum versions follow from ES2022 syntax support.
 
 ## Release notes & plans
 

@@ -1,5 +1,5 @@
 /**
- * Loki 实现接入契约套件（T19；LSFA 持久化落盘 close 时执行）。
+ * Loki 实现接入契约套件（LSFA 持久化落盘 close 时执行）。
  */
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";

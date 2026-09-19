@@ -1,5 +1,5 @@
 /**
- * 组件集成测试（T30/T33 + Wave 4 客户端补齐）。
+ * 组件集成测试。
  *
  * 覆盖：TkError 卡片 / TkSubmit 表单与预览 / TkComments 列表与空态 / TkComment 标签与操作栏 /
  * TkAvatar 头像回退 / TkAction 计数与事件 / TkPagination 页码 / TkFooter 版本 / App 根渲染。
@@ -75,8 +75,8 @@ afterEach(() => {
   setAppState(null, {});
 });
 
-describe("TkError 卡片（T33）", () => {
-  it("标题按 kind 映射（§8.2 场景表）", () => {
+describe("TkError 卡片", () => {
+  it("标题按 kind 映射（场景表）", () => {
     const err = new TwikooError("CORS", "请求被跨域策略拦截", { httpStatus: 0 });
     const wrapper = mount(TkError, { props: { error: err } });
     expect(wrapper.find(".tk-error__title").text()).toBe("请求被跨域策略拦截");
@@ -98,7 +98,7 @@ describe("TkError 卡片（T33）", () => {
   });
 });
 
-describe("TkMetaInput（Wave 4）", () => {
+describe("TkMetaInput", () => {
   it("默认三字段可见且 nick/mail 必填", async () => {
     const wrapper = mount(TkMetaInput, { props: { config: {} } });
     expect(wrapper.findAll(".tk-input").length).toBe(3);
@@ -116,7 +116,7 @@ describe("TkMetaInput（Wave 4）", () => {
   });
 });
 
-describe("TkSubmit（T30 + Wave 4）", () => {
+describe("TkSubmit", () => {
   it("meta 未就绪时发送按钮禁用，填写齐备后可用", async () => {
     useFakeTcb();
     const wrapper = mount(TkSubmit, { props: { config: {} } });
@@ -154,7 +154,7 @@ describe("TkSubmit（T30 + Wave 4）", () => {
   });
 });
 
-describe("TkAction / TkAvatar（Wave 4）", () => {
+describe("TkAction / TkAvatar", () => {
   it("TkAction：计数为 0 时不显示数字；事件逐项派发", async () => {
     const wrapper = mount(TkAction, {
       props: {
@@ -198,7 +198,7 @@ describe("TkAction / TkAvatar（Wave 4）", () => {
   });
 });
 
-describe("TkPagination（Wave 4）", () => {
+describe("TkPagination", () => {
   it("按总数生成页码，首页高亮，点击派发 current-change", async () => {
     const wrapper = mount(TkPagination, { props: { pageSize: 5, total: 26 } });
     const pagers = wrapper.findAll(".tk-pagination-pager");
@@ -215,7 +215,7 @@ describe("TkPagination（Wave 4）", () => {
   });
 });
 
-describe("TkFooter（Wave 4）", () => {
+describe("TkFooter", () => {
   it("渲染构建期注入的版本号", () => {
     const wrapper = mount(TkFooter);
     expect(wrapper.text()).toContain("Twikoo");
@@ -223,7 +223,7 @@ describe("TkFooter（Wave 4）", () => {
   });
 });
 
-describe("TkComment（Wave 4）", () => {
+describe("TkComment", () => {
   it("渲染昵称/正文/站长标签与回复列表", async () => {
     useFakeTcb();
     const wrapper = mount(TkComment, {
@@ -279,7 +279,7 @@ describe("TkComment（Wave 4）", () => {
   });
 });
 
-describe("TkComments（Wave 4）", () => {
+describe("TkComments", () => {
   it("空列表渲染空态与总数", async () => {
     useFakeTcb({
       GET_CONFIG: { code: 0, config: {} },
@@ -334,7 +334,7 @@ describe("TkComments（Wave 4）", () => {
 /** 空告警处理器 */
 const suppressWarn = (): void => undefined;
 
-describe("App 渲染（T30 + Wave 4）", () => {
+describe("App 渲染", () => {
   it("挂载产出 .twikoo 容器、评论区与管理面板", async () => {
     useFakeTcb({
       GET_CONFIG: { code: 0, config: {} },

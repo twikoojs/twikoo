@@ -1,5 +1,5 @@
 /**
- * Netlify 的 POST_SUBMIT 派发实现（规范 §6.6「后置副作用异步语义」）。
+ * Netlify 的 POST_SUBMIT 派发实现（规范「后置副作用异步语义」）。
  *
  * **与 1.x 的差异（修正）**：1.x 的 Netlify 适配器是 `require('twikoo-vercel')`
  * 纯转发壳，于是继承了 vercel 的 HTTP 递归——而 vercel 取的是 `VERCEL_URL`，

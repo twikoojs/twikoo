@@ -1,5 +1,5 @@
 <!--
-  TkError 错误卡片（§8.2：普通访客内联错误卡片——图标 + 标题 + 一行说明 +
+  TkError 错误卡片（普通访客内联错误卡片——图标 + 标题 + 一行说明 +
   可折叠详情；全部 tk- 类名；组合式 API）。
 -->
 <template>
@@ -35,7 +35,7 @@ const props = defineProps<{
 /** 详情展开态（缺省收起） */
 const expanded = ref(false);
 
-/** 标题（按 kind 映射，§8.2 场景表） */
+/** 标题（按 kind 映射，场景表）*/
 const KIND_TITLES: Record<string, string> = {
   NETWORK: "无法连接到后端",
   CORS: "请求被跨域策略拦截",
@@ -62,7 +62,7 @@ const detail = computed(() => props.error.logText || props.error.rawMessage || "
 /** HTTP 状态码 */
 const httpStatus = computed(() => props.error.httpStatus);
 
-/** 请求 ID（§8.3） */
+/** 请求 ID */
 const requestId = computed(() => props.error.requestId);
 </script>
 

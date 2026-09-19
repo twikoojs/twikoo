@@ -1,8 +1,8 @@
 /**
- * twikoo-vercel 适配器测试（T21）。
+ * twikoo-vercel 适配器测试。
  *
  * 注入内存 Database 跑契约核心事件；验证 (req,res) 映射（CORS 头写入、
- * 429 状态码透传、OPTIONS 204）、BC-13 依赖指向（@twikoojs/common）。
+ * 429 状态码透传、OPTIONS 204）、依赖指向（@twikoojs/common）。
  */
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
@@ -60,13 +60,13 @@ function makeFunc(): {
   db: Database;
 } {
   const adapters = createMemoryAdapters();
-  // common 源码态类型 → 产物类型视图收窄（T20 范式）
+  // common 源码态类型 → 产物类型视图收窄（范式）
   const db = adapters.database as unknown as Database;
   const fn = createVercelFunc({ database: db });
   return { fn, db };
 }
 
-describe("twikoo-vercel 薄适配器（T21）", () => {
+describe("twikoo-vercel 薄适配器", () => {
   it("happy：GET_FUNC_VERSION → 200 JSON + accessToken 回填", async () => {
     const { fn, db } = makeFunc();
     await db.saveConfig({ ADMIN_PASS: "x" });
@@ -134,7 +134,7 @@ describe("twikoo-vercel 薄适配器（T21）", () => {
     expect(req.ip).toBe("1.1.1.1");
   });
 
-  it("BC-13：依赖指向 @twikoojs/common（不再内含业务逻辑）", async () => {
+  it("依赖指向 @twikoojs/common（不再内含业务逻辑）", async () => {
     const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
     expect(pkg.dependencies["@twikoojs/common"]).toBe("workspace:*");
     expect(typeof vercelHandler).toBe("function");

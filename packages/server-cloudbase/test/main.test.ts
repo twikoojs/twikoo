@@ -1,8 +1,8 @@
 /**
- * twikoo-func 适配器测试（T20）。
+ * twikoo-func 适配器测试。
  *
  * 注入 CloudBase 数据库句柄替身（以工作区内存 Database 为载体）跑契约核心事件；
- * 验证 main 入口形态 / BC-12 转发导出 / <150 行源码门禁。
+ * 验证 main 入口形态 / 转发导出 / <150 行源码门禁。
  */
 import { describe, expect, it } from "vitest";
 import { createTwikooFunc, toTkRequest } from "../src/main";
@@ -26,7 +26,7 @@ function makeMockTcb(): { tcb: CloudBaseDatabaseLike; db: Database } {
   return { tcb, db };
 }
 
-describe("twikoo-func 薄适配器（T20）", () => {
+describe("twikoo-func 薄适配器", () => {
   it("main 入口形态：事件即请求体 → GET_FUNC_VERSION 返回 code 0 + version", async () => {
     const { tcb, db } = makeMockTcb();
     await db.saveConfig({ ADMIN_PASS: "x" });
@@ -61,7 +61,7 @@ describe("twikoo-func 薄适配器（T20）", () => {
     expect(toTkRequest({}).ip).toBe("");
   });
 
-  it("BC-12：转发导出存在（common 公共导出经 twikoo-func 可取）", async () => {
+  it("转发导出存在（common 公共导出经 twikoo-func 可取）", async () => {
     const mod = await import("../src/index");
     expect(typeof mod.main).toBe("function");
     expect(typeof mod.createTwikooFunc).toBe("function");

@@ -2,7 +2,7 @@
  * 通知服务（1.x utils/notify.js 逐行语义对齐）。
  *
  * 三路并发：博主邮件（noticeMaster）/ 回复邮件（noticeReply）/
- * 即时消息（noticePushoo，pushoo 20 渠道）。邮件传输器经 T17 库加载器
+ * 即时消息（noticePushoo，pushoo 20 渠道）。邮件传输器经库加载器
  * 惰性装载（mail 能力 + setCustomLibs 覆写支持）。
  */
 import type { Capabilities } from "../ports/capabilities";
@@ -227,7 +227,7 @@ async function noticePushoo(options: {
     return;
   }
   const pushContent = await getIMPushContent(comment, config);
-  // pushoo 由适配器按通知能力安装（D-2），运行时动态加载（变量间接保证零静态解析）
+  // pushoo 由适配器按通知能力安装，运行时动态加载（变量间接保证零静态解析）
   const pushoo = await getPushoo();
   const sendResult = await pushoo(String(config.PUSHOO_CHANNEL), {
     token: config.PUSHOO_TOKEN,

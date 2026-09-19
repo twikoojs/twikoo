@@ -1,5 +1,5 @@
 /**
- * 请求端口（规范 §6.3 请求 / 响应抽象）。
+ * 请求端口（规范请求 / 响应抽象）。
  *
  * 设计原则（规范原文）：内部只用**一种**请求表示，适配器负责「翻译」。
  * 各云平台入参（CloudBase event / Vercel req / Netlify event / AWS event /
@@ -9,7 +9,7 @@
 import type { TwikooEvent } from "@twikoojs/shared";
 
 /**
- * 内部统一请求体（§6.3 承载内容：body，含 event、accessToken）。
+ * 内部统一请求体（承载内容：body，含 event、accessToken）。
  *
  * 已解析的 JSON 请求体：event 为 25 事件标识符之一（类型引用 @twikoojs/shared 的
  * TwikooEvent），accessToken 为匿名/管理员鉴权令牌；其余事件参数由各事件 handler
@@ -25,7 +25,7 @@ export interface TkRequestBody {
 }
 
 /**
- * 内部统一请求（§6.3 字段表：method、path、query、body、headers、ip、raw）。
+ * 内部统一请求（字段表：method、path、query、body、headers、ip、raw）。
  *
  * 由适配器从平台原始载荷归一化而来，是 pipeline 与全部 handlers 的唯一请求形态。
  */
@@ -43,7 +43,7 @@ export interface TkRequest {
   /**
    * 客户端 IP。
    *
-   * 语义（§6.3）：适配器按各自平台解析后填入，公共库不再感知 TWIKOO_IP_HEADERS
+   * 语义：适配器按各自平台解析后填入，公共库不再感知 TWIKOO_IP_HEADERS
    * 环境变量。netlify 填 headers.x-nf-client-connection-ip、aws-lambda 填
    * headers.requestContext.http.sourceIp、deta 填 headers.cf-connecting-ip，
    * 默认走通用取 IP 逻辑（x-forwarded-for 逐跳剥离等，随 utils/ip 迁入）。
@@ -54,7 +54,7 @@ export interface TkRequest {
 }
 
 /**
- * 请求转换端口（§6.3：「每个适配器实现 toTkRequest(raw)」）。
+ * 请求转换端口（「每个适配器实现 toTkRequest(raw)」）。
  * 适配器把自家平台的原始载荷翻译为内部统一请求。
  */
 export interface RequestPort {

@@ -1,11 +1,11 @@
 /**
- * i18n 拆分测试（T32 + §7.2 分片机制）。
+ * i18n 拆分测试（分片机制）。
  *
  * Acceptance：
  * - 键集与 1.x 基线一致（191 键）
  * - 9 语言词表齐全（分片内容随产物发布，此处直接校验源 JSON）
  * - **内置 2 语言立即生效；其余 7 语言为按需分片**（`LAZY_LOCALES`）
- * - 分片加载失败 / 基址推导失败 → **回退英文且不抛**（R-8/R-9）
+ * - 分片加载失败 / 基址推导失败 → **回退英文且不抛**
  */
 import { describe, expect, it } from "vitest";
 import {
@@ -43,7 +43,7 @@ const ALL_LOCALES: Record<string, Record<string, string>> = {
   "id-ID": idID,
 };
 
-describe("i18n 拆分（T32）", () => {
+describe("i18n 拆分", () => {
   it("键集与 1.x 基线一致（191 键，含缩写还原与拼接键）", () => {
     expect(TRANSLATION_KEYS.length).toBeGreaterThanOrEqual(190);
     expect(TRANSLATION_KEYS).toContain(KNOWN_KEY);
@@ -62,7 +62,7 @@ describe("i18n 拆分（T32）", () => {
     }
   });
 
-  it("§7.2 分片划分：内置 zh-CN/en，其余 7 语言按需加载", () => {
+  it("分片划分：内置 zh-CN/en，其余 7 语言按需加载", () => {
     expect(LAZY_LOCALES).toHaveLength(7);
     expect(LAZY_LOCALES).not.toContain("zh-CN");
     expect(LAZY_LOCALES).not.toContain("en");
@@ -111,7 +111,7 @@ describe("i18n 拆分（T32）", () => {
     expect(t(missing)).toBe("");
   });
 
-  it("R-8：分片加载失败（不可达地址）→ 回退英文、不抛", async () => {
+  it("分片加载失败（不可达地址）→ 回退英文、不抛", async () => {
     await expect(
       loadLanguage({ lang: "ja-JP", localeBaseUrl: "http://127.0.0.1:1/nowhere" }),
     ).resolves.toBeUndefined();
@@ -119,7 +119,7 @@ describe("i18n 拆分（T32）", () => {
     expect(t(KNOWN_KEY)).toBe(en[KNOWN_KEY]);
   });
 
-  it("R-8：基址推导失败（无 document）→ 记 warn、不抛", async () => {
+  it("基址推导失败（无 document）→ 记 warn、不抛", async () => {
     await expect(loadLanguage({ lang: "ko-KR" })).resolves.toBeUndefined();
     expect(t(KNOWN_KEY)).toBe(en[KNOWN_KEY]);
   });

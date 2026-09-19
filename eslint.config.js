@@ -1,25 +1,25 @@
 // @ts-check
 /**
- * ESLint 9 flat 配置（T7）。
+ * ESLint 9 flat 配置。
  *
  * 分层（自上而下）：
  *  1. 全局 ignores
  *  2. Vue 3 flat/recommended（eslint-plugin-vue）
  *  3. TypeScript recommended-type-checked（@vue/eslint-config-typescript v14，
- *     projectService: true 自动发现各包 tsconfig——T11 已 15/15 就位）
+ *     projectService: true 自动发现各包 tsconfig）
  *  4. 运行环境 globals（browser + node）
  *  5. 配置文件/测试文件跳过 type-aware 规则
- *  6. pushoo 迁入源码过渡放宽（T47 收敛）
+ *  6. pushoo 迁入源码过渡放宽
  *  7. eslint-config-prettier 末层关闭格式类规则（格式由 Prettier 单一职责）
- *  8. T8 强制规则四件套（位于 prettier 末层之前）：
+ *  8. 强制规则四件套（位于 prettier 末层之前）：
  *     ① jsdoc/require-jsdoc——函数/类方法/对象方法/箭头函数常量/导出常量必须带注释
  *     ② 本地规则 twikoo/no-scoped-style——禁 <style scoped>
  *     ③ no-restricted-imports（仅 server-common）——重依赖顶层静态 import 禁令
  *     （规则二「禁新 .js 源码」为人工约定，无自动守卫）
- *  9. T10 测试目录疑似密钥字面量禁令（.env 机制配套，同在 prettier 末层之前）
+ *  9. 测试目录疑似密钥字面量禁令（.env 机制配套，同在 prettier 末层之前）
  *
  * 重写模式说明：client 尚无源码，本配置直接按 Vue 3 设定，无任何 Vue2 过渡降级；
- * T27 接入 client 组件时天然 Vue3。
+ * client 组件接入时天然就是 Vue3。
  */
 import { defineConfigWithVueTs, vueTsConfigs } from "@vue/eslint-config-typescript";
 import pluginVue from "eslint-plugin-vue";
@@ -29,7 +29,7 @@ import globals from "globals";
 import jsdoc from "eslint-plugin-jsdoc";
 
 /**
- * T8 规则一：jsdoc/require-jsdoc 公共选项——覆盖函数声明、类方法、
+ * 规则一：jsdoc/require-jsdoc 公共选项——覆盖函数声明、类方法、
  * 箭头函数赋值常量、对象方法、导出常量（export const）。
  *
  * 设计要点：
@@ -57,7 +57,7 @@ const jsdocRequireOptions = {
     // 导出常量（export const/let/var X = ...，含非函数初始化）。
     // 注意：不能用 `ExportNamedDeclaration > VariableDeclaration > VariableDeclarator`——
     // require-jsdoc 的注释查找对 VariableDeclarator 只看其前一个 token（`const` 关键字），
-    // 沿祖先链回溯仅对函数类节点生效，写在 export 上方的注释会漏检（T8 实测）。
+    // 沿祖先链回溯仅对函数类节点生效，写在 export 上方的注释会漏检（实测）。
     // 直接匹配 ExportNamedDeclaration 节点本身，其 token-before 即为 jsdoc 块。
     "ExportNamedDeclaration[declaration.type='VariableDeclaration']",
   ],
@@ -73,12 +73,12 @@ const jsdocRequireOptionsNoProperty = {
   contexts: jsdocRequireOptions.contexts.filter((c) => !c.startsWith("Property")),
 };
 
-/** T8 规则四：重依赖统一提示语（D-2 动态加载 + 适配器声明缺失依赖）。 */
+/** 规则四：重依赖统一提示语（动态加载 + 适配器声明缺失依赖）。*/
 const heavyDepMessage =
-  "重依赖禁止顶层静态 import：请用 await import() 动态加载（D-2），缺失依赖在适配器声明。";
+  "重依赖禁止顶层静态 import：请用 await import() 动态加载，缺失依赖在适配器声明。";
 
 /**
- * T8 规则三本地规则：禁 <style scoped>（AGENTS.md CSS 规范——样式全局化，
+ * 规则三本地规则：禁 <style scoped>（AGENTS.md CSS 规范——样式全局化，
  * 类名 tk- 前缀，作用域挂 .twikoo 根选择器）。
  *
  * 为什么不用 vue/no-restricted-block：实测 eslint-plugin-vue 10.11.0 该规则按
@@ -148,7 +148,7 @@ export default defineConfigWithVueTs(
 
   {
     // 4. 运行环境 globals：browser（client）+ node（服务端/适配器）合并全开。
-    //    选择记录：client 尚无源码，按目录划分在此阶段收益低；T27 接入 client 后
+    //    选择记录：client 尚无源码，按目录划分在此阶段收益低；接入 client 后
     //    如需严格划分（例如服务端禁 window）再加 per-directory 覆盖。
     name: "twikoo/globals",
     languageOptions: {
@@ -159,7 +159,7 @@ export default defineConfigWithVueTs(
   {
     // 5. 配置文件与测试文件不需要 type-aware 规则——且多数不在任何 tsconfig 项目内
     //    （根 vitest.config.ts、packages/shared/vitest.config.ts、packages/*/test/**；
-    //    tsconfig 由 T11 冻结，不在本任务范围改动）。
+    //    各包 tsconfig 的归属不在本次改动范围内）。
     //    `.mts` 变体必须一并列出：未声明 `type: "module"` 的包（pushoo 与各适配器）其
     //    tsdown 配置为 `tsdown.config.mts`（消除 Node 的 MODULE_TYPELESS_PACKAGE_JSON 告警，
     //    见 AGENTS.md「构建配置文件名」），漏掉就会被 projectService 判为「不属于任何项目」
@@ -172,14 +172,14 @@ export default defineConfigWithVueTs(
 
   // 6. pushoo：独立仓库迁入的历史源码（旧 eslint 8 + airbnb 工具链）。
   //    flat 配置天然不读其旧 .eslintrc；此 override 关闭 type-aware 规则以避免迁移告警，
-  //    待 T47 专项收敛后移除本段。
+  //    待打包链路专项收敛后移除本段。
   {
     name: "twikoo/pushoo-legacy-defer",
     files: ["packages/pushoo/**"],
     extends: [tseslint.configs.disableTypeChecked],
     rules: {
       // 首跑实测 5 处 no-explicit-any（115/164/422/441/663 行）——迁入代码遗留；
-      // T47 收敛时改为显式类型并恢复此规则。
+      // 待打包链路收敛时改为显式类型并恢复此规则。
       "@typescript-eslint/no-explicit-any": "off",
     },
   },
@@ -187,7 +187,7 @@ export default defineConfigWithVueTs(
   // 6b. 冻结占位文件的既知告警（文件内容属其他 T 任务范围，本任务不得改动）：
   //     告警均为有意保留，规则局部关闭并注明重审条件。
   {
-    // COVERAGE_THRESHOLDS 为覆盖率阈值占位（见该文件头注释：Wave 2/4 接线后移入各包配置）
+    // COVERAGE_THRESHOLDS 为覆盖率阈值占位（见该文件头注释：各包接入用例后移入其包配置）
     name: "twikoo/allow-frozen-vitest-config",
     files: ["vitest.config.ts"],
     rules: { "@typescript-eslint/no-unused-vars": "off" },
@@ -199,7 +199,7 @@ export default defineConfigWithVueTs(
     rules: { "@typescript-eslint/require-await": "off" },
   },
 
-  // ===== 8. T8 强制规则四件套（必须在 prettier 末层之前）=====
+  // ===== 8. 强制规则四件套（必须在 prettier 末层之前）=====
 
   {
     // 规则一：函数/类方法/对象方法/箭头函数常量/导出常量必须带 JSDoc 注释（AGENTS.md 硬性规则）。
@@ -245,7 +245,7 @@ export default defineConfigWithVueTs(
             "xml2js",
             "html-to-text",
             "pushoo",
-            // 数据库驱动同属重依赖（T14/T15）：common 内只允许 await import() 动态加载
+            // 数据库驱动同属重依赖：common 内只允许 await import() 动态加载
             "mongodb",
             "lokijs",
           ].map((name) => ({ name, message: heavyDepMessage })),
@@ -257,8 +257,8 @@ export default defineConfigWithVueTs(
 
   {
     // 规则一过渡豁免：pushoo 迁入存量 8 处顶层函数无 JSDoc（checkParameters/getHtml/
-    // getTxt/getTitle/removeUrlAndIp/noticePushdeer/noticeIgot/notice）。按 T8 纪律
-    // 不得改其源码，T47 pushoo 收敛时补注释并移除本段。
+    // getTxt/getTitle/removeUrlAndIp/noticePushdeer/noticeIgot/notice）。按纪律
+    // 不得改其源码，pushoo 收敛时补注释并移除本段。
     name: "twikoo/pushoo-jsdoc-defer",
     files: ["packages/pushoo/**"],
     rules: { "jsdoc/require-jsdoc": "off" },
@@ -285,7 +285,7 @@ export default defineConfigWithVueTs(
     rules: { "jsdoc/require-jsdoc": "off" },
   },
 
-  // ===== 9. T10：测试目录疑似密钥字面量禁令（§9.4 机制要求 5）=====
+  // ===== 9. 测试目录疑似密钥字面量禁令 =====
 
   {
     // .env 机制配套守卫：测试代码出现疑似密钥的字符串字面量即报错，
@@ -314,7 +314,7 @@ export default defineConfigWithVueTs(
         {
           // password/secret/token/key/credential 语义命名的变量直接赋 ≥8 字符字符串字面量
           // （长度门槛压低误伤面：短文案/枚举值不触发）。
-          // 大小写逐字符枚举而非 [Kk]ey 式首字母枚举：QA− 实测 const KEY（全大写，
+          // 大小写逐字符枚举而非 [Kk]ey 式首字母枚举：实测 const KEY（全大写，
           // 测试中硬编码密钥最常见命名形态）漏检——每字母双写覆盖 Camel 与 SCREAMING。
           // esquery 无处用 flag 语法，枚举是确定性实现。
           selector:

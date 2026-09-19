@@ -1,5 +1,5 @@
 /**
- * Mongo 实现接入契约套件（T19）。
+ * Mongo 实现接入契约套件。
  *
  * 内存实例在本机起不来时（如 macOS arm64 未装 Rosetta）**整组跳过**，
  * 判定与理由见 `test/utils/mongo-availability.ts`。

@@ -1,5 +1,5 @@
 /**
- * 事件处理器装配（规范 §6.2 handlers/）。
+ * 事件处理器装配（规范 handlers）。
  *
  * 25 事件全量注册（一事件一文件）：24 个客户端事件 + 服务端内部事件 `POST_SUBMIT`
  * （后置副作用链的执行入口，见 `./post-submit.ts` 头注释，长期保留）。
@@ -62,7 +62,7 @@ import { getQQNickEvent } from "./get-qq-nick";
 import { capChallengeEvent, capRedeemEvent } from "./cap-challenge";
 
 /**
- * 接线真实 postSubmit 服务（T18）：后置垃圾检测 → 回写结果 → 三路通知。
+ * 接线真实 postSubmit 服务：后置垃圾检测 → 回写结果 → 三路通知。
  *
  * 本服务是「副作用链的唯一实现」，被两条路径共用：
  * 1. 单次执行平台：适配器的派发端口递归自调用 → POST_SUBMIT 事件 → 本服务

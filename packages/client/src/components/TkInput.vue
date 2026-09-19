@@ -1,12 +1,12 @@
 <!--
-  tk-input（参考 Element UI Input 改写，D-1；组合式 API）。
+  tk-input（参考 Element UI Input 改写；组合式 API）。
 
-  能力面（§5.3 能力表 + 1.x 各处用法实测）：v-model / placeholder / size /
+  能力面（能力表 + 1.x 各处用法实测）：v-model / placeholder / size /
   textarea（rows、autosize、show-word-limit）/ show-password / clearable /
   prepend·append 具名插槽 / disabled / readonly / maxlength / type=number /
   focus() / 原生 textarea 元素暴露（OwO 面板与日志滚动需要）。
 
-  类名映射（1.x `.el-*` → 2.0 `.tk-*`，§5.3.3）：
+  类名映射（1.x `.el-*` → 2.0 `.tk-*`）：
   `.el-input` → `.tk-input`；`.el-textarea` → `.tk-textarea`（textarea 形态下同时具备，
   便于沿用 1.x 的 `.el-textarea .el-input__count` 后代选择器语义）；
   `.el-input__inner` / `.el-textarea__inner` → `.tk-input__inner`（textarea 同时带
@@ -110,7 +110,7 @@ const props = withDefaults(
     showPassword?: boolean;
     /** 可一键清空 */
     clearable?: boolean;
-    /** 尺寸（mini/small 有可见差异，§5.3） */
+    /** 尺寸（mini/small 有可见差异）*/
     size?: "" | "large" | "default" | "small" | "mini";
     /** 原生 name */
     name?: string;

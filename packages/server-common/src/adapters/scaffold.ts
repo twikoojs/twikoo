@@ -1,9 +1,9 @@
 /**
- * 适配器脚手架（规范 §6.2 适配器契约的装配帮手，T21 起供各薄适配器复用）。
+ * 适配器脚手架（适配器契约的装配帮手，供各薄适配器复用）。
  *
  * storage / mailer / notifier 三个槽位以空实现占位：真实的邮件/通知/Cap
  * 存储均由 services 层经 lib-loader（能力门 + setCustomLibs + 动态 import）
- * 装载，不走这三个端口槽位（T18 实现记录）；槽位保留以冻结 TkAdapters
+ * 装载，不走这三个端口槽位（实现记录）；槽位保留以冻结 TkAdapters
  * 端口形态（未来平台原生实现可从注入点接入）。
  *
  * `postSubmit` 槽位给出**进程内不等待**的默认实现——单次执行平台
@@ -68,7 +68,7 @@ export function scaffoldAdapters(options: {
   /** 平台能力声明 */
   capabilities: Capabilities;
   /**
-   * 后置副作用派发实现（§6.6）。缺省为进程内不等待——单次执行平台
+   * 后置副作用派发实现。缺省为进程内不等待——单次执行平台
    * 必须显式传入递归自调用实现（见 {@link PostSubmitDispatcher}）。
    */
   postSubmit?: PostSubmitDispatcher;

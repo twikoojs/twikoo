@@ -19,7 +19,7 @@ declare module "*.svg?raw" {
 /**
  * prismjs core 的最小类型垫片。
  *
- * 选型记录（T29 客户端补齐）：不引入 `@types/prismjs`——本项目只用
+ * 选型记录（客户端补齐）：不引入 `@types/prismjs`——本项目只用
  * `plugins`（插件注册表，autoloader 的 `languages_path` 挂在上面）与
  * `highlightAllUnder` 两个成员；同时 prismjs 插件是**副作用模块**（自挂全局
  * Prism），官方 @types 也不覆盖子路径。自建垫片可让类型与用法严格对齐、

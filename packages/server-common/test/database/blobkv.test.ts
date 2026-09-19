@@ -1,9 +1,9 @@
 /**
- * BlobKvDatabase 测试（T16）。
+ * BlobKvDatabase 测试。
  *
  * 以内存 fake 模拟 @edgeone/pages-blob 的 store 句柄（setJSON 做 JSON
  * 序列化往返，模拟真实 KV 持久化丢 undefined 的形态）。重点验收：
- * 与 Mongo/Loki 同一套语义断言；缺失 key 返回空而非抛错（QA−）；
+ * 与 Mongo/Loki 同一套语义断言；缺失 key 返回空而非抛错；
  * comments:all 进程内缓存与 KV 的一致性。
  */
 import { describe, expect, it } from "vitest";
@@ -36,7 +36,7 @@ class MemoryBlobStore implements BlobKvStoreLike {
   }
 }
 
-/** 语义套件接入（与 Mongo/Loki 同一套断言，R-3） */
+/** 语义套件接入（与 Mongo/Loki 同一套断言）*/
 runDatabaseSemanticSuite("BlobKvDatabase", {
   /** 每个用例独立 store */
   create: async () => new BlobKvDatabase(new MemoryBlobStore()),
@@ -44,8 +44,8 @@ runDatabaseSemanticSuite("BlobKvDatabase", {
   dispose: async () => {},
 });
 
-describe("BlobKvDatabase 平台语义（T16）", () => {
-  it("QA−：缺失 key 返回空而非抛错（getAllComments/config/counter/cap，1.7.24 行为）", async () => {
+describe("BlobKvDatabase 平台语义", () => {
+  it("缺失 key 返回空而非抛错（getAllComments/config/counter/cap，1.7.24 行为）", async () => {
     const db = new BlobKvDatabase(new MemoryBlobStore());
     await expect(db.getAllComments()).resolves.toEqual([]);
     await expect(db.getConfig()).resolves.toBeNull();

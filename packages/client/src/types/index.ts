@@ -1,7 +1,7 @@
 /**
  * 客户端共享类型（1.x 各组件内散落的「隐式对象」的显式化）。
  *
- * 说明：`CommentDto` 对应服务端 `parseComment` 下发的评论 DTO（§B.1 的
+ * 说明：`CommentDto` 对应服务端 `parseComment` 下发的评论 DTO（
  * `COMMENT_GET` 响应项）；`ServerConfig` 对应服务端配置项的键值形态
  * （值以字符串为主，开关类为 `'true'`/`'false'` 字符串——1.x 的配置约定）。
  */

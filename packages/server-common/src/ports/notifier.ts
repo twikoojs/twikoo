@@ -1,7 +1,7 @@
 /**
- * 通知端口（规范 §6.2 ports/notifier.ts「通知发送（pushoo / webhook）」）。
+ * 通知端口（规范 ports/notifier.ts「通知发送（pushoo / webhook）」）。
  *
- * pushoo 及其通道依赖由声明通知能力的适配器自行安装（D-2 依赖外部化）；
+ * pushoo 及其通道依赖由声明通知能力的适配器自行安装（依赖外部化）；
  * 本端口把 1.x noticePushoo 的推送内容归一化为单一载荷，通道差异由适配器消化。
  */
 

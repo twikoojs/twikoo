@@ -1,5 +1,5 @@
 /**
- * Prism 代码高亮（1.x `utils/highlight.js` 语义对齐，§5.4「renderCode 走 Prism，保持」）。
+ * Prism 代码高亮（1.x `utils/highlight.js` 语义对齐，「renderCode 走 Prism，保持」）。
  *
  * 行为保持：
  * - Prism **core 随主产物打包**，语言组件与主题样式表按需从 CDN 加载

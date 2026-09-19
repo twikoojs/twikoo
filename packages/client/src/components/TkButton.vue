@@ -1,10 +1,10 @@
 <!--
-  tk-button（参考 Element UI Button 改写，D-1：纯 tk- 类名；组合式 API）。
+  tk-button（参考 Element UI Button 改写，纯 tk- 类名；组合式 API）。
 
   Props：type（primary / default / info / text）/ size（large / default / small / mini）/
   disabled / loading / nativeType。
 
-  类名映射（1.x `.el-*` → 2.0 `.tk-*`，§5.3.3）：`.el-button` → `.tk-button`；
+  类名映射（1.x `.el-*` → 2.0 `.tk-*`）：`.el-button` → `.tk-button`；
   `.el-button--primary|--info|--text|--mini|...` → `.tk-button--primary|--info|--text|--mini|...`；
   状态类 `is-disabled` / `is-loading` 与 1.x 同名保留（三处高危点之一：复合状态类选择器）。
 -->
@@ -33,7 +33,7 @@ const props = withDefaults(
   defineProps<{
     /** 视觉类型（`text` 为无边框文字按钮，`info` 为中性色按钮） */
     type?: "primary" | "default" | "info" | "text";
-    /** 尺寸（mini 与 small 有可见差异，§5.3） */
+    /** 尺寸（mini 与 small 有可见差异）*/
     size?: "large" | "mini" | "small" | "default" | "";
     disabled?: boolean;
     loading?: boolean;

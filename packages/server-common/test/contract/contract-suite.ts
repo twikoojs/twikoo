@@ -1,10 +1,10 @@
 /**
- * 25 事件契约套件（规范 §6.7 / §9.2 P0；T19）。
+ * 25 事件契约套件（规范）。
  *
  * 可复用 runner：参数化注入「数据库实现 + 适配器元数据」，把 26 个事件的
  * 请求/响应断言跑在同一套用例上——任何实现漏注册 handler / 漏实现事件，
  * 对应断言（code 0）即红（替代 1.x「各后端 switch 保持一致」的人工约定）。
- * Mongo 与 Loki 两实现均接入；适配器（T20-T24）以各自的 DB 实现接入同一套。
+ * Mongo 与 Loki 两实现均接入；适配器以各自的 DB 实现接入同一套。
  */
 import { expect, describe, it, beforeEach } from "vitest";
 import { createHandler, RECURSION_HEADER, RES_CODE } from "../../src/index";
@@ -95,7 +95,7 @@ export function runContractSuite(name: string, fixture: ContractFixture): void {
     return doc._id as string;
   }
 
-  describe(`${name} 契约套件（25 事件，§6.7）`, () => {
+  describe(`${name} 契约套件（25 事件）`, () => {
     // ---- 元事件与健康检查 ----
     it("GET_FUNC_VERSION：code 0 + version", async () => {
       const res = await post({ event: "GET_FUNC_VERSION" });
@@ -346,7 +346,7 @@ export function runContractSuite(name: string, fixture: ContractFixture): void {
       expect(redeem.body.message).toBe("内嵌 Cap 未启用");
     });
 
-    // ---- POST_SUBMIT（后置副作用链执行入口）与兼容分支（D-4） ----
+    // ---- POST_SUBMIT（后置副作用链执行入口）与兼容分支 ----
     it("POST_SUBMIT：带内部派发令牌 → code 0（副作用链执行）", async () => {
       const res = await handler(
         makeRequest({

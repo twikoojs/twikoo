@@ -1,5 +1,5 @@
 /**
- * SEA 静态内联依赖的最小类型面（T47）。
+ * SEA 静态内联依赖的最小类型面。
  *
  * `bundled-libs.ts` 需要**静态 import** 下列包（SEA 单文件产物必须内联，原因见该文件头注释），
  * 但其中 jsdom / nodemailer / xml2js / html-to-text 不自带类型声明，

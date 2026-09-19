@@ -1,9 +1,9 @@
 /**
- * lokijs 最小类型面（T15）。
+ * lokijs 最小类型面。
  *
  * lokijs 1.5.x 不自带类型声明（package.json 无 types 字段），本文件只为
  * 项目实际使用的能力面提供 ambient 声明；驱动本体运行时 `await import()`
- * 动态加载（D-2 外部化，eslint no-restricted-imports 强制）。
+ * 动态加载（外部化，eslint no-restricted-imports 强制）。
  */
 
 /**

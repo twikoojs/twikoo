@@ -1,9 +1,9 @@
 /**
- * 库加载器测试（T17）。
+ * 库加载器测试。
  *
- * 三种加载路径（QA+）：能力支持 / 能力不支持 / setCustomLibs 覆写；
- * QA−：动态 import 失败 → 错误消息含包名与安装提示（非裸 MODULE_NOT_FOUND）；
- * D-4 外：eo-makers 直通 DOMPurify 注入场景（capability=false 时覆写仍生效）。
+ * 三种加载路径：能力支持 / 能力不支持 / setCustomLibs 覆写；
+ * 动态 import 失败 → 错误消息含包名与安装提示（非裸 MODULE_NOT_FOUND）；
+ * 外：eo-makers 直通 DOMPurify 注入场景（capability=false 时覆写仍生效）。
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Capabilities } from "../../src/ports/capabilities";
@@ -55,7 +55,7 @@ const eoCaps: Capabilities = defineCapabilities({
 /** 静默 importer（不应被调用的路径用它断言零调用） */
 const silentImporter: LibImporter = vi.fn(async () => ({}));
 
-describe("库加载器三路径（T17 QA+）", () => {
+describe("库加载器三路径", () => {
   it("路径一（能力支持）：动态 import 成功 → 返回模块本体（CJS default 解包）", async () => {
     const fakeNodemailer = {
       /** 创建传输器（结构对齐 NodemailerLike 使用面） */
@@ -111,7 +111,7 @@ describe("库加载器三路径（T17 QA+）", () => {
   });
 });
 
-describe("库加载器组合与失败（T17 QA−）", () => {
+describe("库加载器组合与失败", () => {
   it("DOMPurify 组合装载：jsdom window → createDOMPurify(window) → sanitize 实例", async () => {
     /** 构造顺序记录（组合顺序断言） */
     const calls: string[] = [];
@@ -150,7 +150,7 @@ describe("库加载器组合与失败（T17 QA−）", () => {
     expect(calls).toEqual(["jsdom", "dompurify", "new JSDOM()", "createDOMPurify(window)"]);
   });
 
-  it("QA−：动态 import 失败 → LibLoadError 含包名与 npm install 提示（非裸 MODULE_NOT_FOUND）", async () => {
+  it("动态 import 失败 → LibLoadError 含包名与 npm install 提示（非裸 MODULE_NOT_FOUND）", async () => {
     setLibImporter(async () => {
       throw new Error("Cannot find module 'akismet-api'");
     });
@@ -186,7 +186,7 @@ describe("库加载器组合与失败（T17 QA−）", () => {
   });
 });
 
-describe("T47：@xsai/generate-text 具名导出解包（AI 垃圾检测可用性修复）", () => {
+describe("@xsai/generate-text 具名导出解包（AI 垃圾检测可用性修复）", () => {
   /** ai 能力平台声明（其余能力关闭以缩小用例面） */
   const aiCaps: Capabilities = defineCapabilities({
     mail: false,
@@ -219,7 +219,7 @@ describe("T47：@xsai/generate-text 具名导出解包（AI 垃圾检测可用�
     expect(await getGenerateText(aiCaps)).toBe(generateText);
   });
 
-  it("QA−：模块未导出 generateText → LibLoadError（含包名与安装提示）而非运行期 TypeError", async () => {
+  it("模块未导出 generateText → LibLoadError（含包名与安装提示）而非运行期 TypeError", async () => {
     setLibImporter(async () => ({}));
     const err = await getGenerateText(aiCaps).catch((e) => e);
     expect(err).toBeInstanceOf(LibLoadError);

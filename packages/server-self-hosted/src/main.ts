@@ -1,7 +1,7 @@
 /**
- * tkserver 主逻辑（self-hosted 薄适配器，规范 §6.6）。
+ * tkserver 主逻辑（self-hosted 薄适配器）。
  * 业务逻辑全部在 @twikoojs/common；数据库 MONGODB_URI→Mongo，否则 Loki（TWIKOO_DATA）。
- * 平台核对（§6.8）：nodejs.org/api http/信号处理（查阅 2026-09-17）。
+ * 平台核对：nodejs.org/api http/信号处理（查阅 2026-09-17）。
  */
 import {
   FULL_CAPABILITIES,
@@ -14,7 +14,7 @@ import {
 } from "@twikoojs/common";
 import { createTkserverDatabase } from "./database";
 
-/** tkserver 平台能力：全能力（§6.5 能力矩阵） */
+/** tkserver 平台能力：全能力*/
 const tkserverCapabilities = FULL_CAPABILITIES;
 
 /** Node 请求的最小结构面（IncomingMessage；body 已由 server.ts 解析挂载） */
@@ -61,7 +61,7 @@ export function toTkRequest(req: ServerRequestLike): TkRequest {
 
 /**
  * 内部统一响应 → Node 响应（204 无体；业务 JSON 透传 tkRes.status；
- * headers 原样回写——CORS 由 pipeline 算好，§6.3，业务分支在其后补 Content-Type；
+ * headers 原样回写——CORS 由 pipeline 算好，业务分支在其后补 Content-Type；
  * 垫片语义对齐 1.x）。
  */
 export function fromTkResponse(res: ServerResponseLike, tkRes: TkResponse): void {

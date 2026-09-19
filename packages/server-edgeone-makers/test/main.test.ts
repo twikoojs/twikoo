@@ -1,5 +1,5 @@
 /**
- * twikoo-edgeone-makers 适配器测试（T24）。
+ * twikoo-edgeone-makers 适配器测试。
  *
  * 注入内存 BlobKV store 跑契约核心事件；验证受限能力形态（DOMPurify 直通、
  * 内嵌 Cap 未启用语义）、EO 体积门禁脚本。
@@ -47,7 +47,7 @@ function makeEvent(overrides: Partial<EoEventLike> = {}): EoEventLike {
   };
 }
 
-describe("twikoo-edgeone-makers 薄适配器（T24）", () => {
+describe("twikoo-edgeone-makers 薄适配器", () => {
   it("happy：内存 BlobKV → GET_FUNC_VERSION code 0", async () => {
     const { store } = makeStore();
     const fn = createEoMakersFunc({ store });
@@ -87,7 +87,7 @@ describe("twikoo-edgeone-makers 薄适配器（T24）", () => {
     expect(data.data[0].comment).toContain("加粗");
   });
 
-  it("体积门禁脚本：依赖清单无 nodemailer/jsdom（QA− 语义）", async () => {
+  it("体积门禁脚本：依赖清单无 nodemailer/jsdom（语义）", async () => {
     const { execFileSync } = await import("node:child_process");
     // 正向：脚本对当前 package.json 绿
     execFileSync(process.execPath, ["scripts/check-eo-size.mjs"], {

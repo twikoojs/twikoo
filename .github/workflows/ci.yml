@@ -1,4 +1,4 @@
-# Twikoo 2.0 持续集成门禁（T40 / §4.4）
+# Twikoo 2.0 持续集成门禁
 #
 # 4 个并行门禁 job（lint / typecheck / test / build），互不 needs。
 #
@@ -90,7 +90,7 @@ jobs:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     env:
-      # A 类密钥（§9.4）：仓库未配置对应 Secret 时为空字符串 → hasEnv() 判定未配置
+      # 仓库未配置对应 Secret 时为空字符串 → hasEnv() 判定未配置
       # → 对应用例整体 skip（不失败、不伪造），fork PR 同样能跑绿。
       TEST_SMTP_HOST: ${{ secrets.TEST_SMTP_HOST }}
       TEST_SMTP_PORT: ${{ secrets.TEST_SMTP_PORT }}

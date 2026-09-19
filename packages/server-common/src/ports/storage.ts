@@ -1,5 +1,5 @@
 /**
- * 存储端口（规范 §6.2 ports/storage.ts「Cap 验证码存储」）。
+ * 存储端口（规范 ports/storage.ts「Cap 验证码存储」）。
  *
  * 语义对齐 1.x cap.js 的存储适配器族（mongoStorage / tcbStorage / lokiStorage /
  * kvStorage / memoryStorage）：challenges 与 tokens 双组钩子，与 @cap.js/server
@@ -40,7 +40,7 @@ export interface CapTokenStore {
 }
 
 /**
- * Cap 验证码存储端口（§6.2/§6.6：mongoStorage / tcbStorage 等各适配器自行实现）。
+ * Cap 验证码存储端口（mongoStorage / tcbStorage 等各适配器自行实现）。
  */
 export interface Storage {
   /** challenge 存取钩子 */

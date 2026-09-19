@@ -1,7 +1,7 @@
 /**
- * demo 数据 seed（设计文档 §10.2）。
+ * demo 数据 seed（设计文档）。
  *
- * 触发三态（§10.2 表）：
+ * 触发三态：
  * | 数据状态 | 行为 |
  * | --- | --- |
  * | 数据库文件不存在 | 用默认测试数据生成，日志提示「已生成 N 条测试评论」 |
@@ -23,7 +23,7 @@ import {
   buildDemoComments,
 } from "./fixtures";
 
-/** seed 开关环境变量名（§10.2：`TWIKOO_SEED=1` 或 `pnpm demo`） */
+/** seed 开关环境变量名（`TWIKOO_SEED=1` 或 `pnpm demo`）*/
 export const SEED_ENV_KEY = "TWIKOO_SEED";
 
 /** seed 开关值（1 视为开启） */
@@ -41,7 +41,7 @@ export interface SeedResult {
   reason: string;
 }
 
-/** 生产误触达错误（QA−：未开启 seed 却调用即抛，绝不静默写入） */
+/** 生产误触达错误（未开启 seed 却调用即抛，绝不静默写入）*/
 export class SeedNotAllowedError extends Error {
   /**
    * @param envKey 开关环境变量名
@@ -75,7 +75,7 @@ export interface SeedOptions {
 }
 
 /**
- * 写入 demo 测试数据（§10.2）。已有评论时**不改动**任何数据。
+ * 写入 demo 测试数据。已有评论时**不改动**任何数据。
  * @param options seed 选项
  * @returns seed 结果
  */

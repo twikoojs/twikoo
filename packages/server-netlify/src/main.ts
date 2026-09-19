@@ -1,10 +1,10 @@
 /**
- * twikoo-netlify 主逻辑（Netlify 独立薄适配器，规范 §6.6——不再依赖 twikoo-vercel）。
+ * twikoo-netlify 主逻辑（Netlify 独立薄适配器——不再依赖 twikoo-vercel）。
  * 业务逻辑全部在 @twikoojs/common；数据库 MONGODB_URI→Mongo。
- * 平台核对（§6.8）：Functions v1 handler = async (event, context) =>
+ * 平台核对：Functions v1 handler = async (event, context) =>
  * { statusCode, headers, body(string) }；IP 头 x-nf-client-connection-ip——
  * docs.netlify.com/functions（查阅 2026-09-17）。1.x 的 TWIKOO_IP_HEADERS
- * 环境变量机制由本适配器消化（§6.3：公共库不感知该变量）。
+ * 环境变量机制由本适配器消化（公共库不感知该变量）。
  *
  * 后置副作用（垃圾检测 + 通知）经 {@link netlifyPostSubmitDispatcher} 以
  * HTTP 递归自调用派发到独立执行单元，见 `./dispatch.ts`。
@@ -20,7 +20,7 @@ import {
 } from "@twikoojs/common";
 import { netlifyPostSubmitDispatcher } from "./dispatch";
 
-/** Netlify 平台能力：全能力（§6.5 能力矩阵） */
+/** Netlify 平台能力：全能力*/
 const netlifyCapabilities = FULL_CAPABILITIES;
 
 /** Netlify Functions v1 事件的最小结构面 */

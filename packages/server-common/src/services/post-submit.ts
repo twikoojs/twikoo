@@ -1,5 +1,5 @@
 /**
- * postSubmit 服务（§6.6 后置副作用链的唯一实现）。
+ * postSubmit 服务（后置副作用链的唯一实现）。
  *
  * 职责：执行「后置垃圾检测 → 回写检测结果 → 发送评论通知」这条耗时链。
  * 它**只是逻辑**，不关心自己被谁触发、在哪个执行单元里运行：
@@ -31,14 +31,14 @@ export type PostSubmitService = (
 ) => Promise<TkResponseBody>;
 
 /**
- * 默认实现（T13 接缝）：记录日志并返回成功，不执行任何副作用。
- * T18 以真实实现覆写（postCheckSpam + saveSpamCheckResult + sendNotice）。
+ * 默认实现（接缝）：记录日志并返回成功，不执行任何副作用。
+ * 以真实实现覆写（postCheckSpam + saveSpamCheckResult + sendNotice）。
  * @param comment 已保存的评论
  * @param ctx 请求上下文
  * @returns 成功响应体（Promise 形态与真实服务签名一致）
  */
 const noopPostSubmit: PostSubmitService = (comment, ctx) => {
-  ctx.logger.info("postSubmit 服务尚未接线（T18），跳过垃圾检测与通知", {
+  ctx.logger.info("postSubmit 服务尚未接线，跳过垃圾检测与通知", {
     id: comment._id,
   });
   return Promise.resolve({ code: RES_CODE.SUCCESS });
@@ -48,7 +48,7 @@ const noopPostSubmit: PostSubmitService = (comment, ctx) => {
 let current: PostSubmitService = noopPostSubmit;
 
 /**
- * 覆写 postSubmit 服务实现（T18 注入真实实现；测试注入 spy）。
+ * 覆写 postSubmit 服务实现（注入真实实现；测试注入 spy）。
  * @param service 新的服务实现
  */
 export function setPostSubmitService(service: PostSubmitService): void {

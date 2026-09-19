@@ -1,5 +1,5 @@
 /**
- * Markdown 解析（1.x utils/marked.js 的官方扩展机制重建，§5.4）。
+ * Markdown 解析（1.x utils/marked.js 的官方扩展机制重建）。
  *
  * 删除 1.x 的 lib/marked fork（9 文件），改用官方 marked ^18：
  * - GFM / breaks 基础选项对齐 1.x；
@@ -27,7 +27,7 @@ const marked = new Marked({
   breaks: true,
 });
 
-// 1.x #855：禁用缩进代码块（评论常以空格缩进排版）
+// 禁用缩进代码块（评论常以空格缩进排版）
 marked.use({
   tokenizer: {
     /**
@@ -40,7 +40,7 @@ marked.use({
   },
 });
 
-// 公式四语法透传扩展（§5.4）：$$..$$ / \[..\] / \(..\) / $..$ 原样保留，
+// 公式四语法透传扩展：$$..$$ / \[..\] / \(..\) / $..$ 原样保留，
 // KaTeX auto-render 在 DOM 层接管渲染
 const MATH_RE = /^(\$\$[\s\S]*?\$\$|\\\[([\s\S]*?)\\\]|\\\(([\s\S]*?)\\\)|\$[^$\n]+?\$)/;
 

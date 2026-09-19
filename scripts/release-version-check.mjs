@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 发布前版本校验（§4.3.0）：**单调性**与**未发布过**。
+ * 发布前版本校验：**单调性**与**未发布过**。
  *
  * 用法：
  *   node scripts/release-version-check.mjs monotonic 2.0.0-beta.2

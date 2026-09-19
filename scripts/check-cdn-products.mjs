@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * B.3「CDN 直引客户端：4 个产物分别验证」+「自托管 tkserver：启动 + 全功能 + shutdown」
- * 的本地自动化核对（T45 特别项 ④）。
+ * 「CDN 直引客户端：4 个产物分别验证」+「自托管 tkserver：启动 + 全功能 + shutdown」
+ * 的本地自动化核对（特别项 ④）。
  *
  * 做法：真启 `tkserver`（临时数据目录 + seed），对 **4 个客户端产物**各建一个独立 jsdom，
  * 加载产物 → 调 `twikoo.init` → 断言评论区渲染成功；并按产物形态断言样式内联策略
@@ -200,7 +200,7 @@ async function main() {
   assert(existsSync(join(DIST, "twikoo.css")), "缺少 twikoo.css（.nocss 产物必须与之一同使用）");
 
   /**
-   * §7.2 语言分片守卫：
+   * 语言分片守卫：
    * ① 7 个非内置语言必须各自产出 `dist/locales/<lang>.js`（按需加载）；
    * ② 内置语言 `zh-CN` / `en` 不应有分片（它们应内联在主产物里）；
    * ③ 分片语言的文案**不得**出现在主产物中——防止有人把 7 个分片重新静态 import
@@ -210,7 +210,7 @@ async function main() {
   for (const lang of LAZY_LOCALES) {
     assert(
       existsSync(join(DIST, "locales", `${lang}.js`)),
-      `缺少语言分片 dist/locales/${lang}.js（§7.2：非内置语言必须按需加载）`,
+      `缺少语言分片 dist/locales/${lang}.js（非内置语言必须按需加载）`,
     );
   }
   for (const lang of ["zh-CN", "en"]) {
@@ -235,7 +235,7 @@ async function main() {
     for (const { file } of PRODUCTS) {
       assert(
         !readFileSync(join(DIST, file), "utf8").includes(probe),
-        `${file} 内联了语言分片文案（§7.2：非内置语言必须按需加载，勿静态 import 回 i18n/index.ts）`,
+        `${file} 内联了语言分片文案（非内置语言必须按需加载，勿静态 import 回 i18n/index.ts）`,
       );
     }
   }

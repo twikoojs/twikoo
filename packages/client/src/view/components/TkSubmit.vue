@@ -4,9 +4,9 @@
   能力面：meta 输入（TkMetaInput）+ 正文 textarea（TkInput）+ 头像预览 + 表情面板（OwO）
   + 图片上传（选择/粘贴/压缩/云存储或第三方图床）+ 预览（marked + 消毒 + 公式 + 高亮）
   + 草稿持久化 + Ctrl/Cmd+Enter 发送 + 三种人机验证（Turnstile / Geetest / Cap）
-  + 内联错误卡片（§8.2 TkError）。
+  + 内联错误卡片（TkError）。
 
-  类名映射（1.x `.el-*` → 2.0 `.tk-*`，§5.3.3）：`.el-textarea__inner` → `.tk-textarea__inner`；
+  类名映射（1.x `.el-*` → 2.0 `.tk-*`）：`.el-textarea__inner` → `.tk-textarea__inner`；
   `.el-button` → `.tk-button`（其余 tk- 类名与 1.x 同名保留）。
 -->
 <template>
@@ -181,7 +181,7 @@ const isSending = ref(false);
 const isPreviewing = ref(false);
 /** meta 是否校验通过 */
 const isMetaValid = ref(false);
-/** 提交错误（§8.2 统一错误模型） */
+/** 提交错误（统一错误模型）*/
 const error = ref<TwikooError>();
 /** OwO 面板实例 */
 const owo = ref<OwO | null>(null);

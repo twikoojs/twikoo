@@ -1,5 +1,5 @@
 /**
- * 请求处理管线（规范 §6.2 core/pipeline.ts；§2.3 标准流程）。
+ * 请求处理管线（规范 core/pipeline.ts；标准流程）。
  *
  * 八步编排（1.7.24 vercel 入口流程语义对齐）：
  * 1. protect 限流（requestTimes 按 IP 累计，超限 429）
@@ -11,7 +11,7 @@
  * 7. OPTIONS 预检 → 204
  * 8. dispatch 分发事件 → 回填 res.accessToken → 返回
  *
- * 与 1.x 的差异（均为计划内改进，§8.2/§8.3）：
+ * 与 1.x 的差异（均为计划内改进）：
  * - 限流超限从「HTTP 200 + code 1000」升级为 HTTP 429（客户端 TwikooError
  *   按 429 映射「请求过于频繁」）；
  * - 异常响应体附带 `log` 字段（本次请求聚合日志，requestId 标注）。
@@ -32,7 +32,7 @@ const requestTimes: Record<string, number> = {};
 
 /**
  * 清空限流计数器。
- * 使用方：self-hosted 适配器的定时清理（T22 接线）；测试复位。
+ * 使用方：self-hosted 适配器的定时清理（接线）；测试复位。
  */
 export function resetRequestTimes(): void {
   for (const key of Object.keys(requestTimes)) {
@@ -122,7 +122,7 @@ function getAllowedOrigin(origin: string, config: ConfigData): string {
 /**
  * 步骤 5：读取配置（1.x readConfig 语义对齐）——每次请求读取最新配置；
  * 读取失败降级为空配置并记录错误（1.x 建集合动作属于数据库实现的
- * init() 职责，见 T14 MongoDatabase）。
+ * init() 职责，见 MongoDatabase）。
  * @param adapters 适配器聚合端口
  * @param logger 请求级日志器
  * @returns 全量配置（无配置为空对象）
@@ -146,7 +146,7 @@ function getErrorMessage(e: unknown): string {
 }
 
 /**
- * 创建统一请求处理器（§6.2 唯一入口 createHandler 的实现核心）：
+ * 创建统一请求处理器（唯一入口 createHandler 的实现核心）：
  * 启动期以适配器聚合装配一次，返回逐请求调用的处理器。
  * @param adapters 适配器聚合端口
  * @returns 逐请求处理器（TkRequest → TkResponse）
@@ -197,7 +197,7 @@ export function createPipeline(adapters: TkAdapters) {
       body = {
         code: RES_CODE.FAIL,
         message: getErrorMessage(e),
-        // §8.3：异常响应附带本次请求聚合日志（requestId 标注），供前端错误卡片展示
+        // 异常响应附带本次请求聚合日志（requestId 标注），供前端错误卡片展示
         log: logger.getText(),
       };
       if (e instanceof RateLimitError) status = 429;

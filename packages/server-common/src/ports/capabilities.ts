@@ -1,5 +1,5 @@
 /**
- * 平台能力声明（规范 §6.5 第一层：Capability Flags）。
+ * 平台能力声明（规范第一层：Capability Flags）。
  *
  * 适配器启动时声明平台能力，公共库在加载第三方库前先查 capabilities：
  * 未声明的能力走降级路径或返回明确的用户友好错误（如 eo-makers 的
@@ -9,12 +9,12 @@
 
 /**
  * 能力开关值：false 完全不支持；"restricted" 为受限形态——功能存在但仅部分
- * 通道可用。受限形态目前仅 mail 使用（§6.5 能力矩阵：eo-makers 的 mail 为
+ * 通道可用。受限形态目前仅 mail 使用（能力矩阵：eo-makers 的 mail 为
  * ⚠️ 受限，SendGrid / MailChannels / Go SMTP Bridge），类型上保证该形态可表达。
  */
 export type CapabilityFlag = boolean | "restricted";
 
-/** 平台能力声明（§6.5 八项能力，适配器注入） */
+/** 平台能力声明（八项能力，适配器注入）*/
 export interface Capabilities {
   /** 是否支持发邮件（nodemailer）；"restricted" = 仅受限通道（eo-makers 形态） */
   mail: CapabilityFlag;
@@ -34,7 +34,7 @@ export interface Capabilities {
   ai: boolean;
 }
 
-/** 全能力声明（§6.5 矩阵：cloudbase / vercel / self-hosted / netlify / aws-lambda 共用） */
+/** 全能力声明（矩阵：cloudbase / vercel / self-hosted / netlify / aws-lambda 共用）*/
 export const FULL_CAPABILITIES: Capabilities = {
   mail: true,
   domPurify: true,

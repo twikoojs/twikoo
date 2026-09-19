@@ -1,5 +1,5 @@
 /**
- * 客户端 utils 全量单测（T34 覆盖率收尾 + Wave 4 补齐新增工具）。
+ * 客户端 utils 全量单测（覆盖率收尾 + 补齐新增工具）。
  */
 import { describe, expect, it } from "vitest";
 import {
@@ -28,7 +28,7 @@ import {
 import { setLanguage } from "../src/i18n";
 import { call } from "../src/utils/api";
 
-describe("utils 基础函数（T34）", () => {
+describe("utils 基础函数", () => {
   it("isUrl / isNotSet / isQQ / normalizeMail", () => {
     expect(isUrl("https://x.test")).toBe(true);
     expect(isUrl("nope")).toBe(false);
@@ -99,7 +99,7 @@ describe("utils 基础函数（T34）", () => {
   });
 });
 
-describe("utils 文件与 DOM 工具（Wave 4 补齐）", () => {
+describe("utils 文件与 DOM 工具", () => {
   it("readAsText：读取文本文件", async () => {
     const text = await readAsText(new File(["hello"], "a.txt", { type: "text/plain" }));
     expect(text).toBe("hello");
@@ -145,7 +145,7 @@ describe("utils 文件与 DOM 工具（Wave 4 补齐）", () => {
   });
 });
 
-describe("utils call 云开发通道（T34）", () => {
+describe("utils call 云开发通道", () => {
   it("tcb 通道：callFunction 转发（事件名在 data.event）", async () => {
     let received: { name: string; data: Record<string, unknown> } | undefined;
     const tcb = {
@@ -185,7 +185,7 @@ describe("utils call 云开发通道（T34）", () => {
   });
 });
 
-describe("utils API 封装（T34）", () => {
+describe("utils API 封装", () => {
   it("getCommentsCountApi / getRecentCommentsApi / getVisitorsCountApi 事件转发", async () => {
     const events: string[] = [];
     const tcb = {
@@ -229,7 +229,7 @@ describe("utils API 封装（T34）", () => {
   });
 });
 
-describe("view render（T34）", () => {
+describe("view render", () => {
   it("render：createApp 挂载到 el 并注入全局属性", async () => {
     document.body.innerHTML = '<div id="twikoo-test"></div>';
     const { render, getApp } = await import("../src/view");
@@ -241,7 +241,7 @@ describe("view render（T34）", () => {
   });
 });
 
-describe("updateVisitorsCount（T34）", () => {
+describe("updateVisitorsCount", () => {
   it("元素存在 + 非 localhost → 写入 time", async () => {
     document.body.innerHTML = '<span id="twikoo_visitors"></span>';
     let calledEvent: string | undefined;

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * npm 可见性轮询 gate（§4.3.2：作为第二批发布的前置条件）。
+ * npm 可见性轮询 gate（作为第二批发布的前置条件）。
  *
  * 用法：
  *   node scripts/verify-npm.mjs <version> <npm-tag> <batch>

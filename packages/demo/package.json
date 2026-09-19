@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Twikoo 2.0 本地演示工程（pnpm demo：demo 页 + 客户端 watch + tkserver，完全离线，D-6）",
+  "description": "Twikoo 2.0 本地演示工程（pnpm demo：demo 页 + 客户端 watch + tkserver，完全离线）",
   "scripts": {
     "prepare-assets": "node scripts/prepare-assets.mjs",
     "dev": "node scripts/prepare-assets.mjs && vite",

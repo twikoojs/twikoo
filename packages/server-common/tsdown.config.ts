@@ -4,7 +4,7 @@ import { BUILD_TARGET, neverBundleAllDependencies, outExtensions } from "@twikoo
 /**
  * @twikoojs/common 构建：ESM + CJS 双格式 + 类型声明。
  * dependencies/peerDependencies/devDependencies 全部 external
- * （D-2：重依赖由适配器安装；@twikoojs/shared 独立发布）。
+ * （重依赖由适配器安装；@twikoojs/shared 独立发布）。
  */
 export default defineConfig({
   entry: ["src/index.ts"],

@@ -1,19 +1,19 @@
 /**
- * 数据库端口（规范 §6.4 数据库抽象）。
+ * 数据库端口（规范数据库抽象）。
  *
  * 抽象要抓**语义**而非 API（规范原文）：MongoDB / LokiJS / Blob KV / CloudBase DB
- * 各自实现同一接口，业务层不再关心用哪个库。方法名与分组逐条来自 §6.4 方法表：
+ * 各自实现同一接口，业务层不再关心用哪个库。方法名与分组见下表：
  * 评论 8 / 计数 2 / 配置 2 / 验证码 3 / 生命周期 2，共 17 个方法。
  *
  * 形态设计：每个方法以独立的函数类型**方法级导出**，再由 {@link Database} 接口聚合——
- * 四个数据库实现（T14-T17）可按方法类型逐一核对签名，契约测试也可按方法粒度引用。
+ * 四个数据库实现可按方法类型逐一核对签名，契约测试也可按方法粒度引用。
  */
 
 /**
- * 「字段不存在」哨兵（R-3：Loki 无 $exists 的跨库等价）。
+ * 「字段不存在」哨兵（Loki 无 $exists 的跨库等价）。
  *
  * 动机：1.x 里 Mongo 用 `rid: { $exists: false }`、Loki 用 `rid: { $in: ["", null] }`
- * 表达同一语义（§6.4 重点说明），业务层被迫关心底层差异。2.0 统一为语义查询对象
+ * 表达同一语义（重点说明），业务层被迫关心底层差异。2.0 统一为语义查询对象
  * `{ rid: ABSENT }`，各实现自行翻译成自家语法。
  *
  * 设计决策：
@@ -43,7 +43,7 @@ export const GT: unique symbol = Symbol.for("twikoo.db.gt");
  * `created: { $lt: event.before }` 语义——流式分页「加载更多」的游标条件）。
  *
  * 为什么必须进语义层：`before` 是**比较**而非等值，用标量表达会退化为
- * `created === before`（T44 端到端回归实测：加载更多恒为 0 条）。
+ * `created === before`（端到端回归实测：加载更多恒为 0 条）。
  */
 export const LT: unique symbol = Symbol.for("twikoo.db.lt");
 
@@ -63,7 +63,7 @@ export type FieldCondition =
 export type FieldValue = FieldCondition;
 
 /**
- * 语义查询对象（§6.4 重点）：键为文档字段名，值为等值条件或 {@link ABSENT}。
+ * 语义查询对象（重点）：键为文档字段名，值为等值条件或 {@link ABSENT}。
  * 示例：`{ rid: ABSENT }`（顶级评论）、`{ isSpam: true }`（垃圾评论）、
  * `{ url: "https://…", rid: "xxx" }`（某页面某评论的回复）。各数据库实现自行翻译。
  */
@@ -166,7 +166,7 @@ export interface QueryOptions {
 export type DatabaseInit = () => Promise<void>;
 
 /**
- * 生命周期：关闭（§6.4 标注「可选」——Loki 需要持久化收尾，其余实现可为空操作）。
+ * 生命周期：关闭（标注「可选」——Loki 需要持久化收尾，其余实现可为空操作）。
  * 接口内以可选成员呈现，self-hosted 的 shutdown() 优雅退出会调用。
  */
 export type DatabaseClose = () => Promise<void>;
@@ -217,8 +217,8 @@ export type CapSet = (key: string, value: unknown) => Promise<void>;
 export type CapDel = (key: string) => Promise<void>;
 
 /**
- * 统一数据库接口（§6.4 方法表全量聚合：评论 8 / 计数 2 / 配置 2 / 验证码 3 /
- * 生命周期 2，共 17 个方法）。各实现见 §6.4：MongoDatabase（vercel / cloudbase）、
+ * 统一数据库接口（方法表全量聚合：评论 8 / 计数 2 / 配置 2 / 验证码 3 /
+ * 生命周期 2，共 17 个方法）。各实现见：MongoDatabase（vercel / cloudbase）、
  * LokiDatabase（self-hosted）、BlobKvDatabase（eo-makers）、CloudBaseDatabase（cloudbase）。
  */
 export interface Database {

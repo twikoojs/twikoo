@@ -1,5 +1,5 @@
 /**
- * 通知/上传/验证码分支测试（T18 覆盖率补齐 II）。
+ * 通知/上传/验证码分支测试（覆盖率补齐 II）。
  * 全部外部依赖（nodemailer/pushoo/html-to-text/axios/form-data）经
  * setLibImporter 替身注入——零真实网络。
  */

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * EO Makers 体积门禁（规范 §6.5.1）：EO bundle 不得引入 nodemailer/jsdom 等
+ * EO Makers 体积门禁：EO bundle 不得引入 nodemailer/jsdom 等
  * 重依赖——依赖清单断言 + （若 dist 存在）产物体积上限。
  */
 import { readFileSync, existsSync, statSync, readdirSync } from "node:fs";

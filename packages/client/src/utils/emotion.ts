@@ -1,5 +1,5 @@
 /**
- * OwO 表情数据加载（1.x `utils/emotion.js` 语义对齐，§5.4）。
+ * OwO 表情数据加载（1.x `utils/emotion.js` 语义对齐）。
  *
  * 职责：
  * - 从 `EMOTION_CDN`（英文逗号分隔，可多个）拉取 OwO 数据；
@@ -130,7 +130,7 @@ export async function initOwoEmotions(apis: string): Promise<OwoData> {
  * 从 OwO 数据构建 `表情名 → 图片地址` 映射，并注册给 marked 的 owo 扩展。
  *
  * 1.x 把映射塞进 `marked.setOptions({ odata })`；2.0 改为经 {@link setOwoImages}
- * 注入扩展闭包（§5.4：表情映射不再污染 marked options）。
+ * 注入扩展闭包（表情映射不再污染 marked options）。
  * @param odata OwO 数据
  * @returns `表情名 → 图片地址` 映射
  */

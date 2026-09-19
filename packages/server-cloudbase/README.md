@@ -2,7 +2,7 @@
 
 Twikoo 2.0 服务端适配器。业务逻辑在 `@twikoojs/common`，本包仅做平台入口与注入。
 
-## ⚠️ 2.0 升级须知（BC-12：同名不同义）
+## ⚠️ 2.0 升级须知（同名不同义）
 
 **包名没变，但包的内容变了。**
 
@@ -18,24 +18,24 @@ Twikoo 2.0 服务端适配器。业务逻辑在 `@twikoojs/common`，本包仅�
 控制台出现一条弃用告警。**该转发导出将在 2.2.0 移除**——
 请把对公共逻辑的引用改为 `@twikoojs/common`。
 
-**部署方式变更（BC-14）**：`tcb fn deploy` / `npm run deploy` / `login` / `logout`
+**部署方式变更**：`tcb fn deploy` / `npm run deploy` / `login` / `logout`
 脚本与 `@cloudbase/cli` 依赖已移除，**2.0 起只支持控制台部署**（下方流程）。
 这不影响云函数功能，也不影响控制台流程。
 
-## 部署（CloudBase 控制台，D-22）
+## 部署（CloudBase 控制台）
 
 1. CloudBase 控制台 → 云函数 → 创建函数（模板 Node.js Hello World，运行时 Node 24.11）
 2. 在线编辑器粘贴：`exports.main = require("twikoo-func").main`
 3. 在线装依赖：仅声明 `twikoo-func`（其余依赖随 npm 安装自动拉取）
 4. 创建后状态「正常」即部署完成
 
-## 平台核对清单（§6.8，查阅日期 2026-09-17）
+## 平台核对清单（查阅日期 2026-09-17）
 
 - [x] 函数入口 `exports.main(event, context)` 结构与返回体格式（docs.cloudbase.net 云函数章节）
-- [x] 控制台「在线编辑器 + 在线装依赖」流程（4.3.0.1）；CLI（tcb fn deploy）2.0 起不再支持（BC-14）
+- [x] 控制台「在线编辑器 + 在线装依赖」流程；CLI（tcb fn deploy）2.0 起不再支持
 - [x] 运行时创建后不可改版本
-- [ ] 环境变量注入方式实测（B.3 人工项）
-- [ ] MONGODB_URI 外接 Mongo 实测（B.3 人工项）
+- [ ] 环境变量注入方式实测（人工项）
+- [ ] MONGODB_URI 外接 Mongo 实测（人工项）
 
 ## 注意
 

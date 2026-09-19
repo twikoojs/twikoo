@@ -3,7 +3,7 @@
 | <div style="width: 10em">Deployment option</div> | Rating | Description                                                                                                             |
 | ------------------------------------------------ | ------ | ----------------------------------------------------------------------------------------------------------------------- |
 | Tencent CloudBase (console)                      | ★★★☆☆  | Deploy to a Tencent CloudBase environment from the console. Fast inside mainland China. A paid environment is required. |
-| Tencent Cloud CLI                                | ⛔     | **No longer supported since 2.0** (BC-14) — see below.                                                                  |
+| Tencent Cloud CLI                                | ⛔     | **No longer supported since 2.0** — see below.                                                                          |
 | Vercel                                           | ★★★☆☆  | Good free tier. Slower or unreachable from mainland China; bind your own domain to improve speed.                       |
 | Netlify                                          | ★★★★☆  | Generous free tier and decent speed from mainland China.                                                                |
 | AWS Lambda                                       | ★★★☆☆  | Best fit if you already use AWS.                                                                                        |
@@ -41,7 +41,7 @@ Twikoo 2.0 splits the server side into **8 adapters**. All business logic lives 
 Restricted capabilities never break comment posting or rendering: a missing capability returns an explicit error message in the admin panel instead of failing silently.
 
 ::: warning Runtime version
-On CloudBase, upgrade the function runtime to **Node 20 or newer (24 recommended)**. The 2.0 build targets ES2022 and no longer supports Node 16.13 (BC-3).
+On CloudBase, upgrade the function runtime to **Node 20 or newer (24 recommended)**. The 2.0 build targets ES2022 and no longer supports Node 16.13.
 :::
 
 ## Tencent CloudBase (console)
@@ -66,7 +66,7 @@ On CloudBase, upgrade the function runtime to **Node 20 or newer (24 recommended
 ## Command line deployment — no longer supported
 
 ::: danger Removed in 2.0
-Twikoo **2.0 removes command line deployment** (BC-14): `tcb fn deploy` together with the `npm run deploy` / `login` / `logout` scripts and the `@cloudbase/cli` dependency are gone.
+Twikoo **2.0 removes command line deployment**: `tcb fn deploy` together with the `npm run deploy` / `login` / `logout` scripts and the `@cloudbase/cli` dependency are gone.
 
 - Function behaviour is **not** affected, and the console workflow is unchanged;
 - If you used `tcb fn deploy` or a custom CI script, switch to the console workflow described above;

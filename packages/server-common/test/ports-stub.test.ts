@@ -1,12 +1,12 @@
 /**
- * ports 契约的永久用例（T12 QA+）：
+ * ports 契约的永久用例：
  * 1. stub 适配器 satisfies TkAdapters —— 类型契约（包 tsconfig include 覆盖 test/，
- *    `pnpm typecheck` 每次运行都强制；QA− 通过删方法演示 tsc 报缺失）；
- * 2. createHandler(stub) 类型可接受且运行时打通 GET_FUNC_VERSION（T13 起
+ *    `pnpm typecheck` 每次运行都强制；通过删方法演示 tsc 报缺失）；
+ * 2. createHandler(stub) 类型可接受且运行时打通 GET_FUNC_VERSION（起
  *    createHandler 由真实 pipeline 承载）。
  *
  * stub 形态说明：端口方法位一律引用具名 helper 标识符而非内联箭头——
- * T8 的 jsdoc/require-jsdoc 对「对象属性位置的内联箭头函数」强制注释
+ * 的 jsdoc/require-jsdoc 对「对象属性位置的内联箭头函数」强制注释
  * （Property > ArrowFunctionExpression context），具名 helper 各带一条注释即可复用，
  * 避免 24 处属性位的注释噪音。
  */
@@ -128,14 +128,14 @@ const stubAdapters = {
   },
 } satisfies TkAdapters;
 
-describe("ports 契约（T12）", () => {
+describe("ports 契约", () => {
   it("stub 满足 TkAdapters 且 createHandler 类型上接受 stub 并返回 TwikooHandler", () => {
     // 类型层断言（不经运行时调用）：签名兼容由 tsc 保证
     const factory: (adapters: TkAdapters) => TwikooHandler = createHandler;
     expect(typeof factory).toBe("function");
   });
 
-  it("createHandler 接受 stub 并打通 GET_FUNC_VERSION（pipeline 已于 T13 接线）", async () => {
+  it("createHandler 接受 stub 并打通 GET_FUNC_VERSION（pipeline 已于接线）", async () => {
     const handler = createHandler(stubAdapters);
     const request = stubAdapters.request.toTkRequest(null);
     const response = await handler(request);
@@ -144,7 +144,7 @@ describe("ports 契约（T12）", () => {
     expect(typeof response.body.version).toBe("string");
   });
 
-  it("ABSENT 哨兵可表达语义查询对象（R-3）", () => {
+  it("ABSENT 哨兵可表达语义查询对象", () => {
     const query: SemanticQuery = { rid: ABSENT, isSpam: false };
     expect(query.rid).toBe(ABSENT);
   });

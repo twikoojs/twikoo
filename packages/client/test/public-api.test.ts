@@ -1,8 +1,8 @@
 /**
- * twikoo 客户端公开 API 测试（T27/T28）。
+ * twikoo 客户端公开 API 测试。
  *
- * §5.5：公开 API 五个（init/getCommentsCount/getRecentComments/getVisitorsCount/version）
- * 与 BC-9（version 来自 shared）。HTTP 通道以 XMLHttpRequest 替身驱动（happy-dom）。
+ * 公开 API 五个（init/getCommentsCount/getRecentComments/getVisitorsCount/version）
+ * version 来自 @twikoojs/shared（构建注入）。HTTP 通道以 XMLHttpRequest 替身驱动（happy-dom）。
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
 import init, { getCommentsCount, getRecentComments, getVisitorsCount, version } from "../src/main";
@@ -14,8 +14,8 @@ afterEach(() => {
   localStorage.clear();
 });
 
-describe("twikoo 公开 API（T27）", () => {
-  it("BC-9：version 来自 @twikoojs/shared（构建注入，运行时为字符串）", () => {
+describe("twikoo 公开 API", () => {
+  it("version 来自 @twikoojs/shared（构建注入，运行时为字符串）", () => {
     expect(typeof version).toBe("string");
     expect(version.length).toBeGreaterThan(0);
   });
@@ -36,7 +36,7 @@ describe("twikoo 公开 API（T27）", () => {
   });
 });
 
-describe("HTTP 通信层（T27/T33）", () => {
+describe("HTTP 通信层", () => {
   /** XHR 替身装配（可脚本化 readyState/status/responseText） */
   function mockXhr(script: (xhr: Record<string, unknown>) => void): void {
     const xhrStub: Record<string, unknown> = {
@@ -93,7 +93,7 @@ describe("HTTP 通信层（T27/T33）", () => {
     expect(localStorage.getItem("twikoo-access-token")).toBe("tok-1");
   });
 
-  it("QA−：404 → TwikooError NOT_FOUND", async () => {
+  it("404 → TwikooError NOT_FOUND", async () => {
     mockXhr((xhr) => {
       xhr.readyState = 4;
       xhr.status = 404;
@@ -108,7 +108,7 @@ describe("HTTP 通信层（T27/T33）", () => {
     expect(err.httpStatus).toBe(404);
   });
 
-  it("QA−：429 → TwikooError REJECTED", async () => {
+  it("429 → TwikooError REJECTED", async () => {
     mockXhr((xhr) => {
       xhr.readyState = 4;
       xhr.status = 429;
@@ -120,7 +120,7 @@ describe("HTTP 通信层（T27/T33）", () => {
     expect(err.kind).toBe("REJECTED");
   });
 
-  it("QA−：500 → TwikooError SERVER_ERROR", async () => {
+  it("500 → TwikooError SERVER_ERROR", async () => {
     mockXhr((xhr) => {
       xhr.readyState = 4;
       xhr.status = 500;
@@ -132,7 +132,7 @@ describe("HTTP 通信层（T27/T33）", () => {
     expect(err.kind).toBe("SERVER_ERROR");
   });
 
-  it("QA−：status 0 → CORS/TIMEOUT 分类", async () => {
+  it("status 0 → CORS/TIMEOUT 分类", async () => {
     mockXhr((xhr) => {
       xhr.readyState = 4;
       xhr.status = 0;
@@ -145,7 +145,7 @@ describe("HTTP 通信层（T27/T33）", () => {
     expect(["CORS", "TIMEOUT"]).toContain(err.kind);
   });
 
-  it("QA−：非 JSON 响应体 → UNKNOWN + 原始片段（不崩溃）", async () => {
+  it("非 JSON 响应体 → UNKNOWN + 原始片段（不崩溃）", async () => {
     mockXhr((xhr) => {
       xhr.readyState = 4;
       xhr.status = 200;

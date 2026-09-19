@@ -1,7 +1,7 @@
 import type { Capabilities } from "../ports/capabilities";
 
 /**
- * 库加载器（规范 §6.5 选择性加载第三方库 + §6.5.1 D-2 依赖外部化）。
+ * 库加载器（选择性加载第三方库 + 依赖外部化）。
  *
  * 三层机制（加载顺序即优先级）：
  * 1. **setCustomLibs 覆写**（最高优先，1.x lib.js 逃生舱范式——eo-makers 注入
@@ -10,10 +10,10 @@ import type { Capabilities } from "../ports/capabilities";
  *    （用户友好错误，绝不触发模块解析——受控平台如 EO Makers 由此走降级）；
  * 3. **动态 import**：运行时 `await import(specifier)`（specifier 经变量间接，
  *    保证零静态依赖；eslint no-restricted-imports 清单强制该纪律），
- *    解析失败抛 {@link LibLoadError}（含包名与安装提示，QA− 要求）。
+ *    解析失败抛 {@link LibLoadError}（含包名与安装提示，要求）。
  *
- * 依赖安装契约（§6.5.1）：本包以 peerDependenciesMeta(optional) 声明接口约束，
- * 重依赖由声明对应能力的适配器自行安装（CI 依赖完整性检查见 T25）。
+ * 依赖安装契约：本包以 peerDependenciesMeta(optional) 声明接口约束，
+ * 重依赖由声明对应能力的适配器自行安装（CI 依赖完整性检查见）。
  *
  * **消费方约定：本模块一律静态导入，不要写 `await import("../utils/lib-loader")`。**
  * 它是「薄取用层」——自身没有任何第三方静态导入（上面第 3 层的 specifier 经变量间接，
@@ -248,7 +248,7 @@ export class CapabilityError extends Error {
 }
 
 /**
- * 库加载失败错误（QA−：消息含包名与安装提示）。
+ * 库加载失败错误（消息含包名与安装提示）。
  */
 export class LibLoadError extends Error {
   /**
@@ -265,7 +265,7 @@ export class LibLoadError extends Error {
 }
 
 /**
- * 能力门：未声明能力即抛 {@link CapabilityError}（加载前校验，§6.5 第二层）。
+ * 能力门：未声明能力即抛 {@link CapabilityError}（加载前校验，第二层）。
  * @param caps 平台能力声明
  * @param capability 所需能力名
  * @param packageName 关联包名

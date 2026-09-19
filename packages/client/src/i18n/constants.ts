@@ -1,5 +1,5 @@
 /**
- * i18n 常量表（§7.2：把「常量文案」从翻译词表中分离出来）。
+ * i18n 常量表（把「常量文案」从翻译词表中分离出来）。
  *
  * 1.x 把这些枚举值内联在 `i18n.js` 里、再以字符串拼接的方式嵌入配置项说明文案
  * （例如 `${highlightThemes.join('、')}`）；2.0 的说明文案已固化进 `locales/*.json`，
@@ -12,7 +12,7 @@
 import { PUSHOO_CHANNELS } from "@twikoojs/shared";
 
 /**
- * 即时消息推送渠道（§7.4.1：以 pushoo 源码为唯一真相源，从 `@twikoojs/shared` 派生）。
+ * 即时消息推送渠道（以 pushoo 源码为唯一真相源，从 `@twikoojs/shared` 派生）。
  *
  * 1.x 前端只列了 13 个渠道且与 pushoo 实际支持的渠道不一致（缺 8 个）；
  * 2.0 起 `PUSHOO_CHANNELS` 由 pushoo 的 `ChannelType` 派生并带编译期覆盖校验，

@@ -1,10 +1,10 @@
 /**
- * pushoo 各渠道请求体构造单测（T47 / §9.2 P1）。
+ * pushoo 各渠道请求体构造单测。
  *
  * mock HTTP（axios 模块替身，vi.hoisted 捕获）：不真实发请求；逐渠道断言端点
  * URL 与请求体构造（JSON 体与 URLSearchParams 表单体均解码后匹配内容）。
  * 1.x 行为基准：端点与参数名逐一对齐。notice() 对 token 缺失等错误返回
- * `{ error }` 而非未捕获异常（QA−）。
+ * `{ error }` 而非未捕获异常。
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -143,7 +143,7 @@ const CHANNELS: Array<{
   },
 ];
 
-describe("pushoo 渠道请求构造（T47）", () => {
+describe("pushoo 渠道请求构造", () => {
   for (const { channel, urlContains, bodyContains, payload, urlContainsDecoded } of CHANNELS) {
     it(`渠道 ${channel}：请求发往 ${urlContains.split("?")[0].slice(0, 40)} 且携带内容`, async () => {
       const result = await notice(channel, { ...base, ...payload } as never);
@@ -189,7 +189,7 @@ describe("pushoo 渠道请求构造（T47）", () => {
   });
 });
 
-describe("pushoo 错误形态（T47 QA−）", () => {
+describe("pushoo 错误形态", () => {
   it("token 缺失 → 返回 { error } 而非未捕获异常", async () => {
     const result = await notice("serverchan", {
       token: "",

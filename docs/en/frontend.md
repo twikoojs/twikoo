@@ -46,6 +46,6 @@ Recommended worldwide:
 Pin the version in the URL so that a future Twikoo release cannot break your site with an incompatible change.
 :::
 
-::: tip Browser baseline (BC-2)
+::: tip Browser baseline
 The 2.0 frontend targets **ES2022** and no longer supports IE / ES5. Minimum versions: Chrome 94+, Edge 94+, Firefox 93+, Safari 15.4+, iOS Safari 15.4+.
 :::

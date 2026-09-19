@@ -1,12 +1,12 @@
 /**
- * i18n 运行时（§7.2/§7.3：一语言一文件 + 按需分片 + 英文兜底 + TranslationKey 类型安全）。
+ * i18n 运行时（一语言一文件 + 按需分片 + 英文兜底 + TranslationKey 类型安全）。
  *
- * **打包策略**（§7.2）：
+ * **打包策略**：
  * - `zh-CN` / `en` **内置**进主产物（`en` 同时是 fallback 源）；
  * - 其余 7 种（`zh-HK` / `zh-TW` / `uz-UZ` / `ja-JP` / `ko-KR` / `vi-VN` / `id-ID`）
  *   各为一个独立分片 `dist/locales/<lang>.js`，运行时按需动态加载。
  *
- * **加载纪律**（R-8/R-9）：分片基址从主脚本自身 URL 推导（UMD 场景无 `import.meta.url`）；
+ * **加载纪律**：分片基址从主脚本自身 URL 推导（UMD 场景无 `import.meta.url`）；
  * 任何加载失败（网络错误 / 404 / 解析失败）一律**回退英文并记 warn，绝不抛出、绝不阻塞渲染**。
  *
  * **用法**：`init()` 内先 `await loadLanguage(options)` 再挂载，因此组件渲染时语言已就位，

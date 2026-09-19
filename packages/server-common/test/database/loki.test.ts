@@ -1,9 +1,9 @@
 /**
- * LokiDatabase 测试（T15）。
+ * LokiDatabase 测试。
  *
- * 使用临时目录承载 db.json（§9.4 B 类默认值：TWIKOO_DATA 走临时目录，无需
- * 用户填充）。重点验收：与 Mongo 同一套语义断言全绿（R-3 跨库一致性）、
- * LSFA 持久化往返、数据目录不可写时明确报错且不产生半写文件（QA−）。
+ * 使用临时目录承载 db.json（TWIKOO_DATA 走临时目录，无需
+ * 用户填充）。重点验收：与 Mongo 同一套语义断言全绿（跨库一致性）、
+ * LSFA 持久化往返、数据目录不可写时明确报错且不产生半写文件。
  */
 import { mkdtempSync, existsSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -24,7 +24,7 @@ afterEach(() => {
   rmSync(workDir, { recursive: true, force: true });
 });
 
-/** 语义套件接入（与 Mongo 同一套断言，R-3） */
+/** 语义套件接入（与 Mongo 同一套断言）*/
 runDatabaseSemanticSuite("LokiDatabase", {
   /** 每个用例独立数据目录（临时目录内随机子目录，互不串扰） */
   create: async () => {
@@ -39,7 +39,7 @@ runDatabaseSemanticSuite("LokiDatabase", {
   },
 });
 
-describe("LokiDatabase 持久化与容错（T15）", () => {
+describe("LokiDatabase 持久化与容错", () => {
   it("LSFA 持久化往返：写入 → close 落盘 → 重新 autoload 数据完好", async () => {
     const dir = join(workDir, "persist");
     const db = new LokiDatabase({ dataDir: dir });
@@ -71,7 +71,7 @@ describe("LokiDatabase 持久化与容错（T15）", () => {
     await expect(db.close()).resolves.toBeUndefined();
   });
 
-  it("QA−：数据目录不可创建（父级为文件）→ init 抛可读错误且不产生半写 db.json", async () => {
+  it("数据目录不可创建（父级为文件）→ init 抛可读错误且不产生半写 db.json", async () => {
     // 制造不可写场景：把「数据目录的父级」换成普通文件（mkdir 必然 ENOTDIR/EEXIST）
     const notADir = join(workDir, "not-a-dir");
     writeFileSync(notADir, "blocker");

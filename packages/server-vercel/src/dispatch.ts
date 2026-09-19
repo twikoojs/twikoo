@@ -1,5 +1,5 @@
 /**
- * Vercel 的 POST_SUBMIT 派发实现（规范 §6.6「后置副作用异步语义」）。
+ * Vercel 的 POST_SUBMIT 派发实现（规范「后置副作用异步语义」）。
  *
  * **1.x 语义对齐**：COMMENT_SUBMIT 保存评论后，用 **HTTP 递归自调用**把
  * POST_SUBMIT 送到另一个函数实例执行——垃圾检测与邮件/IM 通知因此拥有

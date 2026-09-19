@@ -1,6 +1,6 @@
 # pushoo.js
 
-## ⚠️ 版本策略变更（2.0，BC-11）
+## ⚠️ 版本策略变更（2.0）
 
 自 Twikoo 2.0 起，pushoo 迁入 Twikoo monorepo（`twikoo2/packages/pushoo`），
 **包名 `pushoo` 不变**，但：

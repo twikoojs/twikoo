@@ -1,11 +1,11 @@
 /**
- * 日志工具（1.7.24 `twikoo-func/utils/logger.js` 语义对齐 + §8.3 改进）。
+ * 日志工具（1.7.24 `twikoo-func/utils/logger.js` 语义对齐 + 改进）。
  *
  * 保留：verbose/info/warn/error 四级，级别由 TWIKOO_LOG_LEVEL 控制（默认 info）。
- * 改进（§8.3）：每请求一个 {@link RequestLogger} 实例——
+ * 改进：每请求一个 {@link RequestLogger} 实例——
  * - 控制台输出带 requestId 前缀，前端排障可拿 ID 到后端日志检索；
  * - 聚合本次请求全部日志行（getText()），pipeline 在异常响应体中回传 `log` 字段，
- *   供前端错误卡片（T33 TkError）与管理面板展示。
+ *   供前端错误卡片（TkError）与管理面板展示。
  */
 import { randomUUID } from "node:crypto";
 
@@ -61,7 +61,7 @@ function formatMessage(message: LogMessage): string {
 }
 
 /**
- * 创建请求级日志器（§8.3：requestId 贯穿全链路）。
+ * 创建请求级日志器（requestId 贯穿全链路）。
  * @param requestId 请求 ID（不传则自动生成 UUID）
  * @returns 请求级日志器实例
  */

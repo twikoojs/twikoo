@@ -1,5 +1,5 @@
 /**
- * 客户端日志器（§8.3：`logger` 分级 + `TWIKOO_LOG_LEVEL`）。
+ * 客户端日志器（`logger` 分级 + `TWIKOO_LOG_LEVEL`）。
  *
  * 独立成模块（而非放在 `utils/index.ts`）：`emotion.ts` / `highlight.ts` 等子模块
  * 需要日志能力，若从 `index.ts` 取则会形成 `index ↔ 子模块` 循环依赖——ESM 下虽然

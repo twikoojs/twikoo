@@ -2,7 +2,7 @@
  * tkserver 数据库选择（1.x `server.js` 语义：`MONGODB_URI`/`MONGO_URL` → Mongo，
  * 否则 Loki + `TWIKOO_DATA`）。
  *
- * 独立成文件的原因：启动路径需要**先**拿到数据库实例做 demo seed（§10.2），
+ * 独立成文件的原因：启动路径需要**先**拿到数据库实例做 demo seed，
  * 与逐请求惰性初始化共用同一份选择逻辑。
  */
 import { LokiDatabase, MongoDatabase, type Database } from "@twikoojs/common";

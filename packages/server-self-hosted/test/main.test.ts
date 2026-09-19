@@ -1,8 +1,8 @@
 /**
- * tkserver 适配器测试（T22）。
+ * tkserver 适配器测试。
  *
- * QA+：启动 → 请求 → SIGTERM 优雅退出全流程（spawn dist/server.js）；
- * QA−：数据目录不可写 → init 抛可读错误；
+ * 启动 → 请求 → SIGTERM 优雅退出全流程（spawn dist/server.js）；
+ * 数据目录不可写 → init 抛可读错误；
  * 另含 handler 契约核心事件（内存库注入）与 shutdown 资源清理单测。
  */
 import { spawn } from "node:child_process";
@@ -65,7 +65,7 @@ function makeRes(): {
   return { res, out };
 }
 
-describe("tkserver handler（T22）", () => {
+describe("tkserver handler", () => {
   it("happy：GET_FUNC_VERSION → 200 JSON（Loki 临时目录自动建库）", async () => {
     const dir = mkdtempSync(join(tmpdir(), "tkserver-"));
     // 注入 Loki 实例（而不是只传 dataDir）是为了能在删临时目录前 close()：Loki 带
@@ -87,7 +87,7 @@ describe("tkserver handler（T22）", () => {
     expect(typeof body.version).toBe("string");
   });
 
-  it("QA−：数据目录不可创建（父级为文件）→ 明确错误非静默", async () => {
+  it("数据目录不可创建（父级为文件）→ 明确错误非静默", async () => {
     const dir = mkdtempSync(join(tmpdir(), "tkserver-bad-"));
     const blocker = join(dir, "blocker");
     writeFileSync(blocker, "x");
@@ -129,13 +129,13 @@ describe("tkserver handler（T22）", () => {
 });
 
 /**
- * 回归（T35 端到端冒烟暴露）：D-2 把重依赖外部化到适配器安装，
+ * 回归（端到端冒烟暴露）：重依赖外部化到适配器安装，
  * 而 pnpm isolated 链接下适配器的 node_modules 不在 common 自身解析路径上——
  * 若不把重依赖声明为 `@twikoojs/common` 的 optional peerDependencies，
  * `await import("jsdom")` 会在 common 内 MODULE_NOT_FOUND，COMMENT_SUBMIT 直接 1000 失败。
  * 本用例**不注入任何替身**（不 setCustomLibs），走真实 jsdom + DOMPurify 解析。
  */
-describe("tkserver 真实重依赖解析（D-2 / §6.5.1 回归）", () => {
+describe("tkserver 真实重依赖解析（回归）", () => {
   it("COMMENT_SUBMIT：真实 jsdom+DOMPurify 加载成功且 XSS 内容被清洗", async () => {
     const dir = mkdtempSync(join(tmpdir(), "tkserver-real-libs-"));
     // 同 happy 用例：注入实例以便收尾 close()，避免 Loki autosave 在目录删除后写盘
@@ -175,8 +175,8 @@ describe("tkserver 真实重依赖解析（D-2 / §6.5.1 回归）", () => {
 });
 
 /**
- * 回归（浏览器跨源实测暴露）：pipeline 已把 5 个 CORS 头算进 tkRes.headers（§6.3
- * 「适配器只负责把 headers 写进平台响应」），但 fromTkResponse 曾把 headers 整个丢弃、
+ * 回归（浏览器跨源实测暴露）：pipeline 已把 5 个 CORS 头算进 tkRes.headers
+ * （「适配器只负责把 headers 写进平台响应」），但 fromTkResponse 曾把 headers 整个丢弃、
  * 且状态码硬编码 200（限流 429 被吞）。vercel 适配器为正确参照。
  */
 describe("fromTkResponse CORS 头回写与状态码透传（跨源回归）", () => {
@@ -231,7 +231,7 @@ async function findFreePort(): Promise<number> {
   });
 }
 
-/** QA+ 全流程辅助：spawn dist/server.js（指定端口）→ HTTP 请求 → SIGTERM */
+/** 全流程辅助：spawn dist/server.js（指定端口）→ HTTP 请求 → SIGTERM */
 function spawnServer(
   env: NodeJS.ProcessEnv,
   port: number,
@@ -248,7 +248,7 @@ function spawnServer(
   // 本文件前三个用例为「进程内装配」把 TWIKOO_SKIP_BOOT=1 写进了 process.env，而这里会把
   // process.env 整个传给子进程 —— 带着它 `dist/server.js` 走 factory-export-only 模式
   // **静默退出**（src/bin.ts 的 `if (process.env.TWIKOO_SKIP_BOOT !== "1")`），
-  // 永远打印不出 "port N"，用例只能等到超时。故显式剔除（§17.2 同类坑：工厂模块的
+  // 永远打印不出 "port N"，用例只能等到超时。故显式剔除（同类坑：工厂模块的
   // 「不启动」开关会被父进程环境继承）。
   delete childEnv.TWIKOO_SKIP_BOOT;
   const proc = spawn(process.execPath, [join(__dirname, "../dist/server.js")], { env: childEnv });
@@ -270,7 +270,7 @@ function spawnServer(
   return { proc, ready };
 }
 
-describe("tkserver 优雅退出全流程（T22 QA+）", () => {
+describe("tkserver 优雅退出全流程", () => {
   it("启动 → HTTP 请求成功 → 优雅关闭 → 端口关闭（进程内流程，全平台）", async () => {
     process.env.TWIKOO_SKIP_BOOT = "1";
     const { createTkserverServer } = await import("../src/server");

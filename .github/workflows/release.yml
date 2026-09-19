@@ -1,11 +1,11 @@
-# Twikoo 2.0 发布工作流（D-21 / §4.3）
+# Twikoo 2.0 发布工作流
 #
 # 触发方式：**人工在 GitHub 网页创建 Release**（不提供 workflow_dispatch，不自动创建 Release）。
 #   - Release tag 即最终版本号（容忍 `v` 前缀，CI 统一 strip）
 #   - 「Set as a pre-release」勾选框决定 npm dist-tag：勾了 → beta，未勾 → latest
 #   - 版本号不进入 git：仓库内 8 个发布包恒为 0.0.0，仅在本工作流中覆写后发布
 #
-# 发布顺序（§4.3.2 依赖关系强制分批）：
+# 发布顺序（依赖关系强制分批）：
 #   第一批 @twikoojs/shared / @twikoojs/common / pushoo / twikoo
 #     → verify gate（npm 可见性轮询 600s / 15s）
 #   第二批 twikoo-func / twikoo-vercel / tkserver / twikoo-netlify（依赖 @twikoojs/common）
@@ -95,7 +95,7 @@ jobs:
         working-directory: ${{ matrix.dir }}
         env:
           NPM_TAG: ${{ needs.validate.outputs.npm_tag }}
-          # npm 发布凭证（§4.3.0.2：发布用 NPM_TOKEN PAT，与 GITHUB_TOKEN 无关）。
+          # npm 发布凭证（发布用 NPM_TOKEN PAT，与 GITHUB_TOKEN 无关）。
           # actions/setup-node 的 registry-url 会写入 `.npmrc` 的
           # `_authToken=${NODE_AUTH_TOKEN}`，因此必须在此显式注入该环境变量；
           # 否则 npm publish 会直接 ENEEDAUTH 失败（首跑实测前的静态审查发现）。
@@ -145,7 +145,7 @@ jobs:
         working-directory: ${{ matrix.dir }}
         env:
           NPM_TAG: ${{ needs.validate.outputs.npm_tag }}
-          # npm 发布凭证（§4.3.0.2：发布用 NPM_TOKEN PAT，与 GITHUB_TOKEN 无关）。
+          # npm 发布凭证（发布用 NPM_TOKEN PAT，与 GITHUB_TOKEN 无关）。
           # actions/setup-node 的 registry-url 会写入 `.npmrc` 的
           # `_authToken=${NODE_AUTH_TOKEN}`，因此必须在此显式注入该环境变量；
           # 否则 npm publish 会直接 ENEEDAUTH 失败（首跑实测前的静态审查发现）。
@@ -208,7 +208,7 @@ jobs:
         with:
           # 宿主 Node 必须 ≥ 25.7（tsdown 的 exe 选项依赖较新的 SEA API）；
           # SEA 产物的**目标运行时**由 packages/pkg/tsdown.config.mts 的
-          # exe.targets[].nodeVersion 决定（D-13 = 26.9.0，须为完整 x.y.z）。
+          # exe.targets[].nodeVersion 决定（= 26.9.0，须为完整 x.y.z）。
           # 两者含义不同（宿主 vs 目标运行时），当前都落在 Node 26 线。
           node-version: "26"
           registry-url: ${{ env.NPM_REGISTRY }}

@@ -1,7 +1,7 @@
 <!--
   TkFooter 页脚（1.x TkFooter.vue 的 Vue3 组合式重写）。
 
-  BC-9：版本号不再来自硬编码 `version.js`，改为 `@twikoojs/shared` 的构建期占位符替换值。
+  版本号不再来自硬编码 `version.js`，改为 `@twikoojs/shared` 的构建期占位符替换值。
 -->
 <template>
   <div class="tk-footer">

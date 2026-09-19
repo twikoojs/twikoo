@@ -1,5 +1,5 @@
 /**
- * MongoDatabase（规范 §6.4；1.x `src/server/vercel/api/index.js` 语义对齐）。
+ * MongoDatabase（规范；1.x `src/server/vercel/api/index.js` 语义对齐）。
  *
  * 语义要点（与 1.x 行为一致）：
  * - 评论 `_id` 为 **32 位 uuid 字符串**（1.x parse() 生成，非 ObjectId），
@@ -7,15 +7,15 @@
  * - 「顶级评论」查询 `{ rid: ABSENT }` 翻译为 `{ rid: { $in: ["", null] } }`——
  *   Mongo 中 `$in` 含 `null` 时同时命中「字段缺失」「null」「空串」三种形态，
  *   与 1.x `rid: { $in: ['', null] }` 逐字对齐（1.x 未用 `$exists: false`，
- *   因其无法命中显式空串，见 plan §6.4 与基线 L329/L998）；
+ *   因其无法命中显式空串，见基线 L329/L998）；
  * - 计数器自增：`$inc time + $set title/updated`，命中 0 条则插入首条
  *   （1.x incCounter 的 update → insert 兜底）；
  * - 配置：单文档形态，`updateOne({}, $set, upsert)`（1.x writeConfig 的
  *   update → insert 兜底的原子化等价）；
  * - 验证码 KV：`cap_kv` 集合（cap 三方法为通用形态；1.x cap_challenges/
- *   cap_tokens 为 10 分钟级短命数据，T17 的存储适配器在其上组装过期过滤）。
+ *   cap_tokens 为 10 分钟级短命数据，由存储适配器在其上组装过期过滤）。
  *
- * D-2 依赖外部化：mongodb 驱动**运行时动态加载**（init() 内 `await import`），
+ * 依赖外部化：mongodb 驱动**运行时动态加载**（init() 内 `await import`），
  * 驱动由声明 `mongodb` 依赖的适配器安装（peerDependenciesMeta optional）。
  * 类型面经 `typeof import("mongodb")`（编译期擦除，不产生静态依赖）。
  */
@@ -69,7 +69,7 @@ export interface MongoDatabaseOptions {
 }
 
 /**
- * 语义查询对象 → Mongo 过滤器（§6.4 翻译职责）。
+ * 语义查询对象 → Mongo 过滤器（翻译职责）。
  * @param query 语义查询对象
  * @returns Mongo 过滤器
  */

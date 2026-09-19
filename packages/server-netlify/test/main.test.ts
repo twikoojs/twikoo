@@ -1,9 +1,9 @@
 /**
- * twikoo-netlify 适配器测试（T23）。
+ * twikoo-netlify 适配器测试。
  *
  * 注入内存 Database 跑契约核心事件；验证 Netlify v1 返回体形态（body 字符串、
- * 204 无体）、x-nf-client-connection-ip IP 语义（QA−：IP 头可定位）、
- * BC-13（dependencies 无 twikoo-vercel）。
+ * 204 无体）、x-nf-client-connection-ip IP 语义（IP 头可定位）、
+ * dependencies 无 twikoo-vercel。
  */
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
@@ -17,7 +17,7 @@ function makeFunc(): (
   event: NetlifyEventLike,
 ) => Promise<{ statusCode: number; headers: Record<string, string>; body: string }> {
   const adapters = createMemoryAdapters();
-  // common 源码态类型 → 产物类型视图收窄（T20 范式）
+  // common 源码态类型 → 产物类型视图收窄（范式）
   const db = adapters.database as unknown as Database;
   return createNetlifyFunc({ database: db });
 }
@@ -33,7 +33,7 @@ function makeEvent(overrides: Partial<NetlifyEventLike> = {}): NetlifyEventLike 
   };
 }
 
-describe("twikoo-netlify 薄适配器（T23）", () => {
+describe("twikoo-netlify 薄适配器", () => {
   it("happy：GET_FUNC_VERSION → 200 + body 字符串 + JSON 可解析", async () => {
     const fn = makeFunc();
     const result = await fn(makeEvent());
@@ -65,15 +65,15 @@ describe("twikoo-netlify 薄适配器（T23）", () => {
     expect(result.body).toBe("");
   });
 
-  it("QA−：IP 头缺失 → ip 为空串（可定位：IP 用例红即头部映射错误）", () => {
+  it("IP 头缺失 → ip 为空串（可定位：IP 用例红即头部映射错误）", () => {
     const req = toTkRequest(makeEvent({ headers: {} }));
     expect(req.ip).toBe("");
-    // 错误头名（如误设 x-nf-ip）不会被采集——QA− 的「误设 IP 头可定位」语义
+    // 错误头名（如误设 x-nf-ip）不会被采集—— 「误设 IP 头可定位」语义
     const wrong = toTkRequest(makeEvent({ headers: { "x-nf-ip": "7.7.7.7" } }));
     expect(wrong.ip).toBe("");
   });
 
-  it("BC-13：dependencies 无 twikoo-vercel；handler 为 v1 具名导出", async () => {
+  it("dependencies 无 twikoo-vercel；handler 为 v1 具名导出", async () => {
     const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
     expect(pkg.dependencies["twikoo-vercel"]).toBeUndefined();
     expect(pkg.dependencies["@twikoojs/common"]).toBe("workspace:*");

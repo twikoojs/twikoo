@@ -1,8 +1,8 @@
 /**
- * SEA 单文件产物的重依赖静态引入（D-2 惰性加载 × SEA 的桥接层）。
+ * SEA 单文件产物的重依赖静态引入（惰性加载 × SEA 的桥接层）。
  *
- * **背景（T41 发现 → T45 实测确认 → T47 修复）**：`@twikoojs/common` 的 14 个重依赖
- * 经 `loadLib(specifier)` 的**变量间接** `await import()` 惰性加载（D-2：零静态依赖，
+ * **背景（发现 → 实测确认 → 修复）**：`@twikoojs/common` 的 14 个重依赖
+ * 经 `loadLib(specifier)` 的**变量间接** `await import()` 惰性加载（零静态依赖，
  * 适配器按需安装）。这在有 `node_modules` 的部署形态下工作良好，但 **SEA 单文件产物**
  * 没有 `node_modules` 可解析：变量间接的 specifier 既不会被打包器内联，运行时也解析失败，
  * 于是「发评论（DOMPurify/jsdom）、邮件通知、Akismet 反垃圾、UA/属地解析、Markdown、
@@ -16,7 +16,7 @@
  *    `await import("X")` 得到的都是模块命名空间，common 的 `pickDefault`
  *    解包语义完全不变（`mod.default ?? mod`）。
  * 2. 查表命中即返回该命名空间；**未命中的 specifier 仍回落到动态 import**，
- *    保留 D-2 的「可扩展、不静态绑定未知依赖」性质。
+ *    保留「可扩展、不静态绑定未知依赖」的性质。
  *
  * **两个 1.x 打包补丁因此重新生效**（见 `tsdown.config.mts`）：
  * - jsdom 的 `require.resolve("./xhr-sync-worker.js")` → 置 null（整棵树无同步 XHR）；
@@ -24,7 +24,7 @@
  *
  * **维护约定**：common 新增/更换重依赖时，必须同步本表与 `package.json` 的
  * `dependencies`，否则 SEA 产物会在运行时缺依赖。核对方式见仓库根
- * `VERIFICATION.md` §2.9（`TWIKOO_PKG_BUNDLE_ONLY=1` + 产物字符串探测）。
+ * `VERIFICATION.md`（`TWIKOO_PKG_BUNDLE_ONLY=1` + 产物字符串探测）。
  */
 import * as akismetApi from "akismet-api";
 import * as axios from "axios";

@@ -1,14 +1,14 @@
 /**
- * twikoo 客户端公共 API（§5.5：init / getCommentsCount / getRecentComments /
- * getVisitorsCount / version 五个公开接口不变；BC-9：version 读 @twikoojs/shared，
+ * twikoo 客户端公共 API（init / getCommentsCount / getRecentComments /
+ * getVisitorsCount / version 五个公开接口不变；version 读 @twikoojs/shared，
  * 硬编码 `version.js` 删除）。
  *
- * 双入口形态（§5.2，与 1.x `main.js` / `main.all.js` 对应）：
+ * 双入口形态（与 1.x `main.js` / `main.all.js` 对应）：
  * - 本文件（对应 `twikoo.min.js` / `twikoo.nocss.js`）：**不含**云开发 SDK，
  *   要求使用方先自行引入 cloudbase 全局脚本（1.7.24 行为不变）；
  * - `main.all.ts`（对应 `twikoo.all.min.js` / `twikoo.all.nocss.js`）：内置云开发 SDK，
  *   经 {@link setCloudbaseProvider} 覆盖 SDK 来源。
- * 这样「是否内置 SDK」由**入口文件**决定，代码里不出现 `if (isAll)` 分支（§5.2 要求）。
+ * 这样「是否内置 SDK」由**入口文件**决定，代码里不出现 `if (isAll)` 分支（设计要求）。
  */
 import { VERSION } from "@twikoojs/shared";
 import { install, type TcbInstance } from "./utils/tcb";
@@ -23,7 +23,7 @@ import {
   updateVisitorsCount,
 } from "./utils";
 
-/** init 选项（§11.1 前端配置项集合的入口形态） */
+/** init 选项（前端配置项集合的入口形态）*/
 export interface TwikooOptions {
   /** 后端地址（HTTP 形态）或云开发 envId */
   envId?: string;
@@ -38,7 +38,7 @@ export interface TwikooOptions {
   /** 语言（缺省自动检测） */
   lang?: string;
   /**
-   * 语言分片基址（§7.2；缺省从主脚本自身 URL 推导）。
+   * 语言分片基址（缺省从主脚本自身 URL 推导）。
    * CDN / 子路径部署自动推导失准时可显式指定，如 `https://cdn.example.com/twikoo`。
    */
   localeBaseUrl?: string;
@@ -80,7 +80,7 @@ async function initTcbIfNeeded(options: TwikooOptions): Promise<TcbInstance> {
  */
 export async function init(options: TwikooOptions = {}): Promise<void> {
   const tcb = await initTcbIfNeeded(options);
-  // 先按需加载语言分片再挂载（§7.2）：失败回退英文、绝不阻塞渲染，
+  // 先按需加载语言分片再挂载：失败回退英文、绝不阻塞渲染，
   // 因此在挂载前 await 即可，组件渲染时语言已就位，无需「加载后重渲染」。
   await loadLanguage({ lang: options.lang, localeBaseUrl: options.localeBaseUrl });
   render(tcb, options);
@@ -117,7 +117,7 @@ export async function getVisitorsCount(options: TwikooOptions = {}): Promise<unk
   return await getVisitorsCountApi(tcb, options);
 }
 
-/** 当前版本（BC-9：来自 @twikoojs/shared 占位符，发布时注入） */
+/** 当前版本（来自 @twikoojs/shared 占位符，发布时注入）*/
 export { VERSION as version };
 
 export default init;

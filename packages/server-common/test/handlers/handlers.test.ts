@@ -1,8 +1,8 @@
 /**
- * 25 事件 handler 全量测试（T18）。
+ * 25 事件 handler 全量测试。
  *
  * 每个 handler 至少 1 happy + 1 failure 用例；重依赖经 setCustomLibs /
- * setLibImporter 替身注入（无真实密钥、无真实网络——§9.4 停机协议不触发）。
+ * setLibImporter 替身注入（无真实密钥、无真实网络—— 停机协议不触发）。
  * 管理员 token = md5(ADMIN_PASS)（1.x 客户端本地计算语义）。
  */
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";

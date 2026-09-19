@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * demo 依赖本地化（D-6 / 规范 §10.1）。
+ * demo 依赖本地化。
  *
  * 把 `bulma` 与 `katex` 从本地 npm 依赖（`packages/demo` 的 devDependencies）
  * 复制到 `packages/demo/.vendor/`，由 Vite 的 publicDir 直供根路径，

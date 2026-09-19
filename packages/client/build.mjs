@@ -1,14 +1,14 @@
 /**
- * twikoo 客户端四产物构建脚本（§5.2）：
+ * twikoo 客户端四产物构建脚本：
  * `twikoo.min.js` / `twikoo.all.min.js` / `twikoo.nocss.js` / `twikoo.all.nocss.js`
  *
- * - UMD 全局名 `twikoo`；文件名与 1.7.24 规范一致（§1.2-4 不改产物文件名）；
+ * - UMD 全局名 `twikoo`；文件名与 1.7.24 规范一致（不改产物文件名）；
  * - `all` 变体内置云开发 SDK（由 `src/main.all.ts` 静态 import，见该文件注释）；
  * - **样式行为对齐 1.x**：`.min.js` 两个产物把 `twikoo.css` 内联进 JS（1.x 的
  *   `extractCss: false` 构建，用 `vue-style-loader` 运行时注入）；`.nocss.js` 两个
  *   产物不含样式，需配合 `twikoo.css` 使用（1.x 的 `extractCss: true` 构建）。
  *
- * `--watch`（T35 demo 一键启动的客户端进程）：四产物各起一个 Rollup watcher，
+ * `--watch`（demo 一键启动的客户端进程）：四产物各起一个 Rollup watcher，
  * 源码变更后自动重建到 dist/；重建后再次执行样式内联，进程常驻直到被外部终止
  * （由 concurrently -k 统一清理）。
  */
@@ -30,7 +30,7 @@ const PRODUCTS = [
   { entry: "src/main.all.ts", file: "twikoo.all.min.js", inlineCss: true },
   // 1.x 的 nocss 产物取自 main.all（体积 997KB > main 的 506KB，可证）
   { entry: "src/main.all.ts", file: "twikoo.nocss.js", inlineCss: false },
-  // 计划 §3.2 列出的第四个文件名（与上一个内容一致：同为 all 变体且不内联样式）
+  // 第四个产物文件名（与上一个内容一致：同为 all 变体且不内联样式）
   { entry: "src/main.all.ts", file: "twikoo.all.nocss.js", inlineCss: false },
 ];
 
@@ -38,16 +38,16 @@ const PRODUCTS = [
 const CSS_MARKER = "/*! twikoo:inlined-css */";
 
 /**
- * 需按需加载的语言（§7.2；与 `src/i18n/index.ts` 的 `LAZY_LOCALES` 保持一致）。
+ * 需按需加载的语言（与 `src/i18n/index.ts` 的 `LAZY_LOCALES` 保持一致）。
  * `zh-CN` / `en` 内置进主产物，不在此列。
  */
 const LAZY_LOCALES = ["zh-HK", "zh-TW", "uz-UZ", "ja-JP", "ko-KR", "vi-VN", "id-ID"];
 
 /**
- * 构建语言分片（§7.2）：每个非内置语言产出 `dist/locales/<lang>.js`（ESM，default 导出词表）。
+ * 构建语言分片：每个非内置语言产出 `dist/locales/<lang>.js`（ESM，default 导出词表）。
  *
  * 主产物是 UMD（不支持代码分割），故分片单独构建；运行时由 `i18n/index.ts` 以变量
- * specifier 动态 `import()` 按需拉取，失败回退英文（R-8/R-9）。
+ * specifier 动态 `import()` 按需拉取，失败回退英文。
  */
 async function buildLocaleShards() {
   const result = await build({
@@ -151,7 +151,7 @@ for (const { entry, file, inlineCss } of PRODUCTS) {
           // 也让 `check:products` 的 `window.twikoo.init` 断言成立。
           // 不写则会由 `auto` 推断出同样结果，但每次构建打印两条 [MIXED_EXPORTS] 告警。
           exports: "named",
-          // 语言分片靠运行时动态 `import()` 拉取（§7.2），而 UMD 产物是在浏览器里跑的：
+          // 语言分片靠运行时动态 `import()` 拉取，而 UMD 产物是在浏览器里跑的：
           // Rollup 对 CJS/UMD 输出默认会把 `import()` 改写成 `require()` 包装，
           // 浏览器没有 `require` 会直接失败（分片永远加载不到、只能一直兜底英文）。
           // 显式关闭，保证产物里保留原生 `import()`。

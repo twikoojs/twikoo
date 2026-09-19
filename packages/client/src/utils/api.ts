@@ -1,14 +1,14 @@
 /**
- * 客户端通信层（1.x utils/api.js 语义对齐 + §8.2/§8.3 改进）。
+ * 客户端通信层（1.x utils/api.js 语义对齐 + 错误模型改进）。
  *
  * - call(tcb, event, data)：云开发通道 or HTTP XHR 通道；
  * - accessToken：localStorage `twikoo-access-token`（BC 保留）；
- * - 0.1.x 旧函数名 fallback **已移除**（BC-4）；
- * - TwikooError 八分类（§8.2）：NETWORK/CORS/TIMEOUT/REJECTED/NOT_FOUND/
+ * - 0.1.x 旧函数名 fallback **已移除**；
+ * - TwikooError 八分类：NETWORK/CORS/TIMEOUT/REJECTED/NOT_FOUND/
  *   CLIENT_ERROR/SERVER_ERROR/UNKNOWN，携带 httpStatus/rawMessage/requestId。
  */
 
-/** TwikooError kind 八分类（§8.2 分类表） */
+/** TwikooError kind 八分类（分类表）*/
 export type TwikooErrorKind =
   | "NETWORK"
   | "CORS"
@@ -19,7 +19,7 @@ export type TwikooErrorKind =
   | "SERVER_ERROR"
   | "UNKNOWN";
 
-/** 统一错误模型（§8.2 字段表） */
+/** 统一错误模型（字段表）*/
 export class TwikooError extends Error {
   /** 错误分类 */
   kind: TwikooErrorKind;
@@ -29,7 +29,7 @@ export class TwikooError extends Error {
   rawMessage: string;
   /** 后端回传日志（res.log） */
   logText?: string;
-  /** 请求 ID（§8.3 后端贯穿） */
+  /** 请求 ID（后端贯穿）*/
   requestId?: string;
 
   /**
@@ -111,7 +111,7 @@ export type TcbAuth = {
 /** 云开发实例（可选；HTTP 形态为 null） */
 export type TcbInstance = { app: TcbApp; auth?: TcbAuth } | null;
 
-/** 全局应用状态（view 渲染时注入；§5.5 Options API 全局属性对齐） */
+/** 全局应用状态（view 渲染时注入；Options API 全局属性对齐）*/
 const appState: { tcb: TcbInstance; options: Record<string, unknown> } = {
   tcb: null,
   options: {},
@@ -176,7 +176,7 @@ function httpCall(url: string, payload: Record<string, unknown>): Promise<Record
           );
         }
       } else if (xhr.status === 0) {
-        // status 0：网络失败或跨域拦截（§8.2 判定表）
+        // status 0：网络失败或跨域拦截（判定表）
         reject(
           new TwikooError(elapsed > 30000 ? "TIMEOUT" : "CORS", "请求被跨域策略拦截或网络不可达", {
             rawMessage: xhr.statusText || "status 0",
@@ -230,7 +230,7 @@ function httpCall(url: string, payload: Record<string, unknown>): Promise<Record
 }
 
 /**
- * 统一事件调用（1.x call 语义对齐；BC-4：0.1.x 旧函数名 fallback 已移除）。
+ * 统一事件调用（1.x call 语义对齐；0.1.x 旧函数名 fallback 已移除）。
  * @param tcb 云开发实例（可选）
  * @param event 事件名（24 个客户端事件之一）
  * @param data 事件参数

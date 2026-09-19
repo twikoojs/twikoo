@@ -1,8 +1,8 @@
 /**
- * T38 验收用例：文档站语言自动探测（D-7 / U-3 / §11.2）。
+ * 验收用例：文档站语言自动探测。
  *
- * QA+：zh→root 留、en→/en/、有 localStorage 不跳、`?lang=` 覆盖、内页不跳；
- * QA−：去掉「已有记录 → 不跳」这道闸，两页会互跳（证明防循环靠它，且该断言真会红）。
+ * zh→root 留、en→/en/、有 localStorage 不跳、`?lang=` 覆盖、内页不跳；
+ * 去掉「已有记录 → 不跳」这道闸，两页会互跳（证明防循环靠它，且该断言真会红）。
  */
 import { describe, expect, it } from "vitest";
 import {
@@ -15,7 +15,7 @@ import {
   resolveLangRedirect,
 } from "../.vitepress/theme/lang-detect";
 
-describe("T38 语言探测纯判定", () => {
+describe("语言探测纯判定", () => {
   it("中文浏览器留在 root（不跳）", () => {
     const r = resolveLangRedirect({ pathname: ROOT_HOME, navigatorLang: "zh-CN" });
     expect(r.target).toBeNull();
@@ -93,7 +93,7 @@ describe("T38 语言探测纯判定", () => {
   });
 });
 
-describe("T38 QA−：跳转循环必须被闸门挡住", () => {
+describe("跳转循环必须被闸门挡住", () => {
   it("两条规则本身是互指的（去掉「已有记录」闸门即会 ping-pong）", () => {
     /** 无记录时：/en/ 首页 + 中文浏览器 → 回 root */
     expect(resolveLangRedirect({ pathname: EN_HOME, navigatorLang: "zh-CN" }).target).toBe(

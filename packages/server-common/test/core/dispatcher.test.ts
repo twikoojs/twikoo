@@ -1,5 +1,5 @@
 /**
- * dispatcher 分发测试（T13）。
+ * dispatcher 分发测试。
  *
  * 重点：switch 全量枚举（25 事件标识符清单）与注册表解析行为；以及
  * `COMMENT_GET_FOR_ADMIN` 的 `type` 筛选。
@@ -40,7 +40,7 @@ function makeCtx(body: TkRequestBody): PipelineContext {
   };
 }
 
-describe("dispatcher 分发（T13）", () => {
+describe("dispatcher 分发", () => {
   it("COMMENT_GET_FOR_ADMIN 按 type 参数筛选，且 HIDDEN / VISIBLE 不是事件名", async () => {
     const seen: Record<string, unknown>[] = [];
     registerHandler(COMMENT_GET_FOR_ADMIN, async (ctx) => {
@@ -61,8 +61,8 @@ describe("dispatcher 分发（T13）", () => {
     }
   });
 
-  it("已枚举但未注册的常规事件：dispatch 抛 HandlerNotRegisteredError（T18 迁移守卫）", async () => {
-    resetHandlers(); // 清空默认注册，模拟 T18 前无实现状态
+  it("已枚举但未注册的常规事件：dispatch 抛 HandlerNotRegisteredError（迁移守卫）", async () => {
+    resetHandlers(); // 清空默认注册，模拟「实现尚未接入」的状态
     await expect(dispatch(makeCtx({ event: "COMMENT_GET" } as TkRequestBody))).rejects.toThrow(
       /事件 COMMENT_GET 的处理器尚未注册/,
     );

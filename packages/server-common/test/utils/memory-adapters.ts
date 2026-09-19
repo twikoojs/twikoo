@@ -1,8 +1,8 @@
 /**
  * 测试用内存适配器（pipeline / dispatcher 用例的公共 stub）。
  *
- * Database 为最小内存实现（Map 直查，不承载 T19 契约套件的完整语义）；
- * mailer / notifier / cap 存储全部记录调用供断言。T14-T19 的实现级测试
+ * Database 为最小内存实现（Map 直查，不承载契约套件的完整语义）；
+ * mailer / notifier / cap 存储全部记录调用供断言。各实现的实现级测试
  * 不使用本文件——它们分别用 mongodb-memory-server / 临时目录 Loki /
  * 共享契约 runner。
  */

@@ -6,7 +6,7 @@
  * Artalk v2 / Twikoo）。
  *
  * 依赖：Disqus 解析用 xml2js；Artalk Markdown 渲染用 marked + DOMPurify
- * （T17 库加载器动态装载，能力门：domPurify）。
+ * （库加载器动态装载，能力门：domPurify）。
  */
 import type { Capabilities } from "../ports/capabilities";
 import type { CommentDoc } from "../ports/database";

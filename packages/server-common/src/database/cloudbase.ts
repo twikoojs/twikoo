@@ -1,5 +1,5 @@
 /**
- * CloudBaseDatabase（规范 §6.4；1.x `src/server/function/twikoo/index.js`
+ * CloudBaseDatabase（规范；1.x `src/server/function/twikoo/index.js`
  * 的 TCB 集合操作语义对齐）。
  *
  * 语义要点：
@@ -12,9 +12,9 @@
  * - `where({})` 必须显式传入（1.x 注释：不加 where 会报错
  *   「param should have required property 'query'」）。
  *
- * D-2 依赖外部化：`@cloudbase/node-sdk` 仅在 CloudBase 运行时可用，由适配器
+ * 依赖外部化：`@cloudbase/node-sdk` 仅在 CloudBase 运行时可用，由适配器
  * `tcb.init()` 后把 `database()` 句柄注入本实现；公共库不静态依赖 SDK，
- * 单测以结构化 mock 覆盖（plan T16 验收方式）。
+ * 单测以结构化 mock 覆盖（验收方式）。
  */
 import { ABSENT, GT, LT, NOT } from "../ports/database";
 import type {

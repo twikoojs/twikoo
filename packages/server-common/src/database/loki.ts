@@ -3,12 +3,12 @@
  * 全部方法的 Promise 包装是端口形态要求，非可去除的冗余。
  */
 /**
- * LokiDatabase（规范 §6.4；1.x `src/server/self-hosted/index.js` 语义对齐，R-3 重点）。
+ * LokiDatabase（规范；1.x `src/server/self-hosted/index.js` 语义对齐，重点）。
  *
  * 语义要点（与 MongoDatabase 完全一致的对外语义，实现各自翻译）：
  * - `{ rid: ABSENT }` 的 Loki 翻译：Loki 无 Mongo 的 `$in 含 null 命中缺失`
  *   语义，1.x 用 `rid: { $exists: false }`（漏掉显式 null/空串——1.x 两套
- *   实现真实存在的语义偏差，R-3 风险点）。2.0 统一为 chain().find(其余条件)
+ *   实现真实存在的语义偏差，风险点）。2.0 统一为 chain().find(其余条件)
  *   + `where()` 谓词补过滤「缺失 / null / 空串」三形态，与 Mongo
  *   `{ $in: ["", null] }` 等价；
  * - 排序分页：`compoundsort` + `offset` + `limit`（1.x L492-496 对齐）；
@@ -17,7 +17,7 @@
  *   `close()` 落盘（1.x connectToDatabase L261-267 对齐）；
  * - 配置：真替换语义（旧键不在新配置中即移除，与 Mongo replaceOne 对齐）。
  *
- * D-2 依赖外部化：lokijs 运行时动态加载，由 tkserver 适配器安装。
+ * 依赖外部化：lokijs 运行时动态加载，由 tkserver 适配器安装。
  */
 import { existsSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
@@ -42,7 +42,7 @@ type LokiColl = import("lokijs").LokiCollectionType;
 export interface LokiDatabaseOptions {
   /**
    * 数据目录（db.json 存放于此；由适配器从 TWIKOO_DATA 环境变量解析后传入，
-   * 公共库不感知环境变量——与 §6.3 IP 解析上移同一纪律）。
+   * 公共库不感知环境变量——与 IP 解析上移同一纪律）。
    */
   dataDir: string;
 }
@@ -195,7 +195,7 @@ export class LokiDatabase implements Database {
     const { base, absentKeys } = splitLokiQuery(query);
     let rs = this.col("comment").chain().find(base);
     for (const key of absentKeys) {
-      // ABSENT = 缺失 / null / 空串（与 Mongo $in: ["", null] 严格等价，R-3）
+      // ABSENT = 缺失 / null / 空串（与 Mongo $in: ["", null] 严格等价）
       rs = rs.where((doc) => {
         const value = doc[key];
         return value === undefined || value === null || value === "";

@@ -24,7 +24,7 @@
 ## 针对腾讯云命令行部署的更新方式
 
 ::: danger 2.0 起不再支持
-Twikoo 2.0 移除了命令行部署（`tcb fn deploy` 与 `yarn deploy` / `login` / `logout` 脚本，BC-14）。请改用[腾讯云手动部署的更新方式](#针对腾讯云手动部署的更新方式)（控制台修改 `package.json` 版本号 → 保存并安装依赖）。以下命令仅为 1.x 历史留档。
+Twikoo 2.0 移除了命令行部署（`tcb fn deploy` 与 `yarn deploy` / `login` / `logout` 脚本）。请改用[腾讯云手动部署的更新方式](#针对腾讯云手动部署的更新方式)（控制台修改 `package.json` 版本号 → 保存并安装依赖）。以下命令仅为 1.x 历史留档。
 :::
 
 进入 Twikoo 源码目录，执行以下命令更新现有的云函数

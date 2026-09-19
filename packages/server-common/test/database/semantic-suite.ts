@@ -1,9 +1,9 @@
 /**
- * Database 语义套件（§6.4「抽象要抓语义」的测试落地；R-3 跨库一致性保障）。
+ * Database 语义套件（「抽象要抓语义」的测试落地；跨库一致性保障）。
  *
  * 同一套断言由 Mongo（mongodb-memory-server）与 Loki（临时目录）两个实现
  * 分别执行：任何实现语义偏离（rid ABSENT、排序、分页、计数、配置、验证码、
- * CRUD）即红。T16 的 BlobKv/CloudBase 实现同样接入。
+ * CRUD）即红。的 BlobKv/CloudBase 实现同样接入。
  */
 import { expect, describe, it } from "vitest";
 import type { CommentDoc, Database, SemanticQuery } from "../../src/ports/database";
@@ -42,7 +42,7 @@ export function makeComment(overrides: Partial<CommentDoc> = {}, seed = 0): Comm
  * @param fixture 被测实现的创建/销毁句柄
  */
 export function runDatabaseSemanticSuite(name: string, fixture: DbFixture): void {
-  describe(`${name} 语义套件（§6.4 / R-3）`, () => {
+  describe(`${name} 语义套件`, () => {
     it("CRUD：新增→读取→部分更新→删除，实现为缺失 _id 生成 32 位字符串主键", async () => {
       const db = await fixture.create();
       try {
@@ -65,7 +65,7 @@ export function runDatabaseSemanticSuite(name: string, fixture: DbFixture): void
       }
     });
 
-    it("rid ABSENT 语义：同时命中字段缺失、null、空串三种顶级评论形态（R-3）", async () => {
+    it("rid ABSENT 语义：同时命中字段缺失、null、空串三种顶级评论形态", async () => {
       const db = await fixture.create();
       try {
         // 四种形态：缺失 / null / 空串 / 真实回复

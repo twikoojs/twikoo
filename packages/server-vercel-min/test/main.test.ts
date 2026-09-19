@@ -1,11 +1,11 @@
 /**
- * twikoo-vercel-min 测试（T24）：转发壳语义。
+ * twikoo-vercel-min 测试：转发壳语义。
  */
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import vercelHandler from "../src/index";
 
-describe("twikoo-vercel-min（T24）", () => {
+describe("twikoo-vercel-min", () => {
   it("转发壳：default 导出即 twikoo-vercel 的 Serverless Function", () => {
     expect(typeof vercelHandler).toBe("function");
   });

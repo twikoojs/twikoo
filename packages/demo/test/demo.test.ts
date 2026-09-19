@@ -1,5 +1,5 @@
 /**
- * T35 验收用例（demo 一键启动 + 依赖本地化，D-6 / 规范 §10.1）。
+ * 验收用例（demo 一键启动 + 依赖本地化）。
  *
  * 覆盖三层：
  *  ① 离线依赖本地化——`scripts/prepare-assets.mjs` 真实执行后 vendor 资产齐全；
@@ -43,7 +43,7 @@ function readJson(relPath: string): Record<string, unknown> {
   return JSON.parse(readFileSync(resolve(REPO_ROOT, relPath), "utf8")) as Record<string, unknown>;
 }
 
-describe("T35 离线依赖本地化（D-6）", () => {
+describe("离线依赖本地化", () => {
   it("prepare-assets 复制 bulma / katex（含字体目录）到 .vendor", () => {
     const script = resolve(DEMO_ROOT, "scripts/prepare-assets.mjs");
     const output = execFileSync(process.execPath, [script, "--force"], {
@@ -72,7 +72,7 @@ describe("T35 离线依赖本地化（D-6）", () => {
   });
 });
 
-describe("T35 demo 页零 CDN 外链", () => {
+describe("demo 页零 CDN 外链", () => {
   it("demo.html 与 index.html 均不引用任何 CDN（Acceptance 的 grep cdn == 0）", () => {
     for (const name of ["demo.html", "index.html"]) {
       const html = readHtml(name);
@@ -105,7 +105,7 @@ describe("T35 demo 页零 CDN 外链", () => {
   });
 });
 
-describe("T35 demo 页开箱即用行为", () => {
+describe("demo 页开箱即用行为", () => {
   it("默认填入本地后端地址，无需手填", () => {
     const html = readHtml("demo.html");
     expect(html).toContain(`value="${DEFAULT_BACKEND_URL}"`);
@@ -123,14 +123,14 @@ describe("T35 demo 页开箱即用行为", () => {
     expect(html).toContain('class="twikoo" id="tcomment"');
   });
 
-  it("端口常量与 §10.1 一致（客户端/demo 页 9820、后端 8080）", () => {
+  it("端口常量一致（客户端/demo 页 9820、后端 8080）", () => {
     expect(DEMO_PORT).toBe(9820);
     expect(SERVER_PORT).toBe(8080);
     expect(CLIENT_PRODUCT_FILES).toContain("twikoo.all.min.js");
   });
 });
 
-describe("T35 一键启动编排", () => {
+describe("一键启动编排", () => {
   it("根 demo 脚本用 concurrently 拉起三进程并统一清理", () => {
     const root = readJson("package.json");
     const scripts = root.scripts as Record<string, string>;
@@ -147,7 +147,7 @@ describe("T35 一键启动编排", () => {
     expect(devDeps["cross-env"], "缺少 cross-env 依赖（跨平台 env 传递）").toBeTruthy();
     // 后端数据目录显式指向仓库根 data/（packages/server-self-hosted 的 cwd 上溯两级），
     // 该目录已被 .gitignore 的 data/ 覆盖，保证 demo 数据不误入版本库；
-    // TWIKOO_SEED=1 打开 demo 测试数据 seed（T36 / §10.2）。
+    // TWIKOO_SEED=1 打开 demo 测试数据 seed。
     expect(demo, "demo 脚本未指定 TWIKOO_DATA").toContain("TWIKOO_DATA=../../data");
     expect(demo, "demo 脚本未开启 TWIKOO_SEED").toContain("TWIKOO_SEED=1");
   });
@@ -175,7 +175,7 @@ describe("T35 一键启动编排", () => {
     expect(config).toContain("serveRootAssets");
     expect(config).toContain("CLIENT_DIST");
     // demo.css 必须按 text/css 直供：交给 Vite CSS 管线会返回 text/javascript，
-    // 浏览器拒绝应用该样式表（T35 实测缺陷，固化为回归断言）
+    // 浏览器拒绝应用该样式表（实测缺陷，固化为回归断言）
     expect(config).toContain('"/demo.css"');
     expect(config).toContain("text/css; charset=utf-8");
   });

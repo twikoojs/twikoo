@@ -1,9 +1,9 @@
 import { defineConfig } from "vitest/config";
 
 /**
- * 覆盖率阈值占位（随 Wave 2/4 真正生效）：
- * - packages/server-common（@twikoojs/common）→ `thresholds: { statements: 80 }`（Wave 2 接入 DB/服务端用例时写入其 vitest.config.ts）
- * - packages/client（twikoo 客户端）→ `thresholds: { statements: 70 }`（Wave 4 接入组件用例时写入其 vitest.config.ts）
+ * 覆盖率阈值占位：
+ * - packages/server-common（@twikoojs/common）→ `thresholds: { statements: 80 }`（接入 DB/服务端用例时写入其 vitest.config.ts）
+ * - packages/client（twikoo 客户端）→ `thresholds: { statements: 70 }`（接入组件用例时写入其 vitest.config.ts）
  *
  * 当前仅 @twikoojs/shared 有测试且不设阈值，因此 `pnpm test:coverage` 不会因阈值不达标退出非 0；
  * 上述占位值供后续波次的包级配置对照抄写（不要在本文件导出——vitest 会打包

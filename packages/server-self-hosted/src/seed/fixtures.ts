@@ -1,14 +1,14 @@
 /**
- * demo 测试数据 fixtures（设计文档 §10.2「无数据库时自动生成测试数据」）。
+ * demo 测试数据 fixtures（设计文档「无数据库时自动生成测试数据」）。
  *
- * 覆盖 §10.2 的 11 项场景表；**url 一律 `/demo.html`**（另设第二路径用于分页场景）。
+ * 覆盖 11 项场景表；**url 一律 `/demo.html`**（另设第二路径用于分页场景）。
  * 数据为静态常量 + 少量按「基准时间」推导的时间戳，保证每次 seed 结构可复现。
  * 本文件只在显式开启 seed 时被加载（见 `./index.ts` 与 `../server.ts` 的双重守卫）。
  */
 import { createHash } from "node:crypto";
 import type { CommentDoc, ConfigData } from "@twikoojs/common";
 
-/** demo 页路径（§10.2：测试数据 url 必须为 `/demo.html`，与 demo 页默认 path 一致） */
+/** demo 页路径（测试数据 url 必须为 `/demo.html`，与 demo 页默认 path 一致）*/
 export const DEMO_URL = "/demo.html";
 
 /** 第二路径：用于「多个 url 路径的评论 → 分页 + 仅显示当前页评论」场景 */
@@ -21,7 +21,7 @@ export const DEMO_VISITORS = 42;
 export const DEMO_BLOGGER_NICK = "iMaeGoo";
 
 /**
- * 场景清单（§10.2 覆盖表逐项）——供 seed 日志与单测逐项断言，避免「表里写了但没造」。
+ * 场景清单（覆盖表逐项）——供 seed 日志与单测逐项断言，避免「表里写了但没造」。
  */
 export const DEMO_SCENARIOS = [
   "普通评论（含 _id/url/nick/mail/link/ua/ip）",
@@ -43,7 +43,7 @@ const DEMO_IMAGE =
   "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNjAiIGhlaWdodD0iNjAiPjxyZWN0IHdpZHRoPSIxNjAiIGhlaWdodD0iNjAiIGZpbGw9IiMxODVGQTUiLz48dGV4dCB4PSI4MCIgeT0iMzYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlR3aWtvbyBEZW1vPC90ZXh0Pjwvc3ZnPg==";
 
 /**
- * 默认配置对象（§10.2 场景 11：配置面板**全部字段有值**）。
+ * 默认配置对象（场景 11：配置面板**全部字段有值**）。
  *
  * 键集合 = 1.7.24 管理面板配置项全集（`TkAdminConfig.vue` 的 `key:` 清单）；
  * 凭证类字段填明显非真实的占位值，仅用于「面板有值」演示。
@@ -166,7 +166,7 @@ function baseFixture(index: number, now: number, overrides: CommentFixture = {})
 }
 
 /**
- * 构造全部 demo 评论 fixture（§10.2 场景 1–9）。
+ * 构造全部 demo 评论 fixture（场景 1–9）。
  * @param now 基准时间戳（毫秒）
  * @returns fixture 列表（顶级在前、回复在后，seed 按序写入）
  */

@@ -52,7 +52,7 @@ pnpm lint # ESLint
 pnpm typecheck # 逐包 tsc --noEmit
 pnpm release:check # 发布基线：8 个发布包 version 必须为 0.0.0
 pnpm e2e:b2 # 端到端回归
-pnpm check:products # B.3 客户端四产物逐一 init + 形态断言 + tkserver 启动/shutdown
+pnpm check:products # 客户端四产物逐一 init + 形态断言 + tkserver 启动/shutdown
 ```
 
 > `pnpm e2e:b2` 与 `pnpm check:products` 都需要先 `pnpm build`（消费 `packages/client/dist/*`
@@ -60,9 +60,9 @@ pnpm check:products # B.3 客户端四产物逐一 init + 形态断言 + tkserve
 > 且会起真实端口 8123 / 8124）。
 >
 > - `e2e:b2` 覆盖「加载更多 / 排序 / 点赞 / 提交 / 错误卡片 / i18n / 管理员登录与配置读写 /
->   管理端检索」等 B.2 检查项，是服务端语义层回归的**第一道防线**（T44 即由它发现
+>   管理端检索」等检查项，是服务端语义层回归的**第一道防线**（曾由它发现
 >   `created $lt` 分页与 `COMMENT_GET_FOR_ADMIN` 缺 `count` 两个真实缺陷）；
-> - `check:products` 覆盖 B.3「CDN 四产物」与「自托管启动/全功能/SIGTERM shutdown」。
+> - `check:products` 覆盖「CDN 四产物」与「自托管启动/全功能/SIGTERM shutdown」。
 >
 > 真机平台（CloudBase/Vercel/Netlify/AWS/Deta/EO/Docker/pkg/HF Space）的**人工**验证清单见
 > 仓库根 `VERIFICATION.md`（含回填栏与失败登记区）。
@@ -156,7 +156,7 @@ pnpm check:products # B.3 客户端四产物逐一 init + 形态断言 + tkserve
 > 在 1.x 是 `require('twikoo-vercel')` 转发壳、自调用实际发不出去，2.0 已改为
 > 各自的正确机制。
 
-### 适配器能力矩阵（§6.5 八项能力）
+### 适配器能力矩阵（八项能力）
 
 | 能力        | 全能力适配器 | EdgeOne Makers                                    |
 | ----------- | ------------ | ------------------------------------------------- |
@@ -179,7 +179,7 @@ pnpm check:products # B.3 客户端四产物逐一 init + 形态断言 + tkserve
 - **保持薄**：适配器只做「入口 + 适配器注入 + 平台载荷转换」，业务逻辑一律进 `@twikoojs/common`。原「< 150 行」硬门禁已移除（过严，妨碍平台机制落地），改为**人工约定**；平台专属代码多时按职责拆文件（如 cloudbase 的 `transform.ts` / `dispatch.ts` / `types.ts`）。
 - **入口约定**：`createXxxFunc({ database? })` / `createXxxHandler()`；`twikoo-func` 必须保留 `exports.main`（CloudBase 硬依赖）
 - **依赖完整性**：重依赖在适配器 `dependencies` 中声明，按 capabilities 人工核对（8 个适配器；无自动守卫）
-- **懒加载解析**：common 的重依赖经 `await import(specifier)` 加载，解析基准是**适配器所在位置**——`@twikoojs/common` 已把 16 个重依赖声明为 `peerDependenciesMeta.optional`，pnpm isolated 链接下才会在 common 侧可见（T35 修复的真实缺陷）
+- **懒加载解析**：common 的重依赖经 `await import(specifier)` 加载，解析基准是**适配器所在位置**——`@twikoojs/common` 已把 16 个重依赖声明为 `peerDependenciesMeta.optional`，pnpm isolated 链接下才会在 common 侧可见（修复的真实缺陷）
 
 ---
 
@@ -300,7 +300,7 @@ outputOptions: (options, format) => (format === "cjs" ? { ...options, exports: "
 - **语言别名**：`zh` → `zh-CN`、`en-GB` → `en` 等（1.x langs 表语义）
 - 新增 UI 文本须同步补齐全部 9 种语言
 
-### 打包与按需加载（§7.2）
+### 打包与按需加载
 
 | 语言           | 打包方式                                                                |
 | -------------- | ----------------------------------------------------------------------- |
@@ -313,7 +313,7 @@ outputOptions: (options, format) => (format === "cjs" ? { ...options, exports: "
   （Rollup 对 UMD 输出默认把 `import()` 改写成 `require()` 包装，浏览器没有 `require` 会直接失败）。
 - 分片基址从**主脚本自身 URL** 推导（UMD 无 `import.meta.url`）：`document.currentScript.src` →
   回退扫描 `script[src]` 中含 `twikoo` 者；可用 `init({ localeBaseUrl })` 或 `setLocaleBaseUrl()` 显式覆写。
-- 任何加载失败（网络 / 404 / 解析 / 基址推导失败）**一律回退英文并记 warn，绝不抛出**（R-8）。
+- 任何加载失败（网络 / 404 / 解析 / 基址推导失败）**一律回退英文并记 warn，绝不抛出**。
 - `init()` 在挂载前 `await loadLanguage(options)`，因此组件渲染时语言已就位，**无需「加载后重渲染」**。
 - ⚠️ **不要把 7 个分片重新静态 import 回 `i18n/index.ts`**——那会让全部语言重新进主产物（体积 +120KB）。
 
@@ -325,13 +325,13 @@ outputOptions: (options, format) => (format === "cjs" ? { ...options, exports: "
 
 - **8 个发布包的 `version` 恒为 `0.0.0`**，禁止任何改动（`pnpm release:check` 与 `release.yml` 的基线校验步骤会拦）
 - 版本号由 CI 在发布时从 **Release tag** 注入（`strip /^v/`），不进入 git
-- `pushoo` 不再维护独立版本线（BC-11）：与 `twikoo` 同版本发布，其变更随 twikoo 版本一起出去
+- `pushoo` 不再维护独立版本线：与 `twikoo` 同版本发布，其变更随 twikoo 版本一起出去
 
-### 发布流程（`release.yml`，D-21）
+### 发布流程（`release.yml`）
 
 1. **人在 GitHub 网页创建 Release**（tag 即版本号；勾选 pre-release → npm `beta` dist-tag）——CI **不创建** Release/tag，也无 `workflow_dispatch`
 2. `release: published` 触发 `release.yml`：版本格式 → 8 包基线 → **单调性**（新版本必须大于已发布的最高同线版本）→ 未发布过
-3. **两阶段发布**（依赖关系强制分批，§4.3.2）：
+3. **两阶段发布**（依赖关系强制分批）：
    - 第一批：`@twikoojs/shared` · `@twikoojs/common` · `pushoo` · `twikoo`
    - gate：`verify-npm`（600s / 15s 轮询）确认第一批在 npm 可见
    - 第二批：`twikoo-func` · `twikoo-vercel` · `tkserver` · `twikoo-netlify`
@@ -340,7 +340,7 @@ outputOptions: (options, format) => (format === "cjs" ? { ...options, exports: "
 5. 发布脚本：`scripts/release-set-version.mjs`（基线校验 / 覆写）、`release-version-check.mjs`（单调性 / 未发布过）、`verify-npm.mjs`（可见性 gate）
 
 > **实际操作请照 `RELEASE.md` 走**（发布前本地检查清单 → 网页创建 Release → 观察两阶段 →
-> 发布后核验 → **回滚**）。前置条件（仓库 secrets）以 `RELEASE.md` §0 为准，其中
+> 发布后核验 → **回滚**）。前置条件（仓库 secrets）以 `RELEASE.md` 为准，其中
 > `NPM_TOKEN` 是发布硬依赖：工作流把它注入 `NODE_AUTH_TOKEN`，缺失会直接 ENEEDAUTH。
 
 ### 文档站发布（`docs.yml`）
@@ -350,7 +350,7 @@ push 到 `main` 且改动 `docs/**`、或 Release published、或手动触发 �
 ### Docker / pkg
 
 - `Dockerfile`：**从 workspace 构建**（多阶段，`pnpm --filter "tkserver..." build`），运行 `node packages/server-self-hosted/dist/server.js`，`TWIKOO_DATA=/app/data`
-- `packages/pkg`：tsdown + SEA，`exe.targets[].nodeVersion` = **26.9.0**（D-13，目标运行时 = 仓库基线；**必须是完整 `x.y.z`**，写主版本会被 `@tsdown/exe` 拒绝）；**构建宿主需 Node ≥ 25.7**
+- `packages/pkg`：tsdown + SEA，`exe.targets[].nodeVersion` = **26.9.0**（目标运行时 = 仓库基线；**必须是完整 `x.y.z`**，写主版本会被 `@tsdown/exe` 拒绝）；**构建宿主需 Node ≥ 25.7**
 
 ---
 
@@ -369,11 +369,11 @@ push 到 `main` 且改动 `docs/**`、或 Release published、或手动触发 �
 | `@twikoojs/common` | ≥ **80%**      |
 | `twikoo`（客户端） | ≥ **70%**      |
 
-> **客户端覆盖率口径（F2 建议 #1 处置）**：`packages/client/vitest.config.ts` 的 `coverage.include` 仅含 `src/**/*.ts`，**刻意排除 `.vue` 组件**。原因：SFC 经 `@vitejs/plugin-vue` 编译插桩后整体语句覆盖率仅约 55%，低于 70% 门禁；组件行为已由 `test/components.test.ts` / `test/tk-components.test.ts` 等功能用例覆盖，故显式收窄口径避免门禁误伤。如后续补组件行覆盖率，需同步下调阈值或新增组件测试，二者择一。
+> **客户端覆盖率口径（审计建议 #1 的处置）**：`packages/client/vitest.config.ts` 的 `coverage.include` 仅含 `src/**/*.ts`，**刻意排除 `.vue` 组件**。原因：SFC 经 `@vitejs/plugin-vue` 编译插桩后整体语句覆盖率仅约 55%，低于 70% 门禁；组件行为已由 `test/components.test.ts` / `test/tk-components.test.ts` 等功能用例覆盖，故显式收窄口径避免门禁误伤。如后续补组件行覆盖率，需同步下调阈值或新增组件测试，二者择一。
 
 ### `.env` 机制（硬规则）
 
-- 变量清单的**唯一真相源是根 `.env.example`**（当前 23 个：A 类密钥 14 + B 类默认值 9）
+- 变量清单的**唯一真相源是根 `.env.example`**（当前 23 个：密钥类 14 + 默认值类 9）
 - **硬规则：新增任何环境变量，必须同步更新 `.env.example`**（含用途注释与「缺失时哪些用例会 skip」；人工核对，无自动守卫）
 - 测试通过 `hasEnv()` 判定「空字符串 = 未配置」→ 对应用例**整体 skip**（不失败、不伪造密钥）；本地真实值写入根 `.env`（已 gitignore）
 - 测试代码中出现疑似密钥字面量会被 ESLint 直接拦下（`test-secret-literal-ban`）
@@ -412,11 +412,11 @@ push 到 `main` 且改动 `docs/**`、或 Release published、或手动触发 �
 
 ### 兼容分支与过渡层
 
-| 兼容项                 | 当前行为                                                                 | 移除时间  |
-| ---------------------- | ------------------------------------------------------------------------ | --------- |
-| `twikoo-func` 转发导出 | 保留 `export * from "@twikoojs/common"` + `console.warn` 过渡壳（BC-12） | **2.2.0** |
-| `README.en.md`         | 已删除（BC-5，中文移至 `README_zh_CN.md`）——外部死链需公告               | 已发生    |
-| CloudBase CLI 部署     | 已移除（BC-14，仅保留控制台流程）——CLI 用户需改用控制台                  | 已发生    |
+| 兼容项                 | 当前行为                                                        | 移除时间  |
+| ---------------------- | --------------------------------------------------------------- | --------- |
+| `twikoo-func` 转发导出 | 保留 `export * from "@twikoojs/common"` + `console.warn` 过渡壳 | **2.2.0** |
+| `README.en.md`         | 已删除（中文移至 `README_zh_CN.md`）——外部死链需公告            | 已发生    |
+| CloudBase CLI 部署     | 已移除（仅保留控制台流程）——CLI 用户需改用控制台                | 已发生    |
 
 > `POST_SUBMIT` **不在此列**：它曾被误判为兼容分支，实际是后置副作用链的执行入口
 > （见「25 事件机制」小节），长期保留。
@@ -430,7 +430,7 @@ push 到 `main` 且改动 `docs/**`、或 Release published、或手动触发 �
 
 1. **`twikoo-func` 的 `main` 导出名不可改**：CloudBase 控制台通过 `require("twikoo-func").main` 加载入口，改名或删除会导致所有 CloudBase 部署失效。
 2. **目录名 ≠ 包名**：见上方对照表；`server-cloudbase` → `twikoo-func`、`server-common` → `@twikoojs/common`。
-3. **重依赖在 common 侧不可见**：只把重依赖写进适配器 `dependencies` 不够——common 的动态 `import()` 以自身位置解析，必须同时在 common 的 `peerDependencies`(+`optional`) 中声明（T35 实测：`COMMENT_SUBMIT` 曾因 jsdom 解析失败返回 1000）。
+3. **重依赖在 common 侧不可见**：只把重依赖写进适配器 `dependencies` 不够——common 的动态 `import()` 以自身位置解析，必须同时在 common 的 `peerDependencies`(+`optional`) 中声明（实测：`COMMENT_SUBMIT` 曾因 jsdom 解析失败返回 1000）。
 4. **`pnpm exec <bin>` 在部分环境失效**：改用 `node_modules/.bin/<bin>` 或 `pnpm run <script>`。仓库已不装 pre-commit 钩子，提交前请手动执行等价检查（`pnpm lint` + `pnpm prettier --write`）。
 5. **`version` 字段禁止人为修改**：保持 `0.0.0`，由 CI 从 Release tag 注入；`pnpm release:check` 与 `release.yml` 的基线校验步骤会拦。
 6. **新增 env 变量必须同步 `.env.example`**：无自动守卫，需人工核对。
@@ -447,9 +447,9 @@ push 到 `main` 且改动 `docs/**`、或 Release published、或手动触发 �
 
 | #   | 待移除项                                 | 位置                                    | 移除前置动作                                      |
 | --- | ---------------------------------------- | --------------------------------------- | ------------------------------------------------- |
-| 1   | `twikoo-func` 转发导出过渡壳（BC-12）    | `packages/server-cloudbase` 入口        | 确认无外部依赖后移除 `export *` 与 `console.warn` |
+| 1   | `twikoo-func` 转发导出过渡壳             | `packages/server-cloudbase` 入口        | 确认无外部依赖后移除 `export *` 与 `console.warn` |
 | 2   | `pushoo` 旧独立版本线（`0.1.x`）兼容说明 | `packages/pushoo/README.md` / CHANGELOG | 2.0 已并入统一版本线，2.2.0 起可删除迁移公告      |
-| 3   | `README.en.md` 死链公告                  | CHANGELOG（BC-5）                       | 公告期结束后可移出「最近变更」区                  |
+| 3   | `README.en.md` 死链公告                  | CHANGELOG                               | 公告期结束后可移出「最近变更」区                  |
 
 > 维护约定：任何兼容分支都必须在**本文档与 CHANGELOG 同时登记**并注明移除版本；移除时同步更新文档站「服务端事件」与 README 迁移说明。
 > **不要把 `POST_SUBMIT` 登记为兼容分支**——它是长期机制（见「25 事件机制」小节）。

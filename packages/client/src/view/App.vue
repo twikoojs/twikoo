@@ -2,7 +2,7 @@
   Twikoo 根组件（1.x App.vue 的 Vue3 组合式 API 重写）。
 
   布局：评论区（TkComments）+ 页脚（TkFooter）+ 管理面板（TkAdmin，默认收起）。
-  样式作用域挂 `.twikoo` 根选择器（§1.2-1：禁 `<style scoped>`，类名 `tk-` 前缀）。
+  样式作用域挂 `.twikoo` 根选择器（禁 `<style scoped>`，类名 `tk-` 前缀）。
 
   1.x 的 element-ui 覆盖段（`.el-input__inner` / `.el-button` / `.el-loading-mask` /
   `.el-textarea .el-input__count`）已下沉为各组件的 `.tk-*` 基础样式——2.0 不再依赖

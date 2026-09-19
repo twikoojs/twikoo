@@ -2,7 +2,7 @@
 
 > 适用范围：`2.0.0-beta.n` 与 `2.0.0` 及以后的版本。
 >
-> **核心约定（D-21）**：Release 与 tag **由人**在 GitHub 网页创建，CI **只响应**，
+> **核心约定**：Release 与 tag **由人**在 GitHub 网页创建，CI **只响应**，
 > 不提供 `workflow_dispatch`，也不会自动创建 Release/tag。因此本地仓库**不得**预创建 tag。
 
 - 工作流：`.github/workflows/release.yml`（触发：`release: types: [published]`）
@@ -30,8 +30,8 @@ pnpm typecheck
 pnpm test
 pnpm build
 pnpm release:check                      # 8 个发布包 version 必须为 0.0.0
-pnpm e2e:b2                             # B.2 前端清单端到端回归（26 项；需先 pnpm build）
-pnpm check:products                     # B.3 四产物 + 自托管启动/全功能/shutdown（需先 pnpm build）
+pnpm e2e:b2                             # 前端清单端到端回归（26 项；需先 pnpm build）
+pnpm check:products                     # 四产物 + 自托管启动/全功能/shutdown（需先 pnpm build）
 node node_modules/prettier/bin/prettier.cjs --check .
 git tag -l                              # 必须为空：不得预创建 tag
 git status --porcelain                  # 必须为空：工作区干净
@@ -103,9 +103,9 @@ node -e "require.resolve('@twikoojs/common'); console.log('common resolvable ✓
 - docs 站点：`https://twikoo.js.org`（`docs.yml` 由 Release 触发同步部署）可访问，英文章节齐全；
 - 客户端 CDN：`https://cdn.jsdelivr.net/npm/twikoo@2.0.0-beta.1/dist/twikoo.min.js` 可下载，
   `twikoo.min.js` 自带样式、`twikoo.nocss.js` 需配合 `twikoo.css`；
-- 真机平台：按 **`VERIFICATION.md`**（B.3 十一形态 + 4 特别项，含回填栏与判定标准）逐项执行回填，
+- 真机平台：按 **`VERIFICATION.md`**（十一形态 + 4 特别项，含回填栏与判定标准）逐项执行回填，
   必要时配合 `packages/*/README.md` 的平台核对清单；本地已自动核对项（`pnpm check:products`、
-  `pnpm e2e:b2`、Node 20 加载探针）无需人工重复，见该文档 §4。
+  `pnpm e2e:b2`、Node 20 加载探针）无需人工重复，见该文档。
 
 ## 3. 发布 `2.0.0`（正式版）
 
@@ -123,7 +123,7 @@ node -e "require.resolve('@twikoojs/common'); console.log('common resolvable ✓
 - `git tag -l` 仍为空（tag 由本次 Release 创建）；
 - **SEA 可执行产物（`publish-pkg`）已修复并实测可用**（宿主 Node 26.9.0 下生成四平台 exe，
   win-x64 实跑 10/10 通过；linux / darwin 仅完成构建未跨平台运行）。发布前只需在宿主 Node ≥ 25.7 的
-  runner 上跑通该 job 即可，无需做 (A)/(B) 决策折中（详见 `VERIFICATION.md` §6 与 §2.9）。
+  runner 上跑通该 job 即可，无需做 (A)/(B) 决策折中（详见 `VERIFICATION.md`）。
 
 ### 正式版发布后用户验证项清单
 
@@ -137,8 +137,8 @@ node -e "require.resolve('@twikoojs/common'); console.log('common resolvable ✓
 | 4   | docs 站点         | `https://twikoo.js.org` 可访问且版本说明为 2.0.0                                                          |
 | 5   | Docker 镜像       | `imaegoo/twikoo:latest` 已推送；`docker run` 后能收发评论                                                 |
 | 6   | 云平台升级指引    | 按 `CHANGELOG.md` 的「升级指引」在 CloudBase 控制台完成一次真实升级（运行时 Node 20+/24.11 + 在线装依赖） |
-| 7   | 前端回归          | 真实浏览器（非 jsdom）跑一遍 B.2 的视觉/暗色/响应式人工清单（`VERIFICATION.md` §2.11 与 T44 报告 §5）     |
-| 8   | 回滚预案可用      | 确认 72h 内 `npm deprecate` 命令可按 §4.1 执行（不必真的执行，核对命令与包名清单即可）                    |
+| 7   | 前端回归          | 真实浏览器（非 jsdom）跑一遍视觉/暗色/响应式人工清单（`VERIFICATION.md`）                                 |
+| 8   | 回滚预案可用      | 确认 72h 内 `npm deprecate` 命令可按本手册的步骤执行（不必真的执行，核对命令与包名清单即可）              |
 
 ## 4. 回滚
 

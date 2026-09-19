@@ -1,5 +1,5 @@
 /**
- * demo 工程共享常量（`vite.config.ts` / 测试 / 根编排脚本三方复用，规范 §10.1）。
+ * demo 工程共享常量（`vite.config.ts` / 测试 / 根编排脚本三方复用）。
  *
  * 设计约束：本文件**不得**用 `import.meta.url` 推导路径——Vite 会把
  * `vite.config.ts` 与其 import 的 TS 文件一起打包成同级临时文件，
@@ -7,13 +7,13 @@
  * 路径推导一律留在 `vite.config.ts`（与配置同级）与 `scripts/*.mjs`（真实文件）内。
  */
 
-/** demo 页（含客户端产物直供）dev server 端口（§10.1：沿用 1.x 的 9820） */
+/** demo 页（含客户端产物直供）dev server 端口（沿用 1.x 的 9820）*/
 export const DEMO_PORT = 9820;
 
-/** tkserver 后端端口（§10.1） */
+/** tkserver 后端端口 */
 export const SERVER_PORT = 8080;
 
-/** demo 页默认填入的后端地址——开箱即用无需手填（§10.1） */
+/** demo 页默认填入的后端地址——开箱即用无需手填 */
 export const DEFAULT_BACKEND_URL = `http://localhost:${SERVER_PORT}`;
 
 /** demo 页 localStorage 键前缀（1.x 行为保留：envId/region/path/lang 四项持久化） */

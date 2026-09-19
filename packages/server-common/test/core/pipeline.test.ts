@@ -1,5 +1,5 @@
 /**
- * pipeline 八步编排测试（T13 验收）。
+ * pipeline 八步编排测试（验收）。
  *
  * 覆盖验收断言：
  * 1. GET_FUNC_VERSION 走通（含 accessToken 回填语义）；
@@ -9,7 +9,7 @@
  *    两条路径命中同一 postSubmit 服务；
  * 5. 事件清单完整性（25 标识符）与 COMMENT_GET_FOR_ADMIN 的 type 筛选
  *    （见 dispatcher.test.ts）。
- * 另覆盖 QA−（未知事件统一错误体）与 CORS 白名单 / 校验失败 / handler 异常路径。
+ * 另覆盖未知事件统一错误体、CORS 白名单 / 校验失败 / handler 异常路径。
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { COMMENT_SUBMIT, type TwikooEvent } from "@twikoojs/shared";
@@ -36,7 +36,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe("pipeline 八步编排（T13）", () => {
+describe("pipeline 八步编排", () => {
   it("验收 1：GET_FUNC_VERSION 走通并回填 accessToken", async () => {
     const handler = createHandler(createMemoryAdapters());
     const res = await handler(makeRequest({ body: { event: "GET_FUNC_VERSION" } }));
@@ -163,7 +163,7 @@ describe("pipeline 八步编排（T13）", () => {
     }
   });
 
-  it("QA−：未知事件名返回统一错误体（不抛未捕获异常）", async () => {
+  it("未知事件名返回统一错误体（不抛未捕获异常）", async () => {
     const handler = createHandler(createMemoryAdapters());
     const res = await handler(
       makeRequest({ body: { event: "NOT_A_REAL_EVENT" as unknown as TwikooEvent } }),
@@ -227,7 +227,7 @@ describe("pipeline 八步编排（T13）", () => {
     expect(res.status).toBe(200);
     expect(res.body.code).toBe(RES_CODE.FAIL);
     expect(res.body.message).toBe("boom");
-    // §8.3：异常响应附带本次请求聚合日志（含 requestId）
+    // 异常响应附带本次请求聚合日志（含 requestId）
     expect(typeof res.body.log).toBe("string");
     expect(res.body.log).toMatch(/Twikoo:\[[0-9a-f-]{36}\]/);
   });

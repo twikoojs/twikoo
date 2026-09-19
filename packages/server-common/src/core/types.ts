@@ -1,5 +1,5 @@
 /**
- * pipeline / dispatcher 共享类型（规范 §6.2 core 层）。
+ * pipeline / dispatcher 共享类型（规范 core 层）。
  *
  * 独立成文件避免 pipeline ↔ dispatcher 循环引用：pipeline 创建上下文后调用
  * dispatcher，dispatcher 与 handlers 只消费类型。
@@ -16,7 +16,7 @@ import type { RequestLogger } from "../utils/logger";
 export interface PipelineContext {
   /** 已归一化的内部统一请求 */
   request: TkRequest;
-  /** 本次请求 ID（§8.3，与日志行前缀一致） */
+  /** 本次请求 ID（与日志行前缀一致）*/
   requestId: string;
   /** 本次请求的 accessToken（客户端回传，或匿名签到新生成） */
   accessToken: string;

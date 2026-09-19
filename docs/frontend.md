@@ -133,7 +133,7 @@ twikoo:
 建议使用 CDN 引入 Twikoo 的用户在链接地址上锁定版本，以免将来 Twikoo 升级时受到非兼容性更新的影响。
 :::
 
-::: tip 浏览器基线（BC-2）
+::: tip 浏览器基线
 2.0 起前端产物语法目标为 **ES2022**，不再兼容 IE / ES5。最低版本：Chrome 94+、Edge 94+、Firefox 93+、Safari 15.4+、iOS Safari 15.4+。
 :::
 

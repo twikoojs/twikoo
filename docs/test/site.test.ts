@@ -75,11 +75,11 @@ describe("站点工程配置", () => {
     expect(ws).toMatch(/- "docs"/);
   });
 
-  it("部署工作流保留 vuepress-deploy + gh-pages + CNAME，且 Release 时同步部署", () => {
+  it("部署工作流发布到 gh-pages 并保留 CNAME，且 Release 时同步部署", () => {
     const wf = readFileSync(resolve(DOCS_ROOT, "..", ".github", "workflows", "docs.yml"), "utf8");
-    expect(wf).toContain("imaegoo/vuepress-deploy@master");
-    expect(wf).toContain("TARGET_BRANCH: gh-pages");
-    expect(wf).toContain("CNAME: twikoo.js.org");
+    expect(wf).toContain("peaceiris/actions-gh-pages");
+    expect(wf).toContain("publish_branch: gh-pages");
+    expect(wf).toContain("cname: twikoo.js.org");
     expect(wf).toMatch(/release:\s*\n\s*types:\s*\[published\]/);
     expect(wf).toContain("pnpm --filter twikoo-docs docs:build");
   });

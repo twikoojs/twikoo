@@ -101,7 +101,15 @@ jobs:
     name: Test
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
+    services:
+      # MONGOMS_VERSION 默认 4.4 的二进制依赖 libcrypto.so.1.1，ubuntu-latest（24.04 / OpenSSL 3）起不来；
+      # 改用容器实例，TEST_MONGODB_URI 是 .env.example 里的既有开关
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
     env:
+      TEST_MONGODB_URI: mongodb://127.0.0.1:27017/twikoo_test
       # 仓库未配置对应 Secret 时为空字符串 → hasEnv() 判定未配置
       # → 对应用例整体 skip，fork PR 同样能跑绿。
       TEST_SMTP_HOST: ${{ secrets.TEST_SMTP_HOST }}

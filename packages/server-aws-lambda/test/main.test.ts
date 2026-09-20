@@ -65,4 +65,37 @@ describe("@twikoojs/aws-lambda 薄适配器", () => {
       }).ip,
     ).toBe("8.8.8.8");
   });
+
+  it("数据库连不上不外抛：200 + code 1000（1.x 语义）", async () => {
+    const failingDb = {
+      /**
+       *
+       */
+      init: async () => {
+        throw new Error("mongodb connect failed");
+      },
+    } as unknown as Database;
+    const result = await createLambdaFunc({ database: failingDb })(makeEventV2());
+    expect(result.statusCode).toBe(200);
+    const parsed = JSON.parse(result.body) as { code: number; message: string };
+    expect(parsed.code).toBe(1000);
+    expect(parsed.message).toBe("mongodb connect failed");
+  });
+
+  it("适配器兜底：pipeline 之外的异常不抛给平台", async () => {
+    const badEvent = {
+      /**
+       *
+       */
+      get headers(): Record<string, string> {
+        throw new Error("boom before pipeline");
+      },
+      body: JSON.stringify({ event: "GET_FUNC_VERSION" }),
+    } as ApiGatewayEventLike;
+    const result = await createLambdaFunc({ database: {} as Database })(badEvent);
+    expect(result.statusCode).toBe(200);
+    const parsed = JSON.parse(result.body) as { code: number; message: string };
+    expect(parsed.code).toBe(1000);
+    expect(parsed.message).toBe("boom before pipeline");
+  });
 });

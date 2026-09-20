@@ -134,8 +134,8 @@ describe("twikoo-vercel 薄适配器", () => {
     expect(req.ip).toBe("1.1.1.1");
   });
 
-  it("异常不外抛：数据库初始化失败 → 200 + code 1000 + CORS 头", async () => {
-    // 数据库装配发生在 pipeline 之外，异常若外抛 Vercel 会回 500（1.x 恒 200 + code 1000）
+  it("数据库连不上不外抛：200 + code 1000（1.x 语义）", async () => {
+    // 连接失败由 pipeline 内的 database.init() 抛出，pipeline 统一兜成 200 + code 1000
     const failingDb = {
       /**
        *
@@ -157,22 +157,42 @@ describe("twikoo-vercel 薄适配器", () => {
     expect(calls.status).toBe(200);
     expect((calls.body as { code: number }).code).toBe(1000);
     expect((calls.body as { message: string }).message).toBe("mongodb connect failed");
-    expect(calls.headers["Access-Control-Allow-Origin"]).toBe("https://example.com");
+    // 1.x 的 allowCors 同样排在 readConfig 之后，异常响应也就没有 CORS 头
+    expect(calls.headers["Access-Control-Allow-Origin"]).toBeUndefined();
+  });
+
+  it("适配器兜底：pipeline 之外的异常不抛给平台", async () => {
+    const fn = createVercelFunc({ database: {} as Database });
+    const { res, calls } = makeRes();
+    const badReq: VercelRequestLike = {
+      method: "POST",
+      /** 取 headers 即抛错：模拟发生在 pipeline 之前的异常 */
+      get headers(): Record<string, string> {
+        throw new Error("boom before pipeline");
+      },
+      body: { event: "GET_FUNC_VERSION" },
+    };
+    await fn(badReq, res);
+    expect(calls.status).toBe(200);
+    expect((calls.body as { code: number }).code).toBe(1000);
+    expect((calls.body as { message: string }).message).toBe("boom before pipeline");
   });
 
   it("异常兜底：响应已发出时不再二次写入", async () => {
-    const failingDb = {
+    const fn = createVercelFunc({ database: {} as Database });
+    const { res, calls } = makeRes();
+    res.headersSent = true;
+    const badReq: VercelRequestLike = {
+      method: "POST",
       /**
        *
        */
-      init: async () => {
-        throw new Error("mongodb connect failed");
+      get headers(): Record<string, string> {
+        throw new Error("boom before pipeline");
       },
-    } as unknown as Database;
-    const fn = createVercelFunc({ database: failingDb });
-    const { res, calls } = makeRes();
-    res.headersSent = true;
-    await fn({ method: "POST", headers: {}, body: { event: "GET_FUNC_VERSION" } }, res);
+      body: { event: "GET_FUNC_VERSION" },
+    };
+    await fn(badReq, res);
     expect(calls.status).toBeUndefined();
     expect(calls.body).toBeUndefined();
   });

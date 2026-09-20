@@ -73,6 +73,40 @@ describe("twikoo-netlify 薄适配器", () => {
     expect(wrong.ip).toBe("");
   });
 
+  it("数据库连不上不外抛：200 + code 1000（1.x 语义）", async () => {
+    const failingDb = {
+      /**
+       *
+       */
+      init: async () => {
+        throw new Error("mongodb connect failed");
+      },
+    } as unknown as Database;
+    const result = await createNetlifyFunc({ database: failingDb })(makeEvent());
+    expect(result.statusCode).toBe(200);
+    const parsed = JSON.parse(result.body) as { code: number; message: string };
+    expect(parsed.code).toBe(1000);
+    expect(parsed.message).toBe("mongodb connect failed");
+  });
+
+  it("适配器兜底：pipeline 之外的异常不抛给平台", async () => {
+    const badEvent = {
+      httpMethod: "POST",
+      /**
+       *
+       */
+      get headers(): Record<string, string> {
+        throw new Error("boom before pipeline");
+      },
+      body: JSON.stringify({ event: "GET_FUNC_VERSION" }),
+    } as NetlifyEventLike;
+    const result = await createNetlifyFunc({ database: {} as Database })(badEvent);
+    expect(result.statusCode).toBe(200);
+    const parsed = JSON.parse(result.body) as { code: number; message: string };
+    expect(parsed.code).toBe(1000);
+    expect(parsed.message).toBe("boom before pipeline");
+  });
+
   it("dependencies 无 twikoo-vercel；handler 为 v1 具名导出", async () => {
     const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
     expect(pkg.dependencies["twikoo-vercel"]).toBeUndefined();

@@ -45,18 +45,6 @@ export interface VercelResponseLike {
 }
 
 /**
- * 异常兜底用的 CORS 头（与 common pipeline 的 allowCors 同集）。
- * 此时配置读不出来，无法查白名单，故与 1.x 未配置白名单时的行为一致：回显 Origin。
- */
-const FALLBACK_CORS_HEADERS: Record<string, string> = {
-  "Access-Control-Allow-Credentials": "true",
-  "Access-Control-Allow-Methods": "POST",
-  "Access-Control-Allow-Headers":
-    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
-  "Access-Control-Max-Age": "600",
-};
-
-/**
  * Vercel 请求 → 内部统一请求（headers 小写化；query String 化；x-real-ip/转发首跳取 IP）。
  * @param req Vercel/Node 请求
  * @returns 内部统一请求
@@ -106,15 +94,17 @@ export function createVercelFunc(
   options: { database?: Database; mongoUri?: string } = {},
 ): (req: VercelRequestLike, res: VercelResponseLike) => Promise<void> {
   let database: Database | null = options.database ?? null;
-  /** 懒建连（inject 优先；init 幂等） */
-  const getDatabase = async (): Promise<Database> => {
+  /**
+   * 懒建数据库实例（inject 优先）。**不在这里 init**：pipeline 自己会 init 且在同一处 catch 内，
+   * 提前 init 会让「连不上数据库」在 pipeline 之外抛错（1.x 连不上也是 200 + code 1000）。
+   */
+  const getDatabase = (): Database => {
     database ??= new MongoDatabase({ uri: options.mongoUri ?? process.env.MONGODB_URI ?? "" });
-    await database.init();
     return database;
   };
   return async (req, res) => {
-    const request = toTkRequest(req);
     try {
+      const request = toTkRequest(req);
       const handler = createHandler(
         scaffoldAdapters({
           request: {
@@ -125,23 +115,16 @@ export function createVercelFunc(
             /** TkResponse 恒等透传（平台写入见 fromTkResponse） */
             fromTkResponse: (r: TkResponse) => r,
           },
-          database: await getDatabase(),
+          database: getDatabase(),
           capabilities: vercelCapabilities,
           postSubmit: vercelPostSubmitDispatcher,
         }),
       );
       fromTkResponse(res, await handler(request));
     } catch (e) {
-      // 1.x 语义：函数内异常不外抛。抛出去 Vercel 直接回 500，前端只看到
-      // FUNCTION_INVOCATION_FAILED，拿不到 code/message（数据库连不上就走这条）。
+      // 1.x 语义：函数内异常不外抛 —— 抛出去 Vercel 直接回 500，前端只看到
+      // FUNCTION_INVOCATION_FAILED，拿不到 code/message
       if (res.headersSent || res.writableEnded) return;
-      const origin = request.headers.origin;
-      if (origin) {
-        for (const [name, value] of Object.entries(FALLBACK_CORS_HEADERS)) {
-          res.setHeader(name, value);
-        }
-        res.setHeader("Access-Control-Allow-Origin", origin);
-      }
       res.status(200).json({
         code: RES_CODE.FAIL,
         message: e instanceof Error ? e.message : String(e),

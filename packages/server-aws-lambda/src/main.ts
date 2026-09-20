@@ -8,10 +8,14 @@
  *
  * 后置副作用（垃圾检测 + 通知）经 {@link lambdaPostSubmitDispatcher} 以
  * 原生异步 Invoke 派发到独立执行单元，见 `./dispatch.ts`。
+ *
+ * **异常不外抛**（1.x 语义）：请求处理中的任何异常都转成 HTTP 200 + `code: 1000`。
+ * 1.x 的 Lambda 函数是复用 vercel 核心的薄壳，而核心函数从不外抛。
  */
 import {
   FULL_CAPABILITIES,
   MongoDatabase,
+  RES_CODE,
   createHandler,
   scaffoldAdapters,
   type Database,
@@ -102,30 +106,44 @@ export function createLambdaFunc(
   options: { database?: Database; mongoUri?: string } = {},
 ): (event: ApiGatewayEventLike) => Promise<LambdaResult> {
   let database: Database | null = options.database ?? null;
-  /** 懒建连（inject 优先；init 幂等） */
-  const getDatabase = async (): Promise<Database> => {
+  /**
+   * 懒建数据库实例（inject 优先）。**不在这里 init**：pipeline 自己会 init 且在同一处 catch 内，
+   * 提前 init 会让「连不上数据库」在 pipeline 之外抛错（1.x 连不上也是 200 + code 1000）。
+   */
+  const getDatabase = (): Database => {
     database ??= new MongoDatabase({ uri: options.mongoUri ?? process.env.MONGODB_URI ?? "" });
-    await database.init();
     return database;
   };
   return async (event) => {
-    const request = toTkRequest(event);
-    const handler = createHandler(
-      scaffoldAdapters({
-        request: {
-          /** 请求恒等透传（归一化见 toTkRequest） */
-          toTkRequest: () => request,
-        },
-        response: {
-          /** TkResponse 恒等透传（序列化见 fromTkResponse） */
-          fromTkResponse: (r: TkResponse) => r,
-        },
-        database: await getDatabase(),
-        capabilities: lambdaCapabilities,
-        postSubmit: lambdaPostSubmitDispatcher,
-      }),
-    );
-    return fromTkResponse(await handler(request));
+    try {
+      const request = toTkRequest(event);
+      const handler = createHandler(
+        scaffoldAdapters({
+          request: {
+            /** 请求恒等透传（归一化见 toTkRequest） */
+            toTkRequest: () => request,
+          },
+          response: {
+            /** TkResponse 恒等透传（序列化见 fromTkResponse） */
+            fromTkResponse: (r: TkResponse) => r,
+          },
+          database: getDatabase(),
+          capabilities: lambdaCapabilities,
+          postSubmit: lambdaPostSubmitDispatcher,
+        }),
+      );
+      return fromTkResponse(await handler(request));
+    } catch (e) {
+      // 1.x 语义：不外抛（外抛 API Gateway 回 502，前端拿不到 code/message）
+      return {
+        statusCode: 200,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: RES_CODE.FAIL,
+          message: e instanceof Error ? e.message : String(e),
+        }),
+      };
+    }
   };
 }
 

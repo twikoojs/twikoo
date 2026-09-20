@@ -224,8 +224,7 @@ flowchart LR
 - 每个发布包用 `files` 白名单（`["dist"]`）决定入包内容，`src/`、`test/`、构建配置都不进包。
   **不建 `.npmignore`**：npm 在 `files` 存在时会忽略根 `.npmignore`（黑名单只在没有 `files` 时生效），
   加了也只有零行为变化。
-- **私有包必须 `private: true`**。只靠「约定不发布」不够 —— 从包目录里 `npm publish` 仍能发出去
-  （`@twikoojs/tsdown-config` 曾既无 `private` 又无 `files`，误发会带上 `src/` 与 `test/`）。
+- **私有包必须 `private: true`**。只靠「约定不发布」不够 —— 从包目录里 `npm publish` 仍能发出去。
 
 ### 发布流程（`publish.yml`）
 

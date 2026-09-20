@@ -1,8 +1,8 @@
 /**
  * 发布包清单（Scope C 单一真相源）。
  *
- * 9 个包共享同一版本号；仓库内 `version` 恒为 `0.0.0`，仅由 publish.yml 在 CI 中覆写后发布。
- * 发布为**单阶段**：9 个包一次性并行发布，不按依赖分批。
+ * 10 个包共享同一版本号；仓库内 `version` 恒为 `0.0.0`，仅由 publish.yml 在 CI 中覆写后发布。
+ * 发布为**单阶段**：10 个包一次性并行发布，不按依赖分批。
  * `npm publish` 不校验 dependencies 是否已存在于 registry，故依赖 `@twikoojs/common` 的服务端
  * 适配器与 common 同批发布不会失败；分批只会为等一轮 npm 可见性 gate（最长 600s）白花时间。
  *
@@ -24,6 +24,7 @@ export const PUBLISH_PACKAGES = [
   { name: "tkserver", dir: "packages/server-self-hosted" },
   { name: "twikoo-netlify", dir: "packages/server-netlify" },
   { name: "@twikoojs/aws-lambda", dir: "packages/server-aws-lambda" },
+  { name: "@twikoojs/cloudflare-workers", dir: "packages/server-cloudflare-workers" },
 ];
 
 /**

@@ -80,6 +80,9 @@ export function getConfigForAdmin(config: ConfigData, isAdminUser: boolean): TkR
     /** 摘除凭证后的副本（不改动内存态原配置） */
     const safeConfig = { ...config };
     delete safeConfig.CREDENTIALS;
+    // 管理面板用 config.VERSION 显示「云函数版本」并比对是否需要升级；
+    // 1.x 部署壳把数据库配置整体挂在模块级 config 上顺带带出，2.0 需显式下发
+    safeConfig.VERSION = VERSION;
     return {
       code: RES_CODE.SUCCESS,
       config: safeConfig,

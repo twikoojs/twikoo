@@ -7,6 +7,7 @@
  */
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { createHandler, RECURSION_HEADER, RES_CODE } from "../../src/index";
+import { VERSION } from "@twikoojs/shared";
 import { createMemoryAdapters, makeRequest } from "../utils/memory-adapters";
 import type { TkAdapters } from "../../src/index";
 import { md5 } from "../../src/utils/crypto";
@@ -415,6 +416,8 @@ describe("GET_CONFIG / GET_CONFIG_FOR_ADMIN / SET_CONFIG", () => {
     const adminConfig = admin.body.config as Record<string, unknown>;
     expect(adminConfig.SMTP_PASS).toBe("secret");
     expect(adminConfig.CREDENTIALS).toBeUndefined();
+    // 管理面板用 config.VERSION 显示「云函数版本」并比对升级状态
+    expect(adminConfig.VERSION).toBe(VERSION);
     const visitor = await post({ event: "GET_CONFIG_FOR_ADMIN" });
     expect(visitor.body.code).toBe(1024);
   });

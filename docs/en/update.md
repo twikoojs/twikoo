@@ -27,6 +27,10 @@ If your function is older than 1.0.0, recreate it following the manual deploymen
 If the comment list stops loading after an upgrade, delete the `node_modules` directory in the function editor (this takes about 30 seconds), then save and install dependencies again. If that does not help, delete and recreate the Twikoo function.
 :::
 
+::: warning Runtime version
+On CloudBase, upgrade the function runtime to **Node 20 or newer (24 recommended)**. The 2.0 build targets ES2022 and no longer supports Node 16.13.
+:::
+
 ## CloudBase, command line deployment
 
 ::: danger Removed in 2.0

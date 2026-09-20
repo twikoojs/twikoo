@@ -11,10 +11,6 @@
 
 > Step-by-step walkthroughs with screenshots are maintained in the Chinese documentation: [云函数部署](/backend).
 
-::: warning Runtime version
-On CloudBase, upgrade the function runtime to **Node 20 or newer (24 recommended)**. The 2.0 build targets ES2022 and no longer supports Node 16.13.
-:::
-
 ## Tencent CloudBase
 
 1. Create a CloudBase environment and enable anonymous sign-in (环境 → 登录授权).

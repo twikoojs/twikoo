@@ -1,5 +1,13 @@
 # Twikoo 2.0 持续集成门禁
 # 5 个并行门禁 job（lint / markdown / typecheck / test / build）
+#
+# lint / typecheck / test 三个 job 在跑门禁前各执行一次 `pnpm build`：工作区发布包
+# （@twikoojs/shared、@twikoojs/common、pushoo 等）的 package.json 入口指向 `dist/`，
+# 而 `dist/` 不入库（见 .gitignore），干净 checkout 下这些包**不可解析** ——
+# ESLint 的类型感知、各包 tsc、vitest 的跨包 import 全部走 exports → dist，
+# 缺失时报 TS2307（Cannot find module）、@typescript-eslint/no-redundant-type-constituents
+# （导入类型退化为 error 类型）与 "Failed to resolve import"。
+# （markdown job 只扫 *.md，不依赖构建产物，故不构建。）
 
 name: Build
 
@@ -39,6 +47,10 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      # 门禁依赖工作区包 dist 产物（见文件头说明），故先构建
+      - name: Build workspace packages
+        run: pnpm build
 
       - name: ESLint
         run: pnpm lint
@@ -88,6 +100,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # 门禁依赖工作区包 dist 产物（见文件头说明），故先构建
+      - name: Build workspace packages
+        run: pnpm build
+
       - name: Typecheck all packages
         run: pnpm typecheck
 
@@ -128,6 +144,10 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      # 门禁依赖工作区包 dist 产物（见文件头说明），故先构建
+      - name: Build workspace packages
+        run: pnpm build
 
       - name: Unit tests (Vitest projects)
         run: pnpm test

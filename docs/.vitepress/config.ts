@@ -57,6 +57,7 @@ export default defineConfig({
           { text: "版本更新", link: "/update" },
           { text: "常见问题", link: "/faq" },
           { text: "API 文档", link: "/api" },
+          { text: "即时消息推送", link: "/pushoo" },
           { text: "相关文档", link: "/link" },
         ],
         editLink: {
@@ -105,6 +106,7 @@ export default defineConfig({
           { text: "Update", link: "/en/update" },
           { text: "FAQ", link: "/en/faq" },
           { text: "API", link: "/en/api" },
+          { text: "IM push", link: "/en/pushoo" },
           { text: "Links", link: "/en/link" },
         ],
       },

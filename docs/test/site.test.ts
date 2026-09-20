@@ -36,11 +36,11 @@ function fileForLink(link: string): string {
 }
 
 describe("文档站结构", () => {
-  it("中英 sidebar 项数相等且均为 9 项", () => {
+  it("中英 sidebar 项数相等且均为 10 项", () => {
     const zh = sidebarOf("root");
     const en = sidebarOf("en");
-    expect(zh.length).toBe(9);
-    expect(en.length).toBe(9);
+    expect(zh.length).toBe(10);
+    expect(en.length).toBe(10);
     expect(en.length).toBe(zh.length);
   });
 

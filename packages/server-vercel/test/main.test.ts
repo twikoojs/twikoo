@@ -4,7 +4,9 @@
  * 注入内存 Database 跑契约核心事件；验证 (req,res) 映射（CORS 头写入、
  * 429 状态码透传、OPTIONS 204）、依赖指向（@twikoojs/common）。
  */
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { createVercelFunc, toTkRequest, default as vercelHandler } from "../src/main";
 import type { VercelRequestLike, VercelResponseLike } from "../src/main";
@@ -201,5 +203,15 @@ describe("twikoo-vercel 薄适配器", () => {
     const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
     expect(pkg.dependencies["@twikoojs/common"]).toBe("workspace:*");
     expect(typeof vercelHandler).toBe("function");
+  });
+
+  it("CJS 产物 require 后直接是 handler（1.7.x 部署壳兼容）", () => {
+    const distPath = fileURLToPath(new URL("../dist/index.js", import.meta.url));
+    expect(existsSync(distPath), "缺少 dist/index.js —— 请先运行 pnpm build").toBe(true);
+    // 存量 Vercel 部署壳写的是 `module.exports = require("twikoo-vercel")` 后直接调用，
+    // 拿到的必须是函数（不是 exports 对象）
+    const mod = createRequire(import.meta.url)("../dist/index.js") as { default?: unknown };
+    expect(typeof mod).toBe("function");
+    expect(mod.default).toBe(mod);
   });
 });

@@ -26,5 +26,17 @@ export default defineConfig({
    * @returns 输出选项
    */
   outputOptions: (options, format) =>
-    format === "cjs" ? { ...options, exports: "named" } : options,
+    format === "cjs"
+      ? {
+          ...options,
+          exports: "named",
+          /**
+           * 1.7.x 的包是 `module.exports = <handler>`，部署壳 `require("twikoo-vercel")`
+           * 拿到函数后直接调用；2.0 的 CJS 产物是 `exports.default` + 命名导出，旧壳会拿到对象
+           * （报 `require(...) is not a function`）。末尾把 default 提为 module.exports，
+           * 并把命名导出挂回函数上，两代写法都成立。
+           */
+          footer: "module.exports = Object.assign(module.exports.default, module.exports);",
+        }
+      : options,
 });

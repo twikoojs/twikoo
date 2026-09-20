@@ -1,0 +1,51 @@
+{
+  "name": "twikoo-netlify",
+  "version": "0.0.0",
+  "description": "Twikoo comment system backend for Netlify",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/twikoojs/twikoo.git"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@cap.js/server": "^4.0.5",
+    "@imaegoo/node-ip2region": "^2.1.1",
+    "@twikoojs/common": "workspace:*",
+    "@twikoojs/shared": "workspace:*",
+    "@xsai/generate-text": "^0.5.0",
+    "akismet-api": "^6.0.0",
+    "axios": "^1.20.0",
+    "bowser": "^2.14.1",
+    "dompurify": "^3.4.15",
+    "form-data": "^4.0.6",
+    "html-to-text": "^10.0.1",
+    "jsdom": "^30.0.1",
+    "marked": "^18.0.13",
+    "mongodb": "^7.6.0",
+    "nodemailer": "^10.0.10",
+    "pushoo": "workspace:^",
+    "tencentcloud-sdk-nodejs-tms": "^4.1.311",
+    "xml2js": "^0.6.2"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.1"
+  }
+}

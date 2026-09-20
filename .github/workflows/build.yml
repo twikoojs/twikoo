@@ -1,26 +1,174 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+# Twikoo 2.0 持续集成门禁
+# 5 个并行门禁 job（lint / markdown / typecheck / test / docs）
 
 name: Build
 
 on:
   push:
-    branches: [ main, dev ]
+    branches:
+      - main
   pull_request:
-    branches: [ main, dev ]
+    branches:
+      - main
+    # 默认只有 opened / synchronize / reopened；补 ready_for_review 才能让
+    # 「草稿转为可评审」这一动作触发 CI（否则要等下一次 push）
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
 
 jobs:
-  build:
+  lint:
+    name: Lint
+    # 草稿 PR 不跑
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [24.x]
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: yarn install
-    - run: yarn build
-    - run: yarn lint
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm (version from package.json packageManager field)
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build workspace packages
+        run: pnpm build
+
+      - name: ESLint
+        run: pnpm lint
+
+  # markdown 排版由 AutoCorrect 负责（prettier 已忽略 *.md，见 .prettierignore / .autocorrectrc）。
+  # 单独成 job 是为了与其他门禁并行；检查逻辑在 scripts/format-md.mjs（只扫 *.md）。
+  markdown:
+    name: Markdown
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm (version from package.json packageManager field)
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: AutoCorrect (markdown)
+        run: pnpm lint:md
+
+  typecheck:
+    name: Typecheck
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm (version from package.json packageManager field)
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build workspace packages
+        run: pnpm build
+
+      - name: Typecheck all packages
+        run: pnpm typecheck
+
+  test:
+    name: Test
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    services:
+      # MONGOMS_VERSION 默认 4.4 的二进制依赖 libcrypto.so.1.1，ubuntu-latest（24.04 / OpenSSL 3）起不来；
+      # 改用容器实例，TEST_MONGODB_URI 是 .env.example 里的既有开关
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+    env:
+      TEST_MONGODB_URI: mongodb://127.0.0.1:27017/twikoo_test
+      # 仓库未配置对应 Secret 时为空字符串 → hasEnv() 判定未配置
+      # → 对应用例整体 skip，fork PR 同样能跑绿。
+      TEST_SMTP_HOST: ${{ secrets.TEST_SMTP_HOST }}
+      TEST_SMTP_PORT: ${{ secrets.TEST_SMTP_PORT }}
+      TEST_SMTP_USER: ${{ secrets.TEST_SMTP_USER }}
+      TEST_SMTP_PASS: ${{ secrets.TEST_SMTP_PASS }}
+      TEST_PUSHOO_CHANNEL: ${{ secrets.TEST_PUSHOO_CHANNEL }}
+      TEST_PUSHOO_TOKEN: ${{ secrets.TEST_PUSHOO_TOKEN }}
+      TEST_AKISMET_KEY: ${{ secrets.TEST_AKISMET_KEY }}
+      TEST_SITE_URL: ${{ secrets.TEST_SITE_URL }}
+      TEST_QCLOUD_SECRET_ID: ${{ secrets.TEST_QCLOUD_SECRET_ID }}
+      TEST_QCLOUD_SECRET_KEY: ${{ secrets.TEST_QCLOUD_SECRET_KEY }}
+      TEST_LLM_API_ENDPOINT: ${{ secrets.TEST_LLM_API_ENDPOINT }}
+      TEST_LLM_API_KEY: ${{ secrets.TEST_LLM_API_KEY }}
+      TEST_LLM_MODEL: ${{ secrets.TEST_LLM_MODEL }}
+      TEST_IMAGE_CDN: ${{ secrets.TEST_IMAGE_CDN }}
+      TEST_IMAGE_CDN_TOKEN: ${{ secrets.TEST_IMAGE_CDN_TOKEN }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm (version from package.json packageManager field)
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build workspace packages
+        run: pnpm build
+
+      - name: Unit tests (Vitest projects)
+        run: pnpm test
+
+  # docs 不依赖工作区包产物，故无需先构建
+  docs:
+    name: Docs
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm (version from package.json packageManager field)
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Docs site build
+        run: pnpm --filter twikoo-docs docs:build

@@ -1,0 +1,13 @@
+# Docker 构建上下文裁剪：依赖与产物在镜像内生成，不进构建上下文
+.git
+.github
+node_modules
+**/node_modules
+dist
+**/dist
+coverage
+**/coverage
+data
+docs/.vitepress/dist
+*.log
+.env

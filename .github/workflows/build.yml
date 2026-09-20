@@ -101,13 +101,14 @@ jobs:
       TEST_PUSHOO_CHANNEL: ${{ secrets.TEST_PUSHOO_CHANNEL }}
       TEST_PUSHOO_TOKEN: ${{ secrets.TEST_PUSHOO_TOKEN }}
       TEST_AKISMET_KEY: ${{ secrets.TEST_AKISMET_KEY }}
-      TEST_AKISMET_BLOG: ${{ secrets.TEST_AKISMET_BLOG }}
-      TEST_TENCENT_SECRET_ID: ${{ secrets.TEST_TENCENT_SECRET_ID }}
-      TEST_TENCENT_SECRET_KEY: ${{ secrets.TEST_TENCENT_SECRET_KEY }}
-      TEST_AI_API_KEY: ${{ secrets.TEST_AI_API_KEY }}
-      TEST_AI_BASE_URL: ${{ secrets.TEST_AI_BASE_URL }}
-      TEST_IMAGE_BED_TOKEN: ${{ secrets.TEST_IMAGE_BED_TOKEN }}
-      TEST_QQ_API_URL: ${{ secrets.TEST_QQ_API_URL }}
+      TEST_SITE_URL: ${{ secrets.TEST_SITE_URL }}
+      TEST_QCLOUD_SECRET_ID: ${{ secrets.TEST_QCLOUD_SECRET_ID }}
+      TEST_QCLOUD_SECRET_KEY: ${{ secrets.TEST_QCLOUD_SECRET_KEY }}
+      TEST_LLM_API_ENDPOINT: ${{ secrets.TEST_LLM_API_ENDPOINT }}
+      TEST_LLM_API_KEY: ${{ secrets.TEST_LLM_API_KEY }}
+      TEST_LLM_MODEL: ${{ secrets.TEST_LLM_MODEL }}
+      TEST_IMAGE_CDN: ${{ secrets.TEST_IMAGE_CDN }}
+      TEST_IMAGE_CDN_TOKEN: ${{ secrets.TEST_IMAGE_CDN_TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6

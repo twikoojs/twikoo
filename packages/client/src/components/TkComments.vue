@@ -13,8 +13,6 @@
 <template>
   <div class="tk-comments">
     <TkSubmit :config="config" @load="initComments" @error="onError" />
-    <!-- 评论区唯一错误卡片：占满整行，位于列表容器上方（列表/提交/回复失败共用） -->
-    <TkError v-if="error" :error="error" />
     <div v-loading="loading" class="tk-comments-container">
       <div class="tk-comments-title">
         <span
@@ -86,9 +84,11 @@
           {{ t("COMMENTS_SEARCH") }}
         </TkButton>
       </div>
-      <div v-if="!loading && !comments.length" class="tk-comments-no">
-        <span v-if="!error && searchKeyword">{{ t("COMMENTS_SEARCH_NO_RESULT") }}</span>
-        <span v-if="!error && !searchKeyword">{{ t("COMMENTS_NO_COMMENTS") }}</span>
+      <!-- 评论区唯一错误卡片：列表/提交/回复失败共用，位于空态块上方 -->
+      <TkError v-if="error" :error="error" />
+      <div v-if="!comments.length && !loading && !error" class="tk-comments-no">
+        <span v-if="searchKeyword">{{ t("COMMENTS_SEARCH_NO_RESULT") }}</span>
+        <span v-if="!searchKeyword">{{ t("COMMENTS_NO_COMMENTS") }}</span>
       </div>
       <TkComment
         v-for="comment in comments"
@@ -100,7 +100,7 @@
         @load="refreshPreservingState"
         @error="onError"
       />
-      <div v-if="showExpand && !loading" class="tk-expand-wrap">
+      <div v-if="showExpand && !loading && !error" class="tk-expand-wrap">
         <div v-loading="loadingMore" class="tk-expand" @click="onExpand">
           {{ t("COMMENTS_EXPAND") }}
         </div>

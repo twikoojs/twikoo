@@ -71,8 +71,8 @@ const requestId = computed(() => props.error.requestId);
   display: flex;
   gap: 8px;
   padding: 12px;
-  border: 1px solid #fbc4c4;
-  background: #fef0f0;
+  border: 1px solid rgba(245, 108, 108, 0.5);
+  background-color: rgba(245, 108, 108, 0.13);
   border-radius: 4px;
   color: #f56c6c;
 }
@@ -86,7 +86,8 @@ const requestId = computed(() => props.error.requestId);
 .twikoo .tk-error__toggle {
   border: none;
   background: none;
-  color: #909399;
+  color: currentColor;
+  opacity: 0.7;
   cursor: pointer;
   font-size: 0.75rem;
   padding: 0;
@@ -95,7 +96,8 @@ const requestId = computed(() => props.error.requestId);
 .twikoo .tk-error__detail {
   margin-top: 6px;
   font-size: 0.75rem;
-  color: #909399;
+  color: currentColor;
+  opacity: 0.7;
   word-break: break-all;
 }
 .twikoo .tk-error__raw {

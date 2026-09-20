@@ -2,6 +2,12 @@
  * 图标注册表（用户修正：从 `@fortawesome/fontawesome-free/svgs/` 按需引入
  * SVG 文件，替代 webfont——字体含全量图标会显著膨胀最终产物）。
  *
+ * 版权声明（CC BY 4.0 要求署名；各 SVG 文件内的 license 注释已被
+ * `vite-plugin-svg-raw-min.mjs` 在构建期剥除以减小产物体积，集中声明于此）：
+ * 本文件内联的全部图标来自 Font Awesome Free 7.3.1 by @fontawesome
+ * （https://fontawesome.com），Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License，
+ * Copyright 2026 Fonticons, Inc.（https://fontawesome.com/license/free）。
+ *
  * 规则：
  * - **只 import 本表用到的图标文件**（Vite `?raw` 原样内联），未引入的图标不进产物；
  *   新增图标 = 加一行 import + 一行注册；

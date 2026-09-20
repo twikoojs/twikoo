@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import twikooSvgRawMin from "./vite-plugin-svg-raw-min.mjs";
 
 /**
  * twikoo 客户端 dev/build 基础配置。
@@ -7,5 +8,5 @@ import vue from "@vitejs/plugin-vue";
  * Vite lib 模式的 UMD 格式要求单入口，无法在单配置中并列四产物。
  */
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue(), twikooSvgRawMin()],
 });

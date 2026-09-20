@@ -16,6 +16,7 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { build } from "vite";
 import vue from "@vitejs/plugin-vue";
+import twikooSvgRawMin from "./vite-plugin-svg-raw-min.mjs";
 import { VERSION } from "@twikoojs/shared";
 
 /** 是否进入 watch 模式（pnpm demo 的客户端进程使用） */
@@ -123,7 +124,7 @@ function inlineCssInto(file) {
 for (const { entry, file, inlineCss } of PRODUCTS) {
   const result = await build({
     configFile: false,
-    plugins: [vue()],
+    plugins: [vue(), twikooSvgRawMin()],
     define: {
       "process.env.TWIKOO_LOG_LEVEL": "undefined",
       "process.env.NODE_ENV": JSON.stringify("production"),

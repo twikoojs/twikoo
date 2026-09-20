@@ -138,9 +138,17 @@ describe("一键启动编排", () => {
     expect(demo, "缺少根 demo 脚本").toBeTruthy();
     expect(demo).toContain("concurrently");
     expect(demo, "缺少 -k（任一进程退出时统一清理）").toMatch(/-k\b/);
-    expect(demo, "缺少客户端 watch 进程").toContain("--filter twikoo build:watch");
-    expect(demo, "缺少后端进程").toContain("--filter tkserver start");
-    expect(demo, "缺少 demo 页进程").toContain("--filter @twikoojs/demo dev");
+    // 三个进程已拆成具名脚本（demo:client / demo:server / demo:page），由根 demo 拉起，
+    // 故「跑什么」断言落在子脚本上，根脚本只校验确实拉起了这三个。
+    for (const name of ["demo:client", "demo:server", "demo:page"]) {
+      expect(demo, `根 demo 脚本未拉起 ${name}`).toContain(`pnpm:${name}`);
+      expect(scripts[name], `缺少 ${name} 脚本`).toBeTruthy();
+    }
+    expect(scripts["demo:client"], "缺少客户端 watch 进程").toContain(
+      "--filter twikoo build:watch",
+    );
+    expect(scripts["demo:server"], "缺少后端进程").toContain("--filter tkserver start");
+    expect(scripts["demo:page"], "缺少 demo 页进程").toContain("--filter @twikoojs/demo dev");
 
     const devDeps = root.devDependencies as Record<string, string>;
     expect(devDeps.concurrently, "缺少 concurrently 依赖").toBeTruthy();
@@ -148,8 +156,10 @@ describe("一键启动编排", () => {
     // 后端数据目录显式指向仓库根 data/（packages/server-self-hosted 的 cwd 上溯两级），
     // 该目录已被 .gitignore 的 data/ 覆盖，保证 demo 数据不误入版本库；
     // TWIKOO_SEED=1 打开 demo 测试数据 seed。
-    expect(demo, "demo 脚本未指定 TWIKOO_DATA").toContain("TWIKOO_DATA=../../data");
-    expect(demo, "demo 脚本未开启 TWIKOO_SEED").toContain("TWIKOO_SEED=1");
+    expect(scripts["demo:server"], "demo:server 未指定 TWIKOO_DATA").toContain(
+      "TWIKOO_DATA=../../data",
+    );
+    expect(scripts["demo:server"], "demo:server 未开启 TWIKOO_SEED").toContain("TWIKOO_SEED=1");
   });
 
   it("客户端提供 build:watch，tkserver 提供 start", () => {

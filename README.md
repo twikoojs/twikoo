@@ -9,125 +9,120 @@
 [![](https://app.cloudback.it/badge/twikoojs/twikoo)](https://cloudback.it)
 [![](https://img.shields.io/npm/l/twikoo)](./LICENSE)
 
+一个**简洁**、**安全**、**免费**的静态网站评论系统。<br>
 A **simple**, **safe**, **free** comment system.  
-**English** | [简体中文](./README-zh_CN.md)
+[English](./README.en.md) | **简体中文**
 
-## Features
+## 特色 | Features
 
-### Simple
+### 简单
 
-- Free Build.（Using Tencent CloudBase as the commenting backend, each user enjoys 1 free standard basic version 1 resource package for a long time）
-- Simple Deployment.（Support one-click deployment, manual deployment, command deployment）
+- 免费搭建（使用云开发 / Vercel / 私有部署评论后台）
+- 简单部署（支持云开发 / Vercel 一键部署）
 
-### Easy to use
+### 易用
 
-- Support reply, like.
-- No additional adaptations, support with light theme and dark theme use.
-- Support API , batch get article comment count, latest comments.
-- Visitors entering QQ number in the nickname field will automatically complete the QQ nickname and QQ email.
-- Visitors fill in the digital QQ e-mail, will use the QQ avatar as the comment avatar.
-- Support the comment to paste pictures.（Can be disabled）
-- Support inserting pictures.（Can be disabled）
-- Support 7bu image bed, Tencent CloudBase image bed.
-- Support inserting emoji.（Can be disabled）
-- Support Ctrl + Enter reply.
-- Comments are saved in draft in real time and will not be lost when refreshed.
-- [Support Katex formulas.](https://twikoo.js.org/faq.html#%E5%A6%82%E4%BD%95%E5%90%AF%E7%94%A8-katex-%E6%94%AF%E6%8C%81)
-- Support for code highlighting by language.
+- 支持回复、点赞
+- 无需额外适配，支持搭配浅色主题与深色主题使用
+- 支持 API 调用，批量获取文章评论数、最新评论
+- 访客在昵称栏输入 QQ 号，会自动补全 QQ 昵称和 QQ 邮箱
+- 访客填写数字 QQ 邮箱，会使用 QQ 头像作为评论头像
+- 支持评论框粘贴图片（可禁用）
+- 支持插入图片（可禁用）
+- 支持去不图床、云开发图床
+- 支持插入表情（可禁用）
+- 支持 Ctrl + Enter 快捷回复
+- 评论框内容实时保存草稿，刷新不会丢失
+- [支持 Katex 公式](https://twikoo.js.org/faq.html#%E5%A6%82%E4%BD%95%E5%90%AF%E7%94%A8-katex-%E6%94%AF%E6%8C%81)
+- 支持按语言的代码高亮
 
-### Security
+### 安全
 
-- Privacy and information security. (sensitive fields (email, IP, environment configuration, etc.) are not leaked through Tencent cloud function control)
-- Support for Akismet spam comment detection.（View Details [akismet.com](https://akismet.com/)）
-- Support Tencent Cloud content security spam comment detection.（View Details [Tencent Cloud Content Security](https://console.cloud.tencent.com/cms/text/overview)）
-- Support manual review mode.
-- Anti XSS Attack.
-- Support for limiting the maximum number of comments per IP per 10 minutes.
+- 隐私信息安全（通过云函数控制敏感字段（邮箱、IP、环境配置等）不会泄露）
+- 支持 Akismet 垃圾评论检测（需自行注册 [akismet.com](https://akismet.com/)）
+- 支持腾讯云内容安全垃圾评论检测（需自行注册 [腾讯云内容安全](https://console.cloud.tencent.com/cms/text/overview)）
+- 支持人工审核模式
+- 防 XSS 注入
+- 支持限制每个 IP 每 10 分钟最多发表多少条评论
 
-### notification
+### 即时
 
-- E-mail（Visitors and Blogger）
-- Wechat（only Blogger, [Server酱](https://sc.ftqq.com/3.version)）
-- QQ（only Blogger, [Qmsg酱](https://qmsg.zendee.cn/)）
+- 支持邮件提醒（访客和博主）
+- 支持微信提醒（仅针对博主，基于 [Server 酱](https://sc.ftqq.com/3.version)，需自行注册）
+- 支持 QQ 提醒（仅针对博主，基于 [Qmsg 酱](https://qmsg.zendee.cn/)，需自行注册）
 
-### Personalization
+### 个性
 
-- Background image.
-- the "blogger" logo text.
-- Notification Email Template.
-- Comment prompt message.（placeholder）
-- emoji（[OwO 的数据格式](https://cdn.jsdelivr.net/npm/owo@1.0.2/demo/OwO.json)）
-- 【Nickname】 【Email】 【Website】 Required / Optional
-- Code highlighting theme.
+- 支持自定义评论框背景图片
+- 支持自定义“博主”标识文字
+- 支持自定义通知邮件模板
+- 支持自定义评论框提示信息（placeholder）
+- 支持自定义表情列表（兼容 [OwO 的数据格式](https://cdn.jsdelivr.net/npm/owo@1.0.2/demo/OwO.json)）
+- 支持自定义【昵称】【邮箱】【网址】必填 / 选填
+- 支持自定义代码高亮主题
 
-### Management
+### 便捷管理
 
-- Embedded panel with password login to easily view comments, hide comments, delete comments and modify configuration.
-- Support to hide the management portal and show it by entering a secret code.
-- Support for importing comments from Valine, Artalk, Disqus.
+- 内嵌式管理面板，通过密码登录，可方便地查看评论、隐藏评论、删除评论、修改配置
+- 支持隐藏管理入口，通过输入暗号显示
+- 支持从 Valine、Artalk、Disqus 导入评论
 
-## Preview
+## 预览 | Preview
 
 <details>
-<summary>Click to view.</summary>
+<summary>点击展开</summary>
 
-### Comments
+### 评论
 
-![Comments](./docs/static/readme-1.png)
+![评论](./docs/static/readme-1.png)
 
-### Management
+### 评论管理
 
-![Management](./docs/static/readme-2.png)
+![评论管理](./docs/static/readme-2.png)
 
-### Notification
+### 推送通知
 
-![Notification](./docs/static/readme-3.jpg)
+![推送通知](./docs/static/readme-3.jpg)
 
 </details>
 
-## Quick Start
+## 快速上手 | Quick Start
 
-[![Deploy](https://main.qcloudimg.com/raw/67f5a389f1ac6f3b4d04c7256438e44f.svg)](https://console.cloud.tencent.com/tcb/env/index?action=CreateAndDeployCloudBaseProject&appUrl=https%3A%2F%2Fgithub.com%2Fimaegoo%2Ftwikoo&branch=main)
-
-[View Details](https://twikoo.js.org/quick-start.html)
+有关详细教程，请查看[快速上手](https://twikoo.js.org/quick-start.html)
 
 <details>
-<summary>If you want to get updates, make suggestions and participate in the test, welcome to join the discussion group：1080829142 (QQ)</summary>
+<summary>如果你想获取更新动态、建言献策、参与测试，欢迎加入讨论群：1080829142</summary>
 <img height="300" alt="1080829142" src="https://www.imaegoo.com/gallery/2020/hello-twikoo.png" />
 </details>
 
-<!-- ## Contributors -->
+<!-- ## 贡献者 | Contributors -->
 
-## Special Thanks
+## 特别感谢 | Special Thanks
 
-Icon design：[Maemo Lee](https://www.maemo.cc)
+图标设计：[Maemo Lee](https://www.maemo.cc)
 
-<!-- ## Donate -->
+<!-- ## 捐赠 | Donate -->
 
-## Release notes & plans
+## 开发 | Development
 
-[Update logs](https://github.com/twikoojs/twikoo/releases) & [Development Plan](https://github.com/twikoojs/twikoo/projects/2)
-
-## Development
-
-This repository is a pnpm monorepo (Node 26). To hack on it locally:
+本仓库是 pnpm monorepo（Node 26）。本地二次开发命令：
 
 ```sh
-pnpm install # install dependencies
-pnpm demo    # one-command local demo: client watch + tkserver + demo page (http://localhost:9820/demo.html)
-pnpm lint    # lint
-pnpm typecheck
-pnpm test    # unit tests
-pnpm build   # build (packages/client/dist/twikoo.all.min.js)
+pnpm install # 安装依赖
+pnpm demo # 一键启动本地演示：客户端 watch + tkserver + demo 页 (http://localhost:9820/demo.html)
+pnpm lint # 代码检查
+pnpm typecheck # 类型检查
+pnpm test # 单元测试
+pnpm build # 编译 (packages/client/dist/twikoo.all.min.js)
 ```
 
-If your changes can help more people, feel free to submit a Pull Request!
+如果您的改动能够帮助到更多人，欢迎提交 Pull Request！
 
-## I18N
+## 国际化 | I18N
 
-Supports 9 locales (zh-CN, zh-HK, zh-TW, en, ja-JP, ko-KR, vi-VN, id-ID, uz-UZ). [Translate Pull Request](https://github.com/twikoojs/twikoo/tree/main/packages/client/src/i18n/locales).
+支持 9 种语言（简体中文、繁体中文、English、日本語、한국어、Tiếng Việt、Bahasa Indonesia、Oʻzbekcha、Узбекча）。欢迎[提交翻译 PR](https://github.com/twikoojs/twikoo/tree/main/packages/client/src/i18n/locales)。
 
-## License
+## 许可 | License
 
 <details>
 <summary>MIT License</summary>

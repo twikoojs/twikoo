@@ -13,28 +13,28 @@
 
 ### SITE_NAME
 
-类型: `String`<br>
-默认值: `null`<br>
-必要性: `false`<br>
-示例: 虹墨空间站
+类型：`String`<br>
+默认值：`null`<br>
+必要性：`false`<br>
+示例：虹墨空间站
 
 博客、站点名称。
 
 ### SITE_URL
 
-类型: `String`<br>
-默认值: `null`<br>
-必要性: `false`<br>
-示例: https://www.imaegoo.com
+类型：`String`<br>
+默认值：`null`<br>
+必要性：`false`<br>
+示例：https://www.imaegoo.com
 
 博客、站点地址。
 
 ### BLOGGER_EMAIL
 
-类型: `String`<br>
-默认值: `null`<br>
-必要性: `false`<br>
-示例: 12345@qq.com
+类型：`String`<br>
+默认值：`null`<br>
+必要性：`false`<br>
+示例：12345@qq.com
 
 博主的邮箱地址，用于邮件通知、博主标识。
 
@@ -42,19 +42,19 @@
 
 ### AKISMET_KEY
 
-类型: `String`<br>
-默认值: `null`<br>
-必要性: `false`<br>
-示例: 8651783ed123
+类型：`String`<br>
+默认值：`null`<br>
+必要性：`false`<br>
+示例：8651783ed123
 
 反垃圾评论 API key。
 
 ### HIDE_SPAM
 
-类型: `String`<br>
-默认值: `false`<br>
-必要性: `false`<br>
-示例: `true`
+类型：`String`<br>
+默认值：`false`<br>
+必要性：`false`<br>
+示例：`true`
 
 设为 `true` 后，前台评论区对所有人隐藏已标记为垃圾的评论，包括管理员和评论作者；评论管理后台仍可查看、审核和恢复。
 
@@ -62,57 +62,57 @@
 
 ### SC_SENDKEY
 
-类型: `String`<br>
-默认值: `null`<br>
-必要性: `false`<br>
-示例: SCT1364TKdsiGjGvyAZNYDVnuHW12345
+类型：`String`<br>
+默认值：`null`<br>
+必要性：`false`<br>
+示例：SCT1364TKdsiGjGvyAZNYDVnuHW12345
 
-[Server酱](https://sc.ftqq.com/3.version)微信推送的 `SCKEY`
+[Server 酱](https://sc.ftqq.com/3.version)微信推送的 `SCKEY`
 
 ## 邮件通知
 
 ### SENDER_EMAIL
 
-类型: `String`<br>
-默认值: `null`<br>
-必要性: `false`<br>
-示例: blog@imaegoo.com
+类型：`String`<br>
+默认值：`null`<br>
+必要性：`false`<br>
+示例：blog@imaegoo.com
 
 邮件通知邮箱地址。对于大多数邮箱服务商，`SENDER_EMAIL` 必须和 `SMTP_USER` 保持一致，否则无法发送邮件。
 
 ### SENDER_NAME
 
-类型: `String`<br>
-默认值: `null`<br>
-必要性: `false`<br>
-示例: 虹墨空间站评论提醒
+类型：`String`<br>
+默认值：`null`<br>
+必要性：`false`<br>
+示例：虹墨空间站评论提醒
 
 邮件通知标题。
 
 ### SMTP_SERVICE
 
-类型: `String`<br>
-默认值: `null`<br>
-必要性: `false`<br>
-示例: qiye.aliyun
+类型：`String`<br>
+默认值：`null`<br>
+必要性：`false`<br>
+示例：qiye.aliyun
 
 邮件通知邮箱服务商。<br>
 完整列表请参考：[Supported services](https://nodemailer.com/smtp/well-known/#supported-services)
 
 ### SMTP_USER
 
-类型: `String`<br>
-默认值: `null`<br>
-必要性: `false`<br>
-示例: blog@imaegoo.com
+类型：`String`<br>
+默认值：`null`<br>
+必要性：`false`<br>
+示例：blog@imaegoo.com
 
 邮件通知邮箱用户名。
 
 ### SMTP_PASS
 
-类型: `String`<br>
-默认值: `null`<br>
-必要性: `false`<br>
-示例: password
+类型：`String`<br>
+默认值：`null`<br>
+必要性：`false`<br>
+示例：password
 
-邮件通知邮箱密码，QQ邮箱请填写授权码。
+邮件通知邮箱密码，QQ 邮箱请填写授权码。

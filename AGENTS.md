@@ -53,6 +53,7 @@ twikoo/
 pnpm build # 全仓构建
 pnpm test # 全仓单元测试
 pnpm lint # ESLint
+pnpm lint:md # markdown 排版（AutoCorrect，只扫 *.md）
 pnpm typecheck # 逐包 tsc --noEmit
 pnpm e2e:b2 # 端到端回归
 pnpm check:products # 客户端产物逐一 init + 形态断言 + tkserver 启动/shutdown
@@ -146,6 +147,7 @@ flowchart LR
 
 - **ESLint 9** flat（`vue3-recommended` + `typescript-eslint` type-checked）
 - **Prettier**（`semi` · 双引号 · `trailingComma: "all"` · `printWidth: 100` · `tabWidth: 2`）
+- **markdown 由 [AutoCorrect](https://github.com/huacnlee/autocorrect) 负责**：`pnpm lint:md` 检查、`pnpm format:md` 修复
 - **Vitest 5**（工作区模式：根 `vitest.config.ts` 的 `projects` 发现各包 `vitest.config.ts`）
 
 ## CSS 规范

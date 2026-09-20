@@ -12,7 +12,7 @@
 
 ## 如何获得管理面板的私钥文件？
 
-1. 进入[环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)，点击“自定义登录”右边的“私钥下载”，下载私钥文件
+1. 进入[环境 - 登录授权](https://console.cloud.tencent.com/tcb/env/login)，点击“自定义登录”右边的“私钥下载”，下载私钥文件
 2. 用文本编辑器打开私钥文件，复制全部内容
 3. 点击评论窗口的“小齿轮”图标，粘贴私钥文件内容，并设置管理员密码
 
@@ -69,7 +69,7 @@ Twikoo 支持 Katex 公式，但为了限制 Twikoo 的包大小，Twikoo 没有
 
 ```js
 twikoo.init({
-  envId: "您的环境id",
+  envId: "您的环境 id",
   el: "#tcomment",
   katex: {
     delimiters: [
@@ -93,14 +93,14 @@ Twikoo 支持接入腾讯云文本内容检测，使用深度学习技术，识�
 
 如何申请腾讯云文本内容检测
 
-1. 访问[腾讯云控制台-文本内容安全](https://console.cloud.tencent.com/cms/text/overview)，开通文本内容安全服务
-2. 访问[腾讯云控制台-用户列表](https://console.cloud.tencent.com/cam)，点击新建用户，点击快速创建
+1. 访问[腾讯云控制台 - 文本内容安全](https://console.cloud.tencent.com/cms/text/overview)，开通文本内容安全服务
+2. 访问[腾讯云控制台 - 用户列表](https://console.cloud.tencent.com/cam)，点击新建用户，点击快速创建
 3. 输入用户名，访问方式选择“编程访问”，用户权限取消“AdministratorAccess”，只勾选“QcloudTMSFullAccess”
 4. 点击“创建用户”
 5. 复制“成功新建用户”页面的“SecretId”和“SecretKey”，到 Twikoo 管理面板“反垃圾”模块中配置
 6. 测试反垃圾效果
 
-成功后，站长可以在[腾讯云控制台-自定义库管理](https://console.cloud.tencent.com/cms/text/lib)配置自定义文本内容过滤。
+成功后，站长可以在[腾讯云控制台 - 自定义库管理](https://console.cloud.tencent.com/cms/text/lib)配置自定义文本内容过滤。
 
 ### 使用 Akismet 反垃圾服务
 
@@ -113,7 +113,7 @@ Akismet (Automattic Kismet) 是应用广泛的一个垃圾留言过滤系统，�
 
 请填写 `viagra-test-123` 作为昵称，或填写 `akismet-guaranteed-spam@example.com` 作为邮箱，发表评论，这条评论将一定会被视为垃圾评论。
 
-需要注意的是，由于 Akismet 服务响应速度较慢（大约 6 秒），影响用户体验，Twikoo 采取 “先放行，后检测” 的策略，垃圾评论会在发表后短暂可见。
+需要注意的是，由于 Akismet 服务响应速度较慢（大约 6 秒），影响用户体验，Twikoo 采取“先放行，后检测”的策略，垃圾评论会在发表后短暂可见。
 
 ### 配置 LLM 反垃圾服务
 
@@ -153,9 +153,9 @@ Akismet (Automattic Kismet) 是应用广泛的一个垃圾留言过滤系统，�
 | 7bu | https://7bu.top | 去不图床，由杜老师提供支持，无免费套餐 |
 | see | https://s.ee | S.EE 图床，有免费套餐，请自行注册账号，`IMAGE_CDN_TOKEN` 可在 [Dashboard](https://s.ee/user/developers/) 中获取 |
 | [lsky-pro](https://www.lsky.pro) | 私有部署 | 兰空图床 2.0 版本，`IMAGE_CDN` 请配置图床首页 URL 地址（如 `https://7bu.top`），`IMAGE_CDN_TOKEN` 获取方式请参考教程 [杜老师说图床：新版本去不图床 Token 的获取与清空](https://dusays.com/454/)，获取到的 token 格式应为 `1\|1bJbwlqBfnggmOMEZqXT5XusaIwqiZjCDs7r1Ob5`） |
-| [PicList](https://piclist.cn/)                         | 私有部署        | `IMAGE_CDN_URL` 配置图床 URL 地址，`IMAGE_CDN_TOKEN`填写参考[piclist文档：接口鉴权](https://piclist.cn/advanced.html#%E6%8E%A5%E5%8F%A3%E9%89%B4%E6%9D%83) |
+| [PicList](https://piclist.cn/)                         | 私有部署        | `IMAGE_CDN_URL` 配置图床 URL 地址，`IMAGE_CDN_TOKEN`填写参考[piclist 文档：接口鉴权](https://piclist.cn/advanced.html#%E6%8E%A5%E5%8F%A3%E9%89%B4%E6%9D%83) |
 | [EasyImage2.0](https://github.com/icret/EasyImages2.0) | 私有部署        | `IMAGE_CDN_URL` 配置图床 URL 地址，`IMAGE_CDN_TOKEN`填写 TOKEN |
-| [Chevereto](https://chevereto.com) | 私有部署 | Chevereto v4 版本,`IMAGE_CDN_URL` 配置图床 URL 地址（如 `https://your-chevereto.com`），`IMAGE_CDN_TOKEN` 填写 API Key（在管理后台 Dashboard → Settings → API 中获取）。注意：需要支持 API v1 的 Chevereto 实例 |
+| [Chevereto](https://chevereto.com) | 私有部署 | Chevereto v4 版本，`IMAGE_CDN_URL` 配置图床 URL 地址（如 `https://your-chevereto.com`），`IMAGE_CDN_TOKEN` 填写 API Key（在管理后台 Dashboard → Settings → API 中获取）。注意：需要支持 API v1 的 Chevereto 实例 |
 | S3 / R2 / MinIO | S3 兼容服务 | `IMAGE_CDN` 设为 `s3`，填写 `S3_BUCKET`、`S3_ACCESS_KEY_ID`、`S3_SECRET_ACCESS_KEY` 等配置；`S3_FORCE_PATH_STYLE` 请根据端点类型配置：Cloudflare R2、MinIO 等 path-style 端点保持为空或 `true`，已绑定存储桶的自定义域名（如腾讯云 COS 自定义域名）则设为 `false` |
 
 ## 私有部署能连接自己的数据库吗？
@@ -164,7 +164,7 @@ Twikoo 私有部署版默认使用内置数据库：LokiJS 数据库，支持的
 
 如果您有 MongoDB 实例，可以连接 MongoDB 作为外部数据库，只需配置环境变量 MONGODB_URI 为数据库连接地址即可，如：`mongodb://<username>:<password>@<host>/`。
 
-## 部署后遇到评论失败: 0，管理面板进不去？
+## 部署后遇到评论失败：0，管理面板进不去？
 
 在包含评论框的页面，打开浏览器开发者工具（Windows 下快捷键为 F12），点击 Console 标签，查找包含 twikoo 关键字的报错。
 
@@ -174,7 +174,7 @@ Twikoo 私有部署版默认使用内置数据库：LokiJS 数据库，支持的
 
 如果看到 `Access to XMLHttpRequest at 'https://tcb-api.tencentcloudapi.com/web?env=...' from origin '...' has been blocked by CORS policy...`：请检查前端 js 文件版本是否最新，并确保 envId 以 `https://` 开头。
 
-如果看到 `Access to XMLHttpRequest at ... No 'Access-Control-Allow-Origin' header is present on the requested resource.`：请先访问一下 envId 查看云函数是否运行正常，如果没有运行正常的提示，请重新部署云函数，确保不要漏下任何步骤；如果提示运行正常，请本地启动网站（localhost）并访问管理面板-配置管理-通用，清空 `CORS_ALLOW_ORIGIN` 字段并保存，然后刷新重试。
+如果看到 `Access to XMLHttpRequest at ... No 'Access-Control-Allow-Origin' header is present on the requested resource.`：请先访问一下 envId 查看云函数是否运行正常，如果没有运行正常的提示，请重新部署云函数，确保不要漏下任何步骤；如果提示运行正常，请本地启动网站（localhost）并访问管理面板 - 配置管理 - 通用，清空 `CORS_ALLOW_ORIGIN` 字段并保存，然后刷新重试。
 
 如果看到其他错误，请 [提交 issue](https://github.com/twikoojs/twikoo/issues/new) 并附上错误信息。
 

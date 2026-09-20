@@ -41,8 +41,8 @@ A **simple**, **safe**, **free** comment system.
 
 ### Simple
 
-- Free Build.（Using CloudBase / Vercel / self-hosted as the commenting backend）
-- Simple Deployment.（Support CloudBase / Vercel one-click deployment）
+- Free Build.(Using CloudBase / Vercel / self-hosted as the commenting backend)
+- Simple Deployment.(Support CloudBase / Vercel one-click deployment)
 
 ### Easy to use
 
@@ -51,10 +51,10 @@ A **simple**, **safe**, **free** comment system.
 - Support API , batch get article comment count, latest comments.
 - Visitors entering QQ number in the nickname field will automatically complete the QQ nickname and QQ email.
 - Visitors fill in the digital QQ e-mail, will use the QQ avatar as the comment avatar.
-- Support the comment to paste pictures.（Can be disabled）
-- Support inserting pictures.（Can be disabled）
+- Support the comment to paste pictures.(Can be disabled)
+- Support inserting pictures.(Can be disabled)
 - Support 7bu image bed, Tencent CloudBase image bed.
-- Support inserting emoji.（Can be disabled）
+- Support inserting emoji.(Can be disabled)
 - Support Ctrl + Enter reply.
 - Comments are saved in draft in real time and will not be lost when refreshed.
 - [Support Katex formulas.](https://twikoo.js.org/faq.html#%E5%A6%82%E4%BD%95%E5%90%AF%E7%94%A8-katex-%E6%94%AF%E6%8C%81)
@@ -63,8 +63,8 @@ A **simple**, **safe**, **free** comment system.
 ### Security
 
 - Privacy and information security. (sensitive fields (email, IP, environment configuration, etc.) are not leaked through Tencent cloud function control)
-- Support for Akismet spam comment detection.（View Details [akismet.com](https://akismet.com/)）
-- Support Tencent Cloud content security spam comment detection.（View Details [Tencent Cloud Content Security](https://console.cloud.tencent.com/cms/text/overview)）
+- Support for Akismet spam comment detection.(View Details [akismet.com](https://akismet.com/)）
+- Support Tencent Cloud content security spam comment detection.(View Details [Tencent Cloud Content Security](https://console.cloud.tencent.com/cms/text/overview)）
 - Support manual review mode.
 - Anti XSS Attack.
 - Support for limiting the maximum number of comments per IP per 10 minutes.
@@ -72,8 +72,8 @@ A **simple**, **safe**, **free** comment system.
 ### notification
 
 - E-mail（Visitors and Blogger）
-- Wechat（only Blogger, [Server酱](https://sc.ftqq.com/3.version)）
-- QQ（only Blogger, [Qmsg酱](https://qmsg.zendee.cn/)）
+- Wechat（only Blogger, [Server 酱](https://sc.ftqq.com/3.version)）
+- QQ（only Blogger, [Qmsg 酱](https://qmsg.zendee.cn/)）
 
 ### Personalization
 
@@ -111,14 +111,14 @@ A **simple**, **safe**, **free** comment system.
 
 [View Details](https://twikoo.js.org/quick-start.html)
 
-If you want to get updates, make suggestions and participate in the test, welcome to join the discussion group：1080829142 (QQ)  
+If you want to get updates, make suggestions and participate in the test, welcome to join the discussion group: 1080829142 (QQ)  
 <img height="300" alt="1080829142"  src="https://www.imaegoo.com/gallery/2020/hello-twikoo.png" />
 
 <!-- ## Contributors -->
 
 ## Special Thanks
 
-Icon design：[Maemo Lee](https://www.maemo.cc)
+Icon design:[Maemo Lee](https://www.maemo.cc)
 
 <!-- ## Donate -->
 

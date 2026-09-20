@@ -54,7 +54,7 @@ Get the latest comments.
 ```js
 twikoo
   .getRecentComments({
-    envId: "您的环境id", // Tencent CloudBase Environment ID
+    envId: "您的环境 id", // Tencent CloudBase Environment ID
     // region: 'ap-guangzhou', // Environment locale, default is ap-shanghai, if your environment locale is not Shanghai, you need to pass this parameter
     pageSize: 10, // Get how many bars, the default parameter is 10, the maximum parameter is 100
     includeReply: false, // Whether to include the latest reply, the default parameter is false

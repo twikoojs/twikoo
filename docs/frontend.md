@@ -4,7 +4,7 @@
 
 ### 在 [Hexo Butterfly](https://github.com/jerryc127/hexo-theme-butterfly) 主题使用
 
-请参考 [Butterfly 安裝文檔(四) 主題配置-2](https://butterfly.js.org/posts/ceeb73f/#%E8%A9%95%E8%AB%96) 进行配置
+请参考 [Butterfly 安裝文檔 (四) 主題配置 -2](https://butterfly.js.org/posts/ceeb73f/#%E8%A9%95%E8%AB%96) 进行配置
 
 ### 在 [Hexo Keep](https://github.com/XPoet/hexo-theme-keep) 主题使用
 
@@ -45,7 +45,7 @@ twikoo:
 
 ### 在 [Hexo Icarus](https://github.com/ppoffice/hexo-theme-icarus) 主题使用
 
-请参考 [基于腾讯云，给你的 Icarus 博客配上 Twikoo 评论系统](https://www.anzifan.com/post/icarus_to_candy_2/) by 异次元de机智君💯
+请参考 [基于腾讯云，给你的 Icarus 博客配上 Twikoo 评论系统](https://www.anzifan.com/post/icarus_to_candy_2/) by 异次元 de 机智君💯
 
 ### 在 [Hexo MengD(萌典)](https://github.com/lete114/hexo-theme-MengD) 主题使用
 
@@ -53,7 +53,7 @@ twikoo:
 
 ### 在 [hexo-theme-fluid](https://github.com/fluid-dev/hexo-theme-fluid) 主题使用
 
-请参考 [配置指南-评论](https://hexo.fluid-dev.com/docs/guide/#%E8%AF%84%E8%AE%BA) 进行配置
+请参考 [配置指南 - 评论](https://hexo.fluid-dev.com/docs/guide/#%E8%AF%84%E8%AE%BA) 进行配置
 
 ### 在 [hexo-theme-cards](https://github.com/ChrAlpha/hexo-theme-cards) 主题使用
 
@@ -96,7 +96,7 @@ twikoo:
 <script src="https://cdn.jsdelivr.net/npm/twikoo@__TWIKOO_VERSION__/dist/twikoo.min.js"></script>
 <script>
   twikoo.init({
-    envId: "您的环境id", // 腾讯云环境填 envId；Vercel 环境填地址（https://xxx.vercel.app）
+    envId: "您的环境 id", // 腾讯云环境填 envId；Vercel 环境填地址（https://xxx.vercel.app）
     el: "#tcomment", // 容器元素
     // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，腾讯云环境填 ap-shanghai 或 ap-guangzhou；Vercel 环境不填
     // path: location.pathname, // 用于区分不同文章的自定义 js 路径，如果您的文章路径不是 location.pathname，需传此参数
@@ -160,7 +160,7 @@ curl -sL "https://cdn.jsdelivr.net/npm/twikoo@__TWIKOO_VERSION__/dist/twikoo.all
 
 ## 开启管理面板（腾讯云环境）
 
-1. 进入[环境-登录授权](https://console.cloud.tencent.com/tcb/env/login)，点击“自定义登录”右边的“私钥下载”，下载私钥文件
+1. 进入[环境 - 登录授权](https://console.cloud.tencent.com/tcb/env/login)，点击“自定义登录”右边的“私钥下载”，下载私钥文件
 2. 用文本编辑器打开私钥文件，复制全部内容
 3. 点击评论窗口的“小齿轮”图标，粘贴私钥文件内容，并设置管理员密码
 

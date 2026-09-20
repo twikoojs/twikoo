@@ -4,3 +4,6 @@ coverage/
 pnpm-lock.yaml
 docs/.vitepress/dist/
 node_modules/
+
+# markdown 交给 AutoCorrect（见 .autocorrectrc + scripts/format-md.mjs）
+*.md

@@ -14,7 +14,7 @@ Leave the application directory empty and confirm; the deployment runs automatic
 ::: tip No version number to change
 The one-click deployment depends on `twikoo-func@latest` (see [`templates/cloudbase/twikoo/package.json`](https://github.com/twikoojs/twikoo/blob/main/templates/cloudbase/twikoo/package.json)), so a single redeploy picks up the newest stable release.
 
-If the version does not change after redeploying, open 环境 → 云函数, open `package.json` and click **保存并安装依赖** once to force a fresh install.
+If the version does not change after redeploying, open 环境 → 云函数，open `package.json` and click **保存并安装依赖** once to force a fresh install.
 :::
 
 ## CloudBase, manual deployment

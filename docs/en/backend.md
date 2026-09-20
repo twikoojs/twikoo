@@ -19,7 +19,7 @@ On CloudBase, upgrade the function runtime to **Node 20 or newer (24 recommended
 
 1. Create a CloudBase environment and enable anonymous sign-in (环境 → 登录授权).
 2. Add your site domain to the WEB security domains (环境 → 安全配置).
-3. In 云函数 → 函数管理, create a function from the **Node.js Hello World** template.
+3. In 云函数 → 函数管理，create a function from the **Node.js Hello World** template.
 4. Replace `index.js` with:
 
 ```js

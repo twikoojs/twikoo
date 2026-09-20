@@ -4,7 +4,7 @@
 
 ## 针对腾讯云 CloudBase 部署的更新方式
 
-登录[环境-云函数](https://console.cloud.tencent.com/tcb/scf/index)，点击 twikoo，点击函数代码，打开 `package.json` 文件，确认依赖写的是 `"twikoo-func": "latest"`（1.x 时代这里写的是固定版本号，建议一并改成 `latest`，以后升级就不用再改），点击“保存并安装依赖”即可。
+登录[环境 - 云函数](https://console.cloud.tencent.com/tcb/scf/index)，点击 twikoo，点击函数代码，打开 `package.json` 文件，确认依赖写的是 `"twikoo-func": "latest"`（1.x 时代这里写的是固定版本号，建议一并改成 `latest`，以后升级就不用再改），点击“保存并安装依赖”即可。
 
 ::: tip 提示
 如果您的云函数是 1.0.0 之前的版本，因为 1.0.0 版本修改了部署步骤，请先参考[手动部署](#手动部署)，从第 5 步开始，重新创建云函数，再按照此步骤更新。
@@ -25,7 +25,7 @@
 1. 进入 [Vercel 仪表板](https://vercel.com/dashboard) - twikoo - Deployments
 2. 在最新一次部署右侧点击更多（三个点）- Redeploy
 3. 在弹窗中取消勾选 Use existing Build Cache，点击 Redeploy
-4. 部署完成后访问域名，如果环境配置正确，可以看到 “Twikoo 云函数运行正常” 的提示
+4. 部署完成后访问域名，如果环境配置正确，可以看到“Twikoo 云函数运行正常”的提示
 
 ## 针对 Railway 和 Zeabur 部署的更新方式
 

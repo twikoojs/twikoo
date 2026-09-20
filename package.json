@@ -19,6 +19,8 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
+    "lint:md": "node scripts/format-md.mjs",
+    "format:md": "node scripts/format-md.mjs --fix",
     "typecheck": "pnpm -r --if-present run typecheck",
     "e2e:b2": "node scripts/e2e-b2.mjs",
     "check:products": "node scripts/check-cdn-products.mjs"
@@ -28,6 +30,7 @@
     "@vitest/coverage-v8": "5.0.1",
     "@vue/eslint-config-typescript": "^14.9.0",
     "@vue/test-utils": "^2.5.1",
+    "autocorrect-node": "^2.14.0",
     "concurrently": "^10.0.5",
     "cross-env": "^10.1.0",
     "eslint": "^10.10.0",

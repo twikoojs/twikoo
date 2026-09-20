@@ -178,6 +178,9 @@ importers:
       '@vue/test-utils':
         specifier: ^2.5.1
         version: 2.5.1(@vue/compiler-dom@3.5.42)(@vue/server-renderer@3.5.42)(vue@3.5.42(typescript@6.0.3))
+      autocorrect-node:
+        specifier: ^2.14.0
+        version: 2.14.0
       concurrently:
         specifier: ^10.0.5
         version: 10.0.5
@@ -2295,6 +2298,43 @@ packages:
 
   asynckit@0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
+
+  autocorrect-node-darwin-arm64@2.14.0:
+    resolution: {integrity: sha512-l5IRTQz6zYAlkfEc5emIDXBkayD0MIwPPAVXCFMceFwyTNhAJ5veoKqRrsPuBVthIbfYKtAUs9oy9oFoHQn7bw==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+
+  autocorrect-node-darwin-x64@2.14.0:
+    resolution: {integrity: sha512-vRO0lwfXff2Fs41NzdDqN5t4VQ03M0Xsn6Tk4OjMrbjoWJqaEq05KZOTSaSF/wEs/7E1VoaI9Kz+c0fqylVX4Q==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+
+  autocorrect-node-linux-x64-gnu@2.14.0:
+    resolution: {integrity: sha512-v1y1wh340cbhrHSZZP0oPkvWUprDtUIwnBP69Bls27VhQ2ZyVV4eijDNOP//yGUyUunMB0rtWoZaBsq8ugt1Kg==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  autocorrect-node-linux-x64-musl@2.14.0:
+    resolution: {integrity: sha512-3LifiLG61VIXBrOITpD/REcg/ZEUuLz/P2XUWMCfGqhzoUb8oFgM3o0A6extvIH2NefiHMndB9kNbfQjXCl3zA==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
+  autocorrect-node-win32-x64-msvc@2.14.0:
+    resolution: {integrity: sha512-OM6TeGUW0+4R9KtUYTYNEwlInd+b2kumw/B1HCbCzb1F7HpfaNxnZiMk1li0bdPPBDzD5YuzwM30VJZMCWIi5A==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+
+  autocorrect-node@2.14.0:
+    resolution: {integrity: sha512-Pkdw3Hr1Wbtpm8f7KYOaPnHFa7TNVo9dyuOffVaNGN3iWWRBs011XBuCJUEmHV097kJkab94cs4P6KJ4pvI41g==}
+    engines: {node: '>= 10'}
+    hasBin: true
 
   axios@0.27.2:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
@@ -5387,6 +5427,29 @@ snapshots:
       tslib: 2.8.1
 
   asynckit@0.4.0: {}
+
+  autocorrect-node-darwin-arm64@2.14.0:
+    optional: true
+
+  autocorrect-node-darwin-x64@2.14.0:
+    optional: true
+
+  autocorrect-node-linux-x64-gnu@2.14.0:
+    optional: true
+
+  autocorrect-node-linux-x64-musl@2.14.0:
+    optional: true
+
+  autocorrect-node-win32-x64-msvc@2.14.0:
+    optional: true
+
+  autocorrect-node@2.14.0:
+    optionalDependencies:
+      autocorrect-node-darwin-arm64: 2.14.0
+      autocorrect-node-darwin-x64: 2.14.0
+      autocorrect-node-linux-x64-gnu: 2.14.0
+      autocorrect-node-linux-x64-musl: 2.14.0
+      autocorrect-node-win32-x64-msvc: 2.14.0
 
   axios@0.27.2(debug@4.4.3(supports-color@10.2.2)):
     dependencies:

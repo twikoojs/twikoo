@@ -1,0 +1,14 @@
+# AutoCorrect 配置（中文文案排版：CJK 与拉丁字符 / 数字之间的空格、标点形态等）
+#
+# 仓库约定：markdown 由 AutoCorrect 负责格式化，prettier 已完全忽略 *.md（见 .prettierignore）。
+# 只能通过 scripts/format-md.mjs 调用（它把范围限制在 *.md —— AutoCorrect CLI 直接扫仓库会连
+# .ts/.js 一起处理，把源码字符串里的 `: ` 改成 `：`）。
+# 规则说明：https://github.com/huacnlee/autocorrect
+
+rules:
+  # 拼写检查关闭：仓库以中文为主、专有名词多，维护词典的收益低于噪声成本
+  spellcheck: 0
+
+context:
+  # 代码块内的文案同样排版（例如示例里的中文与英文之间补空格）
+  codeblock: 1

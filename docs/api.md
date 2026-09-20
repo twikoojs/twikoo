@@ -17,7 +17,7 @@
 ```js
 twikoo
   .getCommentsCount({
-    envId: "您的环境id", // 环境 ID
+    envId: "您的环境 id", // 环境 ID
     // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，如果您的环境地域不是上海，需传此参数
     urls: [
       // 不包含协议、域名、参数的文章路径列表，必传参数
@@ -29,7 +29,7 @@ twikoo
   })
   .then(function (res) {
     console.log(res);
-    // 返回示例: [
+    // 返回示例：[
     //   { url: '/2020/10/post-1.html', count: 10 },
     //   { url: '/2020/11/post-2.html', count: 0 },
     //   { url: '/2020/12/post-3.html', count: 20 }
@@ -54,7 +54,7 @@ twikoo
 ```js
 twikoo
   .getRecentComments({
-    envId: "您的环境id", // 环境 ID
+    envId: "您的环境 id", // 环境 ID
     // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，如果您的环境地域不是上海，需传此参数
     urls: [
       // 要求云函数版本 >= 1.6.27。不包含协议、域名、参数的文章路径列表，不传默认获取所有最新评论
@@ -77,8 +77,8 @@ twikoo
     //   * commentText:  纯文本格式的评论内容
     //   * created:      评论时间，格式为毫秒级时间戳
     //   * avatar:       头像地址（0.2.9 新增）
-    //   * relativeTime: 相对评论时间，如 “1 小时前”（0.2.9 新增）
-    // 返回示例: [ // 从新到旧顺序
+    //   * relativeTime: 相对评论时间，如“1 小时前”（0.2.9 新增）
+    // 返回示例：[ // 从新到旧顺序
     //   { id: '', url: '', nick: '', mailMd5: '', link: '', comment: '', commentText: '', created: 0 },
     //   { id: '', url: '', nick: '', mailMd5: '', link: '', comment: '', commentText: '', created: 0 },
     //   { id: '', url: '', nick: '', mailMd5: '', link: '', comment: '', commentText: '', created: 0 }

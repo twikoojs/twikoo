@@ -21,7 +21,7 @@ CloudBase 请将云函数运行时升级到 **Node 20 及以上（推荐 24）**
 
 如果您打算部署到一个现有的云开发环境，请直接从第 2 步开始。
 
-1. 进入[云开发CloudBase购买页面](https://buy.cloud.tencent.com/lowcode?buyType=tcb)，数据库请选择“云数据库”，其余选项按页面提示填写，点击“立即购买”，按提示创建好环境。
+1. 进入[云开发 CloudBase 购买页面](https://buy.cloud.tencent.com/lowcode?buyType=tcb)，数据库请选择“云数据库”，其余选项按页面提示填写，点击“立即购买”，按提示创建好环境。
 ::: tip 提示
 - 推荐创建上海环境。如选择其它环境，需要在 `twikoo.init()` 时额外指定环境 `region: "ap-guangzhou"`
 - 环境名称自由填写
@@ -30,13 +30,13 @@ CloudBase 请将云函数运行时升级到 **Node 20 及以上（推荐 24）**
 ![](./static/tcb/1787559137780.webp)
 
 2. 进入[云开发新版开发平台](https://tcb.cloud.tencent.com/dev)<br>
-3. 进入“身份认证-配置-登录方式”，启用“允许匿名登入”
+3. 进入“身份认证 - 配置 - 登录方式”，启用“允许匿名登入”
 
 ![](./static/tcb/1787559902813.webp)
 
-4. 进入“HTTP 网关-跨域设置-添加跨域域名”，添加网站域名（免费套餐无法添加，需升级付费套餐才能添加）
+4. 进入“HTTP 网关 - 跨域设置 - 添加跨域域名”，添加网站域名（免费套餐无法添加，需升级付费套餐才能添加）
 
-5. 进入“云函数/托管-云函数-函数管理”，点击“权限控制”，将输入框内容修改为以下内容，然后点击确定
+5. 进入“云函数/托管 - 云函数 - 函数管理”，点击“权限控制”，将输入框内容修改为以下内容，然后点击确定
 
 ```json
 {
@@ -48,7 +48,7 @@ CloudBase 请将云函数运行时升级到 **Node 20 及以上（推荐 24）**
 
 ![](./static/tcb/1787560276073.webp)
 
-6. 进入“云函数/托管-云函数-函数管理”，点击“新建云函数”，点击“通过模板创建-Node.js Hello World”
+6. 进入“云函数/托管 - 云函数 - 函数管理”，点击“新建云函数”，点击“通过模板创建-Node.js Hello World”
 7. 打开 `index.js` 文件，清空输入框中的示例代码，复制以下代码、粘贴到代码框中
 
 ```js
@@ -87,7 +87,7 @@ exports.main = require("twikoo-func").main;
 
 ![20241010103723](https://github.com/user-attachments/assets/d15d3422-b2c0-4bd0-a889-4f275565d9cd)
 
-2. 完成安装后在应用商店中找到 Twikoo ，点击安装，配置域名、端口等基本信息即可完成安装
+2. 完成安装后在应用商店中找到 Twikoo，点击安装，配置域名、端口等基本信息即可完成安装
 
 ![1730860915662](https://github.com/user-attachments/assets/fca433b3-5ba9-4424-af0e-4063df341833)
 
@@ -123,7 +123,7 @@ Vercel 侧只装这一个 npm 依赖、不跑任何构建，所以**升级只需
 ![](./static/vercel-1.png)
 
 6. 进入 Deployments , 然后在任意一项后面点击更多（三个点） , 然后点击 Redeploy , 最后点击下面的 Redeploy
-7. 进入 Overview，点击 Domains 下方的链接，如果环境配置正确，可以看到 “Twikoo 云函数运行正常” 的提示
+7. 进入 Overview，点击 Domains 下方的链接，如果环境配置正确，可以看到“Twikoo 云函数运行正常”的提示
 8. Vercel Domains（包含 `https://` 前缀，例如 `https://xxx.vercel.app`）即为您的环境 id
 
 ## Railway 部署
@@ -154,7 +154,7 @@ Zeabur 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 2. 打开 [twikoojs/twikoo-zeabur](https://github.com/twikoojs/twikoo-zeabur) 点击 fork 将仓库 fork 到自己的账号下
 3. 回到 Zeabur 点击部署新服务 - 部署你的源代码 - 授权 GitHub - 选择刚才 fork 的仓库，名称随意
 
-> _无需配置数据库连接字符串！ Zeabur 已自动配置_
+> _无需配置数据库连接字符串！Zeabur 已自动配置_
 
 4. 部署好后点开环境卡片 - 设置 - 域名，绑定一个域名（例如 `mytwikoo.zeabur.app`）
 5. 到博客配置文件中配置 envId 为 `https://` 加域名（例如 `https://mytwikoo.zeabur.app`）
@@ -186,7 +186,7 @@ Netlify 免费等级（Functions Level 0）支持每月 125,000 请求次数和 
 
 ![](./static/netlify-4.png)
 
-8. 进入 Site overview，点击上方的链接，如果环境配置正确，可以看到 “Twikoo 云函数运行正常” 的提示
+8. 进入 Site overview，点击上方的链接，如果环境配置正确，可以看到“Twikoo 云函数运行正常”的提示
 
 ![](./static/netlify-5.png)
 
@@ -307,7 +307,7 @@ lambda_function_url = "https://axtoiiithbcexamplegq7ozalu0cnkii.lambda-url.us-we
 | `MONGODB_URI` | MongoDB 数据库连接字符串，不传则使用 lokijs | `null` |
 | `MONGO_URL` | MongoDB 数据库连接字符串，不传则使用 lokijs | `null` |
 | `TWIKOO_DATA` | lokijs 数据库存储路径 | `./data` |
-| `TWIKOO_HOST` | 自定义监听的主机名或IP地址（例如 0.0.0.0 或 127.0.0.1），设置该值则会忽略 TWIKOO_LOCALHOST_ONLY，默认值为 null 但实际行为会回退到 `::` | `null` |
+| `TWIKOO_HOST` | 自定义监听的主机名或 IP 地址（例如 0.0.0.0 或 127.0.0.1），设置该值则会忽略 TWIKOO_LOCALHOST_ONLY，默认值为 null 但实际行为会回退到 `::` | `null` |
 | `TWIKOO_PORT` | 端口号 | `8080` |
 | `TWIKOO_THROTTLE` | IP 请求限流，当同一 IP 短时间内请求次数超过阈值将对该 IP 返回错误 | `250` |
 | `TWIKOO_LOCALHOST_ONLY` | 为`true`时只监听本地请求，使得 nginx 等服务器反代之后不暴露原始端口 | `null` |
@@ -322,8 +322,8 @@ lambda_function_url = "https://axtoiiithbcexamplegq7ozalu0cnkii.lambda-url.us-we
 ::: tip 提示
 1. Linux 服务器可以用 `nohup tkserver >> tkserver.log 2>&1 &` 命令后台启动
 2. 数据默认在 data 目录，请注意定期备份数据
-3. 默认端口为8080，自定义端口使用可使用 `TWIKOO_PORT=1234 tkserver` 启动。
-4. 配置systemctl服务配合`TWIKOO_PORT=1234 tkserver`设置开机启动
+3. 默认端口为 8080，自定义端口使用可使用 `TWIKOO_PORT=1234 tkserver` 启动。
+4. 配置 systemctl 服务配合`TWIKOO_PORT=1234 tkserver`设置开机启动
 :::
 
 ## 私有部署 (Docker)

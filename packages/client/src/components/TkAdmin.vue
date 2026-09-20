@@ -19,14 +19,13 @@
       <div v-else>
         <div v-if="!isLogin && isSetPassword" class="tk-login">
           <div class="tk-login-title">{{ t("ADMIN_LOGIN_TITLE") }}</div>
-          <form>
+          <form @submit.prevent>
             <input type="hidden" />
             <TkInput
               ref="focusmeRef"
               v-model="password"
               class="tk-password"
               type="password"
-              show-password
               :placeholder="t('ADMIN_PASSWORD_PLACEHOLDER')"
               @keyup.enter="onLogin"
             >
@@ -45,7 +44,7 @@
         </div>
         <div v-if="!isLogin && !isSetPassword" class="tk-regist">
           <div class="tk-login-title">{{ t("ADMIN_LOGIN_TITLE") }}</div>
-          <form>
+          <form @submit.prevent>
             <TkInput
               v-if="!isSetCredentials"
               ref="focusmeRef"
@@ -59,7 +58,6 @@
               v-model="password"
               class="tk-password"
               type="password"
-              show-password
               :placeholder="t('ADMIN_SET_PASSWORD_PLACEHOLDER')"
             >
               <template #prepend>{{ t("ADMIN_SET_PASSWORD") }}</template>
@@ -68,7 +66,6 @@
               v-model="passwordConfirm"
               class="tk-password"
               type="password"
-              show-password
               :placeholder="t('ADMIN_SET_PASSWORD_CONFIRM_PLACEHOLDER')"
             >
               <template #prepend>{{ t("ADMIN_SET_PASSWORD_CONFIRM") }}</template>
@@ -367,7 +364,7 @@ watch(
   cursor: pointer;
   position: sticky;
   display: block;
-  top: 1rem;
+  top: 0;
   left: calc(100% - 3rem);
   width: 1rem;
   height: 1rem;
@@ -375,6 +372,7 @@ watch(
   box-sizing: content-box;
   color: #ffffff;
   line-height: 0;
+  z-index: 1;
 }
 .twikoo .tk-login,
 .twikoo .tk-regist {
@@ -390,6 +388,11 @@ watch(
   font-size: 1.25rem;
   text-align: center;
   margin-top: 10rem;
+}
+.twikoo .tk-login form,
+.twikoo .tk-regist form {
+  width: 100%;
+  text-align: center;
 }
 .twikoo .tk-password,
 .twikoo .tk-login-msg {
@@ -415,6 +418,10 @@ watch(
 .twikoo .tk-panel {
   color: #ffffff;
   padding: 2rem;
+  box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  width: 100%;
 }
 .twikoo .tk-panel-title {
   font-size: 1.5rem;

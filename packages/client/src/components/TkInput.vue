@@ -2,7 +2,7 @@
   tk-input（参考 Element UI Input 改写；组合式 API）。
 
   能力面（能力表 + 1.x 各处用法实测）：v-model / placeholder / size /
-  textarea（rows、autosize、show-word-limit）/ show-password / clearable /
+  textarea（rows、autosize、show-word-limit）/ clearable /
   prepend·append 具名插槽 / disabled / readonly / maxlength / type=number /
   focus() / 原生 textarea 元素暴露（OwO 面板与日志滚动需要）。
 
@@ -45,7 +45,7 @@
       v-else
       ref="inputRef"
       class="tk-input__inner"
-      :type="nativeType"
+      :type="type"
       :name="name"
       :value="modelValue"
       :placeholder="placeholder"
@@ -66,13 +66,6 @@
         @click="handleClear"
       >
         <TkIcon name="circle-xmark" />
-      </i>
-      <i
-        v-if="showPassword && type === 'password'"
-        class="tk-input__icon tk-input__password"
-        @click="passwordVisible = !passwordVisible"
-      >
-        <TkIcon :name="passwordVisible ? 'eye' : 'eye-slash'" />
       </i>
     </span>
     <span v-if="showWordLimit && maxlength" class="tk-input__count">
@@ -106,8 +99,6 @@ const props = withDefaults(
     maxlength?: number;
     /** 显示字数统计 */
     showWordLimit?: boolean;
-    /** 密码显隐切换 */
-    showPassword?: boolean;
     /** 可一键清空 */
     clearable?: boolean;
     /** 尺寸（mini/small 有可见差异）*/
@@ -130,7 +121,6 @@ const props = withDefaults(
     // 显式 undefined：语义不变（未传即不限长），仅为满足 vue/require-default-prop
     maxlength: undefined,
     showWordLimit: false,
-    showPassword: false,
     clearable: false,
     size: "",
     name: "",
@@ -154,28 +144,18 @@ const slots = useSlots();
 /** 原生输入框引用（focus / autosize / OwO 插入都用它） */
 const inputRef = ref<HTMLInputElement | HTMLTextAreaElement>();
 
-/** 密码是否明文显示 */
-const passwordVisible = ref(false);
-
 /** 是否有 prepend 插槽 */
 const hasPrepend = computed(() => Boolean(slots.prepend));
 /** 是否有 append 插槽 */
 const hasAppend = computed(() => Boolean(slots.append));
 /** 是否渲染后缀图标容器 */
 const showSuffix = computed(
-  () =>
-    (props.clearable && !props.disabled && !props.readonly && hasValue.value) ||
-    (props.showPassword && props.type === "password"),
+  () => props.clearable && !props.disabled && !props.readonly && hasValue.value,
 );
 /** 当前值是否非空 */
 const hasValue = computed(
   () => props.modelValue !== "" && props.modelValue !== undefined && props.modelValue !== null,
 );
-/** 实际渲染的原生 type（密码显隐） */
-const nativeType = computed(() => {
-  if (props.type === "password") return passwordVisible.value ? "text" : "password";
-  return props.type;
-});
 /** 字数统计的当前长度 */
 const currentLength = computed(() => String(props.modelValue ?? "").length);
 
@@ -272,6 +252,9 @@ defineExpose({ focus, blur, inputEl: inputRef });
   display: inline-flex;
   align-items: center;
   width: 100%;
+  /* 与 1.x `.el-input { font-size: 14px }` 对齐：prepend / append 插槽里的文字
+     靠继承取字号，不声明就会跟着宿主页面走（管理面板登录框曾因此明显偏大） */
+  font-size: 0.875rem;
 }
 .twikoo .tk-input--group {
   display: inline-flex;

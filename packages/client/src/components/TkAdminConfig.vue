@@ -49,9 +49,9 @@
               <TkInput
                 v-else
                 v-model="setting.value"
+                :type="setting.secret ? 'password' : 'text'"
                 size="small"
                 :placeholder="setting.ph"
-                :show-password="setting.secret === true"
               />
             </div>
             <div></div>

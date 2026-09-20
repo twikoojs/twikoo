@@ -22,8 +22,6 @@ import circleExclamation from "@fortawesome/fontawesome-free/svgs/solid/circle-e
 import circleXmark from "@fortawesome/fontawesome-free/svgs/solid/circle-xmark.svg?raw";
 import cog from "@fortawesome/fontawesome-free/svgs/solid/cog.svg?raw";
 import comment from "@fortawesome/fontawesome-free/svgs/solid/comment.svg?raw";
-import eye from "@fortawesome/fontawesome-free/svgs/solid/eye.svg?raw";
-import eyeSlash from "@fortawesome/fontawesome-free/svgs/solid/eye-slash.svg?raw";
 import faceSmile from "@fortawesome/fontawesome-free/svgs/solid/face-smile.svg?raw";
 import heart from "@fortawesome/fontawesome-free/svgs/solid/heart.svg?raw";
 import image from "@fortawesome/fontawesome-free/svgs/solid/image.svg?raw";
@@ -69,8 +67,6 @@ export const ICONS: Record<string, string> = {
   cog,
   comment,
   "comment-regular": commentRegular,
-  eye,
-  "eye-slash": eyeSlash,
   "face-smile": faceSmile,
   heart,
   image,

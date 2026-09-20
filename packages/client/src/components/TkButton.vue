@@ -59,8 +59,7 @@ function handleClick(evt: MouseEvent): void {
 <style>
 .twikoo .tk-button {
   display: inline-block;
-  padding: 0 15px;
-  height: 32px;
+  padding: 12px 20px;
   line-height: 1;
   font-size: 0.875rem;
   border-radius: 4px;
@@ -132,18 +131,15 @@ function handleClick(evt: MouseEvent): void {
  * 12px 字号 + 1px 边框下，small 高 32px、mini 高 28px。
  */
 .twikoo .tk-button--large {
-  height: auto;
   padding: 13px 20px;
   font-size: 1rem;
 }
 .twikoo .tk-button--small {
-  height: auto;
   padding: 9px 15px;
   font-size: 0.75rem;
   border-radius: 3px;
 }
 .twikoo .tk-button--mini {
-  height: auto;
   padding: 7px 15px;
   font-size: 0.75rem;
   border-radius: 3px;
@@ -191,9 +187,12 @@ function handleClick(evt: MouseEvent): void {
 .twikoo .tk-button + .tk-button {
   margin-left: 0.5rem;
 }
-/* 输入框 append 插槽内的按钮：与输入框合为一体（1.x element-ui 行为） */
+/* 输入框 append 插槽内的按钮：与输入框合为一体（1.x element-ui 行为）。
+   必须把纵向 padding 归零——它靠 `height: 100%` 填满输入框，基础按钮的
+   `padding: 12px 20px` 会让盒子高出输入框 24px。 */
 .twikoo .tk-input-group__append .tk-button {
   height: 100%;
+  padding: 0 15px;
   margin: -1px -1rem;
   border: 0;
   border-radius: 0 3px 3px 0;

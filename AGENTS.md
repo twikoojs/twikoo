@@ -244,7 +244,7 @@ push 到 `main` 且改动 `docs/**`、或 Release published、或手动触发 �
 
 ### Docker / pkg
 
-- `Dockerfile`：**从 workspace 构建**（多阶段，`pnpm --filter "tkserver..." build`），运行 `node packages/server-self-hosted/dist/server.js`，`TWIKOO_DATA=/app/data`
+- `Dockerfile`：装 npm 上已发布的 `tkserver@<版本>`（publish.yml 的 docker job 用 `TWIKOO_VERSION` build-arg 传入），运行 `/app/node_modules/.bin/tkserver`，`TWIKOO_DATA=/app/data`
 - `packages/pkg`：tsdown + SEA，`exe.targets[].nodeVersion` = **26.9.0**（目标运行时 = 仓库基线；**必须是完整 `x.y.z`**，写主版本会被 `@tsdown/exe` 拒绝）；**构建宿主需 Node ≥ 25.7**
 
 ## 测试

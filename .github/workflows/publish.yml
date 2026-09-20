@@ -152,6 +152,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
+          build-args: TWIKOO_VERSION=${{ needs.validate.outputs.version }}
           tags: |
             imaegoo/twikoo:${{ needs.validate.outputs.npm_tag }}
             imaegoo/twikoo:${{ needs.validate.outputs.version }}
@@ -166,7 +167,9 @@ jobs:
           tags: |
             imaegoo/twikoo:arm32v7
             imaegoo/twikoo:${{ needs.validate.outputs.version }}-arm32v7
-          build-args: NODE_IMAGE=arm32v7/node
+          build-args: |
+            NODE_IMAGE=arm32v7/node
+            TWIKOO_VERSION=${{ needs.validate.outputs.version }}
 
   publish-pkg:
     name: SEA 可执行产物

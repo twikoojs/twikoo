@@ -117,8 +117,12 @@ jobs:
         working-directory: ${{ matrix.dir }}
         env:
           NPM_TAG: ${{ needs.validate.outputs.npm_tag }}
-        # --provenance 在信任发布下会自动生效，这里显式保留只为让意图清晰
-        run: npm publish --provenance --tag "$NPM_TAG"
+        # 用 pnpm publish 而非 npm publish：后者不改写 `workspace:` 协议，会把
+        # `workspace:*` 原样发到 npm，装包方直接 EUNSUPPORTEDPROTOCOL（2.0.0-beta.1 的教训）。
+        # pnpm 打包时会把 workspace 协议换成真实版本号。
+        # --no-git-checks：release 触发时检出的是 tag（detached HEAD），过不了 pnpm 的分支校验。
+        # --provenance 在信任发布下会自动生效，这里显式保留只为让意图清晰。
+        run: pnpm publish --provenance --no-git-checks --tag "$NPM_TAG"
 
   verify:
     name: Gate · 9 个包在 npm 可见

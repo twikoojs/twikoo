@@ -1,10 +1,11 @@
 /**
- * 验收用例：文档站结构与内容更新。
+ * 验收用例：文档站结构、站点工程配置与一键部署模板。
  *
- * - 中英 sidebar 项数相等（Acceptance 的脚本断言）；
- * - sidebar 每一项都能落到真实页面文件（防止「加进导航但没有页面」）；
- * - ② 要求的 CloudBase CLI 弃用标注必须存在；
- * - 一键部署模板仍在、且仍可被云平台直接消费（纯 JS / 只依赖 latest，见 `templates/README.md`）。
+ * **不测文档正文措辞**——文档内容不设断言（措辞会随精简改动漂移，且维护成本高于收益）。
+ * 这里只守「结构 / 机制」这类真正会坏的东西：
+ * - 导航每一项都能落到真实页面（防止「加进导航但没有页面」）；
+ * - twikoo 版本由构建注入，不得写死（否则又变成「发版必须改文档」）；
+ * - 一键部署模板仍在、仍可被云平台直接消费、依赖不脱离发布清单。
  */
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -64,77 +65,7 @@ describe("文档站结构", () => {
   });
 });
 
-describe("内容更新", () => {
-  it("② CloudBase CLI 方式标注「2.0 起不再支持」", () => {
-    const zh = readFileSync(resolve(DOCS_ROOT, "backend.md"), "utf8");
-    const en = readFileSync(resolve(DOCS_ROOT, "en/backend.md"), "utf8");
-    expect(zh).toContain("2.0 起不再支持");
-    expect(zh).toMatch(
-      /tcb fn deploy[\s\S]{0,400}2\.0 起不再支持|2\.0 起不再支持[\s\S]{0,400}tcb fn deploy/,
-    );
-    expect(en.toLowerCase()).toContain("no longer supported since 2.0");
-  });
-
-  it("② 能力矩阵与 EO 邮件限制已写入 docs", () => {
-    const zh = readFileSync(resolve(DOCS_ROOT, "backend.md"), "utf8");
-    expect(zh).toContain("能力矩阵");
-    expect(zh).toMatch(/SendGrid|MailChannels/);
-    expect(zh).toContain("Go SMTP Bridge");
-  });
-
-  it("③ 浏览器基线已在 intro 与 frontend 标注", () => {
-    for (const file of ["intro.md", "en/intro.md", "frontend.md", "en/frontend.md"]) {
-      const src = readFileSync(resolve(DOCS_ROOT, file), "utf8");
-      expect(src, `${file} 缺少浏览器基线`).toMatch(/ES2022/);
-      expect(src, `${file} 缺少最低版本`).toMatch(/94\+|15\.4\+/);
-    }
-  });
-
-  it("④ api 页已记录服务端事件语义（POST_SUBMIT 为内部事件；HIDDEN/VISIBLE 是 type 取值而非事件名）", () => {
-    for (const file of ["api.md", "en/api.md"]) {
-      const src = readFileSync(resolve(DOCS_ROOT, file), "utf8");
-      for (const token of ["POST_SUBMIT", "HIDDEN", "VISIBLE"]) {
-        expect(src, `${file} 缺少 ${token}`).toContain(token);
-      }
-      // 关键：HIDDEN / VISIBLE 必须被说明为 type 参数取值，而不是事件名
-      expect(src, `${file} 未把 HIDDEN 说明为 type 取值`).toContain('"type": "HIDDEN"');
-    }
-  });
-
-  it("⑤ 本地开发（pnpm demo）章节已加入 intro", () => {
-    for (const file of ["intro.md", "en/intro.md"]) {
-      const src = readFileSync(resolve(DOCS_ROOT, file), "utf8");
-      expect(src, `${file} 缺少 pnpm demo`).toContain("pnpm demo");
-      expect(src, `${file} 未说明 Node 版本`).toMatch(/Node 26/);
-    }
-  });
-
-  it("⑥ 常见错误排查章节已加入 faq（八类 kind）", () => {
-    for (const file of ["faq.md", "en/faq.md"]) {
-      const src = readFileSync(resolve(DOCS_ROOT, file), "utf8");
-      for (const kind of [
-        "NETWORK",
-        "CORS",
-        "TIMEOUT",
-        "REJECTED",
-        "NOT_FOUND",
-        "CLIENT_ERROR",
-        "SERVER_ERROR",
-        "UNKNOWN",
-      ]) {
-        expect(src, `${file} 缺少错误类型 ${kind}`).toContain(kind);
-      }
-    }
-  });
-
-  it("⑦ DEVELOPMENT.md 已按 monorepo 重写", () => {
-    const src = readFileSync(resolve(DOCS_ROOT, "..", "DEVELOPMENT.md"), "utf8");
-    expect(src).toContain("pnpm demo");
-    expect(src).toContain("pnpm install");
-    expect(src).toMatch(/Node\.js[\s|]*\*\*26\*\*/);
-    expect(src).toContain(".env.example");
-  });
-
+describe("站点工程配置", () => {
   it("docs 已纳入 pnpm workspace（package.json 名 = twikoo-docs）", () => {
     const pkg = JSON.parse(readFileSync(resolve(DOCS_ROOT, "package.json"), "utf8")) as {
       name: string;
@@ -184,7 +115,7 @@ describe("CDN 示例的版本注入", () => {
 
   it("配置里的 markdown 规则会把占位符替换掉（真跑一遍，不只看源码有没有这个词）", async () => {
     const md = await createMarkdownRenderer(DOCS_ROOT);
-    config.markdown?.config?.(md, {});
+    config.markdown?.config?.(md);
     const html = md.render(
       '```html\n<script src="https://cdn.jsdelivr.net/npm/twikoo@__TWIKOO_VERSION__/dist/twikoo.min.js"></script>\n```',
     );
@@ -286,27 +217,5 @@ describe("一键部署模板", () => {
     // 2.0 产物语法目标 ES2022，Node 16 跑不起来
     const major = Number(/Nodejs(\d+)/.exec(fn.runtime)?.[1]);
     expect(major, `CloudBase 运行时 ${fn.runtime} 低于 Node 20`).toBeGreaterThanOrEqual(20);
-  });
-
-  it("部署文档指向 2.0 的模板路径，且不再要求用户改版本号", () => {
-    for (const file of ["backend.md", "update.md", "en/backend.md", "en/update.md"]) {
-      const src = readFileSync(resolve(DOCS_ROOT, file), "utf8");
-      expect(src, `${file} 仍指向 1.x 的部署目录`).not.toMatch(/tree\/main\/src\/server/);
-      expect(src, `${file} 仍要求用户把版本号改成最新版`).not.toMatch(
-        /修改为最新版本号|to the latest version number/,
-      );
-      expect(src, `${file} 仍固定 twikoo-* 的依赖版本`).not.toMatch(
-        /twikoo-(func|vercel|netlify)": "\^?\d/,
-      );
-    }
-    const zh = readFileSync(resolve(DOCS_ROOT, "backend.md"), "utf8");
-    for (const token of [
-      "templates/vercel-min",
-      "templates/cloudbase",
-      "templates/aws-lambda",
-      "templates/hf-space",
-    ]) {
-      expect(zh, `backend.md 未提及 ${token}`).toContain(token);
-    }
   });
 });

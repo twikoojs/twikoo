@@ -5,10 +5,8 @@
  * 2. createHandler(stub) 类型可接受且运行时打通 GET_FUNC_VERSION（起
  *    createHandler 由真实 pipeline 承载）。
  *
- * stub 形态说明：端口方法位一律引用具名 helper 标识符而非内联箭头——
- * 的 jsdoc/require-jsdoc 对「对象属性位置的内联箭头函数」强制注释
- * （Property > ArrowFunctionExpression context），具名 helper 各带一条注释即可复用，
- * 避免 24 处属性位的注释噪音。
+ * stub 形态说明：端口方法位一律引用具名 helper（`noop` / `noComments` 等）而非在每个位置
+ * 内联箭头——同一实现在多个端口复用，具名后一条注释即可覆盖全部引用点，避免属性位的注释噪音。
  */
 import { describe, expect, it } from "vitest";
 import { ABSENT, createHandler } from "../src/index";

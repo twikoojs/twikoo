@@ -145,7 +145,7 @@ flowchart LR
 
 ### 工具链
 
-- **ESLint 9** flat（`vue3-recommended` + `typescript-eslint` type-checked + `eslint-plugin-jsdoc`）
+- **ESLint 9** flat（`vue3-recommended` + `typescript-eslint` type-checked）
 - **Prettier**（`semi` · 双引号 · `trailingComma: "all"` · `printWidth: 100` · `tabWidth: 2`）
 - **Vitest 5**（工作区模式：根 `vitest.config.ts` 的 `projects` 发现各包 `vitest.config.ts`）
 

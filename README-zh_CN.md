@@ -15,9 +15,6 @@ A **simple**, **safe**, **free** comment system.
 
 ## 特色 | Features
 
-<details>
-<summary>点击展开</summary>
-
 ### 简单
 
 - 免费搭建（使用云开发 / Vercel / 私有部署评论后台）
@@ -69,12 +66,6 @@ A **simple**, **safe**, **free** comment system.
 - 内嵌式管理面板，通过密码登录，可方便地查看评论、隐藏评论、删除评论、修改配置
 - 支持隐藏管理入口，通过输入暗号显示
 - 支持从 Valine、Artalk、Disqus 导入评论
-
-### 缺点
-
-- 不支持 IE
-
-</details>
 
 ## 预览 | Preview
 

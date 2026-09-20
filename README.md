@@ -14,9 +14,6 @@ A **simple**, **safe**, **free** comment system.
 
 ## Features
 
-<details>
-<summary>Click to view.</summary>
-
 ### Simple
 
 - Free Build.（Using Tencent CloudBase as the commenting backend, each user enjoys 1 free standard basic version 1 resource package for a long time）
@@ -68,14 +65,6 @@ A **simple**, **safe**, **free** comment system.
 - Embedded panel with password login to easily view comments, hide comments, delete comments and modify configuration.
 - Support to hide the management portal and show it by entering a secret code.
 - Support for importing comments from Valine, Artalk, Disqus.
-
-### Disadvantages
-
-- Slower requests. (except China)
-- Deployment requires real name authentication.
-- IE is not supported.
-
-</details>
 
 ## Preview
 

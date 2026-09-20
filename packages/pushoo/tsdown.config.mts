@@ -21,8 +21,6 @@ export default defineConfig({
   deps: { neverBundle: neverBundleDependencies() },
   /**
    * CJS 侧显式声明命名导出（消除 `[MIXED_EXPORTS]`，理由见文件头注释）。
-   * 本包整包处于 jsdoc 过渡豁免（见 eslint.config.js 的 pushoo-jsdoc-defer），
-   * 注释仍按规范补齐，便于收敛豁免后不再产生新告警。
    * @param options rolldown 默认输出选项
    * @param format 当前产物格式（rolldown 内部把 ES 规范化为 `es`，故只判 `cjs`）
    * @returns 输出选项

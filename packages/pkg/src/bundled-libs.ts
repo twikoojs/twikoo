@@ -18,9 +18,8 @@
  * 2. 查表命中即返回该命名空间；**未命中的 specifier 仍回落到动态 import**，
  *    保留「可扩展、不静态绑定未知依赖」的性质。
  *
- * **两个 1.x 打包补丁因此重新生效**（见 `tsdown.config.mts`）：
- * - jsdom 的 `require.resolve("./xhr-sync-worker.js")` → 置 null（整棵树无同步 XHR）；
- * - `@imaegoo/node-ip2region` 的 `DEFAULT_DB_PATH` → 内联 base64 数据库并落到临时目录。
+ * **打包补丁因此生效**（见 `tsdown.config.mts`）：重依赖的代码进了产物，针对它们的
+ * 运行时路径改写（jsdom 的样式表与 xhr-sync-worker、css-tree 的 JSON 数据、ip2region 数据库）才有对象。
  *
  * **维护约定**：common 新增/更换重依赖时，必须同步本表与 `package.json` 的
  * `dependencies`，否则 SEA 产物会在运行时缺依赖。核对方式：设

@@ -44,7 +44,9 @@ function readJson(relPath: string): Record<string, unknown> {
 }
 
 describe("离线依赖本地化", () => {
-  it("prepare-assets 复制 bulma / katex（含字体目录）到 .vendor", () => {
+  // 本用例真跑一遍 prepare-assets（bulma + katex 含字体目录的磁盘拷贝）：
+  // 单独约 2s，全仓并行抢 CPU 时 4.5~5.2s，会撞上 vitest 默认的 5s testTimeout → 偶发红。
+  it("prepare-assets 复制 bulma / katex（含字体目录）到 .vendor", { timeout: 30_000 }, () => {
     const script = resolve(DEMO_ROOT, "scripts/prepare-assets.mjs");
     const output = execFileSync(process.execPath, [script, "--force"], {
       cwd: DEMO_ROOT,

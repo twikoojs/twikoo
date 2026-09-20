@@ -5,8 +5,7 @@
 # 代码与本次 Release 的 tag 一致（publish.yml 的 docker job 会先覆写版本号再 build）。
 #
 # 多阶段：build 阶段装依赖并构建；runtime 阶段只保留运行所需内容。
-# 镜像体积优化（`pnpm deploy --prod` / 裁剪 devDependencies）留待容器冒烟时验证，
-# 见 todo 45 的 B.3 清单。
+# 镜像体积优化（`pnpm deploy --prod` / 裁剪 devDependencies）留待容器冒烟时验证。
 
 ARG NODE_IMAGE=node
 

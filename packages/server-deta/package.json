@@ -1,6 +1,7 @@
 {
   "name": "twikoo-deta",
   "version": "0.0.0",
+  "private": true,
   "description": "Twikoo comment system backend for Deta",
   "license": "MIT",
   "main": "./dist/index.js",

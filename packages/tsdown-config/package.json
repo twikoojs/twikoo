@@ -1,6 +1,7 @@
 {
   "name": "@twikoojs/tsdown-config",
   "version": "0.0.0",
+  "private": true,
   "description": "Twikoo 2.0 tsdown 共享构建积木（产物扩展名契约、external 解析、版本占位符插件）",
   "license": "MIT",
   "type": "module",

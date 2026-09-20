@@ -12,7 +12,9 @@
 -->
 <template>
   <div class="tk-comments">
-    <TkSubmit :config="config" @load="initComments" />
+    <TkSubmit :config="config" @load="initComments" @error="onError" />
+    <!-- 评论区唯一错误卡片：占满整行，位于列表容器上方（列表/提交/回复失败共用） -->
+    <TkError v-if="error" :error="error" />
     <div v-loading="loading" class="tk-comments-container">
       <div class="tk-comments-title">
         <span
@@ -85,9 +87,8 @@
         </TkButton>
       </div>
       <div v-if="!loading && !comments.length" class="tk-comments-no">
-        <span v-if="!errorMessage && searchKeyword">{{ t("COMMENTS_SEARCH_NO_RESULT") }}</span>
-        <span v-if="!errorMessage && !searchKeyword">{{ t("COMMENTS_NO_COMMENTS") }}</span>
-        <span v-if="errorMessage" class="tk-comments-error">{{ errorMessage }}</span>
+        <span v-if="!error && searchKeyword">{{ t("COMMENTS_SEARCH_NO_RESULT") }}</span>
+        <span v-if="!error && !searchKeyword">{{ t("COMMENTS_NO_COMMENTS") }}</span>
       </div>
       <TkComment
         v-for="comment in comments"
@@ -97,6 +98,7 @@
         :config="config"
         @reply="onReply"
         @load="refreshPreservingState"
+        @error="onError"
       />
       <div v-if="showExpand && !loading" class="tk-expand-wrap">
         <div v-loading="loadingMore" class="tk-expand" @click="onExpand">
@@ -114,8 +116,9 @@ import TkSubmit from "./TkSubmit.vue";
 import TkButton from "../components/TkButton.vue";
 import TkInput from "../components/TkInput.vue";
 import TkIcon from "../components/TkIcon.vue";
+import TkError from "../components/TkError.vue";
 import { call, getUrl, logger, t } from "../utils";
-import { getAppState } from "../utils/api";
+import { TwikooError, getAppState } from "../utils/api";
 import { setServerConfig } from "../utils/state";
 import { EVENT_CONFIG_UPDATED, off as busOff, on as busOn } from "../utils/bus";
 import { vLoading } from "../utils/directives";
@@ -140,8 +143,16 @@ const emit = defineEmits<{
 const loading = ref(true);
 /** 「加载更多」进行中 */
 const loadingMore = ref(false);
-/** 列表加载错误文案 */
-const errorMessage = ref("");
+/**
+ * 评论区**唯一**的错误（统一错误模型）。
+ *
+ * 三个来源共用这一个状态，后到的错误直接覆盖前者，整个评论区只渲染一张错误卡片：
+ * 1. 本组件自身的列表 / 配置请求失败；
+ * 2. 主提交框（`TkSubmit`）的提交失败；
+ * 3. 任意层级回复框（嵌套 `TkComment` 内的 `TkSubmit`）的提交失败——逐层 `error` 事件冒泡至此。
+ * 清除时机：列表重新加载成功（`initComments` / `refreshPreservingState` 入口置空）。
+ */
+const error = ref<TwikooError | null>(null);
 /** 公开配置 */
 const config = ref<ServerConfig>({});
 /** 评论列表（主楼 + 归组回复） */
@@ -185,7 +196,7 @@ async function initConfig(): Promise<void> {
 async function initComments(): Promise<void> {
   const version = ++requestVersion.value;
   loading.value = true;
-  errorMessage.value = "";
+  error.value = null;
   const url = getUrl(getAppState().options.path);
   const event: Record<string, unknown> = {
     url,
@@ -242,7 +253,7 @@ function refresh(): void {
 async function refreshPreservingState(): Promise<void> {
   const version = ++requestVersion.value;
   loading.value = true;
-  errorMessage.value = "";
+  error.value = null;
   try {
     const url = getUrl(getAppState().options.path);
     const pages = loadedPages.value;
@@ -336,7 +347,9 @@ async function getComments(event: Record<string, unknown>): Promise<boolean> {
       count?: number;
     };
     if (result?.message) {
-      errorMessage.value = result.message;
+      error.value = new TwikooError("CLIENT_ERROR", result.message, {
+        rawMessage: result.message,
+      });
       return false;
     }
     if (result?.data) {
@@ -350,9 +363,28 @@ async function getComments(event: Record<string, unknown>): Promise<boolean> {
       return true;
     }
   } catch (e) {
-    if (version === requestVersion.value) errorMessage.value = (e as Error).message;
+    // api 层抛出的已是分类好的 TwikooError（NETWORK / CORS / TIMEOUT / …），保留其 kind
+    if (version === requestVersion.value) {
+      error.value =
+        e instanceof TwikooError
+          ? e
+          : new TwikooError("UNKNOWN", (e as Error).message, {
+              rawMessage: (e as Error).message,
+            });
+    }
   }
   return false;
+}
+
+/**
+ * 接收子组件（主提交框 / 任意层级回复框）上报的提交错误。
+ *
+ * 只接收「新错误」——子组件成功时置空不发，错误卡片的清除统一由列表重新加载成功负责，
+ * 避免「一次成功的提交把列表请求的错误顺手清掉」。
+ * @param err 子组件上报的错误
+ */
+function onError(err: TwikooError): void {
+  error.value = err;
 }
 
 /**
@@ -443,10 +475,6 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-.twikoo .tk-comments-error {
-  font-size: 0.75em;
-  color: #ff0000;
 }
 .twikoo .tk-comments-sort {
   display: flex;

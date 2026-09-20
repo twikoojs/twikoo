@@ -122,6 +122,7 @@
         :config="config"
         @load="onLoad"
         @cancel="onCancel"
+        @error="emit('error', $event)"
       />
       <!-- 回复列表 -->
       <div
@@ -140,6 +141,7 @@
           @load="onLoad"
           @reply="onReplyReply"
           @refreshed="onRefreshed"
+          @error="emit('error', $event)"
         />
       </div>
       <div v-if="showExpand && !replying" class="tk-expand-wrap">
@@ -170,7 +172,7 @@ import {
   t,
   timeago,
 } from "../utils";
-import { getAppState } from "../utils/api";
+import { getAppState, type TwikooError } from "../utils/api";
 import { getServerConfig } from "../utils/state";
 import { EMPTY_CONFIG } from "./defaults";
 import type { CommentDto, ServerConfig } from "../types";
@@ -196,6 +198,7 @@ const emit = defineEmits<{
   (e: "load"): void;
   (e: "expand"): void;
   (e: "refreshed"): void;
+  (e: "error", error: TwikooError): void;
 }>();
 
 /** 操作系统图标表（1.x 同表） */

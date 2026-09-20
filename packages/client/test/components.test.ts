@@ -152,6 +152,27 @@ describe("TkSubmit", () => {
     await wrapper.find(".tk-cancel").trigger("click");
     expect(wrapper.emitted("cancel")).toHaveLength(1);
   });
+
+  it("提交失败：上报 error 事件，且自身不再渲染错误卡片（交给评论区统一渲染）", async () => {
+    useFakeTcb({ COMMENT_SUBMIT: { code: 1000, message: "包含屏蔽词" } });
+    const wrapper = mount(TkSubmit, { props: { config: {} } });
+    await flushPromises();
+    const inputs = wrapper.findAll("input");
+    await inputs[0].setValue("测试用户");
+    await inputs[0].trigger("change");
+    await inputs[1].setValue("user@example.com");
+    await inputs[1].trigger("change");
+    await wrapper.find("textarea").setValue("测试内容");
+    await flushPromises();
+
+    await wrapper.find(".tk-send").trigger("click");
+    await flushPromises();
+
+    const emitted = wrapper.emitted("error");
+    expect(emitted, "未上报 error 事件").toBeTruthy();
+    expect((emitted![0][0] as TwikooError).rawMessage).toBe("包含屏蔽词");
+    expect(wrapper.find(".tk-error").exists()).toBe(false);
+  });
 });
 
 describe("TkAction / TkAvatar", () => {
@@ -320,14 +341,49 @@ describe("TkComments", () => {
     expect(wrapper.emitted("admin")).toHaveLength(1);
   });
 
-  it("接口报错时展示错误文案（不抛）", async () => {
+  it("接口报错时展示统一的 TkError 卡片，且位于 tk-comments-container 上方（不抛）", async () => {
     useFakeTcb({
       GET_CONFIG: { code: 0, config: {} },
       COMMENT_GET: { code: 1000, message: "后端异常" },
     });
     const wrapper = mount(TkComments);
     await flushPromises();
-    expect(wrapper.find(".tk-comments-error").text()).toBe("后端异常");
+    const card = wrapper.find(".tk-error");
+    expect(card.exists()).toBe(true);
+    expect(card.find(".tk-error__title").text()).toBe("请求失败");
+    expect(card.find(".tk-error__message").text()).toBe("后端异常");
+    // 旧的纯文本错误节点已移除
+    expect(wrapper.find(".tk-comments-error").exists()).toBe(false);
+    // 位置：卡片必须排在列表容器之前
+    const html = wrapper.html();
+    expect(html.indexOf("tk-error")).toBeLessThan(html.indexOf("tk-comments-container"));
+  });
+
+  it("整个评论区只有一张错误卡片：提交框上报的错误复用同一张", async () => {
+    useFakeTcb({ GET_CONFIG: { code: 0, config: {} }, COMMENT_GET: { code: 0, data: [] } });
+    const wrapper = mount(TkComments);
+    await flushPromises();
+    expect(wrapper.find(".tk-error").exists()).toBe(false);
+
+    // 主提交框上报错误（真实链路由 TkSubmit 在提交失败时发出）
+    wrapper
+      .findComponent(TkSubmit)
+      .vm.$emit("error", new TwikooError("REJECTED", "请求过于频繁", { rawMessage: "429" }));
+    await flushPromises();
+    const cards = wrapper.findAll(".tk-error");
+    expect(cards).toHaveLength(1);
+    expect(cards[0].find(".tk-error__title").text()).toBe("请求过于频繁");
+
+    // 新的错误直接覆盖同一张卡片
+    wrapper
+      .findComponent(TkSubmit)
+      .vm.$emit(
+        "error",
+        new TwikooError("NETWORK", "无法连接到后端", { rawMessage: "Failed to fetch" }),
+      );
+    await flushPromises();
+    expect(wrapper.findAll(".tk-error")).toHaveLength(1);
+    expect(wrapper.find(".tk-error__title").text()).toBe("无法连接到后端");
   });
 });
 

@@ -3,8 +3,9 @@
 
   能力面：meta 输入（TkMetaInput）+ 正文 textarea（TkInput）+ 头像预览 + 表情面板（OwO）
   + 图片上传（选择/粘贴/压缩/云存储或第三方图床）+ 预览（marked + 消毒 + 公式 + 高亮）
-  + 草稿持久化 + Ctrl/Cmd+Enter 发送 + 三种人机验证（Turnstile / Geetest / Cap）
-  + 内联错误卡片（TkError）。
+  + 草稿持久化 + Ctrl/Cmd+Enter 发送 + 三种人机验证（Turnstile / Geetest / Cap）。
+
+  错误经 `error` 事件上报给评论区，由评论区统一渲染唯一一张错误卡片（本组件不自己渲染）。
 
   类名映射（1.x `.el-*` → 2.0 `.tk-*`）：`.el-textarea__inner` → `.tk-textarea__inner`；
   `.el-button` → `.tk-button`（其余 tk- 类名与 1.x 同名保留）。
@@ -59,9 +60,6 @@
           value=""
           @change="onSelectImage"
         />
-        <div class="tk-error-message">
-          <TkError v-if="error" :error="error" />
-        </div>
       </div>
       <a
         class="tk-submit-action-icon __markdown"
@@ -110,7 +108,6 @@ import TkMetaInput from "./TkMetaInput.vue";
 import TkButton from "../components/TkButton.vue";
 import TkInput from "../components/TkInput.vue";
 import TkIcon from "../components/TkIcon.vue";
-import TkError from "../components/TkError.vue";
 import { ICONS } from "../components/icons";
 import OwO from "../lib/owo";
 import { TwikooError, call, getAppState } from "../utils/api";
@@ -173,6 +170,7 @@ const props = withDefaults(
 const emit = defineEmits<{
   (e: "load"): void;
   (e: "cancel"): void;
+  (e: "error", error: TwikooError): void;
 }>();
 
 /** 发送中 */
@@ -183,6 +181,16 @@ const isPreviewing = ref(false);
 const isMetaValid = ref(false);
 /** 提交错误（统一错误模型）*/
 const error = ref<TwikooError>();
+
+/**
+ * 把提交错误向上抛给评论区，由评论区统一渲染**唯一**的错误卡片。
+ *
+ * 本组件自身不再渲染错误（`TkError` 由评论区在 `tk-comments-container` 上方渲染一份）；
+ * 只上报「新错误」，成功时置空不发——错误卡片的清除由评论区在列表重新加载成功后负责。
+ */
+watch(error, (value) => {
+  if (value) emit("error", value);
+});
 /** OwO 面板实例 */
 const owo = ref<OwO | null>(null);
 /** 正文 Markdown 源文本 */
@@ -1031,12 +1039,6 @@ onUnmounted(() => {
 }
 .twikoo .tk-submit-action-icon.__markdown {
   color: #909399;
-}
-.twikoo .tk-error-message {
-  word-break: break-all;
-  color: #ff0000;
-  font-size: 0.75em;
-  flex-shrink: 1;
 }
 .twikoo .tk-input-image {
   display: none;

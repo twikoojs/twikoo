@@ -5,9 +5,6 @@
  * （例如 `${highlightThemes.join('、')}`）；2.0 的说明文案已固化进 `locales/*.json`，
  * 本文件因此转为**枚举唯一事实来源**：供管理面板做联动显示（`customImageBedServices`）、
  * 供测试校验文案与枚举一致、供文档生成参考。
- *
- * 注意：这些是「用户可见的可选值」，**不是** twikoo 配置项本身——新增/删除配置项
- * 属 Scope OUT 禁止项（向后兼容），本表只枚举已有配置项的合法取值。
  */
 import { PUSHOO_CHANNELS } from "@twikoojs/shared";
 

@@ -4,10 +4,14 @@
  *
  * 后置副作用（垃圾检测 + 通知）经 {@link vercelPostSubmitDispatcher} 以
  * HTTP 递归自调用派发到独立执行单元，见 `./dispatch.ts`。
+ *
+ * **异常不外抛**（1.x 语义）：请求处理中的任何异常都转成 HTTP 200 + `code: 1000`。
+ * 一旦抛给平台，Vercel 会回 500，前端只能看到 FUNCTION_INVOCATION_FAILED。
  */
 import {
   FULL_CAPABILITIES,
   MongoDatabase,
+  RES_CODE,
   createHandler,
   scaffoldAdapters,
   type Database,
@@ -34,7 +38,23 @@ export interface VercelResponseLike {
   setHeader(name: string, value: string): VercelResponseLike;
   json(body: unknown): VercelResponseLike;
   end(): VercelResponseLike;
+  /** Node 响应头已发出（异常兜底时避免二次写入） */
+  headersSent?: boolean;
+  /** Node 响应已结束（异常兜底时避免二次写入） */
+  writableEnded?: boolean;
 }
+
+/**
+ * 异常兜底用的 CORS 头（与 common pipeline 的 allowCors 同集）。
+ * 此时配置读不出来，无法查白名单，故与 1.x 未配置白名单时的行为一致：回显 Origin。
+ */
+const FALLBACK_CORS_HEADERS: Record<string, string> = {
+  "Access-Control-Allow-Credentials": "true",
+  "Access-Control-Allow-Methods": "POST",
+  "Access-Control-Allow-Headers":
+    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+  "Access-Control-Max-Age": "600",
+};
 
 /**
  * Vercel 请求 → 内部统一请求（headers 小写化；query String 化；x-real-ip/转发首跳取 IP）。
@@ -94,22 +114,39 @@ export function createVercelFunc(
   };
   return async (req, res) => {
     const request = toTkRequest(req);
-    const handler = createHandler(
-      scaffoldAdapters({
-        request: {
-          /** 事件即请求体（闭包透传，见 toTkRequest） */
-          toTkRequest: () => request,
-        },
-        response: {
-          /** TkResponse 恒等透传（平台写入见 fromTkResponse） */
-          fromTkResponse: (r: TkResponse) => r,
-        },
-        database: await getDatabase(),
-        capabilities: vercelCapabilities,
-        postSubmit: vercelPostSubmitDispatcher,
-      }),
-    );
-    fromTkResponse(res, await handler(request));
+    try {
+      const handler = createHandler(
+        scaffoldAdapters({
+          request: {
+            /** 事件即请求体（闭包透传，见 toTkRequest） */
+            toTkRequest: () => request,
+          },
+          response: {
+            /** TkResponse 恒等透传（平台写入见 fromTkResponse） */
+            fromTkResponse: (r: TkResponse) => r,
+          },
+          database: await getDatabase(),
+          capabilities: vercelCapabilities,
+          postSubmit: vercelPostSubmitDispatcher,
+        }),
+      );
+      fromTkResponse(res, await handler(request));
+    } catch (e) {
+      // 1.x 语义：函数内异常不外抛。抛出去 Vercel 直接回 500，前端只看到
+      // FUNCTION_INVOCATION_FAILED，拿不到 code/message（数据库连不上就走这条）。
+      if (res.headersSent || res.writableEnded) return;
+      const origin = request.headers.origin;
+      if (origin) {
+        for (const [name, value] of Object.entries(FALLBACK_CORS_HEADERS)) {
+          res.setHeader(name, value);
+        }
+        res.setHeader("Access-Control-Allow-Origin", origin);
+      }
+      res.status(200).json({
+        code: RES_CODE.FAIL,
+        message: e instanceof Error ? e.message : String(e),
+      });
+    }
   };
 }
 

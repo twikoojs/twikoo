@@ -134,6 +134,49 @@ describe("twikoo-vercel 薄适配器", () => {
     expect(req.ip).toBe("1.1.1.1");
   });
 
+  it("异常不外抛：数据库初始化失败 → 200 + code 1000 + CORS 头", async () => {
+    // 数据库装配发生在 pipeline 之外，异常若外抛 Vercel 会回 500（1.x 恒 200 + code 1000）
+    const failingDb = {
+      /**
+       *
+       */
+      init: async () => {
+        throw new Error("mongodb connect failed");
+      },
+    } as unknown as Database;
+    const fn = createVercelFunc({ database: failingDb });
+    const { res, calls } = makeRes();
+    await fn(
+      {
+        method: "POST",
+        headers: { origin: "https://example.com" },
+        body: { event: "GET_FUNC_VERSION" },
+      },
+      res,
+    );
+    expect(calls.status).toBe(200);
+    expect((calls.body as { code: number }).code).toBe(1000);
+    expect((calls.body as { message: string }).message).toBe("mongodb connect failed");
+    expect(calls.headers["Access-Control-Allow-Origin"]).toBe("https://example.com");
+  });
+
+  it("异常兜底：响应已发出时不再二次写入", async () => {
+    const failingDb = {
+      /**
+       *
+       */
+      init: async () => {
+        throw new Error("mongodb connect failed");
+      },
+    } as unknown as Database;
+    const fn = createVercelFunc({ database: failingDb });
+    const { res, calls } = makeRes();
+    res.headersSent = true;
+    await fn({ method: "POST", headers: {}, body: { event: "GET_FUNC_VERSION" } }, res);
+    expect(calls.status).toBeUndefined();
+    expect(calls.body).toBeUndefined();
+  });
+
   it("依赖指向 @twikoojs/common（不再内含业务逻辑）", async () => {
     const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
     expect(pkg.dependencies["@twikoojs/common"]).toBe("workspace:*");

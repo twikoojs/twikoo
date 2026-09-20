@@ -152,7 +152,9 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          build-args: TWIKOO_VERSION=${{ needs.validate.outputs.version }}
+          build-args: |
+            NODE_VERSION=${{ env.NODE_VERSION }}
+            TWIKOO_VERSION=${{ needs.validate.outputs.version }}
           tags: |
             imaegoo/twikoo:${{ needs.validate.outputs.npm_tag }}
             imaegoo/twikoo:${{ needs.validate.outputs.version }}
@@ -169,6 +171,7 @@ jobs:
             imaegoo/twikoo:${{ needs.validate.outputs.version }}-arm32v7
           build-args: |
             NODE_IMAGE=arm32v7/node
+            NODE_VERSION=${{ env.NODE_VERSION }}
             TWIKOO_VERSION=${{ needs.validate.outputs.version }}
 
   publish-pkg:

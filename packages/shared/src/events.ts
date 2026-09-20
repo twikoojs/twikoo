@@ -6,12 +6,6 @@
  * 垃圾检测与通知，只有 vercel / CloudBase 的顶层 switch 里有它）。本文件即导出
  * 这 25 个，客户端的 `api.ts`、`@twikoojs/common` 的事件分发器与契约测试均以此
  * 为单一事实来源。
- *
- * ⚠️ 订正记录：重构期曾把 `HIDDEN` / `VISIBLE` 也当作 1.x 事件分支导出（`ALL_EVENTS`
- * 一度为 27 项）。经核对 1.x 源码，二者**从来不是事件名**——它们只是
- * `COMMENT_GET_FOR_ADMIN` 请求体里 `type` 字段的取值（1.x
- * `getCommentSearchCondition` 的嵌套 switch，客户端 TkAdminComment.vue 的筛选下拉
- * 即传 `type`）。故 2.0 已删除这两个假事件，`type` 参数机制保持不变。
  */
 
 /** 获取后端函数版本号，客户端用于探测服务端能力与版本兼容性 */

@@ -68,22 +68,21 @@ pnpm check:products # 客户端产物逐一 init + 形态断言 + tkserver 启�
 ```mermaid
 flowchart LR
   subgraph Client["客户端 (packages/client)"]
-    CUI["Vue 3 + TS + Vite"]
+    C1["Vue 3 + TS + Vite"]
   end
 
-  subgraph Common["服务端公共层 (packages/server-common)"]
-    SPKG["@twikoojs/common"]
+  subgraph Adapters["云服务适配器"]
+    A1["server-cloudbase"]
+    A2["server-vercel"]
+    A3["server-self-hosted"]
+    AMORE["..."]
   end
 
-  subgraph Adapters["适配器（8 个）"]
-    AFUNC["twikoo-func (CloudBase)"]
-    AVERCEL["twikoo-vercel"]
-    ATK["tkserver"]
-    ANET["twikoo-netlify"]
-    AOTHER["aws-lambda / deta / EO"]
+  subgraph Common["服务端公共层"]
+    S1["server-common"]
   end
 
-  Client --> Common --> Adapters
+  Client --> Adapters --> Common
 ```
 
 ### 事件机制
@@ -131,7 +130,7 @@ flowchart LR
 
 - **Ports 注入**：`request` / `response` / `database` / `storage` / `mailer` / `notifier` / `postSubmit` / `capabilities`
 - **保持薄**：适配器只做「入口 + 适配器注入 + 平台载荷转换」，业务逻辑一律进 `@twikoojs/common`。
-- **依赖完整性**：重依赖在适配器 `dependencies` 中声明，按 capabilities 人工核对（7 个适配器；无自动守卫）
+- **依赖完整性**：重依赖在适配器 `dependencies` 中声明，按 capabilities 人工核对
 
 ## 代码规范
 
@@ -185,7 +184,7 @@ flowchart LR
 ### 声明方式
 
 - **适配器**：按需在 `dependencies` 中声明实际使用的重依赖（按 capabilities 人工核对，`marked` 亦在通用清单内）
-- **`@twikoojs/common`**：16 个重依赖统一以 `peerDependencies` + `peerDependenciesMeta.optional` 声明——既表达接口约束，又让 pnpm 把它们链接到 common 侧
+- **`@twikoojs/common`**：重依赖统一以 `peerDependencies` + `peerDependenciesMeta.optional` 声明——既表达接口约束，又让 pnpm 把它们链接到 common 侧
 
 ### 禁止事项
 
@@ -253,7 +252,7 @@ push 到 `main` 且改动 `docs/**`、或 Release published、或手动触发 �
 
 - **Vitest 5**；各包 `vitest.config.ts` 由根配置 `projects` 自动发现（含 `docs/vitest.config.ts`）
 - 测试与实现同包：`packages/*/test/**`、`docs/test/**`
-- 契约测试：`@twikoojs/common` 的共享契约套件覆盖全部 25 事件，各适配器复用
+- 契约测试：`@twikoojs/common` 的共享契约套件覆盖全部事件，各适配器复用
 
 ### 覆盖率门禁
 

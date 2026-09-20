@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "description": "Twikoo 2.0 自托管服务器（业务逻辑在 @twikoojs/common）",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/twikoojs/twikoo.git"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

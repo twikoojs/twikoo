@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/imaegoo/pushoo.git"
+    "url": "https://github.com/twikoojs/twikoo.git"
   },
   "homepage": "https://pushoo.js.org/",
   "scripts": {

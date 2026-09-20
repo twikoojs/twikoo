@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "description": "Twikoo 2.0 共享常量与类型（版本占位符、推送渠道、后端事件）",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/twikoojs/twikoo.git"
+  },
   "publishConfig": {
     "access": "public"
   },

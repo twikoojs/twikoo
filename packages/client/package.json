@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "description": "Twikoo 2.0 客户端（Vue3 + Vite；UMD 全局名 twikoo）",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/twikoojs/twikoo.git"
+  },
   "main": "./dist/twikoo.min.js",
   "module": "./dist/twikoo.min.js",
   "exports": {

@@ -1,16 +1,17 @@
 #!/usr/bin/env node
 /**
- * npm 可见性轮询 gate（作为第二批发布的前置条件）。
+ * npm 可见性轮询 gate（作为发布后、Docker / SEA 收尾步骤的前置条件）。
  *
  * 用法：
- *   node scripts/verify-npm.mjs <version> <npm-tag> <batch>
- *     batch = 1（校验第一批 4 个包）| 2（校验全部 9 个包）
+ *   node scripts/verify-npm.mjs <version> <npm-tag>
+ *
+ * 单阶段发布：一次性校验全部 9 个发布包（不再有批次参数）。
  *
  * 轮询参数：超时 600s、间隔 15s（与 1.x verify-npm 一致）。
  * 任一包在超时后仍不可见 → exit 1（fail loudly）。
  */
 import { execFileSync } from "node:child_process";
-import { packagesOfBatch, PUBLISH_PACKAGES } from "./release-packages.mjs";
+import { PUBLISH_PACKAGES } from "./release-packages.mjs";
 
 /** 轮询总超时（秒） */
 const TIMEOUT = parseInt(process.env.VERIFY_TIMEOUT ?? "", 10) || 600;
@@ -58,14 +59,14 @@ function sleep(seconds) {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }
 
-const [, , version, tag, batch] = process.argv;
-if (!version || !tag || !batch) {
-  console.error("usage: node scripts/verify-npm.mjs <version> <npm-tag> <1|2>");
+const [, , version, tag] = process.argv;
+if (!version || !tag) {
+  console.error("usage: node scripts/verify-npm.mjs <version> <npm-tag>");
   process.exit(1);
 }
 
-/** 校验范围：batch 2 覆盖全部 9 个包（含第一批） */
-const targets = batch === "2" ? PUBLISH_PACKAGES : packagesOfBatch(Number(batch));
+/** 校验范围：全部 9 个发布包 */
+const targets = PUBLISH_PACKAGES;
 console.log(
   `等待 ${targets.length} 个包在 npm 上可见（version=${version}, tag=${tag}, 超时 ${TIMEOUT}s）…`,
 );

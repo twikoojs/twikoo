@@ -14,8 +14,8 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       include: ["src/**/*.ts"],
-      // 阈值不在本包设置——@twikoojs/common(80)/client(70) 的占位见根 vitest.config.ts，
-      // 随各包接入时真正生效，避免当前用例数不足导致覆盖率门禁误报。
+      // 本包不设覆盖率阈值（避免用例规模不足时门禁误报）；
+      // 需要门禁的包各自在自身配置里设。
     },
   },
 });

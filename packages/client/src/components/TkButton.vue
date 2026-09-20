@@ -187,6 +187,10 @@ function handleClick(evt: MouseEvent): void {
 .twikoo .tk-button + .tk-button {
   margin-left: 0.5rem;
 }
+.twikoo .tk-input-group__append .tk-button,
+.twikoo .tk-input-group__prepend .tk-button {
+  font-size: inherit;
+}
 /* 输入框 append 插槽内的按钮：与输入框合为一体（1.x element-ui 行为）。
    必须把纵向 padding 归零——它靠 `height: 100%` 填满输入框，基础按钮的
    `padding: 12px 20px` 会让盒子高出输入框 24px。 */

@@ -1,6 +1,7 @@
 {
   "name": "@twikoojs/common",
   "version": "0.0.0",
+  "description": "Twikoo comment system backend shared by all platform adapters",
   "license": "MIT",
   "repository": {
     "type": "git",

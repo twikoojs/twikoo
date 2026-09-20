@@ -2,7 +2,7 @@
   "name": "twikoo-pkg",
   "version": "0.0.0",
   "private": true,
-  "description": "Twikoo SEA 可执行产物打包流水线（不发布，version 为占位值）",
+  "description": "Twikoo comment system backend for standalone executables",
   "license": "MIT",
   "scripts": {
     "build:exe": "tsdown",

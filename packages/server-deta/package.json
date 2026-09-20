@@ -1,7 +1,7 @@
 {
   "name": "twikoo-deta",
   "version": "0.0.0",
-  "description": "Twikoo 2.0 Deta Space 适配器（业务逻辑在 @twikoojs/common）",
+  "description": "Twikoo comment system backend for Deta",
   "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

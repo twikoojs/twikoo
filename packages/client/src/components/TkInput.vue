@@ -102,7 +102,7 @@ const props = withDefaults(
     /** 可一键清空 */
     clearable?: boolean;
     /** 尺寸（mini/small 有可见差异）*/
-    size?: "" | "large" | "default" | "small" | "mini";
+    size?: "" | "default" | "small" | "mini";
     /** 原生 name */
     name?: string;
     /** number 形态的最小值 */
@@ -280,18 +280,14 @@ defineExpose({ focus, blur, inputEl: inputRef });
 .twikoo .tk-input__inner:focus {
   border-color: #409eff;
 }
-.twikoo .tk-input--large .tk-input__inner {
-  height: 40px;
-  line-height: 40px;
-}
 .twikoo .tk-input--small .tk-input__inner {
-  height: 28px;
-  line-height: 28px;
+  height: 32px;
+  line-height: 32px;
   font-size: 0.8125rem;
 }
 .twikoo .tk-input--mini .tk-input__inner {
-  height: 24px;
-  line-height: 24px;
+  height: 28px;
+  line-height: 28px;
   font-size: 0.75rem;
 }
 .twikoo .tk-textarea .tk-input__inner {
@@ -386,14 +382,14 @@ defineExpose({ focus, blur, inputEl: inputRef });
  */
 .twikoo .tk-input--small .tk-input-group__prepend,
 .twikoo .tk-input--small .tk-input-group__append {
-  height: 28px;
-  line-height: 28px;
+  height: 32px;
+  line-height: 32px;
   font-size: 0.8125rem;
 }
 .twikoo .tk-input--mini .tk-input-group__prepend,
 .twikoo .tk-input--mini .tk-input-group__append {
-  height: 24px;
-  line-height: 24px;
+  height: 28px;
+  line-height: 28px;
   font-size: 0.75rem;
 }
 </style>

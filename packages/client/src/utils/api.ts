@@ -27,8 +27,6 @@ export class TwikooError extends Error {
   httpStatus?: number;
   /** 原始错误文本 */
   rawMessage: string;
-  /** 后端回传日志（res.log） */
-  logText?: string;
   /** 请求 ID（后端贯穿）*/
   requestId?: string;
 
@@ -43,7 +41,6 @@ export class TwikooError extends Error {
     options: {
       httpStatus?: number;
       rawMessage?: string;
-      logText?: string;
       requestId?: string;
     } = {},
   ) {
@@ -52,7 +49,6 @@ export class TwikooError extends Error {
     this.kind = kind;
     this.httpStatus = options.httpStatus;
     this.rawMessage = options.rawMessage ?? message;
-    this.logText = options.logText;
     this.requestId = options.requestId;
   }
 }

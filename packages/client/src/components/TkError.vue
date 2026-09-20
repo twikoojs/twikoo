@@ -56,8 +56,8 @@ const message = computed(() => {
   return raw.length > 120 ? `${raw.slice(0, 120)}...` : raw;
 });
 
-/** 详情（后端日志 / 原始响应片段） */
-const detail = computed(() => props.error.logText || props.error.rawMessage || "");
+/** 详情（原始响应片段） */
+const detail = computed(() => props.error.rawMessage || "");
 
 /** HTTP 状态码 */
 const httpStatus = computed(() => props.error.httpStatus);

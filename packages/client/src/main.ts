@@ -12,7 +12,7 @@
  */
 import { VERSION } from "@twikoojs/shared";
 import { install, type TcbInstance } from "./utils/tcb";
-import { render } from "./index";
+import { render } from "./render";
 import {
   logger,
   loadLanguage,

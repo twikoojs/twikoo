@@ -1,0 +1,15 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directories:
+      - "/"
+      - "/packages/*"
+      - "/docs"
+    schedule:
+      interval: "weekly"
+    groups:
+      twikoo-deps:
+        group-by: "dependency-name"
+    ignore:
+      - dependency-name: "@cloudbase/js-sdk"
+        versions: [">= 4.0.0"]

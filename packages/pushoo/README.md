@@ -2,7 +2,7 @@
 
 > **本项目已并入 [Twikoo](https://github.com/twikoojs/twikoo) monorepo**（`packages/pushoo`）。
 > 完整文档（支持平台、各平台 token 获取步骤、`NoticeOptions` 说明）已迁移至
-> **<https://twikoo.js.org/pushoo>**，本 README 只保留 npm 页面必需的信息。
+> **<https://twikoo.js.org/pushoo.html>**，本 README 只保留 npm 页面必需的信息。
 
 ## ⚠️ 版本策略变更（2.0）
 
@@ -36,7 +36,7 @@ console.log(result);
 
 支持 `webhook`、`qmsg`、`serverchan`、`pushplus`、`dingtalk`、`wecom`、`bark`、`telegram`、
 `feishu`、`discord`、`wxpusher` 等 19 个平台，各平台的 token 获取方式见
-**<https://twikoo.js.org/pushoo>**。
+**<https://twikoo.js.org/pushoo.html>**。
 
 如果您是在 Twikoo 评论系统中使用，则无需自己调用，直接在 Twikoo 管理面板中配置平台名称和 token 即可。
 

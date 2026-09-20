@@ -1,18 +1,13 @@
 # Twikoo 2.0 持续集成门禁
+# 5 个并行门禁 job（lint / markdown / typecheck / test / build）
 #
-# 3 个 job：
-#   checks    构建全部包 → lint → typecheck → test，同一个 runner 内串行执行。
-#             产物就在工作区里，后续步骤直接用，无需在 job 之间传 artifact，
-#             也只需一次 pnpm install。
-#   markdown  AutoCorrect 扫 *.md（不依赖构建产物，与 checks 并行）
-#   docs      VitePress 文档站构建（不依赖工作区包产物，与 checks 并行）
-#
-# 为什么门禁前必须先构建：工作区发布包（@twikoojs/shared、@twikoojs/common、pushoo 等）
-# 的 package.json 入口指向 `dist/`，而 `dist/` 不入库（见 .gitignore），干净 checkout 下
-# 这些包**不可解析** —— ESLint 的类型感知、各包 tsc、vitest 的跨包 import 全部走
-# exports → dist，缺失时报 TS2307（Cannot find module）、
-# @typescript-eslint/no-redundant-type-constituents（导入类型退化为 error 类型）
-# 与 "Failed to resolve import"。
+# lint / typecheck / test 三个 job 在跑门禁前各执行一次 `pnpm build`：工作区发布包
+# （@twikoojs/shared、@twikoojs/common、pushoo 等）的 package.json 入口指向 `dist/`，
+# 而 `dist/` 不入库（见 .gitignore），干净 checkout 下这些包**不可解析** ——
+# ESLint 的类型感知、各包 tsc、vitest 的跨包 import 全部走 exports → dist，
+# 缺失时报 TS2307（Cannot find module）、@typescript-eslint/no-redundant-type-constituents
+# （导入类型退化为 error 类型）与 "Failed to resolve import"。
+# （markdown job 只扫 *.md，不依赖构建产物，故不构建。）
 
 name: Build
 
@@ -32,13 +27,88 @@ on:
       - ready_for_review
 
 jobs:
-  # 构建 + 三个门禁合成一个 job：唯一目的是让门禁复用同一个构建产物。
-  # 拆成独立 job 就得把 `packages/*/dist` 打包成 artifact 互传（每个下游 job 再解压一次），
-  # 换来的只是「并行」和「PR 界面上的三条独立 check」—— 而三个门禁的耗时远小于
-  # 各自的 install，串行反而更快、更省 runner。
-  checks:
-    name: Checks
+  lint:
+    name: Lint
     # 草稿 PR 不跑
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm (version from package.json packageManager field)
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 门禁依赖工作区包 dist 产物（见文件头说明），故先构建
+      - name: Build workspace packages
+        run: pnpm build
+
+      - name: ESLint
+        run: pnpm lint
+
+  # markdown 排版由 AutoCorrect 负责（prettier 已忽略 *.md，见 .prettierignore / .autocorrectrc）。
+  # 单独成 job 是为了与其他门禁并行；检查逻辑在 scripts/format-md.mjs（只扫 *.md）。
+  markdown:
+    name: Markdown
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm (version from package.json packageManager field)
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: AutoCorrect (markdown)
+        run: pnpm lint:md
+
+  typecheck:
+    name: Typecheck
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm (version from package.json packageManager field)
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 门禁依赖工作区包 dist 产物（见文件头说明），故先构建
+      - name: Build workspace packages
+        run: pnpm build
+
+      - name: Typecheck all packages
+        run: pnpm typecheck
+
+  test:
+    name: Test
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     env:
@@ -76,51 +146,14 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       # 门禁依赖工作区包 dist 产物（见文件头说明），故先构建
-      - name: Build all packages
+      - name: Build workspace packages
         run: pnpm build
 
-      # 三个门禁各自 continue-on-error：把三条结果都跑出来再统一判定，
-      # 避免 lint 一红就看不到 typecheck / test 的结果。
-      - name: ESLint
-        id: lint
-        continue-on-error: true
-        run: pnpm lint
-
-      - name: Typecheck all packages
-        id: typecheck
-        continue-on-error: true
-        run: pnpm typecheck
-
       - name: Unit tests (Vitest projects)
-        id: test
-        continue-on-error: true
         run: pnpm test
 
-      # 汇总三个门禁的结果并决定本 job 成败
-      - name: Gate result
-        if: always()
-        env:
-          OUTCOME_LINT: ${{ steps.lint.outcome }}
-          OUTCOME_TYPECHECK: ${{ steps.typecheck.outcome }}
-          OUTCOME_TEST: ${{ steps.test.outcome }}
-        run: |
-          status=0
-          report() {
-            case "$2" in
-              success) echo "$1: success" ;;
-              skipped) echo "$1: skipped（前置步骤未通过，本门禁未执行）" ;;
-              *) echo "::error::$1 失败（$2）"; status=1 ;;
-            esac
-          }
-          report lint "$OUTCOME_LINT"
-          report typecheck "$OUTCOME_TYPECHECK"
-          report test "$OUTCOME_TEST"
-          exit "$status"
-
-  # markdown 排版由 AutoCorrect 负责（prettier 已忽略 *.md，见 .prettierignore / .autocorrectrc）。
-  # 单独成 job 是为了与 checks 并行；检查逻辑在 scripts/format-md.mjs（只扫 *.md）。
-  markdown:
-    name: Markdown
+  build:
+    name: Build
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
@@ -139,30 +172,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: AutoCorrect (markdown)
-        run: pnpm lint:md
-
-  # 文档站构建独立成 job：docs 不依赖工作区包产物，放这里既与 checks 并行，
-  # 也避免文档站的构建失败拖住 lint / typecheck / test 的反馈。
-  docs:
-    name: Docs
-    if: github.event.pull_request.draft == false
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Setup pnpm (version from package.json packageManager field)
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Build all packages
+        run: pnpm build
 
       - name: Docs site build
         run: pnpm --filter twikoo-docs docs:build

@@ -24,12 +24,13 @@ pnpm demo # 一键启动本地演示（客户端、私有部署服务端、演�
 
 ```
 twikoo/
+├── docs/                      # twikoo-docs             ← VitePress 文档站
 ├── packages/
 │   ├── shared/                # @twikoojs/shared        ← 前后端共享类型与常量
 │   ├── tsdown-config/         # @twikoojs/tsdown-config ← 共享构建积木
 │   ├── client/                # twikoo                  ← 前端库
 │   ├── server-common/         # @twikoojs/common        ← 公共后端库，核心交付
-│   ├── server-aws-lambda/     # @twikoojs/aws-lambda       ← AWS Lambda 适配器
+│   ├── server-aws-lambda/     # @twikoojs/aws-lambda    ← AWS Lambda 适配器
 │   ├── server-cloudbase/      # twikoo-func             ← 腾讯云 CloudBase 适配器
 │   ├── server-deta/           # twikoo-deta             ← Deta 适配器
 │   ├── server-edgeone-makers/ # twikoo-edgeone-makers   ← EdgeOne Makers 适配器
@@ -39,16 +40,12 @@ twikoo/
 │   ├── pkg/                   # twikoo-pkg              ← SEA 可执行产物打包流水线，产出私有部署可执行程序
 │   ├── demo/                  # @twikoojs/demo          ← 本地演示工程
 │   └── pushoo/                # pushoo                  ← 推送通道库
-├── docs/                      # twikoo-docs             ← VitePress 文档站
 └── templates/                 # 非 workspace 包：一键部署模板（纯 JS，平台直取）
-    ├── vercel-min/            #   Vercel（api/index.js + vercel.json + package.json）
-    ├── cloudbase/twikoo/      #   腾讯云开发（仓库根 cloudbaserc.json 指向它）
     ├── aws-lambda/src/        #   AWS Lambda（terraform/main.tf 的 source_path 指向它）
+    ├── cloudbase/twikoo/      #   腾讯云开发（仓库根 cloudbaserc.json 指向它）
+    ├── vercel-min/            #   Vercel（api/index.js + vercel.json + package.json）
     └── hf-space/              #   Hugging Face Space（Dockerfile + src/start.sh）
 ```
-
-> Vercel 的「精简转发壳」不再作为 workspace 包存在（原 `packages/server-vercel-min` 已于 2026-09-19 删除）：
-> 一键部署入口是 `templates/vercel-min`（纯 JS，平台直取），它就是原来那个壳。
 
 ## 常用命令
 

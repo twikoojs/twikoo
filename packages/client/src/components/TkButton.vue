@@ -126,21 +126,27 @@ function handleClick(evt: MouseEvent): void {
  * 因为尺寸类用的是 `padding` 简写（会一并重置纵向/横向），`--text` 只清左右内边距
  * （`padding-left/right: 0`），必须排在后面才能生效，否则会被尺寸类覆盖回去——
  * 那正是「mini 按钮本该 `7px 0`、却变成 `0 7px`」的原因。
+ *
+ * 取值对齐 1.x element-ui 的**实际渲染值**（`.el-button--small` 与 `--mini` 在 1.x 共用
+ * 同一条规则 `{ font-size: 12px; border-radius: 3px }`，padding 分别 `9px 15px` / `7px 15px`）：
+ * 12px 字号 + 1px 边框下，small 高 32px、mini 高 28px。
  */
 .twikoo .tk-button--large {
-  height: 40px;
-  font-size: 0.9375rem;
+  height: auto;
+  padding: 13px 20px;
+  font-size: 1rem;
 }
 .twikoo .tk-button--small {
-  height: 28px;
-  padding: 0 11px;
-  font-size: 0.8125rem;
+  height: auto;
+  padding: 9px 15px;
+  font-size: 0.75rem;
+  border-radius: 3px;
 }
-/* mini 用 1.x 的 padding 驱动尺寸（`.el-button--mini { padding: 7px 15px }`），
-   12px 字号 + 1px 边框 → 高 28px；不再写死 height，纵向内边距才能保留 7px */
 .twikoo .tk-button--mini {
+  height: auto;
   padding: 7px 15px;
   font-size: 0.75rem;
+  border-radius: 3px;
 }
 .twikoo .tk-button--text {
   border-color: transparent;

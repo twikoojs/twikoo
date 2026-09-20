@@ -23,8 +23,8 @@
  * - `@imaegoo/node-ip2region` 的 `DEFAULT_DB_PATH` → 内联 base64 数据库并落到临时目录。
  *
  * **维护约定**：common 新增/更换重依赖时，必须同步本表与 `package.json` 的
- * `dependencies`，否则 SEA 产物会在运行时缺依赖。核对方式见仓库根
- * `VERIFICATION.md`（`TWIKOO_PKG_BUNDLE_ONLY=1` + 产物字符串探测）。
+ * `dependencies`，否则 SEA 产物会在运行时缺依赖。核对方式：设
+ * `TWIKOO_PKG_BUNDLE_ONLY=1` 只验证打包链路（`tsdown.config.mts`），再对产物做依赖字符串探测。
  */
 import * as akismetApi from "akismet-api";
 import * as axios from "axios";

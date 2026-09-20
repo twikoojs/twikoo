@@ -173,9 +173,10 @@ jobs:
           tags: |
             imaegoo/twikoo:arm32v7
             imaegoo/twikoo:${{ needs.validate.outputs.version }}-arm32v7
+          # arm32v7 命名空间没有 node 的新版本 tag（`:26` 之类不存在），只能用 lts（与 1.x 同底座）
           build-args: |
             NODE_IMAGE=arm32v7/node
-            NODE_VERSION=${{ env.NODE_VERSION }}
+            NODE_VERSION=lts
             TWIKOO_VERSION=${{ needs.validate.outputs.version }}
 
   publish-pkg:

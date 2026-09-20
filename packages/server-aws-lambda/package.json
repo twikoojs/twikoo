@@ -1,7 +1,7 @@
 {
   "name": "@twikoojs/aws-lambda",
   "version": "0.0.0",
-  "description": "Twikoo 2.0 AWS Lambda 适配器（API Gateway v1/v2；业务逻辑在 @twikoojs/common）",
+  "description": "Twikoo comment system backend for AWS Lambda",
   "license": "MIT",
   "repository": {
     "type": "git",

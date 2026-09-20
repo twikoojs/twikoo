@@ -1,7 +1,7 @@
 {
   "name": "twikoo-netlify",
   "version": "0.0.0",
-  "description": "Twikoo 2.0 Netlify 适配器（业务逻辑在 @twikoojs/common；不依赖 twikoo-vercel）",
+  "description": "Twikoo comment system backend for Netlify",
   "license": "MIT",
   "repository": {
     "type": "git",

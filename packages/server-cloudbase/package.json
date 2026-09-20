@@ -1,7 +1,7 @@
 {
   "name": "twikoo-func",
   "version": "0.0.0",
-  "description": "Twikoo 2.0 CloudBase 适配器（twikoo-func；业务逻辑在 @twikoojs/common）",
+  "description": "Twikoo comment system backend for CloudBase",
   "license": "MIT",
   "repository": {
     "type": "git",

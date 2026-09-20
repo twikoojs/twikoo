@@ -1,7 +1,7 @@
 {
   "name": "tkserver",
   "version": "0.0.0",
-  "description": "Twikoo 2.0 自托管服务器（业务逻辑在 @twikoojs/common）",
+  "description": "Twikoo comment system backend for self hosted",
   "license": "MIT",
   "repository": {
     "type": "git",

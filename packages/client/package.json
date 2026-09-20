@@ -1,7 +1,7 @@
 {
   "name": "twikoo",
   "version": "0.0.0",
-  "description": "Twikoo 2.0 客户端（Vue3 + Vite；UMD 全局名 twikoo）",
+  "description": "A simple comment system.",
   "license": "MIT",
   "repository": {
     "type": "git",

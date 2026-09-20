@@ -1,7 +1,7 @@
 {
   "name": "twikoo-vercel",
   "version": "0.0.0",
-  "description": "Twikoo 2.0 Vercel 适配器（业务逻辑在 @twikoojs/common）",
+  "description": "Twikoo comment system backend for Vercel",
   "license": "MIT",
   "repository": {
     "type": "git",

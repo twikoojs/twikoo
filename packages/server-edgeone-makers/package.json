@@ -1,7 +1,7 @@
 {
   "name": "twikoo-edgeone-makers",
   "version": "0.0.0",
-  "description": "Twikoo 2.0 腾讯云 EdgeOne Makers 适配器（受限能力形态；业务逻辑在 @twikoojs/common）",
+  "description": "Twikoo comment system backend for Tencent EdgeOne Makers",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",

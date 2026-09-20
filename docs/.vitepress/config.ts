@@ -1,17 +1,6 @@
 import { defineConfig } from "vitepress";
 
-/**
- * 文档示例里的 twikoo 版本占位符。
- *
- * 为什么需要它：CDN 示例写在代码块里，而 **VitePress 不会对代码块做 Vue 插值**，
- * `{{ }}` 在这里不可用 —— 于是沿用客户端产物同名的占位符 `__TWIKOO_VERSION__`
- * （见 `packages/shared/src/version.ts`），由下面的 markdown-it 规则在**构建时**替换。
- *
- * 版本来源与 `theme/Twikoo.vue` 完全一致，都由 `.github/workflows/docs.yml` 注入：
- *   - release 触发 → 发布 tag（本仓库 tag 即 twikoo 版本号）
- *   - push `docs/**` / 手动触发 → registry 最新稳定版（`npm view twikoo version`）
- * 本地未注入时回退 `latest`（不写死版本号，避免又变成"发版必须改文档"）。
- */
+// 文档示例里的 twikoo 版本占位符
 const TWIKOO_VERSION_PLACEHOLDER = "__TWIKOO_VERSION__";
 const twikooVersion = process.env.VITE_TWIKOO_VERSION || "latest";
 
@@ -38,7 +27,7 @@ function replaceVersionPlaceholder(tokens: VersionToken[]): void {
 export default defineConfig({
   markdown: {
     /**
-     * 构建时把 `__TWIKOO_VERSION__` 换成上面解析出的版本（见文件头说明）。
+     * 构建时把 placeholder 换成上面解析出的版本
      * @param md markdown-it 实例
      */
     config(md) {

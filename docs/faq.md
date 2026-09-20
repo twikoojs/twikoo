@@ -147,16 +147,16 @@ Akismet (Automattic Kismet) 是应用广泛的一个垃圾留言过滤系统，�
 
 腾讯云环境自带云存储，所以腾讯云环境下可以直接上传图片，图片保存在云存储中。然而 Vercel 环境没有，上传图片功能依赖第三方图床，请在管理面板中配置图床，Twikoo 支持以下图床：
 
-| 图床                                                   | 地址            | 特点                                                                                                                                                                                                                                                                     |
-| ------------------------------------------------------ | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| qcloud                                                 | 无              | 腾讯云环境自带，可在云开发 - 云存储中查看                                                                                                                                                                                                                                |
-| 7bu                                                    | https://7bu.top | 去不图床，由杜老师提供支持，无免费套餐                                                                                                                                                                                                                                   |
-| see                                                    | https://s.ee    | S.EE 图床，有免费套餐，请自行注册账号，`IMAGE_CDN_TOKEN` 可在 [Dashboard](https://s.ee/user/developers/) 中获取                                                                                                                                                          |
-| [lsky-pro](https://www.lsky.pro)                       | 私有部署        | 兰空图床 2.0 版本，`IMAGE_CDN` 请配置图床首页 URL 地址（如 `https://7bu.top`），`IMAGE_CDN_TOKEN` 获取方式请参考教程 [杜老师说图床：新版本去不图床 Token 的获取与清空](https://dusays.com/454/)，获取到的 token 格式应为 `1\|1bJbwlqBfnggmOMEZqXT5XusaIwqiZjCDs7r1Ob5`） |
-| [PicList](https://piclist.cn/)                         | 私有部署        | `IMAGE_CDN_URL` 配置图床 URL 地址，`IMAGE_CDN_TOKEN`填写参考[piclist文档：接口鉴权](https://piclist.cn/advanced.html#%E6%8E%A5%E5%8F%A3%E9%89%B4%E6%9D%83)                                                                                                               |
-| [EasyImage2.0](https://github.com/icret/EasyImages2.0) | 私有部署        | `IMAGE_CDN_URL` 配置图床 URL 地址，`IMAGE_CDN_TOKEN`填写 TOKEN                                                                                                                                                                                                           |
-| [Chevereto](https://chevereto.com)                     | 私有部署        | Chevereto v4 版本,`IMAGE_CDN_URL` 配置图床 URL 地址（如 `https://your-chevereto.com`），`IMAGE_CDN_TOKEN` 填写 API Key（在管理后台 Dashboard → Settings → API 中获取）。注意：需要支持 API v1 的 Chevereto 实例                                                          |
-| S3 / R2 / MinIO                                        | S3 兼容服务     | `IMAGE_CDN` 设为 `s3`，填写 `S3_BUCKET`、`S3_ACCESS_KEY_ID`、`S3_SECRET_ACCESS_KEY` 等配置；`S3_FORCE_PATH_STYLE` 请根据端点类型配置：Cloudflare R2、MinIO 等 path-style 端点保持为空或 `true`，已绑定存储桶的自定义域名（如腾讯云 COS 自定义域名）则设为 `false`        |
+| 图床 | 地址 | 特点 |
+| ---- | ---- | ---- |
+| qcloud | 无 | 腾讯云环境自带，可在云开发 - 云存储中查看 |
+| 7bu | https://7bu.top | 去不图床，由杜老师提供支持，无免费套餐 |
+| see | https://s.ee | S.EE 图床，有免费套餐，请自行注册账号，`IMAGE_CDN_TOKEN` 可在 [Dashboard](https://s.ee/user/developers/) 中获取 |
+| [lsky-pro](https://www.lsky.pro) | 私有部署 | 兰空图床 2.0 版本，`IMAGE_CDN` 请配置图床首页 URL 地址（如 `https://7bu.top`），`IMAGE_CDN_TOKEN` 获取方式请参考教程 [杜老师说图床：新版本去不图床 Token 的获取与清空](https://dusays.com/454/)，获取到的 token 格式应为 `1\|1bJbwlqBfnggmOMEZqXT5XusaIwqiZjCDs7r1Ob5`） |
+| [PicList](https://piclist.cn/)                         | 私有部署        | `IMAGE_CDN_URL` 配置图床 URL 地址，`IMAGE_CDN_TOKEN`填写参考[piclist文档：接口鉴权](https://piclist.cn/advanced.html#%E6%8E%A5%E5%8F%A3%E9%89%B4%E6%9D%83) |
+| [EasyImage2.0](https://github.com/icret/EasyImages2.0) | 私有部署        | `IMAGE_CDN_URL` 配置图床 URL 地址，`IMAGE_CDN_TOKEN`填写 TOKEN |
+| [Chevereto](https://chevereto.com) | 私有部署 | Chevereto v4 版本,`IMAGE_CDN_URL` 配置图床 URL 地址（如 `https://your-chevereto.com`），`IMAGE_CDN_TOKEN` 填写 API Key（在管理后台 Dashboard → Settings → API 中获取）。注意：需要支持 API v1 的 Chevereto 实例 |
+| S3 / R2 / MinIO | S3 兼容服务 | `IMAGE_CDN` 设为 `s3`，填写 `S3_BUCKET`、`S3_ACCESS_KEY_ID`、`S3_SECRET_ACCESS_KEY` 等配置；`S3_FORCE_PATH_STYLE` 请根据端点类型配置：Cloudflare R2、MinIO 等 path-style 端点保持为空或 `true`，已绑定存储桶的自定义域名（如腾讯云 COS 自定义域名）则设为 `false` |
 
 ## 私有部署能连接自己的数据库吗？
 
@@ -182,15 +182,15 @@ Twikoo 私有部署版默认使用内置数据库：LokiJS 数据库，支持的
 
 2.0 起前端把网络与接口错误归类为 8 种 `kind`，评论区会显示**内联错误卡片**（可展开查看 HTTP 状态、requestId 与响应原文片段）。对照下表快速定位：
 
-| kind           | 典型现象                                  | 排查方向                                                                                    |
-| -------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `NETWORK`      | 请求发不出去，HTTP 状态为 0               | 域名 / 网络不可达；广告拦截插件；确认 envId 地址可直接访问                                  |
-| `CORS`         | `No 'Access-Control-Allow-Origin' header` | 清空配置项 `CORS_ALLOW_ORIGIN`；确认云函数运行正常                                          |
-| `TIMEOUT`      | 长时间无响应                              | 云函数冷启动过慢或后端超时；Vercel 等平台在中国大陆可能超时，请更换部署方式                 |
-| `REJECTED`     | 请求被平台拒绝                            | 平台配额用尽、函数未部署成功、网关跨域设置未添加域名                                        |
-| `NOT_FOUND`    | 404                                       | envId / 部署地址填写错误，或函数名不是 `twikoo`                                             |
-| `CLIENT_ERROR` | 4xx                                       | 请求参数非法（如 `per` / `page` 越界、缺少必填字段）                                        |
-| `SERVER_ERROR` | 5xx                                       | 云函数内部异常：查看函数日志；常见于数据库连接串错误、运行时版本过低（需 Node 20+）         |
-| `UNKNOWN`      | 其它                                      | 展开错误卡片查看响应原文片段，或[提交 issue](https://github.com/twikoojs/twikoo/issues/new) |
+| kind | 典型现象 | 排查方向 |
+| ---- | ---- | ---- |
+| `NETWORK` | 请求发不出去，HTTP 状态为 0 | 域名 / 网络不可达；广告拦截插件；确认 envId 地址可直接访问 |
+| `CORS` | `No 'Access-Control-Allow-Origin' header` | 清空配置项 `CORS_ALLOW_ORIGIN`；确认云函数运行正常 |
+| `TIMEOUT` | 长时间无响应 | 云函数冷启动过慢或后端超时；Vercel 等平台在中国大陆可能超时，请更换部署方式 |
+| `REJECTED` | 请求被平台拒绝 | 平台配额用尽、函数未部署成功、网关跨域设置未添加域名 |
+| `NOT_FOUND` | 404 | envId / 部署地址填写错误，或函数名不是 `twikoo` |
+| `CLIENT_ERROR` | 4xx | 请求参数非法（如 `per` / `page` 越界、缺少必填字段） |
+| `SERVER_ERROR` | 5xx | 云函数内部异常：查看函数日志；常见于数据库连接串错误、运行时版本过低（需 Node 20+） |
+| `UNKNOWN` | 其它 | 展开错误卡片查看响应原文片段，或[提交 issue](https://github.com/twikoojs/twikoo/issues/new) |
 
 > 相关：`ERR_BLOCKED_BY_CLIENT` → 关闭去广告插件；`FUNCTIONS_EXECUTE_FAIL` → 云函数运行时版本或权限问题。

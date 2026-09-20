@@ -20,7 +20,6 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "typecheck": "pnpm -r --if-present run typecheck",
-    "release:check": "node scripts/release-set-version.mjs --check",
     "e2e:b2": "node scripts/e2e-b2.mjs",
     "check:products": "node scripts/check-cdn-products.mjs"
   },

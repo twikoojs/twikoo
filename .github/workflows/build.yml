@@ -1,26 +1,5 @@
 # Twikoo 2.0 持续集成门禁
-#
-# 文件名与显示名和 1.x 对齐：`build.yml` / `Build`（1.x 为 `.github/workflows/build.yml`）。
-#
-# 4 个并行门禁 job（lint / typecheck / test / build），互不 needs。
-#
-# 草稿 PR 不跑 CI：每个 job 带 `if: github.event.pull_request.draft == false`，
-# 并在 `pull_request.types` 里显式加上 `ready_for_review`——**两者缺一不可**：
-#   - 少了 `if`：草稿 PR 会照跑，白烧 CI 分钟数；
-#   - 少了 `ready_for_review`：该活动类型**不在** GitHub 的默认触发集
-#     （默认只有 opened / synchronize / reopened），于是「草稿点 Ready for review」
-#     根本不会触发工作流，CI 要等下一次 push 才启动（静默空档，很难发现）。
-#
-# 注：`push` 事件下 `github.event.pull_request` 为 null，而 GitHub 表达式是宽松相等
-#     （null→0、false→0），故 `null == false` 求值为 **true** —— push 到 main 不受影响。
-#
-# 以下守卫项一律由**人工核对**，不设 CI 检查：
-#   - 基线（engines.node / .nvmrc / 9 个发布包 version）
-#   - AGENTS.md 与仓库现状是否同步
-#   - workflow 静态检查（actionlint + 结构断言）
-#   - packages/*/src 无 .js 源码
-#   - 适配器 dependencies 完整性
-#   - .env.example 变量清单一致性
+# 4 个并行门禁 job（lint / typecheck / test / build）
 
 name: Build
 
@@ -42,7 +21,7 @@ on:
 jobs:
   lint:
     name: Lint
-    # 草稿 PR 不跑（push 事件下 github.event.pull_request 为 null，null == false 为 true）
+    # 草稿 PR 不跑
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
@@ -93,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # 仓库未配置对应 Secret 时为空字符串 → hasEnv() 判定未配置
-      # → 对应用例整体 skip（不失败、不伪造），fork PR 同样能跑绿。
+      # → 对应用例整体 skip，fork PR 同样能跑绿。
       TEST_SMTP_HOST: ${{ secrets.TEST_SMTP_HOST }}
       TEST_SMTP_PORT: ${{ secrets.TEST_SMTP_PORT }}
       TEST_SMTP_USER: ${{ secrets.TEST_SMTP_USER }}

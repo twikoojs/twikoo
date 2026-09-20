@@ -91,10 +91,6 @@ A **simple**, **safe**, **free** comment system.
 - Support to hide the management portal and show it by entering a secret code.
 - Support for importing comments from Valine, Artalk, Disqus.
 
-### Disadvantages
-
-- IE is not supported.
-
 ## Preview
 
 ### Comments

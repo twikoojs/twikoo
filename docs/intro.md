@@ -92,10 +92,6 @@ A simple, safe, free comment system.
 - 支持隐藏管理入口，通过输入暗号显示
 - 支持从 Valine、Artalk、Disqus 导入评论
 
-### 缺点
-
-- 不支持 IE
-
 ## 预览
 
 ### 评论

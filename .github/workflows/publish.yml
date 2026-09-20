@@ -1,38 +1,28 @@
 # Twikoo 2.0 发布工作流
 #
-# 文件名与显示名和 1.x 对齐：`publish.yml` / `Publish`（1.x 为 `.github/workflows/publish.yml`）。
-#
-# 触发方式：**人工在 GitHub 网页创建 Release**（不提供 workflow_dispatch，不自动创建 Release）。
+# 触发方式：**人工在 GitHub 网页创建 Release**。
 #   - Release tag 即最终版本号（容忍 `v` 前缀，CI 统一 strip）
 #   - 「Set as a pre-release」勾选框决定 npm dist-tag：勾了 → beta，未勾 → latest
-#   - 版本号不进入 git：仓库内 9 个发布包恒为 0.0.0，仅在本工作流中覆写后发布
+#   - 版本号不进入 git：仓库内所有发布包恒为 0.0.0，仅在本工作流中覆写后发布
 #
-# 发布顺序（**单阶段**：9 包一次性并行发布，不按依赖分批）：
-#   validate → publish（9 包矩阵，fail-fast）→ verify gate（9 包全部在 npm 可见）
+# 发布顺序（**单阶段**：所有包一次性并行发布，不按依赖分批）：
+#   validate → publish（所有包矩阵，fail-fast）→ verify gate（所有包全部在 npm 可见）
 #   → docker → pkg SEA 产物上传到已有 Release
 #
 # 预发布与正式版走**同一套流程**，只有 tag 不同（都由「Set as a pre-release」决定）：
 #   - npm：dist-tag = beta / latest
 #   - Docker：通道 tag 同源于 npm dist-tag（`:beta` / `:latest`），两种情况都另打精确版本号 tag
+#   - Docker **arm32v7 镜像只在正式版发布**（预发布只出 amd64 / arm64）
 #   - SEA 产物：`gh release upload` 挂到该 Release，预发布同样执行
-#   - **arm32v7 镜像只在正式版发布**（预发布只出 amd64 / arm64）
 #
 # npm 鉴权：**OIDC 信任发布**（trusted publishing），全程不使用任何 npm token ——
 #   靠上面的 `id-token: write` 换取短时令牌。前置条件（缺一不可）：
 #   1. 每个包都要在 npmjs.com 上配置 Trusted Publisher：Owner `twikoojs` /
-#      Repository `twikoo` / Workflow filename `publish.yml`（Environment 留空，
-#      与工作流一致；文件名逐字符匹配，含 `.yml`）；
-#   2. `package.json` 的 `repository.url` 必须与发布仓库一致，否则报
-#      「Repository URL mismatch」；
+#      Repository `twikoo` / Workflow filename `publish.yml`（Environment 留空）；
+#   2. `package.json` 的 `repository.url` 必须与发布仓库一致；
 #   3. **OIDC 只能用于已存在的包** —— 新包名必须先用 token 手动发布一次占位版本，
 #      否则无法在 npmjs.com 上进入该包的 Settings 配置信任发布。
-#      `@twikoojs/shared` / `@twikoojs/common` / `@twikoojs/aws-lambda`
-#      已于 2026-09-20 各发一个 0.0.1 占位包完成占名。
 #   `--provenance` 在信任发布下会自动生效，这里显式保留只为让意图清晰。
-#
-# 为什么不分批：`npm publish` 并不校验 dependencies 是否已存在于 registry，依赖
-# `@twikoojs/common` 的适配器与 common 同批发布不会失败；而分批要多等一轮 gate
-# （每轮最长 600s），npm 的可见性延迟本身只有几分钟——分批只增加发布总耗时。
 
 name: Publish
 
@@ -127,6 +117,7 @@ jobs:
         working-directory: ${{ matrix.dir }}
         env:
           NPM_TAG: ${{ needs.validate.outputs.npm_tag }}
+        # --provenance 在信任发布下会自动生效，这里显式保留只为让意图清晰
         run: npm publish --provenance --tag "$NPM_TAG"
 
   verify:
@@ -185,11 +176,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          # 宿主 Node 必须 ≥ 25.7（tsdown 的 exe 选项依赖较新的 SEA API）；
-          # SEA 产物的**目标运行时**由 packages/pkg/tsdown.config.mts 的
-          # exe.targets[].nodeVersion 决定（= 26.9.0，须为完整 x.y.z）。
-          # 两者含义不同（宿主 vs 目标运行时），当前都落在 Node 26 线。
-          node-version: "26"
+          node-version: ${{ env.NODE_VERSION }}
           registry-url: ${{ env.NPM_REGISTRY }}
       - run: corepack enable && pnpm install --frozen-lockfile
       - name: 覆写版本号（SEA 产物内的版本号取自 @twikoojs/shared，须与本次发布一致）

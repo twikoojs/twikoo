@@ -54,9 +54,8 @@ pnpm build # 全仓构建
 pnpm test # 全仓单元测试
 pnpm lint # ESLint
 pnpm typecheck # 逐包 tsc --noEmit
-pnpm release:check # 发布基线：9 个发布包 version 必须为 0.0.0
 pnpm e2e:b2 # 端到端回归
-pnpm check:products # 客户端四产物逐一 init + 形态断言 + tkserver 启动/shutdown
+pnpm check:products # 客户端产物逐一 init + 形态断言 + tkserver 启动/shutdown
 ```
 
 - `pnpm e2e:b2` 与 `pnpm check:products` 都需要先 `pnpm build`

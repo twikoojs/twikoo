@@ -122,39 +122,3 @@ twikoo.init({
   }
 });
 ```
-
-## Server events
-
-Besides the frontend API above, the Twikoo cloud function (HTTP endpoint) works with **events**:
-
-```json
-// request
-{ "event": "COMMENT_GET", "url": "/post/1", "page": 1, "per": 8 }
-// response (code 0 means success; a non-zero code is a business error)
-{ "code": 0, "data": [], "more": false, "count": 0 }
-```
-
-2.0 keeps the 1.x event names unchanged (`COMMENT_GET`, `COMMENT_SUBMIT`, `COMMENT_LIKE`, `COUNTER_GET`, `GET_CONFIG`, `SET_CONFIG`, `LOGIN`, `COMMENT_IMPORT_FOR_ADMIN`, …) — **24 client events** in total, plus one internal server event, `POST_SUBMIT` (see below).
-
-> **About `HIDDEN` / `VISIBLE`**: these are **not event names**. When the admin panel filters by "spam" or "approved", it passes `HIDDEN` / `VISIBLE` as the **`type` parameter** of `COMMENT_GET_FOR_ADMIN`:
->
-> ```json
-> { "event": "COMMENT_GET_FOR_ADMIN", "type": "HIDDEN", "per": 10, "page": 1 }
-> ```
->
-> This is the mechanism in both 1.x and 2.0 (1.x filters on `event.type` in `getCommentSearchCondition`).
-
-### `POST_SUBMIT` (internal server event, not a compatibility alias)
-
-`POST_SUBMIT` is **not** a legacy name for `COMMENT_SUBMIT`, and it will **not** be removed in 2.2.0. It is the server-side **deferred side-effect event**: after `COMMENT_SUBMIT` saves a comment, each platform dispatches this event to a separate execution unit, where the slow work runs — third-party spam checks and email / instant-message notifications.
-
-The reason is that these operations depend on external networks with unpredictable latency. Run inline inside the submit request, they would (1) make the user wait for the whole chain, and (2) fail the **entire submission** when the cloud function hits its execution time limit — even though the comment has already been saved, so the client shows an error and a retry creates a duplicate.
-
-| Platform                            | Dispatch mechanism                            |
-| ----------------------------------- | --------------------------------------------- |
-| Self-hosted / Deta / EdgeOne Makers | In-process call, not awaited                  |
-| Tencent CloudBase                   | Recursive self-invocation via `callFunction`  |
-| Vercel / Netlify                    | Recursive self-invocation over HTTP           |
-| AWS Lambda                          | Native async Invoke (`InvocationType: Event`) |
-
-> This event is protected by an internal dispatch token (the `x-twikoo-recursion` request header): direct external calls are rejected with `code` 1403. Do **not** call it from a custom client.

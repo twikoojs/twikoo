@@ -1,5 +1,5 @@
 # Twikoo 2.0 持续集成门禁
-# 4 个并行门禁 job（lint / typecheck / test / build）
+# 5 个并行门禁 job（lint / markdown / typecheck / test / build）
 
 name: Build
 
@@ -42,6 +42,31 @@ jobs:
 
       - name: ESLint
         run: pnpm lint
+
+  # markdown 排版由 AutoCorrect 负责（prettier 已忽略 *.md，见 .prettierignore / .autocorrectrc）。
+  # 单独成 job 是为了与其他门禁并行；检查逻辑在 scripts/format-md.mjs（只扫 *.md）。
+  markdown:
+    name: Markdown
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm (version from package.json packageManager field)
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: AutoCorrect (markdown)
+        run: pnpm lint:md
 
   typecheck:
     name: Typecheck

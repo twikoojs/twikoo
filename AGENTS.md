@@ -59,9 +59,7 @@ pnpm e2e:b2 # 端到端回归
 pnpm check:products # 客户端产物逐一 init + 形态断言 + tkserver 启动/shutdown
 ```
 
-- `pnpm build` 是 `pnpm e2e:b2`、`pnpm check:products` 的前置；`pnpm test` / `pnpm typecheck` / `pnpm lint`
-  同样需要先构建 —— 跨包 import 走各包 `package.json` 声明的入口（`dist/`），而 `dist/` 不入库，
-  干净 checkout 下直接跑会报 `Cannot find module` / `Failed to resolve import`（CI 的三个门禁 job 因此各带一步 `pnpm build`）
+- `pnpm build` 是 `pnpm test`、`pnpm lint`、`pnpm typecheck`、`pnpm e2e:b2`、`pnpm check:products` 的前置
 - 单包命令：`pnpm --filter <包名> <script>`（如 `pnpm --filter tkserver test`、`pnpm --filter twikoo build`、`pnpm --filter twikoo-docs docs:build`）。
 - **Windows 开发者**：如遇脚本 shell 兼容问题，可用 `bash -lc "pnpm build"` 通过 Git Bash 执行。
 

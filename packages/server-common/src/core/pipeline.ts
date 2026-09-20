@@ -194,11 +194,10 @@ export function createPipeline(adapters: TkAdapters) {
       );
       logger.error("请求参数：", request.body);
       logger.error("错误信息：", e);
+      // 只回 code + message：聚合日志含请求参数与来访 IP，留在服务端，不回传前端
       body = {
         code: RES_CODE.FAIL,
         message: getErrorMessage(e),
-        // 异常响应附带本次请求聚合日志（requestId 标注），供前端错误卡片展示
-        log: logger.getText(),
       };
       if (e instanceof RateLimitError) status = 429;
     }

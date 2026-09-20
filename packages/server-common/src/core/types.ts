@@ -24,7 +24,7 @@ export interface PipelineContext {
   config: ConfigData;
   /** 适配器聚合端口（database / storage / mailer / notifier / capabilities） */
   adapters: TkAdapters;
-  /** 请求级日志器（requestId 注入；getText() 可聚合回传） */
+  /** 请求级日志器（requestId 注入；getText() 可聚合排查，不回传前端） */
   logger: RequestLogger;
 }
 

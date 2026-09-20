@@ -4,8 +4,7 @@
  * 保留：verbose/info/warn/error 四级，级别由 TWIKOO_LOG_LEVEL 控制（默认 info）。
  * 改进：每请求一个 {@link RequestLogger} 实例——
  * - 控制台输出带 requestId 前缀，前端排障可拿 ID 到后端日志检索；
- * - 聚合本次请求全部日志行（getText()），pipeline 在异常响应体中回传 `log` 字段，
- *   供前端错误卡片（TkError）与管理面板展示。
+ * - 聚合本次请求全部日志行（getText()）供服务端排查；**不回传前端**（含请求参数与来访 IP）。
  */
 import { randomUUID } from "node:crypto";
 
@@ -23,7 +22,7 @@ export type LogMessage = unknown;
 
 /**
  * 请求级日志器：pipeline 为每个请求创建一个，注入 {@link PipelineContext} 供
- * handlers 沿用；getText() 供异常路径聚合回传。
+ * handlers 沿用；getText() 供服务端聚合排查。
  */
 export interface RequestLogger {
   /** verbose 级（级别 1，默认关闭） */

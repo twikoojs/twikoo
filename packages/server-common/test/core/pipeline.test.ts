@@ -218,7 +218,7 @@ describe("pipeline 八步编排", () => {
     expect(res.body.message).toBe('参数"url"必须是字符串');
   });
 
-  it("handler 抛错转统一错误体并附带聚合日志（HTTP 仍 200，1.x 语义）", async () => {
+  it("handler 抛错转统一错误体（HTTP 仍 200，1.x 语义；不回传聚合日志）", async () => {
     registerHandler("COUNTER_GET" as TwikooEvent, () => {
       throw new Error("boom");
     });
@@ -227,9 +227,8 @@ describe("pipeline 八步编排", () => {
     expect(res.status).toBe(200);
     expect(res.body.code).toBe(RES_CODE.FAIL);
     expect(res.body.message).toBe("boom");
-    // 异常响应附带本次请求聚合日志（含 requestId）
-    expect(typeof res.body.log).toBe("string");
-    expect(res.body.log).toMatch(/Twikoo:\[[0-9a-f-]{36}\]/);
+    // 聚合日志含请求参数与来访 IP，只留在服务端
+    expect(res.body).not.toHaveProperty("log");
   });
 
   it("readConfig 失败降级为空配置（请求不失败）", async () => {

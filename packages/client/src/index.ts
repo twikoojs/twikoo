@@ -1,17 +1,18 @@
 /**
- * 视图渲染入口（1.x `view/index.js` 的 Vue3 形态：createApp + 全局属性注入）。
+ * 渲染入口（createApp + 全局属性注入）。
  *
- * 与 1.x 的差异：
- * - 1.x 在 `view/index.js` 里 `Vue.use(Button/Input/Loading)` 并引入 theme-chalk；
+ * 2.0 不再有 `view/` 层——twikoo 没有 router，视图层没有意义，组件与入口在 `src/` 下平铺
+ * （1.x 对应文件为 `src/client/view/index.js`）。与 1.x 的差异：
+ * - 1.x 在那里 `Vue.use(Button/Input/Loading)` 并引入 theme-chalk；
  *   2.0 自研 `tk-*` 组件自带样式，无需全局注册（`<script setup>` 内导入即用）；
  * - `v-loading` / `v-clickoutside` 由各组件按需从 `utils/directives.ts` 导入
  *   （script setup 的 `vXxx` 命名约定即自动注册为本地指令）；
- * - OwO 面板样式（`lib/owo.css`）与 1.x 一致在视图入口引入，随 UMD 产物输出到 twikoo.css。
+ * - OwO 面板样式（`lib/owo.css`）与 1.x 一致在渲染入口引入，随 UMD 产物输出到 twikoo.css。
  */
 import { createApp, type App as VueApp } from "vue";
 import TwikooApp from "./App.vue";
-import { setAppState } from "../utils/api";
-import "../lib/owo.css";
+import { setAppState } from "./utils/api";
+import "./lib/owo.css";
 
 /** 应用实例缓存（重复 init 时先卸载） */
 let app: VueApp | null = null;

@@ -111,15 +111,15 @@
 import { onMounted, onUnmounted, ref } from "vue";
 import TkComment from "./TkComment.vue";
 import TkSubmit from "./TkSubmit.vue";
-import TkButton from "../../components/TkButton.vue";
-import TkInput from "../../components/TkInput.vue";
-import TkIcon from "../../components/TkIcon.vue";
-import { call, getUrl, logger, t } from "../../utils";
-import { getAppState } from "../../utils/api";
-import { setServerConfig } from "../../utils/state";
-import { EVENT_CONFIG_UPDATED, off as busOff, on as busOn } from "../../utils/bus";
-import { vLoading } from "../../utils/directives";
-import type { CommentDto, ServerConfig } from "../../types";
+import TkButton from "../components/TkButton.vue";
+import TkInput from "../components/TkInput.vue";
+import TkIcon from "../components/TkIcon.vue";
+import { call, getUrl, logger, t } from "../utils";
+import { getAppState } from "../utils/api";
+import { setServerConfig } from "../utils/state";
+import { EVENT_CONFIG_UPDATED, off as busOff, on as busOn } from "../utils/bus";
+import { vLoading } from "../utils/directives";
+import type { CommentDto, ServerConfig } from "../types";
 
 // props 仅在模板中使用（showAdminEntry），故不绑定局部变量
 withDefaults(

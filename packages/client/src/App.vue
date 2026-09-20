@@ -21,7 +21,7 @@ import { onMounted, onUnmounted, ref } from "vue";
 import TkComments from "./components/TkComments.vue";
 import TkFooter from "./components/TkFooter.vue";
 import TkAdmin from "./components/TkAdmin.vue";
-import { EVENT_SHOW_ADMIN_ENTRY, off as busOff, on as busOn } from "../utils/bus";
+import { EVENT_SHOW_ADMIN_ENTRY, off as busOff, on as busOn } from "./utils/bus";
 
 /** 管理面板是否展开 */
 const showAdmin = ref(false);

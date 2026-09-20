@@ -95,14 +95,14 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
 import { VERSION } from "@twikoojs/shared";
-import TkButton from "../../components/TkButton.vue";
-import TkInput from "../../components/TkInput.vue";
-import { call, logger, t } from "../../utils";
-import { getAppState } from "../../utils/api";
-import { EVENT_CONFIG_UPDATED, emit as busEmit } from "../../utils/bus";
-import { vLoading } from "../../utils/directives";
-import { customImageBedServices } from "../../i18n/constants";
-import type { ServerConfig } from "../../types";
+import TkButton from "../components/TkButton.vue";
+import TkInput from "../components/TkInput.vue";
+import { call, logger, t } from "../utils";
+import { getAppState } from "../utils/api";
+import { EVENT_CONFIG_UPDATED, emit as busEmit } from "../utils/bus";
+import { vLoading } from "../utils/directives";
+import { customImageBedServices } from "../i18n/constants";
+import type { ServerConfig } from "../types";
 
 /** 配置项定义（1.x settings 表的项结构） */
 interface SettingItem {

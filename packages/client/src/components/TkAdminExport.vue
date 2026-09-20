@@ -19,9 +19,9 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import TkButton from "../../components/TkButton.vue";
-import { call, t } from "../../utils";
-import { getAppState } from "../../utils/api";
+import TkButton from "../components/TkButton.vue";
+import { call, t } from "../utils";
+import { getAppState } from "../utils/api";
 
 /** 导出进行中 */
 const loading = ref(false);

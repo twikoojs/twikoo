@@ -18,10 +18,10 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import TkIcon from "../../components/TkIcon.vue";
-import { convertLink, resolveAvatarUrl } from "../../utils";
+import TkIcon from "../components/TkIcon.vue";
+import { convertLink, resolveAvatarUrl } from "../utils";
 import { EMPTY_CONFIG } from "./defaults";
-import type { ServerConfig } from "../../types";
+import type { ServerConfig } from "../types";
 
 /** 组件属性 */
 const props = withDefaults(

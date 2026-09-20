@@ -132,9 +132,9 @@ import { onMounted, reactive, ref } from "vue";
 import { VERSION } from "@twikoojs/shared";
 import TkAvatar from "./TkAvatar.vue";
 import TkPagination from "./TkPagination.vue";
-import TkButton from "../../components/TkButton.vue";
-import TkInput from "../../components/TkInput.vue";
-import TkIcon from "../../components/TkIcon.vue";
+import TkButton from "../components/TkButton.vue";
+import TkInput from "../components/TkInput.vue";
+import TkIcon from "../components/TkIcon.vue";
 import {
   call,
   convertLink,
@@ -144,11 +144,11 @@ import {
   sanitizeHtml,
   t,
   timeago,
-} from "../../utils";
-import { getAppState } from "../../utils/api";
-import { getServerConfig } from "../../utils/state";
-import { vLoading } from "../../utils/directives";
-import type { CommentDto, ServerConfig } from "../../types";
+} from "../utils";
+import { getAppState } from "../utils/api";
+import { getServerConfig } from "../utils/state";
+import { vLoading } from "../utils/directives";
+import type { CommentDto, ServerConfig } from "../types";
 
 /** 管理列表默认每页条数（1.x defaultPageSize） */
 const defaultPageSize = 5;

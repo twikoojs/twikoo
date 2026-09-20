@@ -8,16 +8,16 @@
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
-import TkSubmit from "../src/view/components/TkSubmit.vue";
-import TkComments from "../src/view/components/TkComments.vue";
-import TkComment from "../src/view/components/TkComment.vue";
-import TkAvatar from "../src/view/components/TkAvatar.vue";
-import TkAction from "../src/view/components/TkAction.vue";
-import TkPagination from "../src/view/components/TkPagination.vue";
-import TkFooter from "../src/view/components/TkFooter.vue";
-import TkMetaInput from "../src/view/components/TkMetaInput.vue";
+import TkSubmit from "../src/components/TkSubmit.vue";
+import TkComments from "../src/components/TkComments.vue";
+import TkComment from "../src/components/TkComment.vue";
+import TkAvatar from "../src/components/TkAvatar.vue";
+import TkAction from "../src/components/TkAction.vue";
+import TkPagination from "../src/components/TkPagination.vue";
+import TkFooter from "../src/components/TkFooter.vue";
+import TkMetaInput from "../src/components/TkMetaInput.vue";
 import TkError from "../src/components/TkError.vue";
-import TwikooApp from "../src/view/App.vue";
+import TwikooApp from "../src/App.vue";
 import { VERSION } from "@twikoojs/shared";
 import { TwikooError, setAppState } from "../src/utils/api";
 import { clearAll } from "../src/utils/bus";

@@ -229,10 +229,10 @@ describe("utils API 封装", () => {
   });
 });
 
-describe("view render", () => {
+describe("render（渲染入口）", () => {
   it("render：createApp 挂载到 el 并注入全局属性", async () => {
     document.body.innerHTML = '<div id="twikoo-test"></div>';
-    const { render, getApp } = await import("../src/view");
+    const { render, getApp } = await import("../src/index");
     const app = render(null, { el: "#twikoo-test" });
     expect(app).toBeTruthy();
     expect(getApp()).toBe(app);

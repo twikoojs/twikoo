@@ -138,12 +138,12 @@ import TkAdminComment from "./TkAdminComment.vue";
 import TkAdminConfig from "./TkAdminConfig.vue";
 import TkAdminImport from "./TkAdminImport.vue";
 import TkAdminExport from "./TkAdminExport.vue";
-import TkButton from "../../components/TkButton.vue";
-import TkInput from "../../components/TkInput.vue";
-import TkIcon from "../../components/TkIcon.vue";
-import { logger, t } from "../../utils";
-import { call, getAppState } from "../../utils/api";
-import { vLoading } from "../../utils/directives";
+import TkButton from "../components/TkButton.vue";
+import TkInput from "../components/TkInput.vue";
+import TkIcon from "../components/TkIcon.vue";
+import { logger, t } from "../utils";
+import { call, getAppState } from "../utils/api";
+import { vLoading } from "../utils/directives";
 
 /** 组件属性 */
 const props = withDefaults(

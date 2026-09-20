@@ -159,7 +159,7 @@ import { computed, nextTick, onMounted, ref, watch } from "vue";
 import TkAction from "./TkAction.vue";
 import TkAvatar from "./TkAvatar.vue";
 import TkSubmit from "./TkSubmit.vue";
-import TkIcon from "../../components/TkIcon.vue";
+import TkIcon from "../components/TkIcon.vue";
 import {
   call,
   convertLink,
@@ -169,11 +169,11 @@ import {
   sanitizeHtml,
   t,
   timeago,
-} from "../../utils";
-import { getAppState } from "../../utils/api";
-import { getServerConfig } from "../../utils/state";
+} from "../utils";
+import { getAppState } from "../utils/api";
+import { getServerConfig } from "../utils/state";
 import { EMPTY_CONFIG } from "./defaults";
-import type { CommentDto, ServerConfig } from "../../types";
+import type { CommentDto, ServerConfig } from "../types";
 
 /** 组件属性（1.x props 同名保留） */
 const props = withDefaults(

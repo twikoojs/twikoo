@@ -28,17 +28,17 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, reactive, watch } from "vue";
-import TkInput from "../../components/TkInput.vue";
-import { call, isQQ, t } from "../../utils";
+import TkInput from "../components/TkInput.vue";
+import { call, isQQ, t } from "../utils";
 import {
   EVENT_INIT_META,
   EVENT_SHOW_ADMIN_ENTRY,
   emit as busEmit,
   off as busOff,
   on as busOn,
-} from "../../utils/bus";
+} from "../utils/bus";
 import { EMPTY_CONFIG } from "./defaults";
-import type { ServerConfig } from "../../types";
+import type { ServerConfig } from "../types";
 
 /** 邮箱正则（来源：MDN input[type=email] 校验规则，1.x 同源） */
 const mailRegExp =

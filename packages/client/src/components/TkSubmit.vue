@@ -107,13 +107,13 @@
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import TkAvatar from "./TkAvatar.vue";
 import TkMetaInput from "./TkMetaInput.vue";
-import TkButton from "../../components/TkButton.vue";
-import TkInput from "../../components/TkInput.vue";
-import TkIcon from "../../components/TkIcon.vue";
-import TkError from "../../components/TkError.vue";
-import { ICONS } from "../../components/icons";
-import OwO from "../../lib/owo";
-import { TwikooError, call, getAppState } from "../../utils/api";
+import TkButton from "../components/TkButton.vue";
+import TkInput from "../components/TkInput.vue";
+import TkIcon from "../components/TkIcon.vue";
+import TkError from "../components/TkError.vue";
+import { ICONS } from "../components/icons";
+import OwO from "../lib/owo";
+import { TwikooError, call, getAppState } from "../utils/api";
 import {
   blobToDataURL,
   getHref,
@@ -128,11 +128,11 @@ import {
   renderMath,
   sanitizeHtml,
   t,
-} from "../../utils";
-import { vClickoutside } from "../../utils/directives";
+} from "../utils";
+import { vClickoutside } from "../utils/directives";
 import { EMPTY_CONFIG } from "./defaults";
-import type { OwoData } from "../../utils/emotion";
-import type { ServerConfig } from "../../types";
+import type { OwoData } from "../utils/emotion";
+import type { ServerConfig } from "../types";
 
 /** 可上传的图片扩展名（1.x imageTypes 同表） */
 const imageTypes = ["apng", "bmp", "gif", "jpeg", "jpg", "png", "svg", "tif", "tiff", "webp"];

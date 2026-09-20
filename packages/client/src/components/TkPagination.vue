@@ -52,8 +52,8 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import TkInput from "../../components/TkInput.vue";
-import { t } from "../../utils";
+import TkInput from "../components/TkInput.vue";
+import { t } from "../utils";
 
 /** 组件属性 */
 const props = withDefaults(

@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import TkIcon from "../../components/TkIcon.vue";
+import TkIcon from "../components/TkIcon.vue";
 
 /** 组件属性 */
 const props = withDefaults(

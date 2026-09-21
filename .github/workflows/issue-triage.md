@@ -93,6 +93,20 @@ safe-outputs:
       - duplicate
       - invalid
     max: 3
+  # 允许纠正错标（例如上一轮误打的 invalid 与正文不符）。白名单与 add-labels 一致，
+  # 不会碰 good first issue / help wanted / wontfix / long-term 这些维护者标签。
+  remove-labels:
+    allowed:
+      - bug
+      - enhancement
+      - question
+      - support
+      - documentation
+      - discussion
+      - tutorial
+      - duplicate
+      - invalid
+    max: 3
   add-comment:
     max: 1
   set-issue-type:

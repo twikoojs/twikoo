@@ -40,7 +40,7 @@
     "happy-dom": "^20.14.5",
     "jsdom": "~25.0.1",
     "mongodb-memory-server": "^11.2.0",
-    "prettier": "^3.9.7",
+    "prettier": "^3.9.8",
     "tsdown": "^0.23.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.70.0",

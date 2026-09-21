@@ -95,6 +95,30 @@ interface NoticeOptions {
      * url 用于点击通知后跳转的地址
      */
     url?: string;
+    /**
+     * 通知级别（active / timeSensitive / critical / passive）
+     */
+    level?: string;
+    /**
+     * 通知分组（同组通知在系统通知中心折叠展示）
+     */
+    group?: string;
+    /**
+     * 自定义图标地址
+     */
+    icon?: string;
+    /**
+     * 铃声名（Bark App 内置或自定义铃声）
+     */
+    sound?: string;
+    /**
+     * 角标数字
+     */
+    badge?: number | string;
+    /**
+     * 是否保存到通知历史（"1" 保存 / "0" 不保存）
+     */
+    isArchive?: "1" | "0";
   };
   /**
    * IFTTT 通知方式的参数配置
@@ -428,3 +452,13 @@ PS：topic 受保护（用户名密码或访问令牌）时，在 `options` 中�
 - **API 不变**：`notice()` 与 `NoticeOptions` 的签名与行为保持兼容。
 
 对使用方的影响：如果您在 `package.json` 里写的是 `"pushoo": "^0.1.x"`，**不会**自动升到 2.0.0（major 变更本就跨不过 `^0.1`）——需要手动改成 `"pushoo": "^2.0.0"` 后再安装。升级后原有 `notice()` 调用无需改动。
+
+## Twikoo 中的 Bark 附加参数
+
+Twikoo 配置项 `PUSHOO_OPTIONS` 接受一段 JSON，原样透传给 pushoo 的 `options` 参数。Bark 示例（通知分组、级别、图标）：
+
+```json
+{ "bark": { "group": "Twikoo", "level": "timeSensitive", "icon": "https://example.com/icon.png" } }
+```
+
+该配置项面向高级用户：管理面板暂无输入框，可通过数据库或管理 API 直接写入配置键 `PUSHOO_OPTIONS`。其他平台的附加参数同样经由它透传，键名与各平台的 `options.<channel>` 一致。

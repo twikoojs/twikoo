@@ -229,13 +229,24 @@ async function noticePushoo(options: {
   const pushContent = await getIMPushContent(comment, config);
   // pushoo 由适配器按通知能力安装，运行时动态加载（变量间接保证零静态解析）
   const pushoo = await getPushoo();
+  /** PUSHOO_OPTIONS：可选附加参数（JSON），与内置 bark.url 合并后透传（如 Bark 的 group / icon / level） */
+  let extraOptions: Record<string, Record<string, unknown>> = {};
+  if (config.PUSHOO_OPTIONS) {
+    try {
+      extraOptions = JSON.parse(String(config.PUSHOO_OPTIONS));
+    } catch (e) {
+      logger.warn("PUSHOO_OPTIONS 不是合法 JSON，已忽略：", e);
+    }
+  }
   const sendResult = await pushoo(String(config.PUSHOO_CHANNEL), {
     token: config.PUSHOO_TOKEN,
     title: pushContent.subject,
     content: pushContent.content,
     options: {
+      ...extraOptions,
       bark: {
         url: pushContent.url,
+        ...extraOptions.bark,
       },
     },
   });

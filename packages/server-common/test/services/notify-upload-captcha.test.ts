@@ -176,6 +176,60 @@ describe("sendNotice 全链路（services/notify）", () => {
     });
     expect(true).toBe(true); // 不抛错即通过（内部全部提前 return）
   });
+
+  it("待审核回复：跳过回复通知（#546）", async () => {
+    // 待审核评论（isSpam: true）的回复通知应被跳过
+    const config = { ...smtpConfig, NOTIFY_SPAM: undefined }; // 默认行为
+    const sent: Array<{ to: string }> = [];
+    setLibImporter(async (specifier) => {
+      if (specifier === "nodemailer") {
+        return {
+          default: {
+            createTransport: () => ({
+              verify: async () => true,
+              sendMail: async (opts: { to: string }) => {
+                sent.push(opts);
+                return { messageId: "x" };
+              },
+            }),
+          },
+        };
+      }
+      if (specifier === "html-to-text") {
+        return {
+          compile: () => (html: string) => html.replace(/<[^>]+>/g, ""),
+        };
+      }
+      throw new Error(`unexpected import: ${specifier}`);
+    });
+    const db = createMemoryAdapters().database;
+    const parent = await db.addComment({
+      _id: "parent",
+      nick: "被回复人",
+      mail: "replied@test.com",
+      comment: "父",
+    });
+    const comment = await db.addComment({
+      _id: "c",
+      isSpam: true,
+      nick: "待审核",
+      mail: "visitor@test.com",
+      comment: "待审核回复",
+      url: "/p/1",
+      pid: parent._id,
+    });
+    const ctx = makeCtx(config);
+    ctx.adapters = { ...ctx.adapters, database: db };
+    await sendNotice({
+      comment,
+      config: ctx.config,
+      caps,
+      logger: ctx.logger,
+      getParentComment: async (c) => (c.pid ? db.getComment(c.pid) : null),
+    });
+    // 回复通知不应发送（to: replied@test.com）
+    expect(sent.some((m) => m.to === "replied@test.com")).toBe(false);
+  });
 });
 
 describe("上传分发（services/upload）", () => {

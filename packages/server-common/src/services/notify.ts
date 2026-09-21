@@ -352,7 +352,12 @@ export async function sendNotice(options: {
   if (comment.isSpam && config.NOTIFY_SPAM === "false") return;
   await Promise.all([
     noticeMaster({ comment, config, caps, logger }),
-    noticeReply({ currentComment: comment, config, caps, logger, getParentComment }),
+    // 未通过审核的回复不通知被回复人（#546）：回复通知意味着「你的评论有了可见的回复」，
+    // 而审核中的回复在页面上不可见，提前通知会在邮件里泄露未审核内容。
+    // 限制：管理员审核通过后不会补发通知，被回复人需自行访问站点查看。
+    comment.isSpam
+      ? Promise.resolve(undefined)
+      : noticeReply({ currentComment: comment, config, caps, logger, getParentComment }),
     noticePushoo({ comment, config, logger }),
   ]).catch((err) => {
     logger.error("通知异常：", err);

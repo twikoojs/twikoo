@@ -1,22 +1,18 @@
 import {
-  FULL_CAPABILITIES,
+  defineCapabilities,
   MongoDatabase,
   RECURSION_HEADER,
   RES_CODE,
   createHandler,
   getRecursionToken,
   scaffoldAdapters,
-  setLibImporter,
   type Database,
   type TkRequest,
   type TkResponse,
   type PostSubmitDispatcher,
 } from "@twikoojs/common";
-import { workersLibImporter } from "./workers-lib-importer";
 
 export { VERSION } from "./version";
-
-setLibImporter(workersLibImporter);
 
 export interface CloudflareWorkersEnv {
   MONGODB_URI?: string;
@@ -28,7 +24,16 @@ export interface CloudflareWorkersExecutionContextLike {
   waitUntil(promise: Promise<unknown>): void;
 }
 
-const workersCapabilities = FULL_CAPABILITIES;
+const workersCapabilities = defineCapabilities({
+  mail: true,
+  domPurify: true,
+  ip2region: true,
+  akismet: true,
+  tencentTms: true,
+  imageUpload: false,
+  qqAvatar: true,
+  ai: true,
+});
 
 /**
  * 归一化请求头。

@@ -38,3 +38,7 @@ wrangler deploy
 Workers 适配器**不会跨请求复用 MongoDB 连接**：每次 `fetch` 创建一个数据库实例，公共管道完成
 `init()` 后处理请求，随后在 `finally` 中调用 `close()`。连接失败、业务异常和响应已生成时也会执行关闭，
 避免连接泄漏；这与 Workers 中手动维护连接生命周期的要求一致。
+
+## 能力限制
+
+- **不支持图片上传**：Cloudflare Workers 环境不支持 Node.js `form-data` 包的 `.getHeaders()` 方法。如需图片上传，建议使用其他适配器（Vercel、私有部署等）。

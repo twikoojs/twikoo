@@ -63,7 +63,8 @@ export function createTkserverServer(options: { database?: Database } = {}): Tks
       return;
     }
     // 健康检查短路：不进 pipeline、不碰数据库——走 pipeline 会在数据库未就绪时探活失败，反而失去意义。
-    // 放在 isShuttingDown 之后，因此关闭期间探活仍是 503（编排不会往正在退出的实例打流量）
+    // 放在 isShuttingDown 之后：关闭开始后 server.close() 会让新连接直接被拒，只有复用
+    // keep-alive 连接的探活才会走到这里拿到 503——两种结果对编排都表示不健康
     if (req.method === "GET" && HEALTH_PATHS.has(stripQuery(req.url))) {
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ code: 0, message: "pong" }));

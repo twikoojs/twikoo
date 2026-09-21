@@ -12,6 +12,8 @@ import {
   type PostSubmitDispatcher,
 } from "@twikoojs/common";
 
+export { VERSION } from "./version";
+
 export interface CloudflareWorkersEnv {
   MONGODB_URI?: string;
   MONGODB_DB_NAME?: string;

@@ -160,7 +160,11 @@ flowchart LR
 
 ### 动态 import
 
-- **对重依赖用动态 `import()`**（`@twikoojs/common` 经 `utils/lib-loader.ts` 的变量 specifier 间接加载）
+- **对重依赖用动态 `import()`**（`@twikoojs/common` 经 `utils/lib-loader.ts` 的 `LITERAL_LOADERS` 表加载）
+- **specifier 必须写字面量**：`import(specifier)` 一旦是变量，静态追踪器（Vercel 的 `@vercel/nft`、
+  SEA 单文件打包、rolldown 依赖内联）就解析不到包，依赖不会进产物 → 运行时 `LibLoadError`。
+  表项是**函数体内的 thunk**（不在模块顶层执行），故惰性不受影响；「不进产物」由各包
+  `deps.neverBundle` 保证。纪律由 `test/utils/lib-loader-literals.test.ts` 兜底
 
 ### 重依赖清单（全部 external + 动态加载）
 

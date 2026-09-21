@@ -282,7 +282,14 @@ lambda_function_url = "https://axtoiiithbcexamplegq7ozalu0cnkii.lambda-url.us-we
 
 ## Cloudflare workers 部署
 
-请参考 [github.com/twikoojs/twikoo-cloudflare](https://github.com/twikoojs/twikoo-cloudflare)
+Fork 一份 twikoo 仓库到你的 Github 账号下
+
+在 Cloudflare Dashboard 创建一个 Worker，选择 Continue with Github，选择你之前 fork 的仓库，在这之后按照下图配置
+
+![](./static/worker-1.png)
+![](./static/worker-2.png)
+
+然后手动触发一次构建，在仓库内任意进行一次提交触发，如果不想让 Github 显示 xx commit ahead 可以将仓库 clone 到本地然后进行强制推送
 
 ## 私有部署
 

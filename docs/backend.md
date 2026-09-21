@@ -3,6 +3,7 @@
 | <div style="width: 6em">部署方式</div> | 推荐度 | 描述 |
 | ---- | ---- | ---- |
 | [腾讯云 CloudBase 部署](#腾讯云-cloudbase-部署) | ★★★☆☆ | 手动部署到腾讯云云开发环境，在中国大陆访问速度较快。需要付费购买环境才能部署。 |
+| [宝塔面板 部署](#宝塔面板-部署) | ★★★☆☆ | 适用于有服务器的用户，通过宝塔面板 (9.2.0+) 的 Docker 应用商店安装。 |
 | [Vercel 部署](#vercel-部署) | ★★★☆☆ | 适用于想要免费部署的用户，在中国大陆访问速度较慢甚至无法访问，绑定自己的域名可以提高访问速度。 |
 | [Railway 部署](#railway-部署) | ★★☆☆☆ | 有免费额度但不足以支持一个月连续运行，部署简单，适合全球访问。 |
 | [Zeabur 部署](#zeabur-部署) | ★☆☆☆☆ | 需要绑定支付宝或信用卡，部署简单，适合中国大陆访问，免费计划环境随时可能会被删除。 |
@@ -10,6 +11,7 @@
 | [Hugging Face 部署](#hugging-face-部署) | ★★★☆☆ | 免费，中国大陆访问速度不错。允许通过 Cloudflare Tunnels 自定义域名。 |
 | [AWS Lambda 部署](#aws-lambda-部署) | ★★★☆☆ | 全球最大的云平台，适合已经使用 AWS 全家桶的用户。 |
 | [Cloudflare workers 部署](#cloudflare-workers-部署) | ★★☆☆☆ | 部署需使用命令行，冷启动时间较短，功能有部分限制。 |
+| [EdgeOne Pages Makers 部署](#edgeone-pages-makers-部署) | ★★☆☆☆ | 腾讯云 EdgeOne Pages 的 Makers 函数部署。功能受限：邮件仅支持部分通道，无垃圾评论检测与 AI 功能。 |
 | [私有部署](#私有部署) | ★★☆☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 | [私有部署 (Docker)](#私有部署-docker) | ★★★☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 
@@ -283,6 +285,26 @@ lambda_function_url = "https://axtoiiithbcexamplegq7ozalu0cnkii.lambda-url.us-we
 ## Cloudflare workers 部署
 
 请参考 [github.com/twikoojs/twikoo-cloudflare](https://github.com/twikoojs/twikoo-cloudflare)
+
+## EdgeOne Pages Makers 部署
+
+::: warning 注意
+EdgeOne 部署功能受限：邮件通知仅支持 SendGrid / MailChannels / 自建 SMTP 桥接通道；不支持 Akismet、腾讯云内容审核等垃圾评论检测，也没有 AI 功能。
+:::
+
+1. 克隆本仓库，进入 `packages/server-edgeone-makers` 目录
+2. 安装依赖并构建（构建会把 IP 属地数据库内联为独立数据分片）：
+
+   ```sh
+   npm install
+   npm run build
+   ```
+
+3. 进入 EdgeOne Pages 控制台，创建 Makers 函数并绑定该目录
+4. 数据库使用平台自动提供的 Blob KV，无需额外配置
+5. 如需邮件通知，请自行部署 SMTP 通道（Go SMTP Bridge，或使用 SendGrid / MailChannels）
+
+更多细节见[适配器 README](https://github.com/twikoojs/twikoo/tree/main/packages/server-edgeone-makers)。
 
 ## 私有部署
 

@@ -8,18 +8,19 @@ import type { Capabilities } from "../ports/capabilities";
  *    直通 DOMPurify 与精简 nodemailer 的既有用法，2.0 原样兼容）；
  * 2. **能力门**：未声明对应 capability 时抛 {@link CapabilityError}
  *    （用户友好错误，绝不触发模块解析——受控平台如 EO Makers 由此走降级）；
- * 3. **动态 import**：运行时 `await import(specifier)`（specifier 经变量间接，
- *    保证零静态依赖；eslint no-restricted-imports 清单强制该纪律），
+ * 3. **动态 import**：运行时 `await import(specifier)`，specifier 取自 {@link LITERAL_LOADERS}
+ *    的**字面量**表（未收录的 specifier 回落变量间接的动态 import），
  *    解析失败抛 {@link LibLoadError}（含包名与安装提示，要求）。
  *
  * 依赖安装契约：本包以 peerDependenciesMeta(optional) 声明接口约束，
  * 重依赖由声明对应能力的适配器自行安装（CI 依赖完整性检查见）。
  *
  * **消费方约定：本模块一律静态导入，不要写 `await import("../utils/lib-loader")`。**
- * 它是「薄取用层」——自身没有任何第三方静态导入（上面第 3 层的 specifier 经变量间接，
- * 构建器不解析），所以静态导入它既无额外体积代价，也不破坏重依赖的惰性。反之，由于同包
- * 多个文件已静态引入本模块，构建器必然把它放进主 chunk，再写动态导入只会得到
- * `[INEFFECTIVE_DYNAMIC_IMPORT]`（无法拆出独立 chunk，惰性收益为零）。
+ * 它是「薄取用层」——自身没有任何第三方**静态**导入（上面第 3 层的重依赖全在
+ * {@link LITERAL_LOADERS} 的 thunk 里、按需才执行），所以静态导入它既无额外体积代价，
+ * 也不破坏重依赖的惰性。反之，由于同包多个文件已静态引入本模块，构建器必然把它放进主
+ * chunk，再写动态导入只会得到 `[INEFFECTIVE_DYNAMIC_IMPORT]`（无法拆出独立 chunk，
+ * 惰性收益为零）。
  */
 
 /** 库模块的最小结构类型面（仅声明 handlers 实际使用的成员） */
@@ -197,8 +198,58 @@ export interface CustomLibs {
 /** 动态导入函数类型（测试注入失败替身用） */
 export type LibImporter = (specifier: string) => Promise<unknown>;
 
-/** 默认动态导入：变量间接保证构建器不把 specifier 静态解析 */
-const defaultImporter: LibImporter = async (specifier) => import(/* @vite-ignore */ specifier);
+/**
+ * 重依赖**字面量**加载表：specifier → 惰性导入 thunk。
+ *
+ * **为什么必须是字面量**：`import(specifier)` 的 specifier 一旦是变量，任何
+ * **静态分析型**的打包/追踪器（`@vercel/nft`、rolldown 的依赖内联、SEA 单文件打包）
+ * 都无法把它解析成一个具体包 —— 后果是依赖不会被带进产物，运行时才报
+ * {@link LibLoadError}（Vercel 的 `form-data`、SEA 的 14 个重依赖都是这个坑）。
+ * 字面量则天然可被解析（1.x `utils/lib.js` 的静态 `require("form-data")` 正是如此）。
+ *
+ * **与「零静态依赖」的关系**：本表是**函数体内的动态** `import()`，不在模块顶层执行，
+ * 因此既保持惰性（不用到不加载，冷启动不受影响），也不违反「禁止重依赖顶层静态 import」。
+ * 至于「不要被构建器打包进产物」——那由各包的 `deps.neverBundle`（重依赖恒 external）
+ * 保证，与本表的字面量写法无关。
+ *
+ * **维护约定**：新增/更换重依赖时，在此加一行 + 适配器 `dependencies` 同步声明即可；
+ * 若漏加，`loadLib` 仍会走变量间接的兜底路径（有 `node_modules` 的形态照常工作），
+ * 但依赖会重新变得不可被静态追踪。
+ *
+ * 本常量**不**由 `src/index.ts` 转发（非公共 API），仅供纪律测试核对
+ * 「`loadLib` 的调用点 ↔ 本表」是否一一对应。
+ */
+export const LITERAL_LOADERS: Record<string, () => Promise<unknown>> = {
+  nodemailer: () => import("nodemailer"),
+  jsdom: () => import("jsdom"),
+  dompurify: () => import("dompurify"),
+  "@imaegoo/node-ip2region": () => import("@imaegoo/node-ip2region"),
+  "akismet-api": () => import("akismet-api"),
+  "tencentcloud-sdk-nodejs-tms": () => import("tencentcloud-sdk-nodejs-tms"),
+  "form-data": () => import("form-data"),
+  axios: () => import("axios"),
+  xml2js: () => import("xml2js"),
+  "html-to-text": () => import("html-to-text"),
+  pushoo: () => import("pushoo"),
+  "@xsai/generate-text": () => import("@xsai/generate-text"),
+  bowser: () => import("bowser"),
+  marked: () => import("marked"),
+};
+
+/**
+ * 默认动态导入：命中 {@link LITERAL_LOADERS} 走字面量（可被静态追踪），
+ * 未收录的 specifier 回落变量间接的动态 import（保留「不静态绑定未知依赖」的性质）。
+ * @param specifier 包名
+ * @returns 模块命名空间
+ */
+const defaultImporter: LibImporter = async (specifier) => {
+  // hasOwnProperty 而非 `LITERAL_LOADERS[specifier]` 直取：避免 `toString` 这类
+  // 原型链键被误判为「已收录的库」（与 pkg 的 bundled-libs.ts 同款防御）
+  if (Object.prototype.hasOwnProperty.call(LITERAL_LOADERS, specifier)) {
+    return await LITERAL_LOADERS[specifier]();
+  }
+  return await import(/* @vite-ignore */ specifier);
+};
 
 /** 当前生效的导入函数（测试可替换） */
 let importer: LibImporter = defaultImporter;

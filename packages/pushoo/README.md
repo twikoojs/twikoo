@@ -9,7 +9,7 @@
 自 Twikoo 2.0 起，pushoo 迁入 Twikoo monorepo，**包名 `pushoo` 不变**，但：
 
 - **版本号不再独立演进**：由 `0.1.12` 直接跳到 **`2.0.0`**，此后跟随 Twikoo 统一版本；
-- **依赖升级**：`axios` 0.26 → 1.x、`marked` 4 → 18；
+- **HTTP 层改用原生 `fetch`**：不再依赖 `axios`（axios 依赖 Node 的 `http` 模块，在 Cloudflare Workers 等运行时不可用），`marked` 4 → 18；
 - **API 不变**：`notice()` 与 `NoticeOptions` 的签名与行为保持兼容。
 
 对使用方的影响：如果您在 `package.json` 里写的是 `"pushoo": "^0.1.x"`，

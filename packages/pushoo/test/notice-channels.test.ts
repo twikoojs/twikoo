@@ -1,37 +1,35 @@
 /**
  * pushoo 各渠道请求体构造单测。
  *
- * mock HTTP（axios 模块替身，vi.hoisted 捕获）：不真实发请求；逐渠道断言端点
+ * mock HTTP（fetch 全局替身，vi.hoisted 捕获）：不真实发请求；逐渠道断言端点
  * URL 与请求体构造（JSON 体与 URLSearchParams 表单体均解码后匹配内容）。
  * 1.x 行为基准：端点与参数名逐一对齐。notice() 对 token 缺失等错误返回
  * `{ error }` 而非未捕获异常。
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-/** axios 调用捕获（vi.hoisted：vi.mock 工厂提升后仍可引用） */
-const { httpCalls } = vi.hoisted(() => ({
-  httpCalls: [] as Array<{ url: string; body: unknown; method?: string }>,
+/** fetch 调用捕获（vi.hoisted：vi.stubGlobal 提升后仍可引用） */
+const { httpCalls, mockState } = vi.hoisted(() => ({
+  httpCalls: [] as Array<{ url: string; body: unknown; method?: string; headers?: unknown }>,
+  /** 可控响应状态：用例可改为非 2xx 以断言错误路径 */
+  mockState: { status: 200 },
 }));
 
-vi.mock("axios", () => ({
-  default: {
-    get: async (url: string, config?: { params?: unknown }) => {
-      httpCalls.push({ url, body: config?.params, method: "GET" });
-      return { data: { errno: 0, errmsg: "ok" } };
-    },
-    post: async (url: string, body?: unknown) => {
-      httpCalls.push({ url, body, method: "POST" });
-      // onebot 校验 retcode === 0；其余渠道忽略返回体形态
-      return { data: { retcode: 0, errno: 0, errmsg: "ok" } };
-    },
-  },
-}));
+vi.stubGlobal("fetch", async (url: string, init: RequestInit = {}) => {
+  httpCalls.push({ url, body: init.body, method: init.method, headers: init.headers });
+  // onebot 校验 retcode === 0；其余渠道忽略返回体形态
+  return new Response(JSON.stringify({ retcode: 0, errno: 0, errmsg: "ok" }), {
+    status: mockState.status,
+    headers: { "Content-Type": "application/json" },
+  });
+});
 
 const { notice } = await import("../src/index");
 
 /** 重建捕获（每用例隔离） */
 beforeEach(() => {
   httpCalls.length = 0;
+  mockState.status = 200;
 });
 
 /** 基础载荷 */
@@ -184,8 +182,38 @@ describe("pushoo 渠道请求构造", () => {
   it("URL 通道：https:// 开头的 channel 走 webhook（:GET 后缀切换方法）", async () => {
     await notice("https://my.test/hook:GET", base as never);
     const call = httpCalls[httpCalls.length - 1];
-    expect(call.url).toBe("https://my.test/hook");
+    // fetch 收到的是拼好查询串的最终 URL（旧 axios 替身只记录传入的 url 参数）
+    expect(call.url).toContain("https://my.test/hook?");
+    expect(decodeURIComponent(call.url)).toContain("content=正文内容");
     expect(call.method).toBe("GET");
+  });
+});
+
+describe("原生 fetch 迁移后的请求形态", () => {
+  it("非 2xx 抛错 → notice() 返回 { error }（与 axios 一致）", async () => {
+    mockState.status = 500;
+    const result = await notice("serverchan", base as never);
+    expect(result.error).toBeInstanceOf(Error);
+    expect(String(result.error?.message)).toContain("500");
+  });
+
+  it("GET 参数支持 URLSearchParams 形态（bark 的空串 url 参数不被丢弃）", async () => {
+    await notice("bark", { ...base, token: "T0KEN" } as never);
+    expect(httpCalls[httpCalls.length - 1].url).toMatch(/\?url=$/);
+  });
+
+  it("对象体发 application/json，字符串体发表单编码（对齐 axios 推断）", async () => {
+    await notice("dingtalk", base as never);
+    const jsonCall = httpCalls[httpCalls.length - 1];
+    expect(jsonCall.headers).toMatchObject({ "Content-Type": "application/json" });
+    expect(typeof jsonCall.body).toBe("string");
+
+    await notice("gocqhttp", { ...base, token: "https://gocq.test/send_private_msg" } as never);
+    const formCall = httpCalls[httpCalls.length - 1];
+    expect(formCall.headers).toMatchObject({
+      "Content-Type": "application/x-www-form-urlencoded",
+    });
+    expect(decodeURIComponent(String(formCall.body))).toContain("正文内容");
   });
 });
 

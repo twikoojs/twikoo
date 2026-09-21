@@ -372,9 +372,6 @@ importers:
 
   packages/pushoo:
     dependencies:
-      axios:
-        specifier: ^1.20.0
-        version: 1.20.0(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
       lodash:
         specifier: ^4.18.1
         version: 4.18.1

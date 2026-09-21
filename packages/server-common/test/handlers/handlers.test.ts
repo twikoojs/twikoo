@@ -113,6 +113,29 @@ describe("COMMENT_GET / COMMENT_GET_FOR_ADMIN", () => {
     expect((res.body.data as unknown[]).length).toBeGreaterThanOrEqual(1);
   });
 
+  it("置顶 + 隐藏评论对访客不可见，对本人/管理员可见（#297）", async () => {
+    // 正常置顶、隐藏置顶（他人）、隐藏置顶（本人 user-9）
+    await seed({ nick: "正常置顶", top: true, uid: "user-1" });
+    await seed({ nick: "隐藏置顶", top: true, isSpam: true, uid: "user-1" });
+    await seed({ nick: "本人隐藏置顶", top: true, isSpam: true, uid: "user-9" });
+
+    /** 取响应中的昵称集合 */
+    const nicksOf = (res: { body: Record<string, unknown> }) =>
+      (res.body.data as Array<{ nick: string }>).map((d) => d.nick).sort();
+
+    // 匿名访客：只见非垃圾置顶
+    const anon = await post({ event: "COMMENT_GET", url: "/post/1" });
+    expect(nicksOf(anon)).toEqual(["正常置顶"]);
+
+    // 本人（user-9）：非垃圾 + 本人垃圾
+    const owner = await post({ event: "COMMENT_GET", url: "/post/1", accessToken: "user-9" });
+    expect(nicksOf(owner)).toEqual(["本人隐藏置顶", "正常置顶"]);
+
+    // 管理员：全部
+    const admin = await postAdmin({ event: "COMMENT_GET", url: "/post/1" });
+    expect(nicksOf(admin)).toEqual(["本人隐藏置顶", "正常置顶", "隐藏置顶"]);
+  });
+
   it("failure：缺 url → 参数不合法错误体", async () => {
     const res = await post({ event: "COMMENT_GET" });
     expect(res.body.code).toBe(1000);

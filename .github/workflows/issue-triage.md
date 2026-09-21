@@ -84,6 +84,11 @@ network:
   allowed:
     - defaults
     - ai.imaegoo.com
+    # agent 分诊时会去查 npm 包信息（核实依赖是否声明、版本等）。
+    # 实测不加会被 firewall 拦下，分诊报告里会多出一条 blocked domain 告警。
+    # 用生态标识符 `node`（等价于 registry.npmjs.org 等 npm 相关域名）而不是写死域名，
+    # gh-aw 明确建议这么做，可维护性更好。
+    - node
 
 safe-outputs:
   add-labels:

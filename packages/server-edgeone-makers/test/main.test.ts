@@ -5,6 +5,7 @@
  * 内嵌 Cap 未启用语义）、EO 体积门禁脚本。
  */
 import { describe, expect, it } from "vitest";
+import { existsSync } from "node:fs";
 import { createEoMakersFunc, eoCapabilities } from "../src/main";
 import type { EoEventLike } from "../src/main";
 
@@ -90,9 +91,15 @@ describe("twikoo-edgeone-makers 薄适配器", () => {
   it("体积门禁脚本：依赖清单无 nodemailer/jsdom（语义）", async () => {
     const { execFileSync } = await import("node:child_process");
     // 正向：脚本对当前 package.json 绿
-    execFileSync(process.execPath, ["scripts/check-eo-size.mjs"], {
+    const out = execFileSync(process.execPath, ["scripts/check-eo-size.mjs"], {
       cwd: new URL("..", import.meta.url).pathname.replace(/^\/([A-Z]:)/, "$1"),
+      encoding: "utf8",
     });
+    // dist 已构建时（CI 里 pnpm build 是 test 的前置），必须真的断言到数据分片——
+    // 否则「数据分片存在」这条判据被静默跳过时，本用例仍会绿
+    if (existsSync(new URL("../dist", import.meta.url))) {
+      expect(out).toContain("数据分片");
+    }
     // 反向：临时注入 nodemailer 依赖 → 红
     const { readFileSync: rf, writeFileSync: wf } = await import("node:fs");
     const pkgPath = new URL("../package.json", import.meta.url).pathname.replace(

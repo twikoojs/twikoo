@@ -14,6 +14,10 @@
  * 2. **无能力门**：`lib-loader` 里没有能力门、任何适配器处理某个事件时都可能加载的包，
  *    **所有**适配器都必须声明（没有门 ⇒ 没有降级路径）。
  *
+ * **一个出口**：适配器可以不走「声明依赖」而用 `setCustomLibs` 注入自实现，
+ * 此时能力可用但依赖不必声明 —— 这类豁免记在 {@link OVERRIDE_SATISFIED}，并有守卫用例
+ * 要求它真的成立（能力声明为 true + 源码里确实出现该包名的覆写键）。
+ *
  * **为什么放在 `@twikoojs/common`**：能力 → 包的映射由本包 `src/utils/lib-loader.ts`
  * 定义，适配器只是消费者。本文件会读各适配器的 `package.json` 与 `src/`（跨包读取，
  * 与 `packages/demo/test` 的做法一致）。
@@ -66,16 +70,30 @@ const CAPABILITY_PACKAGES: Record<string, string[]> = {
  * 已知缺口白名单（**自清理**：缺口修好后必须删除对应条目，否则「白名单腐化」用例会红）。
  *
  * 每条都必须能追溯到跟踪 issue，别只写包名。
+ *
+ * **当前为空** —— #1127 的三条缺口都已修复：`form-data` / `pushoo` 补了声明，
+ * `ip2region` 改为「由覆写满足」（见下方 {@link OVERRIDE_SATISFIED}）。
+ * 机制保留，供下一个缺口使用。
  */
-const KNOWN_GAPS: Record<string, string[]> = {
-  // 见 #1127：EO 的 capabilities 声明了 ip2region / imageUpload / 即时推送，
-  // 但这三个包都没在 dependencies 里；其中 ip2region 还需要 1.x 那套「不依赖 fs 的
-  // 内联 searcher」，不是加一行依赖能修的。
-  "server-edgeone-makers": [
-    "ip2region=true 需要 @imaegoo/node-ip2region",
-    "imageUpload=true 需要 form-data",
-    "无能力门但所有适配器都需要 pushoo",
-  ],
+const KNOWN_GAPS: Record<string, string[]> = {};
+
+/**
+ * 由 `setCustomLibs` 覆写满足的能力（**不需要**在 `dependencies` 里声明对应包）。
+ *
+ * 适配器不一定走「声明依赖 → `lib-loader` 动态 import」这条路：它可以在启动时用
+ * `setCustomLibs` 注入自实现 —— 覆写优先于能力门与动态加载（见 `getIpToRegion`）。
+ * 这类适配器把该能力声明为 `true` 是**诚实**的：能力确实可用。
+ *
+ * 条目格式 `"<能力>=<包名>"`；下方有守卫用例，要求适配器源码里真的出现该包名的
+ * 字符串字面量（即「确实注入了一个以该包名为键的覆写」），不允许只填一行表就蒙混过关。
+ *
+ * 目前仅 EO 的 ip2region：库靠 `fs` 随机读 8.33 MB 的 db，而 EO 的部署产物是 JS bundle，
+ * 没有可读的兄弟数据文件 —— 声明依赖只会把 8.5 MB 装进去却仍然读不到 db。改为把 db
+ * gzip+base64 内联成独立模块 + fs-free 内存查询器（见
+ * `packages/server-edgeone-makers/src/ip2region/`，对照实验见该包 `test/ip2region.test.ts`）。
+ */
+const OVERRIDE_SATISFIED: Record<string, string[]> = {
+  "server-edgeone-makers": ["ip2region=@imaegoo/node-ip2region"],
 };
 
 /** 已解析的 lib-loader AST（`setParentNodes` 打开，用于回溯所属函数） */
@@ -253,6 +271,8 @@ function declaredCapabilities(adapterDir: string): Record<string, unknown> {
 
 /**
  * 适配器的重依赖声明缺口。
+ *
+ * 「由覆写满足」的能力不计为缺口（见 {@link OVERRIDE_SATISFIED}）。
  * @param adapterDir 适配器目录名（packages/ 下）
  * @returns 缺口描述（空数组表示合规）
  */
@@ -260,13 +280,15 @@ function adapterGaps(adapterDir: string): string[] {
   const manifest = JSON.parse(
     readFileSync(join(REPO_ROOT, "packages", adapterDir, "package.json"), "utf8"),
   ) as { dependencies?: Record<string, string> };
-  const deps = Object.keys(manifest.dependencies ?? {});
+  const deps = Object.keys(manifest.dependencies ?? []);
   const declared = declaredCapabilities(adapterDir);
+  const overridden = new Set(OVERRIDE_SATISFIED[adapterDir] ?? []);
 
   const gaps: string[] = [];
   for (const [cap, pkgs] of Object.entries(CAPABILITY_PACKAGES)) {
     if (declared[cap] !== true) continue;
     for (const pkg of pkgs) {
+      if (overridden.has(`${cap}=${pkg}`)) continue;
       if (!deps.includes(pkg)) gaps.push(`${cap}=true 需要 ${pkg}`);
     }
   }
@@ -390,5 +412,43 @@ describe("各适配器的重依赖声明完整性", () => {
     const dirs = adapterDirs();
     const unknown = Object.keys(KNOWN_GAPS).filter((d) => !dirs.includes(d));
     expect(unknown, `KNOWN_GAPS 里有不存在的适配器：${unknown.join(", ")}`).toEqual([]);
+  });
+
+  it("OVERRIDE_SATISFIED 只引用真实存在的适配器目录", () => {
+    const dirs = adapterDirs();
+    const unknown = Object.keys(OVERRIDE_SATISFIED).filter((d) => !dirs.includes(d));
+    expect(unknown, `OVERRIDE_SATISFIED 里有不存在的适配器：${unknown.join(", ")}`).toEqual([]);
+  });
+
+  it("OVERRIDE_SATISFIED 的条目必须真的成立（能力声明为 true、且源码里确实注入了该包名的覆写）", () => {
+    const problems: string[] = [];
+    for (const [dir, entries] of Object.entries(OVERRIDE_SATISFIED)) {
+      const declared = declaredCapabilities(dir);
+      const source = readTsSources(join(REPO_ROOT, "packages", dir, "src"));
+      for (const entry of entries) {
+        const [cap, pkg] = entry.split("=");
+        if (!cap || !pkg) {
+          problems.push(`${dir}: 条目格式应为 "<能力>=<包名>"，实为 "${entry}"`);
+          continue;
+        }
+        if (declared[cap] !== true) {
+          problems.push(`${dir}: 声明豁免 "${entry}"，但该适配器并未把 ${cap} 声明为 true`);
+        }
+        if (!CAPABILITY_PACKAGES[cap]?.includes(pkg)) {
+          problems.push(`${dir}: 条目 "${entry}" 的能力与包不匹配（映射表里没有这一对）`);
+        }
+        // 关键守卫：源码里必须出现该包名的字符串字面量 ——
+        // 即「确实以它为键注入了覆写」，而不是只在测试里填一行表把检查静音
+        if (!source.includes(`"${pkg}"`) && !source.includes(`'${pkg}'`)) {
+          problems.push(
+            `${dir}: 声明豁免 "${entry}"，但 src/ 下找不到 "${pkg}" 这个键 —— 请确认确实经 setCustomLibs 注入了覆写`,
+          );
+        }
+      }
+    }
+    expect(
+      problems,
+      `OVERRIDE_SATISFIED 里以下条目不成立（不能只填表就跳过依赖检查）：\n  ${problems.join("\n  ")}`,
+    ).toEqual([]);
   });
 });

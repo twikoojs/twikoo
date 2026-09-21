@@ -42,6 +42,11 @@ export interface TwikooOptions {
    * CDN / 子路径部署自动推导失准时可显式指定，如 `https://cdn.example.com/twikoo`。
    */
   localeBaseUrl?: string;
+  /**
+   * 评论提交前的回调（可原地修改即将发送的字段）。
+   * 抛出异常等同于中止发送；返回 `false` 不会拦截（避免与验证码、草稿状态纠缠）。
+   */
+  onSubmit?: (payload: Record<string, unknown>) => void | Promise<void>;
   /** 其他前端配置项（管理面板透传） */
   [key: string]: unknown;
 }

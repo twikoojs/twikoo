@@ -53,7 +53,15 @@ function makeComment(overrides: Partial<CommentDto> = {}): CommentDto {
  * 装配替身云开发实例（返回固定事件响应表）。
  * @param handlers 事件名 → 响应载荷
  */
-function useFakeTcb(handlers: Record<string, unknown> = {}): void {
+/**
+ * 数据通道替身。
+ * @param handlers 事件 → 响应；值为函数时按 `(payload) => 响应` 调用（可顺便抓取 payload）
+ * @param options 追加的 init 选项（如 onSubmit 钩子）
+ */
+function useFakeTcb(
+  handlers: Record<string, unknown> = {},
+  options: Record<string, unknown> = {},
+): void {
   const tcb = {
     app: {
       /**
@@ -63,11 +71,17 @@ function useFakeTcb(handlers: Record<string, unknown> = {}): void {
        */
       callFunction: async (params: { name: string; data: { event?: string } }) => {
         const event = String(params.data?.event ?? "");
-        return { result: handlers[event] ?? { code: 0 } };
+        const handler = handlers[event];
+        /** 函数形 handler 可读取 payload 并自行决定响应 */
+        const result =
+          typeof handler === "function"
+            ? (handler as (data: Record<string, unknown>) => unknown)(params.data ?? {})
+            : (handler ?? { code: 0 });
+        return { result };
       },
     },
   };
-  setAppState(tcb as never, { path: "/demo.html" });
+  setAppState(tcb as never, { path: "/demo.html", ...options });
 }
 
 afterEach(() => {
@@ -146,6 +160,81 @@ describe("TkSubmit", () => {
     await flushPromises();
     expect(wrapper.find(".tk-preview-container").exists()).toBe(true);
     expect(wrapper.find(".tk-preview-container").html()).toContain("<strong>加粗预览</strong>");
+  });
+
+  it("提交前回调：onSubmit 可原地修改待发送字段", async () => {
+    /** 抓取实际提交的 payload */
+    let submitted: Record<string, unknown> | undefined;
+    useFakeTcb(
+      {
+        /**
+         * 提交替身。
+         * @param data 待发送载荷
+         * @returns 成功响应
+         */
+        COMMENT_SUBMIT: (data: Record<string, unknown>) => {
+          submitted = data;
+          return { id: "c9" };
+        },
+      },
+      {
+        /**
+         * 钩子：改写昵称。
+         * @param payload 待发送载荷
+         */
+        onSubmit: (payload: Record<string, unknown>) => {
+          payload.nick = "钩子改过的昵称";
+        },
+      },
+    );
+    const wrapper = mount(TkSubmit, { props: { config: {} } });
+    await flushPromises();
+    const inputs = wrapper.findAll("input");
+    await inputs[0].setValue("测试用户");
+    await inputs[0].trigger("change");
+    await inputs[1].setValue("user@example.com");
+    await inputs[1].trigger("change");
+    await wrapper.find("textarea").setValue("测试内容");
+    await wrapper.find(".tk-send").trigger("click");
+    await flushPromises();
+    expect(submitted).toBeDefined();
+    expect(submitted?.nick).toBe("钩子改过的昵称");
+  });
+
+  it("提交前回调抛错：中止发送并上报 error", async () => {
+    let submitCount = 0;
+    useFakeTcb(
+      {
+        /**
+         * 提交替身（回调抛错时不应到达）。
+         * @returns 成功响应
+         */
+        COMMENT_SUBMIT: () => {
+          submitCount += 1;
+          return { id: "c9" };
+        },
+      },
+      {
+        /**
+         * 钩子：直接抛错。
+         */
+        onSubmit: () => {
+          throw new Error("钩子拦截");
+        },
+      },
+    );
+    const wrapper = mount(TkSubmit, { props: { config: {} } });
+    await flushPromises();
+    const inputs = wrapper.findAll("input");
+    await inputs[0].setValue("测试用户");
+    await inputs[0].trigger("change");
+    await inputs[1].setValue("user@example.com");
+    await inputs[1].trigger("change");
+    await wrapper.find("textarea").setValue("测试内容");
+    await wrapper.find(".tk-send").trigger("click");
+    await flushPromises();
+    expect(submitCount).toBe(0);
+    expect(wrapper.emitted("error")).toBeTruthy();
   });
 
   it("回复态显示取消按钮并派发 cancel", async () => {

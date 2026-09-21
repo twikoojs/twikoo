@@ -243,8 +243,22 @@ const hasExpand = ref(false);
 const isContentExpanded = ref(false);
 /** 正文是否需要「展开更多」 */
 const hasContentExpand = ref(false);
-/** 当前访问者是否为管理员（决定内联管理按钮） */
-const isLogin = ref(false);
+/** tcb 通道的异步登录结果（仅 `tcb.auth` 存在时使用） */
+const tcbLoggedIn = ref(false);
+/**
+ * 当前访问者是否为管理员（决定内联管理按钮）。
+ *
+ * 必须为 `computed`：`initConfig()` 与 `initComments()` 并发执行（`TkComments` 的 `onMounted`），
+ * 评论先于配置返回时 `IS_ADMIN` 尚未写入 `serverConfig`，若用 `ref` 一次性读取会得到 `false`，
+ * 管理按钮要刷新才出现（#994）。`computed` 会在 `setServerConfig` 写入后自动重算。
+ */
+const isLogin = computed(() => {
+  const { tcb } = getAppState();
+  if (tcb?.auth) {
+    return tcbLoggedIn.value;
+  }
+  return getServerConfig().IS_ADMIN === true;
+});
 /** 是否被标记为垃圾评论（本地态，替代 1.x 改 props） */
 const localSpam = ref(props.comment.isSpam === true);
 /** 是否置顶（本地态） */
@@ -424,14 +438,12 @@ function onRefreshed(): void {
   });
 }
 
-/** 检查当前访问者身份（1.x checkAuth 对齐：tcb 通道判定自定义登录，否则看 IS_ADMIN） */
+/** 检查当前访问者身份（1.x checkAuth 对齐：仅 tcb 通道需异步判定，非 tcb 路径由 `isLogin` computed 响应式读取） */
 async function checkAuth(): Promise<void> {
   const { tcb } = getAppState();
   if (tcb?.auth) {
     const currentUser = await tcb.auth.getCurrentUser();
-    isLogin.value = currentUser.loginType === "CUSTOM";
-  } else {
-    isLogin.value = getServerConfig().IS_ADMIN === true;
+    tcbLoggedIn.value = currentUser.loginType === "CUSTOM";
   }
 }
 

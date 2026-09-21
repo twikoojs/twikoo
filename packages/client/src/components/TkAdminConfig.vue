@@ -86,12 +86,6 @@
         <TkButton size="small" type="info" @click="resetConfig">
           {{ t("ADMIN_CONFIG_RESET") }}
         </TkButton>
-        <TkButton size="small" type="success" @click="exportConfig">
-          {{ t("ADMIN_CONFIG_EXPORT") }}
-        </TkButton>
-        <TkButton size="small" type="warning" @click="importConfig">
-          {{ t("ADMIN_CONFIG_IMPORT") }}
-        </TkButton>
       </div>
     </form>
     <div class="tk-admin-config-message">{{ message }}</div>
@@ -99,13 +93,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, onUnmounted, reactive, ref } from "vue";
 import { VERSION } from "@twikoojs/shared";
 import TkButton from "../components/TkButton.vue";
 import TkInput from "../components/TkInput.vue";
 import { call, logger, t } from "../utils";
 import { getAppState } from "../utils/api";
-import { EVENT_CONFIG_UPDATED, emit as busEmit } from "../utils/bus";
+import { EVENT_CONFIG_UPDATED, emit as busEmit, off as busOff, on as busOn } from "../utils/bus";
 import { vLoading } from "../utils/directives";
 import { customImageBedServices } from "../i18n/constants";
 import type { ServerConfig } from "../types";
@@ -817,66 +811,19 @@ async function testEmail(): Promise<void> {
   loading.value = false;
 }
 
-/** 导出配置 */
-async function exportConfig(): Promise<void> {
-  loading.value = true;
-  message.value = "正在导出配置";
-  try {
-    const res = await call(getAppState().tcb, "CONFIG_EXPORT_FOR_ADMIN", {});
-    if (res.code === 0 && res.config) {
-      const blob = new Blob([JSON.stringify(res.config, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `twikoo-config-${new Date().toISOString().slice(0, 10)}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-      message.value = "配置导出成功";
-    } else {
-      message.value = "配置导出失败";
-    }
-  } catch (e) {
-    logger.error("导出配置失败", e);
-    message.value = "导出配置失败";
-  }
-  loading.value = false;
-}
-
-/** 导入配置 */
-function importConfig(): void {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "application/json";
-  input.onchange = async () => {
-    const file = input.files?.[0];
-    if (!file) return;
-    const mode = confirm('点击"确定"覆盖现有配置，点击"取消"跳过已存在的配置项')
-      ? "overwrite"
-      : "skip";
-    loading.value = true;
-    message.value = `正在导入配置（${mode === "overwrite" ? "覆盖" : "跳过"}模式）`;
-    try {
-      const text = await file.text();
-      const config = JSON.parse(text);
-      const res = await call(getAppState().tcb, "CONFIG_IMPORT_FOR_ADMIN", { config, mode });
-      if (res.code === 0) {
-        message.value = "配置导入成功，正在刷新";
-        await readConfig();
-        busEmit(EVENT_CONFIG_UPDATED);
-      } else {
-        message.value = `配置导入失败：${typeof res.message === "string" ? res.message : "未知错误"}`;
-      }
-    } catch (e) {
-      logger.error("导入配置失败", e);
-      message.value = "导入配置失败：文件格式错误";
-    }
-    loading.value = false;
-  };
-  input.click();
+/** 配置已更新（保存或导入）后重新回填表单 */
+function onConfigUpdated(): void {
+  void readConfig();
 }
 
 onMounted(() => {
   void readConfig();
+  // 导入配置已挪到导入页签，配置变更后本页表单需重新回填
+  busOn(EVENT_CONFIG_UPDATED, onConfigUpdated);
+});
+
+onUnmounted(() => {
+  busOff(EVENT_CONFIG_UPDATED, onConfigUpdated);
 });
 </script>
 

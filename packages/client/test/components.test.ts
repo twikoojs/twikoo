@@ -18,6 +18,8 @@ import TkFooter from "../src/components/TkFooter.vue";
 import TkMetaInput from "../src/components/TkMetaInput.vue";
 import TkError from "../src/components/TkError.vue";
 import TkAdminComment from "../src/components/TkAdminComment.vue";
+import TkAdminExport from "../src/components/TkAdminExport.vue";
+import TkAdminImport from "../src/components/TkAdminImport.vue";
 import TwikooApp from "../src/App.vue";
 import { VERSION } from "@twikoojs/shared";
 import { TwikooError, setAppState } from "../src/utils/api";
@@ -479,6 +481,182 @@ describe("TkAdminComment 管理操作（#1140 回归）", () => {
     await flushPromises();
     expect(calls.filter((c) => c.event === "COMMENT_SET_FOR_ADMIN").at(-1)?.data.id).toBe("c1");
 
+    wrapper.unmount();
+  });
+});
+
+describe("配置导出 / 导入（复用 GET_CONFIG_FOR_ADMIN + SET_CONFIG，不新增事件）", () => {
+  /**
+   * 直接挂在 window 上的替身值（SFC 内的裸标识符读的是 window，
+   * vi.stubGlobal 在模块隔离下到不了组件上下文）。
+   */
+  const savedGlobals: Record<string, unknown> = {};
+
+  /**
+   * 替换 window 上的全局函数（用例结束自动还原）。
+   * @param key 属性名
+   * @param value 替身值
+   */
+  function stubWindow(key: string, value: unknown): void {
+    const target = window as unknown as Record<string, unknown>;
+    if (!(key in savedGlobals)) savedGlobals[key] = target[key];
+    target[key] = value;
+  }
+
+  afterEach(() => {
+    const target = window as unknown as Record<string, unknown>;
+    for (const [key, value] of Object.entries(savedGlobals)) target[key] = value;
+    for (const key of Object.keys(savedGlobals)) delete savedGlobals[key];
+  });
+
+  /**
+   * 装配事件调用记录器（返回固定响应表）。
+   * @param responses 事件名 → 响应载荷
+   * @returns 调用记录（按发生顺序）
+   */
+  function useRecordingTcb(
+    responses: Record<string, unknown> = {},
+  ): Array<{ event: string; data: Record<string, unknown> }> {
+    const calls: Array<{ event: string; data: Record<string, unknown> }> = [];
+    setAppState(
+      {
+        app: {
+          /**
+           * 记录事件并返回固定响应。
+           * @param params 事件参数
+           * @returns 响应包络
+           */
+          callFunction: async (params: { name: string; data: Record<string, unknown> }) => {
+            const event = String(params.data?.event ?? "");
+            calls.push({ event, data: params.data });
+            return { result: responses[event] ?? { code: 0 } };
+          },
+        },
+      } as never,
+      { path: "/demo.html" },
+    );
+    return calls;
+  }
+
+  /**
+   * 在导入页签的文件选择框里注入文件。
+   * @param wrapper 组件实例
+   * @param content 文件内容
+   */
+  function injectFile(wrapper: ReturnType<typeof mount>, content: string): void {
+    const input = wrapper.find('input[type="file"]').element as HTMLInputElement;
+    Object.defineProperty(input, "files", {
+      value: [new File([content], "config.json", { type: "application/json" })],
+      writable: true,
+    });
+  }
+
+  /**
+   * 按文案定位按钮。
+   * @param wrapper 组件实例
+   * @param label 按钮文案
+   * @returns 按钮包装器
+   */
+  function findButton(wrapper: ReturnType<typeof mount>, label: string) {
+    const button = wrapper.findAll("button").find((item) => item.text().includes(label));
+    if (!button) throw new Error(`未找到按钮：${label}`);
+    return button;
+  }
+
+  /**
+   * 挂载导入页签并选好来源与导入方式。
+   * @param source 导入来源
+   * @param mode 配置导入方式
+   * @returns 组件包装器
+   */
+  async function mountImport(source = "twikoo", mode = "overwrite") {
+    const wrapper = mount(TkAdminImport);
+    const selects = wrapper.findAll("select");
+    await selects[0].setValue(source);
+    await selects[1].setValue(mode);
+    return wrapper;
+  }
+
+  it("导出配置：只调用 GET_CONFIG_FOR_ADMIN，且导出内容去掉 VERSION", async () => {
+    const calls = useRecordingTcb({
+      GET_CONFIG_FOR_ADMIN: { code: 0, config: { SITE_NAME: "站名", VERSION: "2.0.0" } },
+    });
+    const blobs: Blob[] = [];
+    stubWindow("URL", {
+      ...URL,
+      createObjectURL: (blob: Blob) => {
+        blobs.push(blob);
+        return "blob:test";
+      },
+      revokeObjectURL: () => undefined,
+    });
+    vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => undefined);
+
+    const wrapper = mount(TkAdminExport);
+    await findButton(wrapper, t("ADMIN_CONFIG_EXPORT")).trigger("click");
+    await flushPromises();
+
+    expect(calls.map((call) => call.event)).toEqual(["GET_CONFIG_FOR_ADMIN"]);
+    const exported = JSON.parse(await blobs[0].text()) as Record<string, unknown>;
+    expect(exported.SITE_NAME).toBe("站名");
+    // VERSION 是服务端回填的展示字段，导出文件里不该有，否则回灌会写进库
+    expect(exported.VERSION).toBeUndefined();
+    wrapper.unmount();
+  });
+
+  it("导入配置：源系统不是 Twikoo → alert 提示且不发起任何请求", async () => {
+    const calls = useRecordingTcb();
+    const alertSpy = vi.fn();
+    stubWindow("alert", alertSpy);
+    const wrapper = await mountImport("valine");
+    await findButton(wrapper, t("ADMIN_CONFIG_IMPORT")).trigger("click");
+    await flushPromises();
+
+    expect(alertSpy).toHaveBeenCalledWith(t("ADMIN_CONFIG_IMPORT_SOURCE_ALERT"));
+    expect(calls).toEqual([]);
+    wrapper.unmount();
+  });
+
+  it("导入配置：跳过模式只提交当前配置里缺失的键", async () => {
+    const calls = useRecordingTcb({
+      GET_CONFIG_FOR_ADMIN: { code: 0, config: { SITE_NAME: "旧站名" } },
+    });
+    const wrapper = await mountImport("twikoo", "skip");
+    injectFile(wrapper, JSON.stringify({ SITE_NAME: "新站名", MASTER_TAG: "博主" }));
+    await findButton(wrapper, t("ADMIN_CONFIG_IMPORT")).trigger("click");
+    // 文件读取走 FileReader 的异步事件，flushPromises 等不到，需轮询
+    await vi.waitFor(() =>
+      expect(calls.map((call) => call.event)).toEqual(["GET_CONFIG_FOR_ADMIN", "SET_CONFIG"]),
+    );
+    expect(calls[1].data.config).toEqual({ MASTER_TAG: "博主" });
+    wrapper.unmount();
+  });
+
+  it("导入配置：覆盖模式提交全部键，且摘除 CREDENTIALS", async () => {
+    const calls = useRecordingTcb();
+    const wrapper = await mountImport("twikoo", "overwrite");
+    injectFile(wrapper, JSON.stringify({ SITE_NAME: "新站名", CREDENTIALS: "试图覆盖" }));
+    await findButton(wrapper, t("ADMIN_CONFIG_IMPORT")).trigger("click");
+    await vi.waitFor(() => expect(calls.map((call) => call.event)).toEqual(["SET_CONFIG"]));
+    expect(calls[0].data.config).toEqual({ SITE_NAME: "新站名" });
+    wrapper.unmount();
+  });
+
+  it.each([
+    ["数组", "[1,2]"],
+    ["含 null 值的配置", '{"SITE_NAME":null}'],
+    ["含嵌套对象的配置", '{"SITE_NAME":{"a":1}}'],
+  ])("导入配置：%s → 不提交并记录格式错误", async (_label, content) => {
+    const calls = useRecordingTcb();
+    const wrapper = await mountImport();
+    injectFile(wrapper, content);
+    await findButton(wrapper, t("ADMIN_CONFIG_IMPORT")).trigger("click");
+    await vi.waitFor(() =>
+      expect((wrapper.find("textarea").element as HTMLTextAreaElement).value).toContain(
+        t("ADMIN_CONFIG_IMPORT_INVALID"),
+      ),
+    );
+    expect(calls).toEqual([]);
     wrapper.unmount();
   });
 });

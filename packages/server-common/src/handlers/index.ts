@@ -17,8 +17,6 @@ import {
   COMMENT_LIKE,
   COMMENT_SET_FOR_ADMIN,
   COMMENT_SUBMIT,
-  CONFIG_EXPORT_FOR_ADMIN,
-  CONFIG_IMPORT_FOR_ADMIN,
   COUNTER_GET,
   EMAIL_TEST,
   GET_COMMENTS_COUNT,
@@ -47,8 +45,6 @@ import { commentDeleteForAdmin } from "./comment-delete-for-admin";
 import { commentDeleteForUser } from "./comment-delete-for-user";
 import { commentImportForAdmin } from "./comment-import-for-admin";
 import { commentExportForAdmin } from "./comment-export-for-admin";
-import { configExportForAdmin } from "./config-export-for-admin";
-import { configImportForAdmin } from "./config-import-for-admin";
 import { commentLike } from "./comment-like";
 import { commentSubmit } from "./comment-submit";
 import { counterGet } from "./counter-get";
@@ -112,8 +108,6 @@ export function registerDefaultHandlers(): void {
   registerHandler(COMMENT_DELETE_FOR_USER, commentDeleteForUser);
   registerHandler(COMMENT_IMPORT_FOR_ADMIN, commentImportForAdmin);
   registerHandler(COMMENT_EXPORT_FOR_ADMIN, commentExportForAdmin);
-  registerHandler(CONFIG_EXPORT_FOR_ADMIN, configExportForAdmin);
-  registerHandler(CONFIG_IMPORT_FOR_ADMIN, configImportForAdmin);
   registerHandler(COMMENT_LIKE, commentLike);
   registerHandler(COMMENT_SUBMIT, commentSubmit);
   registerHandler(COUNTER_GET, counterGet);

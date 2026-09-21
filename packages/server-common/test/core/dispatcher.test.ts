@@ -69,7 +69,7 @@ describe("dispatcher 分发", () => {
   });
 
   it("switch 全量枚举 25 个事件标识符（清单完整性）", async () => {
-    // 从源码静态核对 switch 分支数（26 客户端事件 + 服务端内部事件 POST_SUBMIT）
+    // 从源码静态核对 switch 分支数（24 客户端事件 + 服务端内部事件 POST_SUBMIT）
     const { readFileSync } = await import("node:fs");
     const source = readFileSync(new URL("../../src/core/dispatcher.ts", import.meta.url), "utf8");
     const caseCount = source.match(/case [A-Z_]+:/g)?.length ?? 0;

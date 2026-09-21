@@ -81,14 +81,54 @@ tools:
     min-integrity: unapproved
 
 network:
+  # 分诊 agent 经常需要核实「某依赖是否已声明 / 某平台是否支持某特性」这类事实，
+  # 被 firewall 拦下会让分诊报告多出 blocked domain 告警，结论也可能因此不准
+  # （实测：#1116 那次 agent 查 npm 时被拦，报告末尾多出一条告警）。
+  #
+  # 这里放开 gh-aw 的**生态标识符** —— 它们都是知名包仓库 / 工具链，属低风险集合。
+  # 用标识符而不是逐个写域名：gh-aw 编译时明确建议这么做，且后续域名变化无需改配置。
+  #
+  # 刻意排除两类：
+  #   - 引擎传输类（copilot / claude / codex / gemini / pi / threat-detection）：
+  #     那是给对应引擎出站用的，本工作流走自建端点，加了只会扩大无关出站面。
+  #   - 浏览器自动化类（playwright / chrome / fonts）：分诊用不到。
   allowed:
-    - defaults
-    - ai.imaegoo.com
-    # agent 分诊时会去查 npm 包信息（核实依赖是否声明、版本等）。
-    # 实测不加会被 firewall 拦下，分诊报告里会多出一条 blocked domain 告警。
-    # 用生态标识符 `node`（等价于 registry.npmjs.org 等 npm 相关域名）而不是写死域名，
-    # gh-aw 明确建议这么做，可维护性更好。
-    - node
+    - defaults        # 基础基础设施：证书、JSON schema、Ubuntu、常见包镜像
+    - github          # GitHub 域名
+    - local           # 回环地址
+    - dev-tools       # Codecov / Shields / Snyk / Renovate / CircleCI 等 CI 服务
+    - containers      # Docker Hub / GHCR / Quay / GCR / MCR
+    - linux-distros   # Debian / Ubuntu / Alpine / Fedora 等发行版源
+    - node            # npm / yarn / pnpm / Node.js / Bun
+    - node-cdns       # jsDelivr、jQuery CDN
+    - python          # PyPI / conda
+    - python-native   # PyPI + crates.io（带原生扩展的 Python 包）
+    - go              # Go modules
+    - rust            # crates.io / rustup
+    - java            # Maven Central / Gradle / Adoptium
+    - kotlin          # JetBrains 包
+    - scala           # sbt / JitPack
+    - php             # Composer
+    - ruby            # RubyGems / Bundler
+    - dotnet          # NuGet / .NET SDK
+    - deno            # deno.land / jsr.io
+    - dart            # pub.dev
+    - swift           # Swift / CocoaPods
+    - haskell         # Hackage / GHCup
+    - elixir          # hex.pm
+    - lua             # LuaRocks
+    - perl            # CPAN
+    - r               # CRAN
+    - julia           # Julia 包
+    - ocaml           # opam
+    - clojure         # Clojars
+    - zig             # ziglang.org
+    - lean            # Lean 包
+    - latex           # CTAN / TUG / MiKTeX
+    - powershell      # PowerShell Gallery
+    - bazel           # Bazel
+    - terraform       # HashiCorp registry
+    - ai.imaegoo.com  # 自建推理端点（BYOK）
 
 safe-outputs:
   add-labels:

@@ -15,11 +15,13 @@ import {
   getAxios,
   getDomPurify,
   getGenerateText,
+  getIpToRegion,
   getNodemailer,
   getXml2js,
   resetCustomLibs,
   setCustomLibs,
   setLibImporter,
+  type Ip2RegionLike,
   type LibImporter,
 } from "../../src/utils/lib-loader";
 
@@ -183,6 +185,60 @@ describe("库加载器组合与失败", () => {
     });
     expect(typeof (await getAxios()).post).toBe("function");
     expect(typeof (await getXml2js()).parseStringPromise).toBe("function");
+  });
+});
+
+describe("ip2region 覆写（eo-makers 的 fs-free 内存查询器注入）", () => {
+  /** 关闭 ip2region 的能力声明（用于断言覆写先于能力门生效） */
+  const noIpCaps: Capabilities = defineCapabilities({
+    mail: false,
+    domPurify: false,
+    ip2region: false,
+    akismet: false,
+    tencentTms: false,
+    imageUpload: false,
+    qqAvatar: false,
+    ai: false,
+  });
+
+  it("覆写优先于能力门与动态加载：注入后不再解析 @imaegoo/node-ip2region", async () => {
+    setLibImporter(silentImporter);
+    /** fs-free 查询器替身（形态对齐 Ip2RegionLike.create().binarySearchSync） */
+    const custom: Ip2RegionLike = {
+      /** 返回 fs-free 实例替身 */
+      create: () => ({
+        /** 二分查找替身（region 回显 ip 便于断言取到的是本替身） */
+        binarySearchSync: (ip: string) => ({ city: 215, region: `中国|0|北京|北京市|${ip}` }),
+      }),
+    };
+    setCustomLibs({ "@imaegoo/node-ip2region": custom });
+    // 注意 noIpCaps.ip2region=false：覆写在能力门之前生效（与 nodemailer/DOMPurify 同序）
+    const mod = await getIpToRegion(noIpCaps);
+    expect(mod).toBe(custom);
+    expect(mod.create().binarySearchSync("1.2.3.4")?.region).toContain("1.2.3.4");
+    expect(silentImporter).not.toHaveBeenCalled();
+  });
+
+  it("未覆写时能力门照旧：ip2region=false → CapabilityError 且不触发解析", async () => {
+    setLibImporter(silentImporter);
+    await expect(getIpToRegion(noIpCaps)).rejects.toThrow(CapabilityError);
+    expect(silentImporter).not.toHaveBeenCalled();
+  });
+
+  it("未覆写且能力支持 → 走动态加载（fs 版 8.33MB 库）", async () => {
+    /** fs 版库替身（真实形态：模块本体即 create() 工厂） */
+    const fsVersion: Ip2RegionLike = {
+      /** 返回 fs 实例替身 */
+      create: () => ({
+        /** 二分查找替身 */
+        binarySearchSync: () => ({ city: 0, region: "中国|0|0|0|0" }),
+      }),
+    };
+    setLibImporter(async (specifier) => {
+      expect(specifier).toBe("@imaegoo/node-ip2region");
+      return fsVersion;
+    });
+    expect(await getIpToRegion(fullCaps)).toBe(fsVersion);
   });
 });
 

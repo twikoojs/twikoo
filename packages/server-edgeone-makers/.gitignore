@@ -1,0 +1,5 @@
+# ip2region 内联数据生成物（由 node scripts/build-ip2region-data.mjs 产出）
+#
+# 只忽略生成出来的 .js：同目录的 ip2region-data.d.ts 是**手写入库**的，用来让
+# tsc --noEmit 在生成物缺失时依然通过，因此不能一起忽略。
+/src/ip2region/generated/*.js

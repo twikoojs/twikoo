@@ -653,16 +653,28 @@ importers:
       bowser:
         specifier: ^2.14.1
         version: 2.14.1
+      form-data:
+        specifier: ^4.0.6
+        version: 4.0.6
       html-to-text:
         specifier: ^10.0.1
         version: 10.0.1
       marked:
         specifier: ^18.0.13
         version: 18.0.13
+      pako:
+        specifier: ^2.1.0
+        version: 2.2.0
+      pushoo:
+        specifier: workspace:^
+        version: link:../pushoo
       xml2js:
         specifier: ^0.6.2
         version: 0.6.2
     devDependencies:
+      '@imaegoo/node-ip2region':
+        specifier: ^2.1.1
+        version: 2.1.1
       '@types/node':
         specifier: ^26.6.1
         version: 26.6.1
@@ -3458,6 +3470,9 @@ packages:
   p-try@2.2.0:
     resolution: {integrity: sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==}
     engines: {node: '>=6'}
+
+  pako@2.2.0:
+    resolution: {integrity: sha512-zJq6RP/5q+TO2OpFV3FHzlPnFjmkb7Nc99a5SNjJE+uu/PkpChs+NIZSSzbBoD+6kjiISXjfYdwj1ZRQ81dz/w==}
 
   parse5@8.0.1:
     resolution: {integrity: sha512-z1e/HMG90obSGeidlli3hj7cbocou0/wa5HacvI3ASx34PecNjNQeaHNo5WIZpWofN9kgkqV1q5YvXe3F0FoPw==}
@@ -6656,6 +6671,8 @@ snapshots:
       p-limit: 3.1.0
 
   p-try@2.2.0: {}
+
+  pako@2.2.0: {}
 
   parse5@8.0.1:
     dependencies:

@@ -542,3 +542,42 @@ describe("上传解析与预检（services/upload + spam）", () => {
     expect(preCheckSpam({ comment: "c", nick: "n" }, {}, logger)).toBe(false);
   });
 });
+
+describe("IP 属地（services/comment-dto）", () => {
+  it("注入查询器：命中返回格式化属地；未命中返回空串（不抛异常）", async () => {
+    setCustomLibs({
+      DOMPurify: {
+        /**
+         * 直通消毒
+         */
+        sanitize: (d) => d,
+      },
+      // eo-makers 形态：注入 fs-free 内存查询器（此处用替身，真实实现见 EO 包的等价性测试）
+      "@imaegoo/node-ip2region": {
+        /**
+         * @returns 查询器替身
+         */
+        create: () => ({
+          /**
+           * 1.1.1.1 模拟未命中（库在 dataPos === 0 时返回 null），其余返回北京移动
+           */
+          binarySearchSync: (ip: string) =>
+            ip === "1.1.1.1" ? null : { city: 215, region: "中国|0|北京|北京市|移动" },
+        }),
+      },
+    });
+
+    // 命中：省份去掉「省/市」后缀
+    expect(await getIpRegion(caps, "223.104.3.1")).toBe("北京");
+    // detail=true：area 与 city 不同，输出 [area, city, isp]
+    expect(await getIpRegion(caps, "223.104.3.1", true)).toBe("北京 北京市 移动");
+    // 未命中 → 空串（改前靠「解构 null 抛 TypeError 被 catch 吞掉」，现在显式判空）
+    expect(await getIpRegion(caps, "1.1.1.1")).toBe("");
+    // IPv6 映射前缀 / 端口号归一化后仍能命中
+    expect(await getIpRegion(caps, "::ffff:223.104.3.1")).toBe("北京");
+    expect(await getIpRegion(caps, "223.104.3.1:8080")).toBe("北京");
+    // 空 IP 直接返回空串（不查库）
+    expect(await getIpRegion(caps, undefined)).toBe("");
+    expect(await getIpRegion(caps, "")).toBe("");
+  });
+});

@@ -26,5 +26,5 @@ declare module "xml2js";
 /** html-to-text：项目只经 common 的 HtmlToTextLike 使用 `compile` */
 declare module "html-to-text";
 
-/** @imaegoo/node-ip2region：fork 无类型；项目只经 common 的 Ip2RegionLike 使用 `search` */
+/** @imaegoo/node-ip2region：fork 无类型；项目只经 common 的 Ip2RegionLike 使用 `create().binarySearchSync` */
 declare module "@imaegoo/node-ip2region";

@@ -1,7 +1,8 @@
 /**
  * twikoo-edgeone-makers 主逻辑（EdgeOne Makers 薄适配器）。
  * 受限能力：mail restricted（SendGrid/MailChannels/Go SMTP Bridge）、domPurify false
- * （直通注入）、akismet/tencentTms false；BlobKV 注入 BlobKvDatabase。核对：EdgeOne Pages 官方文档（2026-09-17）。
+ * （直通注入）、akismet/tencentTms false；BlobKV 注入 BlobKvDatabase；
+ * ip2region 注入 fs-free 内存查询器（db 内联，见 `ip2region/`）。核对：EdgeOne Pages 官方文档（2026-09-17）。
  */
 import {
   BlobKvDatabase,
@@ -14,6 +15,7 @@ import {
   type TkRequest,
   type TkResponse,
 } from "@twikoojs/common";
+import { getIp2RegionOverride } from "./ip2region/inline";
 
 /** EO Makers 受限能力声明（EO 行，能力受限）*/
 export const eoCapabilities: Capabilities = {
@@ -76,16 +78,25 @@ export function fromTkResponse(tkRes: TkResponse): EoResult {
   };
 }
 
-/** 组装受限能力下的公共库运行态（DOMPurify 直通 + BlobKV 数据库）。 */
-export function prepareEoRuntime(store: BlobKvStoreLike): Database {
-  // domPurify: false → 注入直通 DOMPurify（内容原样返回，1.x 形态对齐）
+/**
+ * 组装受限能力下的公共库运行态（DOMPurify 直通 + fs-free ip2region + BlobKV 数据库）。
+ *
+ * 为 async 的原因是 ip2region 的内联数据模块（6.06 MB base64）要**按需**加载：不查 IP 属地
+ * 就不付解压代价；加载失败也不阻断请求 —— 只是不注入，回落既有降级路径（属地为空）。
+ * @param store BlobKV store
+ * @returns 数据库端口实现
+ */
+export async function prepareEoRuntime(store: BlobKvStoreLike): Promise<Database> {
   setCustomLibs({
     DOMPurify: {
       /**
-       *
+       * domPurify: false → 注入直通 DOMPurify（内容原样返回，1.x 形态对齐）
        */
       sanitize: (dirty) => dirty,
     },
+    // ip2region: true，但依赖 fs 版的 8.33MB db → 注入 fs-free 内存查询器
+    // （覆写优先于能力门与动态加载，见 lib-loader 的 getIpToRegion）
+    ...(await getIp2RegionOverride()),
   });
   return new BlobKvDatabase(store);
 }
@@ -111,7 +122,7 @@ export function createEoMakersFunc(
   };
   return async (event) => {
     const request = toTkRequest(event);
-    const db = prepareEoRuntime(await getStore());
+    const db = await prepareEoRuntime(await getStore());
     const handler = createHandler(
       scaffoldAdapters({
         request: {

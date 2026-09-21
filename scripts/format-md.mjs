@@ -21,9 +21,19 @@ import { formatFor, lintFor, loadConfig } from "autocorrect-node";
 /** 仓库根（本文件位于 scripts/） */
 const ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)), "..");
 
-/** 不进入的目录：构建产物、依赖、本地数据 */
+/**
+ * 不进入的目录名：构建产物、依赖、本地数据。
+ *
+ * **所有「点开头」的目录一律跳过**（`.git` / `.vitepress` / `.workbuddy-ai` …），见
+ * {@link collectMarkdown} —— 它们要么是 VCS 与工具的内部目录，要么是 Agent 在本地的状态
+ * 目录，都不是仓库内容，也不该让本地 `pnpm lint:md` 变红。因此本清单只列**非点开头**的
+ * 目录，需要跳过某个点目录时不必加在这里。
+ *
+ * 已知副作用：`.github/` 也是点开头，故它下面的 md 不再参与排版检查
+ * （当前仅 `.github/workflows/issue-triage.md`，由技能生成的 Agent 工作流定义，
+ * 不属于手写文档）。若将来那里出现需要检查的手写文档，把 `.github` 从跳过规则里摘出来即可。
+ */
 const SKIP_DIRS = new Set([
-  ".git",
   "node_modules",
   "dist",
   "cache",
@@ -31,7 +41,6 @@ const SKIP_DIRS = new Set([
   "build",
   "pack-test",
   "data",
-  ".vendor",
 ]);
 
 /** 是否 fix 模式（否则只检查） */
@@ -48,6 +57,8 @@ function collectMarkdown(dir) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const full = join(dir, entry.name);
     if (entry.isDirectory()) {
+      // 点开头目录一律跳过：VCS / 工具内部 / Agent 本地状态，都不是仓库内容
+      if (entry.name.startsWith(".")) continue;
       if (!SKIP_DIRS.has(entry.name)) out.push(...collectMarkdown(full));
     } else if (entry.name.endsWith(".md")) {
       out.push(full);

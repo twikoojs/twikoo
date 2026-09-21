@@ -23,9 +23,14 @@
     </select>
     <div class="tk-admin-import-label">{{ t("ADMIN_IMPORT_SELECT_FILE") }}</div>
     <input ref="inputFileRef" type="file" value="" />
-    <TkButton size="small" :disabled="loading" @click="uploadFile">
-      {{ t("ADMIN_IMPORT_START") }}
-    </TkButton>
+    <div class="tk-admin-import-actions">
+      <TkButton size="small" :disabled="loading" @click="uploadFile">
+        {{ t("ADMIN_IMPORT_COMMENT") }}
+      </TkButton>
+      <TkButton size="small" :disabled="loading" @click="importConfig">
+        {{ t("ADMIN_CONFIG_IMPORT") }}
+      </TkButton>
+    </div>
     <TkInput
       ref="logTextAreaRef"
       v-model="logText"
@@ -43,6 +48,7 @@ import TkButton from "../components/TkButton.vue";
 import TkInput from "../components/TkInput.vue";
 import { call, readAsText, t } from "../utils";
 import { getAppState } from "../utils/api";
+import { EVENT_CONFIG_UPDATED, emit as busEmit } from "../utils/bus";
 
 /** 导入进行中 */
 const loading = ref(false);
@@ -153,6 +159,64 @@ async function importFileToVercel(filePath: File): Promise<void> {
   logText.value += result.log ?? "";
   log(`${t("ADMIN_IMPORT_IMPORTED")}${source.value}`);
 }
+
+/**
+ * 校验配置导入内容：必须是普通对象，且值只能是字符串/数字/布尔。
+ *
+ * 与服务端 `ConfigData` 一致——越界的值落库后会影响下游配置比较。
+ * @param value 待校验值
+ * @returns 是否符合配置形态
+ */
+function isPlainConfig(value: unknown): value is Record<string, string | number | boolean> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  return Object.values(value).every(
+    (item) => typeof item === "string" || typeof item === "number" || typeof item === "boolean",
+  );
+}
+
+/**
+ * 导入配置（复用 SET_CONFIG 的合并语义，不新增事件）。
+ *
+ * 固定覆盖语义：提交的全部导入项按同键覆盖写入。配置只可能来自 Twikoo 的
+ * 导出文件，来源选错时提示并中止。
+ */
+async function importConfig(): Promise<void> {
+  if (source.value !== "twikoo") {
+    log(t("ADMIN_CONFIG_IMPORT_SOURCE_INVALID"));
+    return;
+  }
+  const file = inputFileRef.value?.files?.[0];
+  if (!file) {
+    log(t("ADMIN_IMPORT_FILE_REQUIRED"));
+    return;
+  }
+  loading.value = true;
+  try {
+    const parsed: unknown = JSON.parse(await readAsText(file));
+    if (!isPlainConfig(parsed)) {
+      log(t("ADMIN_CONFIG_IMPORT_INVALID"));
+      return;
+    }
+    // 导出文件不含 CREDENTIALS，手工构造的文件可能带上：摘掉以免覆盖本机凭证
+    const imported = { ...parsed };
+    delete imported.CREDENTIALS;
+    log(t("ADMIN_CONFIG_IMPORTING"));
+    const res = await call(getAppState().tcb, "SET_CONFIG", { config: imported });
+    const result = (res.result ?? res) as { code?: number; message?: unknown };
+    if (result.code === 0) {
+      busEmit(EVENT_CONFIG_UPDATED);
+      log(t("ADMIN_CONFIG_IMPORTED"));
+    } else {
+      const detail = typeof result.message === "string" ? result.message : "";
+      log(`${t("ADMIN_CONFIG_IMPORT_FAILED")}${detail}`);
+    }
+  } catch (e) {
+    console.error(e);
+    log(`${t("ADMIN_CONFIG_IMPORT_FAILED")}${(e as Error).message}`);
+  }
+  loading.value = false;
+}
+
 </script>
 
 <style>
@@ -170,6 +234,12 @@ async function importFileToVercel(filePath: File): Promise<void> {
 .twikoo .tk-admin-import .tk-button,
 .twikoo .tk-admin-import .tk-input {
   margin-top: 1em;
+}
+.twikoo .tk-admin-import-actions {
+  display: flex;
+}
+.twikoo .tk-admin-import-actions .tk-button {
+  flex: 1;
 }
 .twikoo .tk-admin-import select {
   height: 32px;

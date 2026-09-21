@@ -14,6 +14,9 @@
     <TkButton size="small" :disabled="loading" @click="doExport('counter')">
       {{ t("ADMIN_EXPORT_COUNTER") }}
     </TkButton>
+    <TkButton size="small" :disabled="loading" @click="exportConfig">
+      {{ t("ADMIN_CONFIG_EXPORT") }}
+    </TkButton>
   </div>
 </template>
 
@@ -36,6 +39,26 @@ async function doExport(collection: string): Promise<void> {
     const res = await call(getAppState().tcb, "COMMENT_EXPORT_FOR_ADMIN", { collection });
     const result = (res.result ?? res) as { data?: unknown };
     if (result.data) downloadJson(`twikoo-${collection}.json`, result.data);
+  } finally {
+    loading.value = false;
+  }
+}
+
+/**
+ * 导出配置（复用 GET_CONFIG_FOR_ADMIN，不新增事件）。
+ *
+ * 服务端已摘除 CREDENTIALS；VERSION 是服务端回填的展示字段，导出前去掉，
+ * 否则回灌时会被当作配置项写进库。
+ */
+async function exportConfig(): Promise<void> {
+  loading.value = true;
+  try {
+    const res = await call(getAppState().tcb, "GET_CONFIG_FOR_ADMIN", {});
+    const result = (res.result ?? res) as { config?: Record<string, unknown> };
+    if (!result.config) return;
+    const config = { ...result.config };
+    delete config.VERSION;
+    downloadJson(`twikoo-config-${new Date().toISOString().slice(0, 10)}.json`, config);
   } finally {
     loading.value = false;
   }

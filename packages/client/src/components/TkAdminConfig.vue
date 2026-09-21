@@ -93,13 +93,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, onUnmounted, reactive, ref } from "vue";
 import { VERSION } from "@twikoojs/shared";
 import TkButton from "../components/TkButton.vue";
 import TkInput from "../components/TkInput.vue";
 import { call, logger, t } from "../utils";
 import { getAppState } from "../utils/api";
-import { EVENT_CONFIG_UPDATED, emit as busEmit } from "../utils/bus";
+import { EVENT_CONFIG_UPDATED, emit as busEmit, off as busOff, on as busOn } from "../utils/bus";
 import { vLoading } from "../utils/directives";
 import { customImageBedServices } from "../i18n/constants";
 import type { ServerConfig } from "../types";
@@ -811,8 +811,19 @@ async function testEmail(): Promise<void> {
   loading.value = false;
 }
 
+/** 配置已更新（保存或导入）后重新回填表单 */
+function onConfigUpdated(): void {
+  void readConfig();
+}
+
 onMounted(() => {
   void readConfig();
+  // 配置变更后本页表单需重新回填
+  busOn(EVENT_CONFIG_UPDATED, onConfigUpdated);
+});
+
+onUnmounted(() => {
+  busOff(EVENT_CONFIG_UPDATED, onConfigUpdated);
 });
 </script>
 

@@ -22,6 +22,7 @@
   ],
   "scripts": {
     "build": "tsdown",
+    "prebuild": "pnpm --filter \"@twikoojs/cloudflare-workers^...\" --if-present build",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run"
   },

@@ -118,7 +118,7 @@
   "ADMIN_CONFIG_IMPORT": "設定をインポート",
   "ADMIN_CONFIG_IMPORT_FAILED": "設定のインポートに失敗しました：",
   "ADMIN_CONFIG_IMPORT_INVALID": "設定ファイルの形式が正しくありません",
-  "ADMIN_CONFIG_IMPORT_SOURCE_ALERT": "設定のインポートは Twikoo がエクスポートしたファイルのみ対応しています。「元のシステム」で Twikoo を選択してください",
+  "ADMIN_CONFIG_IMPORT_SOURCE_INVALID": "設定のインポートは Twikoo がエクスポートしたファイルのみ対応しています。「元のシステム」で Twikoo を選択してください",
   "ADMIN_CONFIG_IMPORTED": "設定をインポートしました",
   "ADMIN_CONFIG_IMPORTING": "設定をインポートしています",
   "ADMIN_CREDENTIALS": "秘密鍵ファイル",

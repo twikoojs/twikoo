@@ -118,7 +118,7 @@
   "ADMIN_CONFIG_IMPORT": "Nhập cấu hình",
   "ADMIN_CONFIG_IMPORT_FAILED": "Nhập cấu hình thất bại: ",
   "ADMIN_CONFIG_IMPORT_INVALID": "Định dạng tệp cấu hình không hợp lệ",
-  "ADMIN_CONFIG_IMPORT_SOURCE_ALERT": "Nhập cấu hình chỉ hỗ trợ tệp do Twikoo xuất. Vui lòng chọn Twikoo ở mục hệ thống nguồn",
+  "ADMIN_CONFIG_IMPORT_SOURCE_INVALID": "Nhập cấu hình chỉ hỗ trợ tệp do Twikoo xuất. Vui lòng chọn Twikoo ở mục hệ thống nguồn",
   "ADMIN_CONFIG_IMPORTED": "Nhập cấu hình thành công",
   "ADMIN_CONFIG_IMPORTING": "Đang nhập cấu hình",
   "ADMIN_CREDENTIALS": "File khóa riêng tư",

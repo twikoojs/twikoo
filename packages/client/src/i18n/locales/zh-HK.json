@@ -118,7 +118,7 @@
   "ADMIN_CONFIG_IMPORT": "匯入設定",
   "ADMIN_CONFIG_IMPORT_FAILED": "設定匯入失敗：",
   "ADMIN_CONFIG_IMPORT_INVALID": "設定檔格式不合法",
-  "ADMIN_CONFIG_IMPORT_SOURCE_ALERT": "設定匯入僅支援 Twikoo 匯出的設定檔，請將「來源系統」選擇為 Twikoo",
+  "ADMIN_CONFIG_IMPORT_SOURCE_INVALID": "設定匯入僅支援 Twikoo 匯出的設定檔，請將「來源系統」選擇為 Twikoo",
   "ADMIN_CONFIG_IMPORTED": "設定匯入成功",
   "ADMIN_CONFIG_IMPORTING": "正在匯入設定",
   "ADMIN_CREDENTIALS": "私鑰文件",

@@ -601,15 +601,15 @@ describe("配置导出 / 导入（复用 GET_CONFIG_FOR_ADMIN + SET_CONFIG，不
     wrapper.unmount();
   });
 
-  it("导入配置：源系统不是 Twikoo → alert 提示且不发起任何请求", async () => {
+  it("导入配置：源系统不是 Twikoo → 日志框提示且不发起任何请求", async () => {
     const calls = useRecordingTcb();
-    const alertSpy = vi.fn();
-    stubWindow("alert", alertSpy);
     const wrapper = await mountImport("valine");
     await findButton(wrapper, t("ADMIN_CONFIG_IMPORT")).trigger("click");
     await flushPromises();
 
-    expect(alertSpy).toHaveBeenCalledWith(t("ADMIN_CONFIG_IMPORT_SOURCE_ALERT"));
+    expect((wrapper.find("textarea").element as HTMLTextAreaElement).value).toContain(
+      t("ADMIN_CONFIG_IMPORT_SOURCE_INVALID"),
+    );
     expect(calls).toEqual([]);
     wrapper.unmount();
   });

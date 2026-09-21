@@ -118,7 +118,7 @@
   "ADMIN_CONFIG_IMPORT": "Sozlamalarni import qilish",
   "ADMIN_CONFIG_IMPORT_FAILED": "Sozlamalarni import qilish amalga oshmadi: ",
   "ADMIN_CONFIG_IMPORT_INVALID": "Sozlama fayli formati noto‘g‘ri",
-  "ADMIN_CONFIG_IMPORT_SOURCE_ALERT": "Sozlamalarni import qilish faqat Twikoo eksport qilgan fayllar uchun. Manba tizimida Twikoo ni tanlang",
+  "ADMIN_CONFIG_IMPORT_SOURCE_INVALID": "Sozlamalarni import qilish faqat Twikoo eksport qilgan fayllar uchun. Manba tizimida Twikoo ni tanlang",
   "ADMIN_CONFIG_IMPORTED": "Sozlamalar import qilindi",
   "ADMIN_CONFIG_IMPORTING": "Sozlamalar import qilinmoqda",
   "ADMIN_CREDENTIALS": "Shaxsiy kalit fayli",

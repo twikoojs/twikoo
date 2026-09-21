@@ -118,7 +118,7 @@
   "ADMIN_CONFIG_IMPORT": "Impor Konfigurasi",
   "ADMIN_CONFIG_IMPORT_FAILED": "Impor konfigurasi gagal: ",
   "ADMIN_CONFIG_IMPORT_INVALID": "Format berkas konfigurasi tidak valid",
-  "ADMIN_CONFIG_IMPORT_SOURCE_ALERT": "Impor konfigurasi hanya mendukung berkas yang diekspor oleh Twikoo. Pilih Twikoo sebagai sistem sumber",
+  "ADMIN_CONFIG_IMPORT_SOURCE_INVALID": "Impor konfigurasi hanya mendukung berkas yang diekspor oleh Twikoo. Pilih Twikoo sebagai sistem sumber",
   "ADMIN_CONFIG_IMPORTED": "Konfigurasi berhasil diimpor",
   "ADMIN_CONFIG_IMPORTING": "Mengimpor konfigurasi",
   "ADMIN_CREDENTIALS": "File kunci pribadi",

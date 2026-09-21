@@ -118,7 +118,7 @@
   "ADMIN_CONFIG_IMPORT": "Import Config",
   "ADMIN_CONFIG_IMPORT_FAILED": "Config import failed: ",
   "ADMIN_CONFIG_IMPORT_INVALID": "Invalid config file format",
-  "ADMIN_CONFIG_IMPORT_SOURCE_ALERT": "Config import only supports files exported by Twikoo. Please select Twikoo as the source system.",
+  "ADMIN_CONFIG_IMPORT_SOURCE_INVALID": "Config import only supports files exported by Twikoo. Please select Twikoo as the source system.",
   "ADMIN_CONFIG_IMPORTED": "Config imported",
   "ADMIN_CONFIG_IMPORTING": "Importing config",
   "ADMIN_CREDENTIALS": "Private key file",

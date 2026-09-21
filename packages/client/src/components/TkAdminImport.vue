@@ -182,7 +182,7 @@ function isPlainConfig(value: unknown): value is Record<string, string | number 
  */
 async function importConfig(): Promise<void> {
   if (source.value !== "twikoo") {
-    alert(t("ADMIN_CONFIG_IMPORT_SOURCE_ALERT"));
+    log(t("ADMIN_CONFIG_IMPORT_SOURCE_INVALID"));
     return;
   }
   const file = inputFileRef.value?.files?.[0];
@@ -237,7 +237,6 @@ async function importConfig(): Promise<void> {
 }
 .twikoo .tk-admin-import-actions {
   display: flex;
-  gap: 1em;
 }
 .twikoo .tk-admin-import-actions .tk-button {
   flex: 1;

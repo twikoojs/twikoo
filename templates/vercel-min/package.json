@@ -1,4 +1,7 @@
 {
+  "engines": {
+    "node": "22.x"
+  },
   "dependencies": {
     "twikoo-vercel": "latest"
   }

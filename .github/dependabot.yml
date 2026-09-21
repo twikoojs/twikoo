@@ -11,6 +11,10 @@ updates:
       twikoo-deps:
         group-by: "dependency-name"
     ignore:
+      # jsdom 26+ 的依赖树里有 ESM-only 的包（parse5@8、html-encoding-sniffer@5+ → @exodus/bytes），
+      # 在 Node <20.19 的平台上会直接 ERR_REQUIRE_ESM。钉在 ~25.0.1（CJS 安全）。
+      - dependency-name: "jsdom"
+        versions: [">= 26.0.0"]
       - dependency-name: "@cloudbase/js-sdk"
         versions: [">= 4.0.0"]
       - dependency-name: "typescript"

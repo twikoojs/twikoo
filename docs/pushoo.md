@@ -263,7 +263,7 @@ OneBot 是 QQ 机器人应用层协议标准，NapCat、Lagrange、LLOneBot 等�
 1. 部署一个 OneBot 11 实现（如 [NapCat](https://github.com/NapNeko/NapCatQQ)、[Lagrange.OneBot](https://github.com/LagrangeDev/Lagrange.Core)），启用 HTTP 服务端
 2. 按示例所示的 API 调用地址，填入 pushoo 的 token 中
 
-示例 token：`http://你的IP或域名:端口号/send_private_msg?user_id=QQ号`（QQ 号，鉴权 token 追加 `&access_token=你配置的token`）或 `http://你的IP或域名:端口号/send_group_msg?group_id=群号`（QQ 群）
+示例 token：`http://你的IP或域名:端口号/send_private_msg?user_id=QQ号`（QQ 号，鉴权 token 追加 `&access_token=你配置的token`）或 `http://你的IP或域名:端口号/send_group_msg?group_id=群号&access_token=你配置的token`（QQ 群）
 
 PS：`onebot` 与 `gocqhttp` 的 API 路径相同，但请求形态不同——本通道会把 token 里的 `user_id`、`group_id` 从 URL 移到 JSON 请求体中（`access_token` 仍留在 URL 上），而 `gocqhttp` 用表单编码的 `message` 体。若从 go-cqhttp 迁移，按上述格式重填 token 即可，接口文档见 [https://11.onebot.dev/](https://11.onebot.dev/)
 

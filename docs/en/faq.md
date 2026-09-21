@@ -171,7 +171,7 @@ On a page with the comment box, open your browser's developer tools (F12 on Wind
 
 **`Access to XMLHttpRequest at 'https://tcb-api.tencentcloudapi.com/web?env=...' has been blocked by CORS policy`** — Make sure your frontend JS is up to date and that `envId` starts with `https://`.
 
-**`No 'Access-Control-Allow-Origin' header is present`** — Visit your `envId` URL directly to check whether the cloud function is running. If not, redeploy it carefully. If it is running, start the site on localhost, go to **Admin Panel → Configuration → General**, clear the `CORS_ALLOW_ORIGIN` field, save, and refresh.
+**`No 'Access-Control-Allow-Origin' header is present`** — First make sure `envId` is the **full URL of the cloud function**, including the platform-specific path suffix (e.g. `/.netlify/functions/twikoo` for Netlify, `/api/twikoo` for Vercel). An `envId` that only contains the domain hits the site homepage and returns HTML instead of JSON, which triggers the same error. Then visit your `envId` URL directly to check whether the cloud function is running. If not, redeploy it carefully. If it is running, start the site on localhost, go to **Admin Panel → Configuration → General**, clear the `CORS_ALLOW_ORIGIN` field, save, and refresh.
 
 For any other error, please [open an issue](https://github.com/twikoojs/twikoo/issues/new) and include the full error message.
 

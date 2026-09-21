@@ -174,7 +174,7 @@ Twikoo 私有部署版默认使用内置数据库：LokiJS 数据库，支持的
 
 如果看到 `Access to XMLHttpRequest at 'https://tcb-api.tencentcloudapi.com/web?env=...' from origin '...' has been blocked by CORS policy...`：请检查前端 js 文件版本是否最新，并确保 envId 以 `https://` 开头。
 
-如果看到 `Access to XMLHttpRequest at ... No 'Access-Control-Allow-Origin' header is present on the requested resource.`：请先访问一下 envId 查看云函数是否运行正常，如果没有运行正常的提示，请重新部署云函数，确保不要漏下任何步骤；如果提示运行正常，请本地启动网站（localhost）并访问管理面板 - 配置管理 - 通用，清空 `CORS_ALLOW_ORIGIN` 字段并保存，然后刷新重试。
+如果看到 `Access to XMLHttpRequest at ... No 'Access-Control-Allow-Origin' header is present on the requested resource.`：请先确认 `envId` 填的是**云函数的完整地址**（含平台专属路径后缀，如 Netlify 的 `/.netlify/functions/twikoo`、Vercel 的 `/api/twikoo`）；`envId` 只写到域名会请求到站点首页，返回 HTML 而非 JSON，同样会报这个错。然后访问一下 envId 查看云函数是否运行正常，如果没有运行正常的提示，请重新部署云函数，确保不要漏下任何步骤；如果提示运行正常，请本地启动网站（localhost）并访问管理面板 - 配置管理 - 通用，清空 `CORS_ALLOW_ORIGIN` 字段并保存，然后刷新重试。
 
 如果看到其他错误，请 [提交 issue](https://github.com/twikoojs/twikoo/issues/new) 并附上错误信息。
 
@@ -185,7 +185,7 @@ Twikoo 私有部署版默认使用内置数据库：LokiJS 数据库，支持的
 | kind | 典型现象 | 排查方向 |
 | ---- | ---- | ---- |
 | `NETWORK` | 请求发不出去，HTTP 状态为 0 | 域名 / 网络不可达；广告拦截插件；确认 envId 地址可直接访问 |
-| `CORS` | `No 'Access-Control-Allow-Origin' header` | 清空配置项 `CORS_ALLOW_ORIGIN`；确认云函数运行正常 |
+| `CORS` | `No 'Access-Control-Allow-Origin' header` | 确认 envId 含函数路径后缀（如 `/.netlify/functions/twikoo`）；清空配置项 `CORS_ALLOW_ORIGIN`；确认云函数运行正常 |
 | `TIMEOUT` | 长时间无响应 | 云函数冷启动过慢或后端超时；Vercel 等平台在中国大陆可能超时，请更换部署方式 |
 | `REJECTED` | 请求被平台拒绝 | 平台配额用尽、函数未部署成功、网关跨域设置未添加域名 |
 | `NOT_FOUND` | 404 | envId / 部署地址填写错误，或函数名不是 `twikoo` |

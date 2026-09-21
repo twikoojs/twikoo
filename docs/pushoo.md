@@ -230,6 +230,12 @@ PS：如果出现接口请求正常，企业微信接受消息正常，个人微
 - 进入「我的企业」 → 「微信插件」，拉到最下方，勾选「允许成员在微信插件中接收和回复聊天消息」
 - 在企业微信客户端「我」 → 「设置」 → 「新消息通知」中关闭「仅在企业微信中接受消息」限制条件
 
+PS：如果推送失败，日志中出现错误码 60020（not allow to access from your ip），说明企业微信对调用方 IP 有限制，需将部署 Twikoo 的服务器出口 IP 加入可信 IP 名单：
+
+- 进入「应用管理」 → 选择对应自建应用 → 「企业可信 IP」，填入服务器 IP
+- 排查入口：[接口调试工具](https://open.work.weixin.qq.com/devtool/query?e=60020)、[错误码 60020 说明](https://developer.work.weixin.qq.com/document/path/90475#错误码：60020)
+- 云函数等托管部署需查询平台提供的出口 IP（通常为固定网段），本机部署则为公网出口 IP
+
 ### 💬 [Bark](https://github.com/Finb/Bark) <sub>缩写：`bark`</sub>
 
 Bark 是 iOS 通知中心推送工具，可以推送消息到苹果手机上，免费。

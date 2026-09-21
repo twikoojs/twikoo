@@ -331,6 +331,17 @@ describe("COUNTER_GET / GET_COMMENTS_COUNT / GET_RECENT_COMMENTS", () => {
     expect(res2.body.time).toBe(1);
   });
 
+  it("counter：/p/2 与 /p/2/ 视为同一页，读取时合并计数", async () => {
+    // 存量数据可能分散在两种 URL 形态的键上，读取应相加而不是只看一个键
+    await post({ event: "COUNTER_GET", url: "/p/2", title: "标题" });
+    await post({ event: "COUNTER_GET", url: "/p/2/" });
+    const res = await post({ event: "COUNTER_GET", url: "/p/2" });
+    expect(res.body.time).toBe(2);
+    // 反向也要合并：从带尾斜杠的一侧读，同样应看到总数
+    const res2 = await post({ event: "COUNTER_GET", url: "/p/2/" });
+    expect(res2.body.time).toBe(3);
+  });
+
   it("counter failure：缺 url → message 错误体", async () => {
     const res = await post({ event: "COUNTER_GET" });
     expect(res.body.message).toBe('参数"url"不合法');

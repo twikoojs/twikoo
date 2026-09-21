@@ -81,9 +81,54 @@ tools:
     min-integrity: unapproved
 
 network:
+  # 分诊 agent 经常需要核实「某依赖是否已声明 / 某平台是否支持某特性」这类事实，
+  # 被 firewall 拦下会让分诊报告多出 blocked domain 告警，结论也可能因此不准
+  # （实测：#1116 那次 agent 查 npm 时被拦，报告末尾多出一条告警）。
+  #
+  # 这里放开 gh-aw 的**生态标识符** —— 它们都是知名包仓库 / 工具链，属低风险集合。
+  # 用标识符而不是逐个写域名：gh-aw 编译时明确建议这么做，且后续域名变化无需改配置。
+  #
+  # 刻意排除两类：
+  #   - 引擎传输类（copilot / claude / codex / gemini / pi / threat-detection）：
+  #     那是给对应引擎出站用的，本工作流走自建端点，加了只会扩大无关出站面。
+  #   - 浏览器自动化类（playwright / chrome / fonts）：分诊用不到。
   allowed:
-    - defaults
-    - ai.imaegoo.com
+    - defaults        # 基础基础设施：证书、JSON schema、Ubuntu、常见包镜像
+    - github          # GitHub 域名
+    - local           # 回环地址
+    - dev-tools       # Codecov / Shields / Snyk / Renovate / CircleCI 等 CI 服务
+    - containers      # Docker Hub / GHCR / Quay / GCR / MCR
+    - linux-distros   # Debian / Ubuntu / Alpine / Fedora 等发行版源
+    - node            # npm / yarn / pnpm / Node.js / Bun
+    - node-cdns       # jsDelivr、jQuery CDN
+    - python          # PyPI / conda
+    - python-native   # PyPI + crates.io（带原生扩展的 Python 包）
+    - go              # Go modules
+    - rust            # crates.io / rustup
+    - java            # Maven Central / Gradle / Adoptium
+    - kotlin          # JetBrains 包
+    - scala           # sbt / JitPack
+    - php             # Composer
+    - ruby            # RubyGems / Bundler
+    - dotnet          # NuGet / .NET SDK
+    - deno            # deno.land / jsr.io
+    - dart            # pub.dev
+    - swift           # Swift / CocoaPods
+    - haskell         # Hackage / GHCup
+    - elixir          # hex.pm
+    - lua             # LuaRocks
+    - perl            # CPAN
+    - r               # CRAN
+    - julia           # Julia 包
+    - ocaml           # opam
+    - clojure         # Clojars
+    - zig             # ziglang.org
+    - lean            # Lean 包
+    - latex           # CTAN / TUG / MiKTeX
+    - powershell      # PowerShell Gallery
+    - bazel           # Bazel
+    - terraform       # HashiCorp registry
+    - ai.imaegoo.com  # 自建推理端点（BYOK）
 
 safe-outputs:
   add-labels:
@@ -116,6 +161,29 @@ safe-outputs:
     max: 1
   set-issue-type:
     max: 1
+  # 允许对「改动小且明确」的 issue 直接动手修并提 PR。
+  # 注意 create-pull-request **不是向已有分支推送**，而是用 agent 产出的 patch 新建分支再开 PR，
+  # 所以 main / gh-pages 从机制上就碰不到；allowed-branches 再收口一道命名白名单。
+  # 本仓库 CI 门禁很严（新增 UI 文本须补齐 9 种语言、覆盖率有下限），所以：
+  #   - 保持 draft，让人先过一眼
+  #   - max 限 1，避免一次刷出多个低质量 PR
+  #   - protected-files 用 fallback-to-issue：改到 package.json / 锁文件 / .github/ 等
+  #     受保护路径时不硬闯，转成审查 issue 交给人工
+  create-pull-request:
+    title-prefix: "[triage] "
+    labels:
+      - agentic-workflows
+    draft: true
+    max: 1
+    base-branch: main
+    allowed-branches:
+      - "triage/*"
+      - "fix/*"
+    if-no-changes: "warn"
+    protected-files: fallback-to-issue
+    excluded-files:
+      - "pnpm-lock.yaml"
+      - "**/dist/**"
   # 想让分诊结论直接把 issue 派给 Copilot coding agent 去开 PR，就取消下面两行注释。
   # 需要付费 Copilot 计划，否则运行时会失败。
   # assign-to-agent:
@@ -202,7 +270,35 @@ Twikoo 的 issue 里，**版本与部署方式**是判断问题的前提，缺�
 
 给**一个**聚焦的下一步，不要写成实现方案。
 
-## 6. 输出
+## 6. 判断是否直接动手修
+
+**默认不动手。** 只有同时满足下面全部条件，才走「修复 + 提 PR」这条路：
+
+- 问题**已经定位到具体文件与具体行为**，不是猜测
+- 改动**局限在 1~2 个文件**，且不涉及新增 UI 文案
+- 有明确的对错，不需要产品判断
+- 你能说清楚**怎么验证**这个修复有效
+
+典型的合格场景：文档/注释错误、明显的拼写或逻辑笔误、单文件内的边界条件修复。
+
+**以下情况一律不动手**，只出分诊报告：
+
+- 需要新增或修改 UI 文案 —— 本仓库要求**同步补齐 9 种语言**，改动量远超「小」
+- 需要新增/升级依赖，或改动 `package.json` / 锁文件（会被受保护文件策略拦下）
+- 涉及多个模块、架构取舍，或需求本身还有歧义
+- 你自己也不确定根因 —— **不要用 PR 去试探**
+
+动手时：
+
+1. 从 `main` 建分支，名字用 `triage/<简短英文描述>`
+2. 改动**最小化**，不要顺手重构、不要改无关格式
+3. 提交信息按 Conventional Commits 写，正文用 `Refs #<issue 编号>`
+4. 调 `create-pull-request`，PR 描述里写清：改了什么、为什么、**怎么验证**
+5. 在分诊报告里说明**已开 PR**，附上编号
+
+**没有把握就不提 PR** —— 一个跑不过 CI 的 PR 比没有 PR 更糟，维护者还得替你清理。
+
+## 7. 输出
 
 只发**一条**给维护者的评论：
 
@@ -223,6 +319,10 @@ Twikoo 的 issue 里，**版本与部署方式**是判断问题的前提，缺�
 ### 下一步
 
 [一个具体动作，或仍缺的那条信息。]
+
+### 已开 PR
+
+[仅当第 6 步真的提了 PR 时写这一节，附编号与一句话说明；没提就整节省略。]
 ````
 
 没有有用的关联项时省略「关联 issue」小节。信息不完整时，用**具体的追问**替换整张表格。

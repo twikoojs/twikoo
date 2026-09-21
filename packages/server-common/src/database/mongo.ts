@@ -219,6 +219,12 @@ export class MongoDatabase implements Database {
     return (doc as unknown as CounterDoc) ?? null;
   }
 
+  /** 计数：获取全部页面计数（导出用，按自然序） */
+  async getAllCounters(): Promise<CounterDoc[]> {
+    const docs = await this.col("counter").find({}).toArray();
+    return docs as unknown as CounterDoc[];
+  }
+
   /** 计数：自增（update 命中 0 条则插入首条；1.x incCounter 兜底语义） */
   async incCounter(url: string, title?: string): Promise<CounterDoc> {
     const now = Date.now();

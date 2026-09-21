@@ -34,6 +34,15 @@ class MemoryBlobStore implements BlobKvStoreLike {
   async delete(key: string): Promise<void> {
     this.map.delete(key);
   }
+
+  /** 按键前缀列举（只返回键名，与平台 store.list 的返回面一致） */
+  async list(options?: { prefix?: string }): Promise<{ blobs: Array<{ key: string }> }> {
+    const prefix = options?.prefix ?? "";
+    const blobs = [...this.map.keys()]
+      .filter((key) => key.startsWith(prefix))
+      .map((key) => ({ key }));
+    return { blobs };
+  }
 }
 
 /** 语义套件接入（与 Mongo/Loki 同一套断言）*/

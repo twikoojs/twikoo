@@ -110,6 +110,11 @@ class MemoryDatabase implements Database {
     return this.counters.get(url) ?? null;
   }
 
+  /** 计数：全量列表 */
+  async getAllCounters(): Promise<CounterDoc[]> {
+    return [...this.counters.values()];
+  }
+
   /** 计数：自增 */
   async incCounter(url: string): Promise<CounterDoc> {
     const current = this.counters.get(url) ?? { url, time: 0 };

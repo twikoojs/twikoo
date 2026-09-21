@@ -295,6 +295,12 @@ export class CloudBaseDatabase implements Database {
     return (res.data[0] as CounterDoc) ?? null;
   }
 
+  /** 计数：获取全部页面计数（导出用；TCB 服务端单次 get 上限 1000，与 getAllComments 同形态） */
+  async getAllCounters(): Promise<CounterDoc[]> {
+    const res = await this.col("counter").where({}).limit(1000).get();
+    return res.data as CounterDoc[];
+  }
+
   /** 计数：自增（update 未命中则 add；1.x incCounter 的 _.inc 语义） */
   async incCounter(url: string, title?: string): Promise<CounterDoc> {
     const now = Date.now();

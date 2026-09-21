@@ -473,6 +473,13 @@ describe("jsdom 必须钉在 CJS 安全版本", () => {
       .filter((d) => existsSync(join(REPO_ROOT, "packages", d, "package.json")));
 
     const problems: string[] = [];
+    // 检查根目录
+    const rootPj = JSON.parse(readFileSync(join(REPO_ROOT, "package.json"), "utf8"));
+    const rootRange = rootPj.dependencies?.jsdom || rootPj.devDependencies?.jsdom;
+    if (rootRange && !JSDOM_PIN_REGEX.test(rootRange)) {
+      problems.push(`root: jsdom 范围 "${rootRange}" 不符合 ${JSDOM_PIN_REGEX}（必须钉在 ~25.x）`);
+    }
+    // 检查适配器
     for (const dir of adapters) {
       const pjPath = join(REPO_ROOT, "packages", dir, "package.json");
       const pj = JSON.parse(readFileSync(pjPath, "utf8"));
@@ -484,7 +491,7 @@ describe("jsdom 必须钉在 CJS 安全版本", () => {
     }
     expect(
       problems,
-      `以下适配器的 jsdom 范围不在 CJS 安全区间（parse5@8 / html-encoding-sniffer@5+ 为 ESM-only，\n` +
+      `以下位置的 jsdom 范围不在 CJS 安全区间（parse5@8 / html-encoding-sniffer@5+ 为 ESM-only，\n` +
         `在 Node <20.19 上 require 链会直接 ERR_REQUIRE_ESM）：\n  ${problems.join("\n  ")}`,
     ).toEqual([]);
   });

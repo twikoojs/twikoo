@@ -6,13 +6,17 @@ import {
   createHandler,
   getRecursionToken,
   scaffoldAdapters,
+  setLibImporter,
   type Database,
   type TkRequest,
   type TkResponse,
   type PostSubmitDispatcher,
 } from "@twikoojs/common";
+import { workersLibImporter } from "./workers-lib-importer";
 
 export { VERSION } from "./version";
+
+setLibImporter(workersLibImporter);
 
 export interface CloudflareWorkersEnv {
   MONGODB_URI?: string;

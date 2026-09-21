@@ -25,7 +25,7 @@ export default defineConfig({
   clean: true,
   target: BUILD_TARGET,
   outExtensions: outExtensions(["esm", "cjs"]),
-  deps: { alwaysBundle },
+  deps: { alwaysBundle, onlyBundle: false },
   plugins: [createVersionPlugin(pkg.version)],
   outputOptions: (options, format) =>
     format === "cjs"

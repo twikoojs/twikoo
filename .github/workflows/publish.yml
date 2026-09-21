@@ -136,6 +136,41 @@ jobs:
           registry-url: ${{ env.NPM_REGISTRY }}
       - run: node scripts/verify-npm.mjs "${{ needs.validate.outputs.version }}" "${{ needs.validate.outputs.npm_tag }}"
 
+  # 文档站（twikoo.js.org）的评论后端跑在 Vercel 上，构建时 `npm install` 会重新解析
+  # `twikoo-vercel@latest`。npm 发了新版本后必须重新构建一次才会装上新版，
+  # 否则后端仍跑旧代码 —— 此前需要人工到 Vercel 点 Redeploy。
+  #
+  # 用 Vercel 的 **Deploy Hook**（项目 Settings → Git → Deploy Hooks 创建）：
+  # 一次 POST 即触发构建，不需要 Vercel token，hook URL 本身即凭据。
+  #
+  # 前置（一次性）：把 hook URL 存进仓库 secret `VERCEL_DOCS_BACKEND_DEPLOY_HOOK`。
+  # 未配置时**跳过而非失败** —— 不阻塞发版主流程。
+  #
+  # 依赖 `verify`（9 个包在 npm 可见）而不是 `publish`：只有包真的上线了才值得重建后端。
+  redeploy-docs-backend:
+    name: 触发文档站后端重新部署
+    needs: [validate, verify]
+    runs-on: ubuntu-latest
+    steps:
+      - name: POST Vercel Deploy Hook
+        env:
+          DEPLOY_HOOK: ${{ secrets.VERCEL_DOCS_BACKEND_DEPLOY_HOOK }}
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DEPLOY_HOOK}" ]; then
+            echo "::warning::未配置 secret VERCEL_DOCS_BACKEND_DEPLOY_HOOK，跳过文档站后端重新部署"
+            exit 0
+          fi
+          echo "twikoo-vercel@${VERSION} 已发布，触发文档站后端重新部署"
+          code="$(curl -sS -o /tmp/deploy-hook.out -w '%{http_code}' -X POST "${DEPLOY_HOOK}")"
+          echo "Deploy Hook 返回 HTTP ${code}"
+          cat /tmp/deploy-hook.out || true
+          if [ "${code}" -lt 200 ] || [ "${code}" -ge 300 ]; then
+            echo "::error::Vercel Deploy Hook 返回 HTTP ${code}"
+            exit 1
+          fi
+
   publish-docker:
     name: Docker 镜像
     needs: [validate, verify]

@@ -243,6 +243,8 @@ Bark 是 iOS 通知中心推送工具，可以推送消息到苹果手机上，�
 
 go-cqhttp 是开源 QQ 机器人程序，免费，需自行搭建，插件十分丰富，但“野生”机器人并没有得到 Tencent 官方的支持，有账号被冻结的风险。
 
+PS：go-cqhttp 已停止维护（[仓库](https://github.com/Mrs4s/go-cqhttp) 最后一次提交为 2024-05，最新版本仍是 2023-10 发布的 v1.2.0），新部署建议改用 OneBot 协议的实现（NapCat、Lagrange.OneBot 等），配置方式见下方 OneBot 章节；已配置好的 go-cqhttp 可继续使用，接口本身没有变化。
+
 1. 前往 [go-cqhttp release](https://github.com/Mrs4s/go-cqhttp) 下载对应系统版本
 2. 此处省略安装过程，可参考 [https://docs.go-cqhttp.org/guide/quick_start.html](https://docs.go-cqhttp.org/guide/quick_start.html)
 3. 修改配置文件，配置 `default-middlewares` 下面的 `access-token`，启动 go-cqhttp

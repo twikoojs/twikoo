@@ -73,7 +73,7 @@ function renderModule(base64, info) {
  * 原始大小 ${mb(info.rawSize)} / 压缩后 ${mb(info.gzipSize)} / base64 ${mb(info.base64Size)}
  * db sha256 ${info.sha256}
  */
-import pako from "pako";
+import { ungzip } from "pako";
 
 /** db 的 gzip+base64 内容 */
 const IP2REGION_DATA_BASE64 = "${base64}";
@@ -91,7 +91,7 @@ export function getIp2RegionBuffer() {
     const binary = atob(IP2REGION_DATA_BASE64);
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    cachedBuffer = Buffer.from(pako.ungzip(bytes));
+    cachedBuffer = Buffer.from(ungzip(bytes));
   }
   return cachedBuffer;
 }

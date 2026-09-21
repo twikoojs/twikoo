@@ -666,6 +666,9 @@ async function send(): Promise<void> {
     ) {
       payload.capToken = await getCapToken();
     }
+    /** 提交前钩子（可原地改 payload；抛错即中止发送，见 TwikooOptions.onSubmit） */
+    const onSubmit = getAppState().options.onSubmit;
+    if (typeof onSubmit === "function") await onSubmit(payload);
     const res = await call(getAppState().tcb, "COMMENT_SUBMIT", payload);
     const result = (res.result ?? res) as { id?: string; code?: number; message?: string };
     if (result.id) {

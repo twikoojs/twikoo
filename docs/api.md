@@ -109,6 +109,27 @@ twikoo.init({
 });
 ```
 
+## On submit
+
+评论提交前的回调函数，参数是即将发送的评论数据。<br>
+可以在回调里就地修改这些字段（如改写昵称、追加标记）。<br>
+**回调抛出异常会中止发送**（表单显示错误）；返回 `false` 不会拦截。
+
+### Version
+
+`>= 2.0.7`
+
+### Example
+
+```js
+twikoo.init({
+  ......,
+  onSubmit: function (comment) {
+    comment.nick = comment.nick + '（来自小程序）';
+  }
+});
+```
+
 ## On comment loaded
 
 评论加载成功后的回调函数。<br>

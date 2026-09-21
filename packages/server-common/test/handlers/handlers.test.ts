@@ -494,6 +494,95 @@ describe("GET_CONFIG / GET_CONFIG_FOR_ADMIN / SET_CONFIG", () => {
   });
 });
 
+describe("CONFIG_EXPORT_FOR_ADMIN / CONFIG_IMPORT_FOR_ADMIN", () => {
+  it("export admin happy/failure：导出配置摘除 CREDENTIALS；未登录 NEED_LOGIN", async () => {
+    await adapters.database.saveConfig({ SITE_NAME: "站名", CREDENTIALS: "cred" });
+    const admin = await postAdmin({ event: "CONFIG_EXPORT_FOR_ADMIN" });
+    expect(admin.body.code).toBe(RES_CODE.SUCCESS);
+    const exported = admin.body.config as Record<string, unknown>;
+    expect(exported.SITE_NAME).toBe("站名");
+    expect(exported.CREDENTIALS).toBeUndefined();
+
+    const visitor = await post({ event: "CONFIG_EXPORT_FOR_ADMIN" });
+    expect(visitor.body.code).toBe(RES_CODE.NEED_LOGIN);
+  });
+
+  it("import overwrite：覆盖已有键、新增键，且不允许写 CREDENTIALS", async () => {
+    await adapters.database.saveConfig({
+      SITE_NAME: "旧站名",
+      MASTER_TAG: "博主",
+      CREDENTIALS: "原凭证",
+    });
+    const res = await postAdmin({
+      event: "CONFIG_IMPORT_FOR_ADMIN",
+      config: { SITE_NAME: "新站名", NEW_KEY: "1", CREDENTIALS: "试图覆盖" },
+      mode: "overwrite",
+    });
+    expect(res.body.code).toBe(RES_CODE.SUCCESS);
+    const config = (await adapters.database.getConfig()) as Record<string, unknown>;
+    expect(config.SITE_NAME).toBe("新站名");
+    expect(config.NEW_KEY).toBe("1");
+    // saveConfig 为合并语义：导入载荷摘除 CREDENTIALS 后，库中原凭证不受影响
+    expect(config.CREDENTIALS).toBe("原凭证");
+  });
+
+  it("import skip：只填充不存在的键，已有键保持原值", async () => {
+    await adapters.database.saveConfig({ SITE_NAME: "旧站名" });
+    const res = await postAdmin({
+      event: "CONFIG_IMPORT_FOR_ADMIN",
+      config: { SITE_NAME: "新站名", MASTER_TAG: "博主" },
+      mode: "skip",
+    });
+    expect(res.body.code).toBe(RES_CODE.SUCCESS);
+    const config = (await adapters.database.getConfig()) as Record<string, unknown>;
+    expect(config.SITE_NAME).toBe("旧站名");
+    expect(config.MASTER_TAG).toBe("博主");
+  });
+
+  it("import failure：mode 非 overwrite/skip → 参数错误（不再静默按 skip 处理）", async () => {
+    await adapters.database.saveConfig({ SITE_NAME: "旧站名" });
+    const res = await postAdmin({
+      event: "CONFIG_IMPORT_FOR_ADMIN",
+      config: { SITE_NAME: "新站名" },
+      mode: "merge",
+    });
+    expect(res.body.code).toBe(RES_CODE.FAIL);
+    const config = (await adapters.database.getConfig()) as Record<string, unknown>;
+    expect(config.SITE_NAME).toBe("旧站名");
+  });
+
+  it.each([
+    ["数组", [1, 2]],
+    ["字符串", "not-an-object"],
+    ["null", null],
+    ["含数组的配置", { SITE_NAME: ["a", "b"] }],
+    ["含 null 值的配置", { SITE_NAME: null }],
+    ["含嵌套对象的配置", { SITE_NAME: { a: 1 } }],
+  ])("import failure：配置为%s → 配置格式不合法且不落库", async (_label, config) => {
+    await adapters.database.saveConfig({ SITE_NAME: "旧站名" });
+    const res = await postAdmin({
+      event: "CONFIG_IMPORT_FOR_ADMIN",
+      config,
+      mode: "overwrite",
+    });
+    expect(res.body.code).toBe(RES_CODE.FAIL);
+    expect(res.body.message).toBe("配置格式不合法");
+    const stored = (await adapters.database.getConfig()) as Record<string, unknown>;
+    expect(stored.SITE_NAME).toBe("旧站名");
+  });
+
+  it("import failure：未登录 → NEED_LOGIN 且不落库", async () => {
+    const res = await post({
+      event: "CONFIG_IMPORT_FOR_ADMIN",
+      config: { SITE_NAME: "新站名" },
+      mode: "overwrite",
+    });
+    expect(res.body.code).toBe(RES_CODE.NEED_LOGIN);
+    const config = (await adapters.database.getConfig()) as Record<string, unknown>;
+    expect(config.SITE_NAME).toBeUndefined();
+  });
+});
+
 describe("EMAIL_TEST / UPLOAD_IMAGE / GET_QQ_NICK（重依赖替身注入）", () => {
   it("email test：未登录 NEED_LOGIN；管理员无 SMTP 配置 → 友好错误", async () => {
     const visitor = await post({ event: "EMAIL_TEST", mail: "a@b.com" });

@@ -7,6 +7,21 @@ import { isAdmin } from "../services/user";
 import type { ConfigData } from "../ports/database";
 
 /**
+ * 校验导入内容：必须是普通对象，且值只能是字符串/数字/布尔。
+ *
+ * JSON.parse 的产物只可能是普通对象、数组与原始值，故用「非数组 + 逐值类型」
+ * 即可覆盖；目的是拦住数组、null 等非 ConfigData 值，避免它们落库。
+ * @param value 待校验值
+ * @returns 是否符合配置形态
+ */
+function isPlainConfig(value: unknown): value is ConfigData {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  return Object.values(value).every(
+    (item) => typeof item === "string" || typeof item === "number" || typeof item === "boolean",
+  );
+}
+
+/**
  * 管理员导入配置（合并语义：覆盖或跳过）。
  * @param ctx 请求上下文
  * @returns 导入响应
@@ -17,10 +32,10 @@ export const configImportForAdmin: EventHandler = async (ctx) => {
     return { code: RES_CODE.NEED_LOGIN, message: "请先登录" };
   }
   const event = ctx.request.body;
-  const importedConfig = event.config as ConfigData;
+  const importedConfig = event.config;
   const mode = event.mode;
 
-  if (!importedConfig || typeof importedConfig !== "object") {
+  if (!isPlainConfig(importedConfig)) {
     return { code: RES_CODE.FAIL, message: "配置格式不合法" };
   }
   if (mode !== "overwrite" && mode !== "skip") {

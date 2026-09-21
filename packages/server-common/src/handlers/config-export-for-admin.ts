@@ -9,7 +9,7 @@ import type { ConfigData } from "../ports/database";
 /**
  * 管理员导出配置（排除 CREDENTIALS）。
  * @param ctx 请求上下文
- * @returns 导出响应（config 为全量配置）
+ * @returns 导出响应（config 为排除 CREDENTIALS 后的配置）
  */
 export const configExportForAdmin: EventHandler = (ctx) => {
   const isAdminUser = isAdmin(ctx.config, ctx.accessToken);

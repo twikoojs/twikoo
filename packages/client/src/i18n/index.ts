@@ -150,7 +150,10 @@ export async function loadLanguage(
   const target = resolveLanguage(options);
   currentLang = target;
   if (BUILTIN[target] || loadedLocales[target]) return;
-  const base = (options.localeBaseUrl ?? localeBaseUrl ?? detectLocaleBaseUrl()).replace(
+  // 必须用 `||` 而非 `??`：localeBaseUrl 的初值是空串（语义为「未设置」），
+  // 而 `??` 只对 null / undefined 回退 —— 空串会直接短路，detectLocaleBaseUrl()
+  // 永远不会被调用，于是任何非内置语言都恒报「无法推导基址」。
+  const base = (options.localeBaseUrl || localeBaseUrl || detectLocaleBaseUrl()).replace(
     /\/+$/,
     "",
   );

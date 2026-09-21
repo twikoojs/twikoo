@@ -7,7 +7,7 @@
  * - **内置 2 语言立即生效；其余 7 语言为按需分片**（`LAZY_LOCALES`）
  * - 分片加载失败 / 基址推导失败 → **回退英文且不抛**
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   LAZY_LOCALES,
   getLanguage,
@@ -119,8 +119,30 @@ describe("i18n 拆分", () => {
     expect(t(KNOWN_KEY)).toBe(en[KNOWN_KEY]);
   });
 
-  it("基址推导失败（无 document）→ 记 warn、不抛", async () => {
+  it("基址推导失败（页面无 twikoo 脚本）→ 记 warn、不抛", async () => {
     await expect(loadLanguage({ lang: "ko-KR" })).resolves.toBeUndefined();
     expect(t(KNOWN_KEY)).toBe(en[KNOWN_KEY]);
+  });
+
+  it("未指定 localeBaseUrl 时从页面 script[src] 自动推导基址", async () => {
+    // 回归：localeBaseUrl 初值是空串，若用 `??` 串联则 detectLocaleBaseUrl() 永不执行，
+    // 任何非内置语言都会误报「无法推导基址」（2.0.2 线上 twikoo.js.org 即此症状）。
+    // 用 spy 伪造页面上的 twikoo 脚本——happy-dom 对真实 <script src> 会尝试加载并抛错。
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const querySelectorAll = vi
+      .spyOn(document, "querySelectorAll")
+      .mockImplementation(((selector: string) =>
+        selector === "script[src]"
+          ? [{ src: "https://cdn.example.com/twikoo/dist/twikoo.min.js" }]
+          : []) as unknown as typeof document.querySelectorAll);
+    try {
+      await loadLanguage({ lang: "id-ID" });
+      const messages = warn.mock.calls.map((call) => String(call[0])).join("\n");
+      // 推导已成功 → 只可能因分片取不到而记「加载失败」，绝不出现「无法推导」
+      expect(messages).not.toContain("无法推导");
+    } finally {
+      querySelectorAll.mockRestore();
+      warn.mockRestore();
+    }
   });
 });

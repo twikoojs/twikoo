@@ -20,6 +20,18 @@ type ServerResponseShim = import("./main").ServerResponseLike;
 /** 垫片中的请求形态（body 已解析挂载） */
 type ServerRequestShim = import("./main").ServerRequestLike & { body?: unknown };
 
+/** 健康检查路径（两个名字都收：编排系统常用 /healthz） */
+const HEALTH_PATHS = new Set(["/ping", "/healthz"]);
+
+/**
+ * 去掉 URL 的查询串（`/ping?x=1` 仍按 `/ping` 处理）。
+ * @param url Node 请求 URL（可能带 query 或为空）
+ * @returns 纯路径
+ */
+function stripQuery(url: string | undefined): string {
+  return (url ?? "/").split("?")[0];
+}
+
 /** 服务器实例与生命周期控制（createTkserverServer 产物） */
 export interface TkserverInstance {
   /** HTTP 服务器（未监听；listen 由调用方执行） */
@@ -48,6 +60,13 @@ export function createTkserverServer(options: { database?: Database } = {}): Tks
     if (isShuttingDown) {
       res.writeHead(503, { Connection: "close", "Content-Type": "application/json" });
       res.end(JSON.stringify({ code: 503, message: "Twikoo server is shutting down" }));
+      return;
+    }
+    // 健康检查短路：不进 pipeline、不碰数据库——走 pipeline 会在数据库未就绪时探活失败，反而失去意义。
+    // 放在 isShuttingDown 之后，因此关闭期间探活仍是 503（编排不会往正在退出的实例打流量）
+    if (req.method === "GET" && HEALTH_PATHS.has(stripQuery(req.url))) {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ code: 0, message: "pong" }));
       return;
     }
     void (async () => {

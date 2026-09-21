@@ -79,6 +79,7 @@ onUnmounted(() => {
 .twikoo .OwO-item img {
   width: 3em;
   height: auto;
+  vertical-align: middle;
 }
 .twikoo .tk-admin-warn {
   padding: 1rem 1.5rem;

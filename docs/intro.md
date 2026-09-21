@@ -73,7 +73,8 @@ A simple, safe, free comment system.
 
 - 支持邮件提醒（访客和博主）
 - 支持微信提醒（仅针对博主，基于 [Server 酱](https://sct.ftqq.com/r/13235)，需自行注册）
-- 支持 QQ 提醒（仅针对博主，基于 [Qmsg 酱](https://qmsg.zendee.cn/) 或 [go-cqhttp](https://docs.go-cqhttp.org/)，需自行注册）
+- 支持 QQ 提醒（仅针对博主，基于 [Qmsg 酱](https://qmsg.zendee.cn/)，需自行注册）
+- 支持 QQ 提醒（仅针对博主，基于 [go-cqhttp](https://docs.go-cqhttp.org/)，需自行搭建并配置机器人及 QQ 账号）
 - 支持钉钉、企业微信、飞书、Telegram、Discord、Bark、PushDeer、WxPusher 等渠道（仅针对博主，基于 [pushoo](https://twikoo.js.org/pushoo.html)，需自行注册）
 
 ### 个性

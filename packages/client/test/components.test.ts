@@ -17,9 +17,11 @@ import TkPagination from "../src/components/TkPagination.vue";
 import TkFooter from "../src/components/TkFooter.vue";
 import TkMetaInput from "../src/components/TkMetaInput.vue";
 import TkError from "../src/components/TkError.vue";
+import TkAdminComment from "../src/components/TkAdminComment.vue";
 import TwikooApp from "../src/App.vue";
 import { VERSION } from "@twikoojs/shared";
 import { TwikooError, setAppState } from "../src/utils/api";
+import { t } from "../src/utils";
 import { clearAll } from "../src/utils/bus";
 import { setServerConfig } from "../src/utils/state";
 import type { CommentDto } from "../src/types";
@@ -404,6 +406,79 @@ describe("App 渲染", () => {
     expect(wrapper.find(".tk-comments").exists()).toBe(true);
     expect(wrapper.find(".tk-footer").exists()).toBe(true);
     expect(wrapper.find(".tk-admin-container").exists()).toBe(true);
+    wrapper.unmount();
+  });
+});
+
+describe("TkAdminComment 管理操作（#1140 回归）", () => {
+  /**
+   * 挂载管理评论页签，并用替身 tcb 记录上报的事件载荷。
+   * @returns 组件包装器与调用记录
+   */
+  async function mountAdminComment() {
+    const calls: Array<{ event: string; data: Record<string, unknown> }> = [];
+    const tcb = {
+      app: {
+        /**
+         * 事件转发替身：记录载荷，按事件名返回固定响应。
+         * @param params 事件参数
+         * @returns 固定响应
+         */
+        callFunction: async (params: {
+          name: string;
+          data: { event?: string } & Record<string, unknown>;
+        }) => {
+          const event = String(params.data?.event ?? "");
+          calls.push({ event, data: params.data });
+          if (event === "COMMENT_GET_FOR_ADMIN") {
+            // 管理端下发的是**原始评论文档**：主键为 _id，没有 id、没有 replies
+            return {
+              result: {
+                code: 0,
+                count: 1,
+                data: [{ _id: "c1", nick: "甲", comment: "x", url: "/demo.html", created: 1 }],
+              },
+            };
+          }
+          return { result: { code: 0 } };
+        },
+      },
+    };
+    setAppState(tcb as never, { path: "/demo.html" });
+    const wrapper = mount(TkAdminComment);
+    await flushPromises();
+    return { wrapper, calls };
+  }
+
+  it("删除/隐藏/置顶上报的 id 取自文档 _id（不是 id）", async () => {
+    vi.stubGlobal("confirm", () => true);
+    const { wrapper, calls } = await mountAdminComment();
+
+    /**
+     * 按按钮文案定位元素。
+     * @param label 按钮文案
+     * @returns 找到的按钮包装器
+     */
+    const findByText = (label: string) => {
+      const btn = wrapper.findAll("button").find((b) => b.text() === label);
+      if (!btn) throw new Error(`未找到按钮：${label}`);
+      return btn;
+    };
+
+    await findByText(t("ADMIN_COMMENT_DELETE")).trigger("click");
+    await flushPromises();
+    expect(calls.find((c) => c.event === "COMMENT_DELETE_FOR_ADMIN")?.data.id).toBe("c1");
+
+    await findByText(t("ADMIN_COMMENT_HIDE")).trigger("click");
+    await flushPromises();
+    const hide = calls.find((c) => c.event === "COMMENT_SET_FOR_ADMIN");
+    expect(hide?.data.id).toBe("c1");
+    expect(hide?.data.set).toEqual({ isSpam: true });
+
+    await findByText(t("ADMIN_COMMENT_TOP")).trigger("click");
+    await flushPromises();
+    expect(calls.filter((c) => c.event === "COMMENT_SET_FOR_ADMIN").at(-1)?.data.id).toBe("c1");
+
     wrapper.unmount();
   });
 });

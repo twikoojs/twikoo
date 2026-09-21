@@ -35,7 +35,7 @@
       </TkButton>
     </div>
     <div ref="commentListRef" class="tk-admin-comment-list">
-      <div v-for="comment in comments" :key="comment.id" class="tk-admin-comment-item">
+      <div v-for="comment in comments" :key="comment._id" class="tk-admin-comment-item">
         <div class="tk-admin-comment-meta">
           <TkAvatar
             :config="serverConfig"
@@ -65,7 +65,7 @@
         <!-- eslint-disable-next-line vue/no-v-html -->
         <div class="tk-content" v-html="comment.comment"></div>
         <div
-          v-if="securityAlert && securityAlert.commentId === comment.id"
+          v-if="securityAlert && securityAlert.commentId === comment._id"
           class="tk-admin-warn tk-admin-security-alert"
         >
           <a class="tk-admin-close" href="#" @click.prevent="securityAlert = null">
@@ -150,6 +150,22 @@ import { getServerConfig } from "../utils/state";
 import { vLoading } from "../utils/directives";
 import type { CommentDto, ServerConfig } from "../types";
 
+/**
+ * 管理端评论记录。
+ *
+ * **主键是 `_id` 而不是 `id`**：`COMMENT_GET_FOR_ADMIN` 下发的是**原始评论文档**
+ * （见服务端 `parseCommentForAdmin`），只做 IP 属地补充，不做 `toCommentDto` 的
+ * 字段重映射——因此它带的是库里的 `_id`，且没有 `replies`（管理列表是平铺的）。
+ *
+ * 1.x 的管理面板也是用 `comment._id`；2.0 重构时误写成 `comment.id`，
+ * 导致所有管理操作都上送 `id: undefined`，被服务端 `validate(event, ["id"])`
+ * 拦下后**静默失败**（客户端不检查返回码）——即 #1140。
+ */
+interface AdminCommentDto extends Omit<CommentDto, "id" | "replies"> {
+  /** 评论文档 ID（原始文档主键） */
+  _id: string;
+}
+
 /** 管理列表默认每页条数（1.x defaultPageSize） */
 const defaultPageSize = 5;
 
@@ -159,7 +175,7 @@ const initialServerVersion = getServerConfig().VERSION;
 /** 加载中 */
 const loading = ref(true);
 /** 评论列表（当前页） */
-const comments = ref<CommentDto[]>([]);
+const comments = ref<AdminCommentDto[]>([]);
 /** 管理端配置（`GET_CONFIG_FOR_ADMIN` 下发） */
 const serverConfig = reactive<ServerConfig>({});
 /** 服务端版本 */
@@ -184,7 +200,7 @@ const commentListRef = ref<HTMLElement>();
  * @param comment 评论
  * @returns 相对时间
  */
-function displayCreated(comment: CommentDto): string {
+function displayCreated(comment: AdminCommentDto): string {
   return timeago(comment.created);
 }
 
@@ -197,7 +213,7 @@ async function getComments(): Promise<void> {
     keyword: filter.keyword,
     type: filter.type,
   });
-  const result = (res.result ?? res) as { code?: number; count?: number; data?: CommentDto[] };
+  const result = (res.result ?? res) as { code?: number; count?: number; data?: AdminCommentDto[] };
   if (result && !result.code) {
     count.value = result.count ?? 0;
     comments.value = (result.data ?? []).map((comment) => ({
@@ -268,13 +284,13 @@ function switchPage(page: number): void {
  * 查看评论所在页面（1.x handleView 对齐：跨域域名只提示不打开）。
  * @param comment 评论
  */
-function handleView(comment: CommentDto): void {
-  const targetUrl = `${comment.url ?? ""}#${comment.id}`;
+function handleView(comment: AdminCommentDto): void {
+  const targetUrl = `${comment.url ?? ""}#${comment._id}`;
   try {
     const url = new URL(targetUrl);
     if (url.hostname !== window.location.hostname) {
       securityAlert.value = {
-        commentId: comment.id,
+        commentId: comment._id,
         message: t("ADMIN_COMMENT_SECURITY_ALERT"),
         url: targetUrl,
       };
@@ -288,7 +304,7 @@ function handleView(comment: CommentDto): void {
       window.open(targetUrl);
     } catch {
       securityAlert.value = {
-        commentId: comment.id,
+        commentId: comment._id,
         message: t("ADMIN_COMMENT_PARSE_ERROR"),
         url: comment.url,
       };
@@ -300,10 +316,10 @@ function handleView(comment: CommentDto): void {
  * 删除评论（1.x handleDelete 对齐：二次确认后重载当前页）。
  * @param comment 评论
  */
-async function handleDelete(comment: CommentDto): Promise<void> {
+async function handleDelete(comment: AdminCommentDto): Promise<void> {
   if (!confirm(t("ADMIN_COMMENT_DELETE_CONFIRM"))) return;
   loading.value = true;
-  await call(getAppState().tcb, "COMMENT_DELETE_FOR_ADMIN", { id: comment.id });
+  await call(getAppState().tcb, "COMMENT_DELETE_FOR_ADMIN", { id: comment._id });
   await getComments();
   loading.value = false;
 }
@@ -313,7 +329,7 @@ async function handleDelete(comment: CommentDto): Promise<void> {
  * @param comment 评论
  * @param isSpam 目标状态
  */
-function handleSpam(comment: CommentDto, isSpam: boolean): void {
+function handleSpam(comment: AdminCommentDto, isSpam: boolean): void {
   void setComment(comment, { isSpam });
 }
 
@@ -322,7 +338,7 @@ function handleSpam(comment: CommentDto, isSpam: boolean): void {
  * @param comment 评论
  * @param top 目标状态
  */
-function handleTop(comment: CommentDto, top: boolean): void {
+function handleTop(comment: AdminCommentDto, top: boolean): void {
   void setComment(comment, { top });
 }
 
@@ -331,9 +347,9 @@ function handleTop(comment: CommentDto, top: boolean): void {
  * @param comment 评论
  * @param set 要设置的字段
  */
-async function setComment(comment: CommentDto, set: Record<string, unknown>): Promise<void> {
+async function setComment(comment: AdminCommentDto, set: Record<string, unknown>): Promise<void> {
   loading.value = true;
-  await call(getAppState().tcb, "COMMENT_SET_FOR_ADMIN", { id: comment.id, set });
+  await call(getAppState().tcb, "COMMENT_SET_FOR_ADMIN", { id: comment._id, set });
   await getComments();
   loading.value = false;
 }

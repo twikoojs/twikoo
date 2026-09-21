@@ -461,6 +461,23 @@ describe("评论查询可见性（services/comment-query）", () => {
     );
     expect(sorted.every((d) => d.url === "/p")).toBe(true);
   });
+
+  it("queryVisibleComments：置顶 + 隐藏评论对访客不可见（#297）", async () => {
+    const adapters = createMemoryAdapters();
+    const db = adapters.database;
+    await db.addComment({ _id: "p1", nick: "正常置顶", url: "/p", top: true });
+    await db.addComment({ _id: "p2", nick: "隐藏置顶", url: "/p", top: true, isSpam: true });
+    await db.addComment({ _id: "p3", nick: "本人隐藏置顶", url: "/p", top: true, isSpam: true, uid: "u9" });
+    // 管理员可见全部
+    const adminView = await queryVisibleComments(db, { url: "/p", top: true }, "u9", true, {});
+    expect(adminView.map((d) => d._id).sort()).toEqual(["p1", "p2", "p3"]);
+    // 访客只见非垃圾 + 本人
+    const visitorView = await queryVisibleComments(db, { url: "/p", top: true }, "u9", false, {});
+    expect(visitorView.map((d) => d._id).sort()).toEqual(["p1", "p3"]);
+    // 其他访客只见非垃圾
+    const otherView = await queryVisibleComments(db, { url: "/p", top: true }, "", false, {});
+    expect(otherView.map((d) => d._id)).toEqual(["p1"]);
+  });
 });
 
 describe("Cap 服务（services/cap）", () => {

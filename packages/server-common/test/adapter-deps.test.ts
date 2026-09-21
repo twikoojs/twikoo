@@ -18,22 +18,42 @@
  * 定义，适配器只是消费者。本文件会读各适配器的 `package.json` 与 `src/`（跨包读取，
  * 与 `packages/demo/test` 的做法一致）。
  *
+ * **为什么用 TypeScript 编译器 API 而不是正则**：映射表的正确性完全建立在「它准确镜像了
+ * `lib-loader` 的调用点」之上，而正则只能匹配「恰好写成字面量」的调用 —— 一旦有人改成
+ * `loadLib(specifier)` / `requireCapability(caps, cap, pkg)`，该调用就从结果集里消失，
+ * 同步测试反而变绿。AST 能把「参数不是字面量」本身报出来（与
+ * `test/utils/lib-loader-literals.test.ts` 同款处理）。
+ *
  * `mongodb` / `lokijs` 不在此检查范围：它们不经 `lib-loader`，而由适配器注入的
  * `database` 端口自行选择（如 EO 用 `BlobKvDatabase`），不是「人人必备」。
  */
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import ts from "typescript";
 import { describe, expect, it } from "vitest";
 import { FULL_CAPABILITIES } from "../src/ports/capabilities";
 
 /** 仓库根（本文件位于 packages/server-common/test/） */
 const REPO_ROOT = fileURLToPath(new URL("../../..", import.meta.url));
 
-/** 能力 → 该能力为 true 时适配器必须声明的包（镜像 lib-loader 的 requireCapability 调用点） */
+/** lib-loader 源文件路径（能力映射与加载清单的真相源） */
+const LIB_LOADER_PATH = join(REPO_ROOT, "packages/server-common/src/utils/lib-loader.ts");
+
+/**
+ * 能力 → 该能力为 true 时适配器必须声明的包。
+ *
+ * **这是镜像，不是真相源**：每一行都必须能在 `lib-loader` 里找到对应的
+ * `requireCapability(caps, "<能力>", "<包>")`，由下方同步用例强制核对 ——
+ * 比对的是 **(能力, 包) 对**，不只是能力名，否则「能力名不变、包名换成别的」这种改动
+ * 会悄悄溜过去，而适配器仍按旧包名声明依赖。
+ *
+ * `jsdom` 是 `domPurify` 的**伴随包**（DOMPurify 需要一个 window，见 `getDomPurify`），
+ * 它没有独立的 `requireCapability` 调用，因此只出现在本表、不出现在门控调用点里 ——
+ * 所以同步比对取「调用点 ⊆ 本表」的子集语义，而非相等。
+ */
 const CAPABILITY_PACKAGES: Record<string, string[]> = {
   mail: ["nodemailer"],
-  // DOMPurify 需要一个 window，故 jsdom 与 dompurify 同装（见 getDomPurify）
   domPurify: ["jsdom", "dompurify"],
   ip2region: ["@imaegoo/node-ip2region"],
   akismet: ["akismet-api"],
@@ -58,29 +78,128 @@ const KNOWN_GAPS: Record<string, string[]> = {
   ],
 };
 
-/** lib-loader 源码（能力映射与加载清单的真相源） */
-const LIB_LOADER_SOURCE = readFileSync(
-  join(REPO_ROOT, "packages/server-common/src/utils/lib-loader.ts"),
-  "utf8",
+/** 已解析的 lib-loader AST（`setParentNodes` 打开，用于回溯所属函数） */
+const LIB_LOADER_FILE = ts.createSourceFile(
+  "lib-loader.ts",
+  readFileSync(LIB_LOADER_PATH, "utf8"),
+  ts.ScriptTarget.ES2022,
+  /* setParentNodes */ true,
+  ts.ScriptKind.TS,
 );
 
 /**
- * 从 lib-loader 源码解析 `requireCapability(caps, "<能力>", "<包>")` 里的能力名。
- * @returns 能力名（去重）
+ * 深度优先遍历 AST。
+ * @param node 起始节点
+ * @param visit 访问回调
  */
-function gatedCapabilities(): string[] {
-  const found = [...LIB_LOADER_SOURCE.matchAll(/requireCapability\(\s*caps,\s*"([^"]+)"/g)].map(
-    (m) => m[1],
-  );
-  return [...new Set(found)];
+function walk(node: ts.Node, visit: (node: ts.Node) => void): void {
+  visit(node);
+  node.forEachChild((child) => walk(child, visit));
 }
 
 /**
- * 从 lib-loader 源码解析所有 `loadLib("<包>")` 调用点。
- * @returns 包名（去重）
+ * 取节点所在的最近函数节点。
+ * @param node 起始节点
+ * @returns 最近的函数节点；不在任何函数内时为 undefined
+ */
+function enclosingFunction(node: ts.Node): ts.Node | undefined {
+  let current: ts.Node | undefined = node.parent;
+  while (current) {
+    if (
+      ts.isFunctionDeclaration(current) ||
+      ts.isFunctionExpression(current) ||
+      ts.isArrowFunction(current) ||
+      ts.isMethodDeclaration(current)
+    ) {
+      return current;
+    }
+    current = current.parent;
+  }
+  return undefined;
+}
+
+/**
+ * 取字符串字面量节点的值。
+ * @param node 节点
+ * @returns 字面量文本；非字符串字面量时为 undefined
+ */
+function literalText(node: ts.Node | undefined): string | undefined {
+  if (node === undefined) return undefined;
+  return ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)
+    ? node.text
+    : undefined;
+}
+
+/**
+ * 取节点所在行号（1 起）。
+ * @param node 节点
+ * @returns 行号
+ */
+function lineOf(node: ts.Node): number {
+  return LIB_LOADER_FILE.getLineAndCharacterOfPosition(node.getStart(LIB_LOADER_FILE)).line + 1;
+}
+
+/** `loadLib("<包>")` 调用点 */
+interface LoadLibCall {
+  /** 包名；**首参不是字符串字面量时为 undefined** */
+  specifier?: string;
+  /** 源码行号 */
+  line: number;
+}
+
+/** `requireCapability(caps, "<能力>", "<包>")` 调用点 */
+interface CapabilityGate {
+  /** 能力名；**不是字符串字面量时为 undefined** */
+  capability?: string;
+  /** 关联包名；**不是字符串字面量时为 undefined** */
+  package?: string;
+  /** 源码行号 */
+  line: number;
+  /** 所属函数节点 */
+  fn?: ts.Node;
+}
+
+/**
+ * 抽取 lib-loader 里所有 `loadLib(...)` 调用点。
+ * @returns 调用点（按出现顺序）
+ */
+function loadLibCalls(): LoadLibCall[] {
+  const calls: LoadLibCall[] = [];
+  walk(LIB_LOADER_FILE, (node) => {
+    if (!ts.isCallExpression(node)) return;
+    if (!ts.isIdentifier(node.expression) || node.expression.text !== "loadLib") return;
+    calls.push({ specifier: literalText(node.arguments[0]), line: lineOf(node) });
+  });
+  return calls;
+}
+
+/**
+ * 抽取 lib-loader 里所有 `requireCapability(...)` 调用点（函数自身声明不算）。
+ * @returns 调用点（按出现顺序）
+ */
+function capabilityGates(): CapabilityGate[] {
+  const gates: CapabilityGate[] = [];
+  walk(LIB_LOADER_FILE, (node) => {
+    if (!ts.isCallExpression(node)) return;
+    if (!ts.isIdentifier(node.expression) || node.expression.text !== "requireCapability") return;
+    gates.push({
+      capability: literalText(node.arguments[1]),
+      package: literalText(node.arguments[2]),
+      line: lineOf(node),
+      fn: enclosingFunction(node),
+    });
+  });
+  return gates;
+}
+
+/**
+ * 所有 `loadLib("<包>")` 的包名。
+ * @returns 包名（去重、按出现顺序）
  */
 function loadLibPackages(): string[] {
-  const found = [...LIB_LOADER_SOURCE.matchAll(/\bloadLib\("([^"]+)"\)/g)].map((m) => m[1]);
+  const found = loadLibCalls()
+    .map((call) => call.specifier)
+    .filter((specifier): specifier is string => specifier !== undefined);
   return [...new Set(found)];
 }
 
@@ -166,8 +285,66 @@ function adapterDirs(): string[] {
 }
 
 describe("能力 → 包 映射与 lib-loader 保持同步", () => {
+  it("抽取逻辑本身有效：解析到了 loadLib 与 requireCapability 调用点（防止静默抽空）", () => {
+    expect(loadLibCalls().length, "一个 loadLib 调用点都没解析到").toBeGreaterThan(0);
+    expect(capabilityGates().length, "一个 requireCapability 调用点都没解析到").toBeGreaterThan(0);
+  });
+
+  it("能力门的两个参数都是字符串字面量（变量会让映射表失去核对依据）", () => {
+    const offenders = capabilityGates().filter(
+      (gate) => gate.capability === undefined || gate.package === undefined,
+    );
+    expect(
+      offenders.map((gate) => `第 ${gate.line} 行`),
+      "以下 requireCapability 调用的能力名或包名不是字符串字面量，映射表将无法与源码核对",
+    ).toEqual([]);
+  });
+
   it("能力门控清单与 requireCapability 调用点一致", () => {
-    expect(Object.keys(CAPABILITY_PACKAGES).sort()).toEqual(gatedCapabilities().sort());
+    const gated = [...new Set(capabilityGates().map((gate) => gate.capability))].filter(
+      (capability): capability is string => capability !== undefined,
+    );
+    expect(Object.keys(CAPABILITY_PACKAGES).sort()).toEqual(gated.sort());
+  });
+
+  it("映射表里的包与该能力在 requireCapability 里声明的包一致（比对 (能力, 包) 对，不只是能力名）", () => {
+    const mismatched = capabilityGates()
+      .filter(
+        (gate): gate is CapabilityGate & { capability: string; package: string } =>
+          gate.capability !== undefined && gate.package !== undefined,
+      )
+      .filter((gate) => !(CAPABILITY_PACKAGES[gate.capability] ?? []).includes(gate.package))
+      .map(
+        (gate) =>
+          `第 ${gate.line} 行 requireCapability(caps, "${gate.capability}", "${gate.package}")` +
+          ` —— CAPABILITY_PACKAGES["${gate.capability}"] = [${(CAPABILITY_PACKAGES[gate.capability] ?? []).join(", ")}]`,
+      );
+    expect(
+      mismatched,
+      `以下能力门声明的包没在映射表里，适配器会按错误的包名声明依赖：\n  ${mismatched.join("\n  ")}`,
+    ).toEqual([]);
+  });
+
+  it("每个能力门所在函数内确实 loadLib 了它声明的那个包（防止门控参数与实际加载脱节）", () => {
+    const problems: string[] = [];
+    for (const gate of capabilityGates()) {
+      if (gate.capability === undefined || gate.package === undefined || gate.fn === undefined) {
+        continue;
+      }
+      const loadedInFn = new Set<string>();
+      walk(gate.fn, (node) => {
+        if (!ts.isCallExpression(node)) return;
+        if (!ts.isIdentifier(node.expression) || node.expression.text !== "loadLib") return;
+        const specifier = literalText(node.arguments[0]);
+        if (specifier !== undefined) loadedInFn.add(specifier);
+      });
+      if (!loadedInFn.has(gate.package)) {
+        problems.push(
+          `第 ${gate.line} 行声明了 "${gate.package}"，但同函数内只加载了 [${[...loadedInFn].join(", ")}]`,
+        );
+      }
+    }
+    expect(problems, `以下能力门的包名与实际加载不一致：\n  ${problems.join("\n  ")}`).toEqual([]);
   });
 
   it("映射里的包都在 loadLib 调用点里（避免指向一个根本不加载的包）", () => {

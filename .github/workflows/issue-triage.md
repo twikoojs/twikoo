@@ -56,6 +56,18 @@ engine:
     COPILOT_PROVIDER_TYPE: openai
     COPILOT_PROVIDER_WIRE_API: completions
 
+# 自建端点上的模型不在 models.dev 定价目录里，而 AWF 的 api-proxy 要用定价做
+# AI Credits 成本记账 —— 没有费率时会直接以 400 拒绝请求：
+#   Model "flash" has no AI credits pricing and no default pricing is configured.
+# 所以必须给一个兜底费率。单位是**每 token 美元**，且必须写普通小数 ——
+# 编译器会把 "1e-07" 这类科学计数法字符串解析成 0 并报错（input must be a positive value）。
+# 0.0000001 = $0.10/百万 token，0.0000004 = $0.40/百万 token。
+# 下面按 Flash 档位估的占位值，请按你端点的实际账单调整。
+models:
+  default-ai-credits-pricing:
+    input: 0.0000001
+    output: 0.0000004
+
 tools:
   github:
     # 公开仓库默认自动应用 min-integrity: approved，会把外部贡献者（CONTRIBUTOR /

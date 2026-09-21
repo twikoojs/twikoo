@@ -21,9 +21,17 @@ import { formatFor, lintFor, loadConfig } from "autocorrect-node";
 /** 仓库根（本文件位于 scripts/） */
 const ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)), "..");
 
-/** 不进入的目录：构建产物、依赖、本地数据 */
+/**
+ * 不进入的目录名：构建产物、依赖、本地数据。
+ *
+ * **所有「点开头」的目录默认跳过**（`.git` / `.vitepress` / `.workbuddy-ai` …），见
+ * {@link collectMarkdown} —— 它们要么是 VCS 与工具的内部目录，要么是 Agent 在本地的状态
+ * 目录，都不是仓库内容，也不该让本地 `pnpm lint:md` 变红。因此本清单只列**非点开头**的
+ * 目录，需要跳过某个点目录时不必加在这里。
+ *
+ * 唯一的例外见 {@link DOT_DIRS_ALLOWED}。
+ */
 const SKIP_DIRS = new Set([
-  ".git",
   "node_modules",
   "dist",
   "cache",
@@ -31,8 +39,19 @@ const SKIP_DIRS = new Set([
   "build",
   "pack-test",
   "data",
-  ".vendor",
 ]);
+
+/**
+ * 「点开头目录一律跳过」的例外白名单。
+ *
+ * `.github/` 虽然也是点开头，但它是**受版本控制、由人工维护的仓库内容**，它下面的 md
+ * 必须继续参与排版检查。具体到 `.github/workflows/issue-triage.md`：那个文件的前置步骤
+ * 里就写着「改完先跑 `pnpm format:md` 再 `gh aw compile`」——
+ * 若把它一起跳过，这条步骤会**静默失效**（改了排版没人发现，编译出的产物与源不一致）。
+ *
+ * 加新条目请先确认：该目录确实在 git 里、且里面的 md 是人工维护的文档。
+ */
+const DOT_DIRS_ALLOWED = new Set([".github"]);
 
 /** 是否 fix 模式（否则只检查） */
 const FIX = process.argv.includes("--fix");
@@ -48,6 +67,8 @@ function collectMarkdown(dir) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const full = join(dir, entry.name);
     if (entry.isDirectory()) {
+      // 点开头目录默认跳过（VCS / 工具内部 / Agent 本地状态），`.github` 例外，见上
+      if (entry.name.startsWith(".") && !DOT_DIRS_ALLOWED.has(entry.name)) continue;
       if (!SKIP_DIRS.has(entry.name)) out.push(...collectMarkdown(full));
     } else if (entry.name.endsWith(".md")) {
       out.push(full);

@@ -7,3 +7,6 @@ node_modules/
 
 # markdown 交给 AutoCorrect（见 .autocorrectrc + scripts/format-md.mjs）
 *.md
+
+# gh-aw 编译产物：生成物，prettier 重排会与源文件（.github/workflows/*.md）不一致
+.github/workflows/*.lock.yml

@@ -48,7 +48,8 @@ A **simple**, **safe**, **free** comment system.
 
 - E-mail (visitors and blogger)
 - WeChat (blogger only, via [Server 酱](https://sct.ftqq.com/r/13235), registration required)
-- QQ (blogger only, via [Qmsg 酱](https://qmsg.zendee.cn/) or [go-cqhttp](https://docs.go-cqhttp.org/), registration required)
+- QQ (blogger only, via [Qmsg 酱](https://qmsg.zendee.cn/), service registration required)
+- QQ (blogger only, via [go-cqhttp](https://docs.go-cqhttp.org/), self-hosting/configuring the bot and a QQ account required)
 - DingTalk, WeCom, Feishu, Telegram, Discord, Bark, PushDeer, WxPusher and more (blogger only, via [pushoo](https://twikoo.js.org/pushoo.html), registration required)
 
 ### Personalization

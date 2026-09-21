@@ -66,7 +66,7 @@ console.log(result);
 
 | 参数     | 必填 | 默认       | 说明                                                                                                                                                                                                                               |
 | -------- | ---- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 平台名称 | ✅   | 无         | 字符串，平台名称的缩写，支持：`webhook`、`qmsg`、`serverchan`、`pushplus`、`pushplushxtrip`、`dingtalk`、`wecom`、`bark`、`gocqhttp`、`atri`、`pushdeer`、`igot`、`telegram`、`feishu`、`lark`、`ifttt`、`wecombot`、`discord`, `wxpusher`                           |
+| 平台名称 | ✅   | 无         | 字符串，平台名称的缩写，支持：`webhook`、`qmsg`、`serverchan`、`pushplus`、`pushplushxtrip`、`dingtalk`、`wecom`、`bark`、`gocqhttp`、`onebot`、`atri`、`pushdeer`、`igot`、`telegram`、`feishu`、`lark`、`ifttt`、`wecombot`、`discord`、`wxpusher` |
 | token    | ✅   | 无         | 平台用户身份标识，通常情况下是一串数字和字母组合，详情和示例见下方详细说明                                                                                                                                                         |
 | title    |      | 内容第一行 | 可选，消息标题，如果推送平台不支持消息标题，则会拼接在正文首行                                                                                                                                                                     |
 | content  | ✅   | 无         | Markdown 格式的推送内容，如果推送平台不支持 Markdown，pushoo 会自动转换成支持的格式                                                                                                                                                |
@@ -255,6 +255,17 @@ go-cqhttp 是开源 QQ 机器人程序，免费，需自行搭建，插件十分
 4. 按照示例所示的 API 调用地址，填入 pushoo 的 token 中
 
 示例 token：`http://你的IP或域名:端口号/send_private_msg?user_id=QQ号&access_token=你配置的token`（QQ 号）或 `http://你的IP或域名:端口号/send_group_msg?group_id=群号&access_token=你配置的token`（QQ 群）
+
+### 💬 [OneBot](https://11.onebot.dev/) <sub>缩写：`onebot`</sub>
+
+OneBot 是 QQ 机器人应用层协议标准，NapCat、Lagrange、LLOneBot 等实现均支持，免费，需自行搭建。Twikoo 仅使用其正向 HTTP 通信，不做长连接。
+
+1. 部署一个 OneBot 11 实现（如 [NapCat](https://github.com/NapNeko/NapCatQQ)、[Lagrange.OneBot](https://github.com/LagrangeDev/Lagrange.Core)），启用 HTTP 服务端
+2. 按示例所示的 API 调用地址，填入 pushoo 的 token 中
+
+示例 token：`http://你的IP或域名:端口号/send_private_msg?user_id=QQ号`（QQ 号，鉴权 token 追加 `&access_token=你配置的token`）或 `http://你的IP或域名:端口号/send_group_msg?group_id=群号`（QQ 群）
+
+PS：`onebot` 与 `gocqhttp` 的 API 路径相同，但请求形态不同——本通道会把 token 里的 `user_id`、`group_id` 从 URL 移到 JSON 请求体中（`access_token` 仍留在 URL 上），而 `gocqhttp` 用表单编码的 `message` 体。若从 go-cqhttp 迁移，按上述格式重填 token 即可，接口文档见 [https://11.onebot.dev/](https://11.onebot.dev/)
 
 ### 💬 [atri](https://github.com/TIANLI0/push-bot-api/) <sub>缩写：`atri`</sub>
 

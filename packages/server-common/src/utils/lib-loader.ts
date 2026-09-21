@@ -45,6 +45,13 @@ export interface NodemailerLike {
      * @returns 发送结果
      */
     sendMail(mail: unknown): Promise<unknown>;
+    /**
+     * 校验传输器配置（1.x transporter.verify 语义）。
+     *
+     * 标注可选是因为只有 nodemailer 与 EO Makers 的 HTTP 垫片提供它，
+     * `services/notify.ts` 调用前做了存在性处理。
+     */
+    verify?(): Promise<unknown>;
   };
 }
 

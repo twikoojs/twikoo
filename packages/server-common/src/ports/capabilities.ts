@@ -2,9 +2,12 @@
  * 平台能力声明（规范第一层：Capability Flags）。
  *
  * 适配器启动时声明平台能力，公共库在加载第三方库前先查 capabilities：
- * 未声明的能力走降级路径或返回明确的用户友好错误（如 eo-makers 的
- * 「EdgeOne Makers 仅支持 SendGrid、MailChannels，或通过 SMTP_HOST 使用
- * Go SMTP Bridge」），绝不触发顶层 import。
+ * 未声明的能力走降级路径或返回明确的用户友好错误，绝不触发顶层 import。
+ *
+ * 能力受限但可用的平台应改走 `setCustomLibs` 覆写（覆写优先于能力门）：如 eo-makers
+ * 的 mail 为 `"restricted"`，它注入 HTTP 版 nodemailer，文案「EdgeOne Makers 仅支持
+ * SendGrid、MailChannels，或通过 SMTP_HOST 使用 Go SMTP Bridge」由该垫片抛出
+ * （见 `packages/server-edgeone-makers/src/mail`）。
  */
 
 /**

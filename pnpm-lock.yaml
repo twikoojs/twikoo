@@ -243,8 +243,8 @@ importers:
         version: link:../shared
     devDependencies:
       '@cloudbase/js-sdk':
-        specifier: ^3.9.4
-        version: 3.9.4
+        specifier: ^3.10.0
+        version: 3.10.0
       '@fortawesome/fontawesome-free':
         specifier: ^7.3.1
         version: 7.3.1
@@ -545,7 +545,7 @@ importers:
         version: 10.0.1
       jsdom:
         specifier: ^25.0.0 || ^26.0.0 || ^27.0.0 || ^28.0.0 || ^29.0.0 || ^30.0.0
-        version: 26.1.0(supports-color@10.2.2)
+        version: 25.0.1(supports-color@10.2.2)
       marked:
         specifier: ^18.0.4
         version: 18.0.13
@@ -1018,8 +1018,8 @@ packages:
   '@cloudbase/database@1.4.3':
     resolution: {integrity: sha512-JzmdsGjy9LwzSQQ0Fv4OlNHNK61BRXdJSembTpy4408AQA3q2Ip3N5eB3v9OpAlFMvP/6MGmOQ/ZuUPKfJddJA==}
 
-  '@cloudbase/js-sdk@3.9.4':
-    resolution: {integrity: sha512-y7sMdUACtamgE/8RCun4ewPYiecpStIVvq4I9RKW43NNzdP94JrPC8c9te8gmnH7L+FlTOrtTZ6y7ki3B3foQw==}
+  '@cloudbase/js-sdk@3.10.0':
+    resolution: {integrity: sha512-diwefp1ZTyyAXMatTkYCHBn9BJvb1ZqXS/CSaC2VSVRwlvBDYtb44FBB0EJ7+a1z1zuXOIasKei+If+REhUGeA==}
 
   '@cloudbase/node-sdk@3.18.3':
     resolution: {integrity: sha512-qluLOIyPhK8AWmUeS1Qt/S4cV/07pv/L79Cne8beFove775FL9Wi2tSsawZuwGUygIUySljqQaLPUl+lrJ4Leg==}
@@ -3078,7 +3078,6 @@ packages:
       canvas:
         optional: true
 
-
   json-bigint@1.0.0:
     resolution: {integrity: sha512-SiPv/8VpZuWbvLSMtTDU8hEfrZWg/mH/nV/b4o0CYbSxu1UIQPLdwKOCIyLQX+VIPO5vrLX3i8qtqFyhdPSUSQ==}
 
@@ -4391,7 +4390,7 @@ snapshots:
       lodash.set: 4.3.2
       lodash.unset: 4.5.2
 
-  '@cloudbase/js-sdk@3.9.4':
+  '@cloudbase/js-sdk@3.10.0':
     dependencies:
       '@cloudbase/adapter-interface': 0.7.1
       '@cloudbase/adapter-wx_mp': 1.3.1
@@ -6301,7 +6300,6 @@ snapshots:
       - bufferutil
       - supports-color
       - utf-8-validate
-
 
   json-bigint@1.0.0:
     dependencies:

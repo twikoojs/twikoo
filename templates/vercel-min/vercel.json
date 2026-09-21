@@ -1,3 +1,25 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "api/index" }]
+  "rewrites": [{ "source": "/(.*)", "destination": "api/index" }],
+  "functions": {
+    "api/index.js": {
+      "includeFiles": [
+        "node_modules/form-data/**",
+        "node_modules/axios/**",
+        "node_modules/nodemailer/**",
+        "node_modules/akismet-api/**",
+        "node_modules/html-to-text/**",
+        "node_modules/marked/**",
+        "node_modules/dompurify/**",
+        "node_modules/jsdom/**",
+        "node_modules/bowser/**",
+        "node_modules/xml2js/**",
+        "node_modules/mongodb/**",
+        "node_modules/@imaegoo/node-ip2region/**",
+        "node_modules/@xsai/generate-text/**",
+        "node_modules/@cap.js/server/**",
+        "node_modules/tencentcloud-sdk-nodejs-tms/**",
+        "node_modules/pushoo/**"
+      ]
+    }
+  }
 }

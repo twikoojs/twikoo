@@ -343,7 +343,7 @@ function createSettings(): SettingGroup[] {
           key: "S3_SECRET_ACCESS_KEY",
           desc: t("ADMIN_CONFIG_ITEM_S3_SECRET_ACCESS_KEY"),
           // 同上：打码示例值，避免下游仓库触发 secrets 误报（#793）
-          ph: `${EXAMPLE()}wJal******************************EKEY`,
+          ph: `${EXAMPLE()}wJal********************************EKEY`,
           value: "",
           secret: true,
           showIf: showS3,

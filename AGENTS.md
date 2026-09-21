@@ -130,7 +130,9 @@ flowchart LR
 
 - **Ports 注入**：`request` / `response` / `database` / `storage` / `mailer` / `notifier` / `postSubmit` / `capabilities`
 - **保持薄**：适配器只做「入口 + 适配器注入 + 平台载荷转换」，业务逻辑一律进 `@twikoojs/common`。
-- **依赖完整性**：重依赖在适配器 `dependencies` 中声明，按 capabilities 人工核对
+- **依赖完整性**：重依赖在适配器 `dependencies` 中声明（能力为 `true` ⇒ 关联包必须在 `dependencies` 里；
+  无能力门的包人人必备）。由 `packages/server-common/test/adapter-deps.test.ts` 自动断言，无需人工核对。
+  例外：用 `setCustomLibs` 注入自实现替代依赖的适配器，在 `OVERRIDE_SATISFIED` 里登记（该表有守卫用例）
 
 ## 代码规范
 

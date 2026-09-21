@@ -5,7 +5,8 @@ import type { Capabilities } from "../ports/capabilities";
  *
  * 三层机制（加载顺序即优先级）：
  * 1. **setCustomLibs 覆写**（最高优先，1.x lib.js 逃生舱范式——eo-makers 注入
- *    直通 DOMPurify 与精简 nodemailer 的既有用法，2.0 原样兼容）；
+ *    直通 DOMPurify、精简 nodemailer、以及 fs-free 的 ip2region 内存查询器，
+ *    2.0 原样兼容）；
  * 2. **能力门**：未声明对应 capability 时抛 {@link CapabilityError}
  *    （用户友好错误，绝不触发模块解析——受控平台如 EO Makers 由此走降级）；
  * 3. **动态 import**：运行时 `await import(specifier)`，specifier 取自 {@link LITERAL_LOADERS}
@@ -13,7 +14,12 @@ import type { Capabilities } from "../ports/capabilities";
  *    解析失败抛 {@link LibLoadError}（含包名与安装提示，要求）。
  *
  * 依赖安装契约：本包以 peerDependenciesMeta(optional) 声明接口约束，
- * 重依赖由声明对应能力的适配器自行安装（CI 依赖完整性检查见）。
+ * 重依赖由声明对应能力的适配器自行安装。完整性由 `test/adapter-deps.test.ts` 断言
+ * （「能力声明为 true ⇒ 关联包已声明」+「无能力门的包人人必备」）。
+ *
+ * 例外：适配器也可用第 1 层的 `setCustomLibs` 注入自实现来**替代**声明依赖，
+ * 此时能力仍然可用（覆写优先于能力门与动态加载，故不会去解析该包）。
+ * EO Makers 的 ip2region 即走这条路（库靠 `fs` 读 8.33 MB 的 db，而它的部署产物是 JS bundle）。
  *
  * **消费方约定：本模块一律静态导入，不要写 `await import("../utils/lib-loader")`。**
  * 它是「薄取用层」——自身没有任何第三方**静态**导入（上面第 3 层的重依赖全在
@@ -164,18 +170,26 @@ export interface MarkedLike {
   parse(markdown: string): string;
 }
 
-/** IP 属地库使用面（@imaegoo/node-ip2region） */
+/**
+ * IP 属地库使用面（`@imaegoo/node-ip2region` 的真实形态）。
+ *
+ * 该库导出的是 `create()` **工厂**（不是可直接 `new` 的构造器），实例方法为
+ * `binarySearchSync`（走 `fs` 随机读 db）。消费方见 `services/comment-dto.ts` 的
+ * `getIpRegionSearcher`；`customLibs` 覆写项也必须满足本接口，EO Makers 的
+ * fs-free 内存查询器即按此形态注入。
+ */
 export interface Ip2RegionLike {
   /**
    * @returns 查询器实例
    */
-  new (): {
+  create(): {
     /**
-     * 查询 IP 属地
-     * @param ip IP 地址
-     * @returns 属地信息（省份/城市）
+     * 二分查找 IP 属地
+     * @param ip IPv4 地址
+     * @returns city 数字码与 region 管道分隔串（如 `中国|0|广东省|深圳市|电信`）；
+     * **未命中时为 null**（库在 `dataPos === 0` 时返回 null，IP 非法时抛异常）
      */
-    search(ip: string): unknown;
+    binarySearchSync(ip: string): { city: number; region: string } | null;
   };
 }
 
@@ -191,6 +205,13 @@ export interface CustomLibs {
   DOMPurify?: DOMPurifyLike;
   /** 自定义 nodemailer（eo-makers 精简邮件形态） */
   nodemailer?: NodemailerLike;
+  /**
+   * 自定义 ip2region 查询器（eo-makers 的 fs-free 内存查询器注入形态）。
+   *
+   * 键按包名取（与「其余覆写项按包名索键」的约定一致）——覆写的是**加载来源**，
+   * 不是能力开关：是否查询 IP 属地仍由 `capabilities.ip2region` 决定。
+   */
+  "@imaegoo/node-ip2region"?: Ip2RegionLike;
   /** 其余覆写项按包名索键 */
   [key: string]: unknown;
 }
@@ -395,11 +416,14 @@ export async function getDomPurify(caps: Capabilities): Promise<DOMPurifyLike> {
 }
 
 /**
- * 获取 IP 属地查询器（ip2region 能力，体积大故外部化）。
+ * 获取 IP 属地查询器（ip2region 能力，体积大故外部化；覆写优先——
+ * eo-makers 以 fs-free 内存查询器注入，绕过 8.33 MB 的 `fs` 版 db）。
  * @param caps 平台能力声明
  * @returns 查询器构造器
  */
 export async function getIpToRegion(caps: Capabilities): Promise<Ip2RegionLike> {
+  const override = customLibs["@imaegoo/node-ip2region"];
+  if (override) return override;
   requireCapability(caps, "ip2region", "@imaegoo/node-ip2region");
   return pickDefault(await loadLib("@imaegoo/node-ip2region")) as Ip2RegionLike;
 }

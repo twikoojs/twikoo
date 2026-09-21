@@ -108,6 +108,7 @@ export { validateClientFields } from "./utils/validate";
 export type {
   NodemailerLike,
   DOMPurifyLike,
+  Ip2RegionLike,
   AxiosLike,
   CustomLibs,
   LibImporter,

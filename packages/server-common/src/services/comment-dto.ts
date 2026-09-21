@@ -64,7 +64,7 @@ export interface CommentDto {
 }
 
 /** IP 属地查询器实例缓存（进程级，1.x ipRegionSearcher 语义） */
-let ipRegionSearcher: { binarySearchSync(ip: string): { region: string } } | null = null;
+let ipRegionSearcher: { binarySearchSync(ip: string): { region: string } | null } | null = null;
 
 /**
  * 获取（并缓存）IP 属地查询器。
@@ -75,11 +75,7 @@ async function getIpRegionSearcher(caps: Capabilities) {
   if (!ipRegionSearcher) {
     if (caps.ip2region !== true) return null;
     const IpToRegion = await getIpToRegion(caps);
-    ipRegionSearcher = (
-      IpToRegion as unknown as {
-        create(): { binarySearchSync(ip: string): { region: string } };
-      }
-    ).create();
+    ipRegionSearcher = IpToRegion.create();
   }
   return ipRegionSearcher;
 }
@@ -192,8 +188,10 @@ export async function getIpRegion(
     if (!searcher) return "";
     // 将 IPv6 格式的 IPv4 地址转换为 IPv4 格式；去掉端口号（1.x 对齐）
     const normalized = ip.replace(/^::ffff:/, "").replace(/:[0-9]*$/, "");
-    const { region } = searcher.binarySearchSync(normalized);
-    const [country, , province, city, isp] = region.split("|");
+    const result = searcher.binarySearchSync(normalized);
+    // 未命中（库在 dataPos === 0 时返回 null）：属地为空
+    if (!result) return "";
+    const [country, , province, city, isp] = result.region.split("|");
     const area = province.trim() && province !== "0" ? province : country;
     if (detail) {
       return area === city ? [city, isp].join(" ") : [area, city, isp].join(" ");

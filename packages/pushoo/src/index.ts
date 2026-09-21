@@ -139,7 +139,7 @@ async function sendRequest(
   const text = await response.text();
   let data: any = text;
   try {
-    data = text ? JSON.parse(text) : {};
+    data = text ? JSON.parse(text) : text;
   } catch {
     // 非 JSON 响应保持文本形态（与 axios 的 response.data 一致）
   }

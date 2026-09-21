@@ -384,6 +384,34 @@ describe("COUNTER_GET / GET_COMMENTS_COUNT / GET_RECENT_COMMENTS", () => {
     expect(data.map((d) => d.nick)).toEqual(["丙", "甲"]);
     expect(typeof data[0].commentText).toBe("string");
   });
+
+  it("recent：includeReply 时剔除「父评论未通过审核」的回复", async () => {
+    setLibImporter(async (specifier) => {
+      expect(specifier).toBe("html-to-text");
+      return {
+        /**
+         *
+         */
+        compile: () => (html: string) => html.replace(/<[^>]+>/g, ""),
+      };
+    });
+    // 待审核的主楼（MANUAL_REVIEW 下即 isSpam: true）+ 博主对它的回复
+    const pending = await seed({ nick: "待审核", created: 1000, isSpam: true });
+    await seed({ nick: "博主回复待审核", rid: pending, created: 2000 });
+    // 正常主楼 + 对它的回复（应保留）
+    const normal = await seed({ nick: "正常", created: 3000 });
+    await seed({ nick: "回复正常", rid: normal, created: 4000 });
+
+    const withReply = await post({ event: "GET_RECENT_COMMENTS", includeReply: true });
+    const nicks = (withReply.body.data as Array<{ nick: string }>).map((d) => d.nick);
+    expect(nicks).toContain("回复正常");
+    expect(nicks).not.toContain("博主回复待审核");
+
+    // 不含回复时行为不变：只剩两条主楼（待审核的本来就被 isSpam 过滤掉）
+    const withoutReply = await post({ event: "GET_RECENT_COMMENTS" });
+    const topNicks = (withoutReply.body.data as Array<{ nick: string }>).map((d) => d.nick);
+    expect(topNicks).toEqual(["正常"]);
+  });
 });
 
 describe("SET_PASSWORD / GET_PASSWORD_STATUS / LOGIN", () => {

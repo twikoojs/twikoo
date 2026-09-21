@@ -6,7 +6,7 @@
  * 不使用本文件——它们分别用 mongodb-memory-server / 临时目录 Loki /
  * 共享契约 runner。
  */
-import { ABSENT, GT, NOT } from "../../src/ports/database";
+import { ABSENT, GT, LT, NOT } from "../../src/ports/database";
 import type { QueryOptions } from "../../src/ports/database";
 import type {
   Capabilities,
@@ -154,6 +154,9 @@ function matches(doc: CommentDoc, query: SemanticQuery): boolean {
   return Object.entries(query).every(([key, expected]) => {
     const actual = doc[key];
     if (expected === ABSENT) return actual === undefined || actual === "" || actual === null;
+    // 数组值 = 「属于集合之一」（与 mongo/loki/blobkv/cloudbase 四套实现一致；
+    // 缺这一支会让 { _id: [id] } 之类的查询在本替身上恒为 false，测试假绿/假红）
+    if (Array.isArray(expected)) return (expected as unknown[]).includes(actual);
     if (typeof expected === "object" && expected !== null && "$in" in expected) {
       // Mongo $in 语义：null 在列表中同时命中字段缺失
       const list = (expected as { $in: unknown[] }).$in;
@@ -164,6 +167,10 @@ function matches(doc: CommentDoc, query: SemanticQuery): boolean {
     }
     if (typeof expected === "object" && expected !== null && GT in expected) {
       return typeof actual === "number" && actual > ((expected as { [GT]?: number })[GT] as number);
+    }
+    // 「小于」：流式分页游标（与四套实现一致，同样不能缺）
+    if (typeof expected === "object" && expected !== null && LT in expected) {
+      return typeof actual === "number" && actual < ((expected as { [LT]?: number })[LT] as number);
     }
     return actual === expected;
   });

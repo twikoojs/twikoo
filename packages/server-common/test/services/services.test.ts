@@ -579,5 +579,8 @@ describe("IP 属地（services/comment-dto）", () => {
     // 空 IP 直接返回空串（不查库）
     expect(await getIpRegion(caps, undefined)).toBe("");
     expect(await getIpRegion(caps, "")).toBe("");
+    // 本地回环地址（::1 / 127.0.0.1）无法查询属地，直接返回空（#581）
+    expect(await getIpRegion(caps, "::1")).toBe("");
+    expect(await getIpRegion(caps, "127.0.0.1")).toBe("");
   });
 });

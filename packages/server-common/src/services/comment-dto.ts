@@ -183,6 +183,9 @@ export async function getIpRegion(
   detail = false,
 ): Promise<string> {
   if (!ip) return "";
+  // 本地回环地址（::1 / 127.0.0.1）无法查询属地，直接返回空（#581）
+  // 必须在 normalize 之前判断，因为 normalize 的正则会破坏 ::1
+  if (ip === "::1" || ip === "127.0.0.1") return "";
   try {
     const searcher = await getIpRegionSearcher(caps);
     if (!searcher) return "";

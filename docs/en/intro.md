@@ -108,8 +108,6 @@ A **simple**, **safe**, **free** comment system.
 
 ## Quick Start
 
-[![Deploy](https://main.qcloudimg.com/raw/67f5a389f1ac6f3b4d04c7256438e44f.svg)](https://console.cloud.tencent.com/tcb/env/index?action=CreateAndDeployCloudBaseProject&appUrl=https%3A%2F%2Fgithub.com%2Fimaegoo%2Ftwikoo&branch=main)
-
 [View Details](https://twikoo.js.org/quick-start.html)
 
 If you want to get updates, make suggestions and participate in the test, welcome to join the discussion group: 1080829142 (QQ)  

@@ -209,8 +209,8 @@ importers:
         specifier: ^11.2.0
         version: 11.2.0(supports-color@10.2.2)
       prettier:
-        specifier: ^3.9.7
-        version: 3.9.7
+        specifier: ^3.9.8
+        version: 3.9.8
       tsdown:
         specifier: ^0.23.0
         version: 0.23.0(@tsdown/exe@0.23.0)(typescript@6.0.3)
@@ -545,7 +545,7 @@ importers:
         version: 10.0.1
       jsdom:
         specifier: ^25.0.0 || ^26.0.0 || ^27.0.0 || ^28.0.0 || ^29.0.0 || ^30.0.0
-        version: 26.1.0(supports-color@10.2.2)
+        version: 25.0.1(supports-color@10.2.2)
       marked:
         specifier: ^18.0.4
         version: 18.0.13
@@ -3078,7 +3078,6 @@ packages:
       canvas:
         optional: true
 
-
   json-bigint@1.0.0:
     resolution: {integrity: sha512-SiPv/8VpZuWbvLSMtTDU8hEfrZWg/mH/nV/b4o0CYbSxu1UIQPLdwKOCIyLQX+VIPO5vrLX3i8qtqFyhdPSUSQ==}
 
@@ -3533,8 +3532,8 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  prettier@3.9.7:
-    resolution: {integrity: sha512-T3mF5P7HFzZVLDQuCUNtJj6WK1pcpLMweMNUVwGb01bLNkH9AkKxtZvmInw8K6bnn2O3d6/5RHl6zSHiBAD0Og==}
+  prettier@3.9.8:
+    resolution: {integrity: sha512-WRFq3Wn3WId7LLROfMLdH7xaFr2jR62wU8nLO6rQUOLOxNZUviyJQs1M0iIhLexSFy+L+w0ch66wtoO2jRjG0A==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -6302,7 +6301,6 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-
   json-bigint@1.0.0:
     dependencies:
       bignumber.js: 9.3.1
@@ -6716,7 +6714,7 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier@3.9.7: {}
+  prettier@3.9.8: {}
 
   prismjs@1.30.0: {}
 

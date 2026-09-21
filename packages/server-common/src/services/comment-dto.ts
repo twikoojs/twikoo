@@ -387,10 +387,12 @@ export async function toCommentDto(
 ): Promise<CommentDto> {
   let displayOs = "";
   let displayBrowser = "";
-  if (config.SHOW_UA !== "false") {
+  // 空 UA 时跳过解析：bowser.getParser("") 会抛 "UserAgent parameter can't be empty"，
+  // 虽被 catch 兜住不影响展示，但会在后台持续刷错误日志（#729）
+  if (config.SHOW_UA !== "false" && comment.ua) {
     try {
       const bowser = await getBowser();
-      const ua = bowser.getParser(comment.ua ?? "");
+      const ua = bowser.getParser(comment.ua);
       const os = fixOS(ua as never);
       displayOs = [os.name, os.versionName ? os.versionName : os.version].join(" ");
       displayBrowser = [

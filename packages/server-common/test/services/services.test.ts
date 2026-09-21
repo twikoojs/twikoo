@@ -413,6 +413,30 @@ describe("评论 DTO（services/comment-dto）", () => {
     expect(dto2.os).toBe("");
   });
 
+  it("toCommentDto：空 UA 不调用 bowser.getParser（#729）", async () => {
+    let getParserCalled = false;
+    setLibImporter(async (specifier) => {
+      expect(specifier).toBe("bowser");
+      return {
+        default: {
+          /**
+           * 真实 bowser 对空串会抛 "UserAgent parameter can't be empty"，
+           * 这里用调用标记断言「空 UA 时压根不进入解析」
+           */
+          getParser: () => {
+            getParserCalled = true;
+            throw new Error("UserAgent parameter can't be empty");
+          },
+        },
+      };
+    });
+    const doc = { _id: "c2", nick: "n", ua: "", created: 6 };
+    const dto = await toCommentDto(doc, "u1", [], [doc], config, caps);
+    expect(getParserCalled).toBe(false);
+    expect(dto.os).toBe("");
+    expect(dto.browser).toBe("");
+  });
+
   it("parseComment：回复归组 + ruser 回填", async () => {
     const root = { _id: "r1", nick: "楼主", comment: "c", created: 1 };
     const reply = { _id: "r2", nick: "回复者", pid: "r1", rid: "r1", comment: "c2", created: 2 };

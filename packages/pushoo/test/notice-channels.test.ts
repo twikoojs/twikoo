@@ -78,6 +78,23 @@ const CHANNELS: Array<{
     urlContainsDecoded: ["正文内容"],
   },
   {
+    // bark：Bark 原生 query 参数透传（level / group / icon 等，空值不发送）
+    channel: "bark",
+    urlContains: "api.day.app/T0KEN/",
+    bodyContains: [],
+    payload: {
+      options: {
+        bark: {
+          level: "timeSensitive",
+          group: "Twikoo",
+          icon: "https://i.example/icon.png",
+          sound: "calypso",
+        },
+      },
+    },
+    urlContainsDecoded: ["level=timeSensitive", "group=Twikoo", "icon=https://i.example/icon.png"],
+  },
+  {
     // gocqhttp：token 为完整 HTTP 地址（1.x 语义）
     channel: "gocqhttp",
     urlContains: "https://gocq.test/send_private_msg",
@@ -175,6 +192,14 @@ describe("pushoo 渠道请求构造", () => {
   it("serverchan：sct 前缀 token 走 sctapi.ftqq.com（1.x 分流语义）", async () => {
     await notice("serverchan", { ...base, token: "SCT123ABC" } as never);
     expect(httpCalls[httpCalls.length - 1].url).toContain("sctapi.ftqq.com/SCT123ABC.send");
+  });
+
+  it("bark：未配置的可选参数不发送（url= 沿用 1.x 保留）", async () => {
+    await notice("bark", base as never);
+    const url = decodeURIComponent(httpCalls[httpCalls.length - 1].url);
+    expect(url).toContain("url=");
+    expect(url).not.toContain("level=");
+    expect(url).not.toContain("group=");
   });
 
   it("serverchain 与 serverchan 同端点（1.x 别名语义）", async () => {

@@ -23,6 +23,30 @@ export interface NoticeOptions {
      * url 用于点击通知后跳转的地址
      */
     url?: string;
+    /**
+     * 通知级别（active / timeSensitive / critical / passive）
+     */
+    level?: string;
+    /**
+     * 通知分组（同组通知在系统通知中心折叠展示）
+     */
+    group?: string;
+    /**
+     * 自定义图标地址
+     */
+    icon?: string;
+    /**
+     * 铃声名（Bark App 内置或自定义铃声）
+     */
+    sound?: string;
+    /**
+     * 角标数字
+     */
+    badge?: number | string;
+    /**
+     * 是否保存到通知历史（"1" 保存 / "0" 不保存）
+     */
+    isArchive?: "1" | "0";
   };
   /**
    * IFTTT通知方式的参数配置
@@ -479,9 +503,13 @@ async function noticeBark(options: CommonOptions) {
   if (!url.endsWith("/")) url += "/";
   const title = encodeURIComponent(options.title || getTitle(options.content));
   const content = encodeURIComponent(getTxt(options.content));
-  const params = new URLSearchParams({
-    url: options?.options?.bark?.url || "",
-  });
+  /** url 沿用 1.x：即使未配置也带上（行为基准）；其余可选参数有值才透传 */
+  const params = new URLSearchParams({ url: options?.options?.bark?.url || "" });
+  for (const [key, value] of Object.entries(options?.options?.bark ?? {})) {
+    if (key === "url") continue;
+    if (value === undefined || value === null || value === "") continue;
+    params.set(key, String(value));
+  }
   const response = await httpGet(`${url}${title}/${content}/`, { params });
   return response.data;
 }

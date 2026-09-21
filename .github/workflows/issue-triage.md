@@ -34,6 +34,11 @@ on:
   issues:
     types: [opened, reopened]
   reaction: eyes
+  # 允许**任何用户**开的 issue 触发分诊。默认值是 admin/maintainer/write —— 那意味着
+  # 外部贡献者（仓库权限 read）开的 issue 会在 pre_activation 门禁被静默跳过：整个 run
+  # 显示 success，但下游 job 全 skipped，issue 一个标签都拿不到。
+  # 社区分诊必须放开这一层；内容层面的防注入仍由 tools.github.min-integrity 负责。
+  roles: all
 
 permissions:
   contents: read

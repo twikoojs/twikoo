@@ -41,19 +41,19 @@ A simple, safe, free comment system.
 
 ### 简单
 
-- 免费搭建（使用云开发 / Vercel / 私有服务器作为评论后台）
-- 简单部署（支持云开发 / Vercel 一键部署）
+- 免费搭建（支持腾讯云 CloudBase、Vercel、Netlify、Hugging Face、Railway、Zeabur、Cloudflare Workers、AWS Lambda、EdgeOne Makers 等平台，也可使用私有服务器作为评论后台）
+- 简单部署（支持 Vercel 一键部署，各平台均有图文部署教程，另有 Docker 私有部署）
 
 ### 易用
 
-- 支持回复、点赞
+- 支持回复、点赞、点踩
 - 无需额外适配，支持搭配浅色主题与深色主题使用
 - 支持 API 调用，批量获取文章评论数、最新评论
 - 访客在昵称栏输入 QQ 号，会自动补全 QQ 昵称和 QQ 邮箱
 - 访客填写数字 QQ 邮箱，会使用 QQ 头像作为评论头像
 - 支持评论框粘贴图片（可禁用）
 - 支持插入图片（可禁用）
-- 支持去不图床、云开发图床
+- 支持云开发图床、去不图床、S.EE、兰空图床、PicList、EasyImage、Chevereto，以及 S3 兼容存储（Cloudflare R2 / MinIO 等）
 - 支持插入表情（可禁用）
 - 支持 Ctrl + Enter 快捷回复
 - 评论框内容实时保存草稿，刷新不会丢失
@@ -72,9 +72,10 @@ A simple, safe, free comment system.
 ### 即时
 
 - 支持邮件提醒（访客和博主）
-- 支持微信提醒（仅针对博主，基于 [Server 酱](https://sc.ftqq.com/3.version)，需自行注册）
+- 支持微信提醒（仅针对博主，基于 [Server 酱](https://sct.ftqq.com/r/13235)，需自行注册）
 - 支持 QQ 提醒（仅针对博主，基于 [Qmsg 酱](https://qmsg.zendee.cn/)，需自行注册）
-- 支持 QQ 提醒（针对博主 QQ 或者群，基于 [go-cqhttp](https://docs.go-cqhttp.org/)，需自己有服务器）
+- 支持 QQ 提醒（仅针对博主，基于 [go-cqhttp](https://docs.go-cqhttp.org/)，需自行搭建并配置机器人及 QQ 账号）
+- 支持钉钉、企业微信、飞书、Telegram、Discord、Bark、PushDeer、WxPusher 等渠道（仅针对博主，基于 [pushoo](https://twikoo.js.org/pushoo.html)，需自行注册）
 
 ### 个性
 

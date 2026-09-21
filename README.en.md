@@ -16,19 +16,19 @@ A **simple**, **safe**, **free** comment system.
 
 ### Simple
 
-- Free Build.(Using Tencent CloudBase as the commenting backend, each user enjoys 1 free standard basic version 1 resource package for a long time)
-- Simple Deployment.(Support one-click deployment, manual deployment, command deployment)
+- Free Build.(Support CloudBase, Vercel, Netlify, Hugging Face, Railway, Zeabur, Cloudflare Workers, AWS Lambda, EdgeOne Makers, or self-hosted as the commenting backend)
+- Simple Deployment.(Vercel one-click deployment, illustrated guides for every platform, plus Docker self-hosting)
 
 ### Easy to use
 
-- Support reply, like.
+- Support reply, like, dislike.
 - No additional adaptations, support with light theme and dark theme use.
 - Support API , batch get article comment count, latest comments.
 - Visitors entering QQ number in the nickname field will automatically complete the QQ nickname and QQ email.
 - Visitors fill in the digital QQ e-mail, will use the QQ avatar as the comment avatar.
 - Support the comment to paste pictures.(Can be disabled)
 - Support inserting pictures.(Can be disabled)
-- Support 7bu image bed, Tencent CloudBase image bed.
+- Support CloudBase, 7bu, S.EE, Lsky Pro, PicList, EasyImage, Chevereto image beds, and S3-compatible storage (R2 / MinIO, etc.)
 - Support inserting emoji.(Can be disabled)
 - Support Ctrl + Enter reply.
 - Comments are saved in draft in real time and will not be lost when refreshed.
@@ -46,9 +46,11 @@ A **simple**, **safe**, **free** comment system.
 
 ### notification
 
-- E-mail（Visitors and Blogger）
-- Wechat（only Blogger, [Server 酱](https://sc.ftqq.com/3.version)）
-- QQ（only Blogger, [Qmsg 酱](https://qmsg.zendee.cn/)）
+- E-mail (visitors and blogger)
+- WeChat (blogger only, via [Server 酱](https://sct.ftqq.com/r/13235), registration required)
+- QQ (blogger only, via [Qmsg 酱](https://qmsg.zendee.cn/), service registration required)
+- QQ (blogger only, via [go-cqhttp](https://docs.go-cqhttp.org/), self-hosting/configuring the bot and a QQ account required)
+- DingTalk, WeCom, Feishu, Telegram, Discord, Bark, PushDeer, WxPusher and more (blogger only, via [pushoo](https://twikoo.js.org/pushoo.html), registration required)
 
 ### Personalization
 
@@ -86,8 +88,6 @@ A **simple**, **safe**, **free** comment system.
 </details>
 
 ## Quick Start
-
-[![Deploy](https://main.qcloudimg.com/raw/67f5a389f1ac6f3b4d04c7256438e44f.svg)](https://console.cloud.tencent.com/tcb/env/index?action=CreateAndDeployCloudBaseProject&appUrl=https%3A%2F%2Fgithub.com%2Fimaegoo%2Ftwikoo&branch=main)
 
 [View Details](https://twikoo.js.org/quick-start.html)
 

@@ -145,6 +145,13 @@ const CHANNELS: Array<{
     bodyContains: ["正文内容"],
     payload: { token: "KEY1#DEV1" },
   },
+  {
+    // ntfy：token 为 topic 名（公共实例），自建实例可填完整 URL
+    channel: "ntfy",
+    urlContains: "ntfy.sh/T0PIC",
+    bodyContains: ["正文内容"],
+    payload: { token: "T0PIC" },
+  },
 ];
 
 describe("pushoo 渠道请求构造", () => {
@@ -192,6 +199,36 @@ describe("pushoo 渠道请求构造", () => {
     expect(call.url).toContain("https://my.test/hook?");
     expect(decodeURIComponent(call.url)).toContain("content=正文内容");
     expect(call.method).toBe("GET");
+  });
+
+  it("ntfy：自建实例填完整 URL，认证与优先级走请求头", async () => {
+    await notice("ntfy", {
+      ...base,
+      token: "https://ntfy.test/my-topic",
+      options: {
+        ntfy: { accessToken: "tk_test", priority: 5, tags: "warning", click: "https://blog.test" },
+      },
+    } as never);
+    const call = httpCalls[httpCalls.length - 1];
+    expect(call.url).toBe("https://ntfy.test/my-topic");
+    expect(call.headers).toMatchObject({
+      Authorization: "Bearer tk_test",
+      Priority: "5",
+      Tags: "warning",
+      Click: "https://blog.test",
+    });
+  });
+
+  it("ntfy：非 ASCII 标题按 RFC 2047 编码（HTTP 头部不接受 latin1 以外的字符）", async () => {
+    await notice("ntfy", { ...base, token: "T0PIC", title: "标题" } as never);
+    const headers = httpCalls[httpCalls.length - 1].headers as Record<string, string>;
+    expect(headers.Title).toBe(`=?UTF-8?B?${Buffer.from("标题", "utf8").toString("base64")}?=`);
+  });
+
+  it("ntfy：ASCII 标题原样写入 Title 头", async () => {
+    await notice("ntfy", { ...base, token: "T0PIC", title: "New comment" } as never);
+    const headers = httpCalls[httpCalls.length - 1].headers as Record<string, string>;
+    expect(headers.Title).toBe("New comment");
   });
 });
 

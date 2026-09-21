@@ -77,6 +77,27 @@ export interface NoticeOptions {
      */
     msgtype?: string;
   };
+  /**
+   * ntfy 通知方式的参数配置
+   */
+  ntfy?: {
+    /**
+     * 访问令牌（topic 受保护时使用，作为 Bearer 认证）
+     */
+    accessToken?: string;
+    /**
+     * 优先级，1-5 或 min/low/default/high/urgent
+     */
+    priority?: string | number;
+    /**
+     * 标签，逗号分隔
+     */
+    tags?: string;
+    /**
+     * 点击通知后跳转的地址
+     */
+    click?: string;
+  };
 }
 export interface CommonOptions {
   token: string;
@@ -110,6 +131,7 @@ export type ChannelType =
   | "wecombot"
   | "discord"
   | "wxpusher"
+  | "ntfy"
   | "join";
 
 function checkParameters(options: any, requires: string[] = []) {
@@ -755,6 +777,48 @@ async function noticeJoin(options: CommonOptions) {
   return response.data;
 }
 
+/**
+ * 头部值编码：HTTP 头部只接受 latin1，非 ASCII 值按 RFC 2047 编码（ntfy 支持该形式）
+ * @param value 原始头部值
+ * @returns 可写入头部的值
+ */
+function encodeHeaderValue(value: string): string {
+  if (/^[\x20-\x7e]*$/.test(value)) return value;
+  const bytes = new TextEncoder().encode(value);
+  let binary = "";
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+  const base64 =
+    typeof Buffer === "undefined" ? btoa(binary) : Buffer.from(bytes).toString("base64");
+  return `=?UTF-8?B?${base64}?=`;
+}
+
+/**
+ * ntfy 推送
+ * 文档: https://docs.ntfy.sh/publish/
+ * @param options 推送参数
+ * @returns 接口返回体
+ */
+async function noticeNtfy(options: CommonOptions) {
+  checkParameters(options, ["token", "content"]);
+  // token 支持 topic 名（公共实例）或完整 URL（自建实例）
+  const url = options.token.startsWith("http")
+    ? options.token
+    : `https://ntfy.sh/${options.token}`;
+  const ntfy = options.options?.ntfy;
+  const headers: Record<string, string> = {
+    "Content-Type": "text/plain; charset=utf-8",
+    Title: encodeHeaderValue(options.title || getTitle(options.content)),
+  };
+  if (ntfy?.priority !== undefined) headers.Priority = String(ntfy.priority);
+  if (ntfy?.tags) headers.Tags = ntfy.tags;
+  if (ntfy?.click) headers.Click = ntfy.click;
+  if (ntfy?.accessToken) headers.Authorization = `Bearer ${ntfy.accessToken}`;
+  const response = await httpPost(url, getTxt(options.content), { headers });
+  return response.data;
+}
+
 async function notice(channel: ChannelType | string, options: CommonOptions) {
   try {
     let data: any;
@@ -780,6 +844,7 @@ async function notice(channel: ChannelType | string, options: CommonOptions) {
       wecombot: noticeWecombot,
       discord: noticeDiscord,
       wxpusher: noticeWxPusher,
+      ntfy: noticeNtfy,
       join: noticeJoin,
     }[channel.toLowerCase()];
     if (noticeFn) {
@@ -831,5 +896,6 @@ export {
   noticeWecombot,
   noticeDiscord,
   noticeWxPusher,
+  noticeNtfy,
   noticeJoin,
 };

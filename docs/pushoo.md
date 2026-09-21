@@ -66,7 +66,7 @@ console.log(result);
 
 | 参数     | 必填 | 默认       | 说明                                                                                                                                                                                                                               |
 | -------- | ---- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 平台名称 | ✅   | 无         | 字符串，平台名称的缩写，支持：`webhook`、`qmsg`、`serverchan`、`pushplus`、`pushplushxtrip`、`dingtalk`、`wecom`、`bark`、`gocqhttp`、`onebot`、`atri`、`pushdeer`、`igot`、`telegram`、`feishu`、`lark`、`ifttt`、`wecombot`、`discord`、`wxpusher` |
+| 平台名称 | ✅   | 无         | 字符串，平台名称的缩写，支持：`webhook`、`qmsg`、`serverchan`、`pushplus`、`pushplushxtrip`、`dingtalk`、`wecom`、`bark`、`gocqhttp`、`onebot`、`atri`、`pushdeer`、`igot`、`telegram`、`feishu`、`lark`、`ifttt`、`wecombot`、`discord`、`wxpusher`、`ntfy` |
 | token    | ✅   | 无         | 平台用户身份标识，通常情况下是一串数字和字母组合，详情和示例见下方详细说明                                                                                                                                                         |
 | title    |      | 内容第一行 | 可选，消息标题，如果推送平台不支持消息标题，则会拼接在正文首行                                                                                                                                                                     |
 | content  | ✅   | 无         | Markdown 格式的推送内容，如果推送平台不支持 Markdown，pushoo 会自动转换成支持的格式                                                                                                                                                |
@@ -124,6 +124,27 @@ interface NoticeOptions {
      * 消息类型，目前支持 text、markdown。不设置，默认为 text。
      */
     msgtype?: string;
+  };
+  /**
+   * ntfy 通知方式的参数配置
+   */
+  ntfy?: {
+    /**
+     * 访问令牌（topic 受保护时使用，作为 Bearer 认证）
+     */
+    accessToken?: string;
+    /**
+     * 优先级，1-5 或 min/low/default/high/urgent
+     */
+    priority?: string | number;
+    /**
+     * 标签，逗号分隔
+     */
+    tags?: string;
+    /**
+     * 点击通知后跳转的地址
+     */
+    click?: string;
   };
 }
 ```
@@ -383,6 +404,17 @@ WxPusher 是一款微信推送平台，免费。
 <!-- TODO -->
 
 示例 token: `apiKey#deviceId`
+
+### 💬 [ntfy](https://ntfy.sh/) <sub>缩写：`ntfy`</sub>
+
+ntfy 是开源的通知推送服务，支持自建，提供 Android、iOS 客户端和浏览器通知，免费。
+
+1. 在 [ntfy.sh](https://ntfy.sh/) 或自建实例上确定一个 topic 名称（topic 名相当于密码，请勿使用易被猜到的名字）
+2. 把 topic 名称填入 pushoo 的 token 中；自建实例可直接填完整的发布地址
+
+示例 token：`my-topic`（公共实例，等价于 `https://ntfy.sh/my-topic`）或 `https://ntfy.example.com/my-topic`（自建实例）
+
+PS：topic 受保护（用户名密码或访问令牌）时，在 `options` 中设置 `ntfy.accessToken`，pushoo 会以 `Authorization: Bearer` 发送；此外还可用 `ntfy.priority`（1-5 或 `min`/`low`/`default`/`high`/`urgent`）、`ntfy.tags`、`ntfy.click` 设置优先级、标签与点击跳转地址
 
 ## 计划支持的推送平台
 

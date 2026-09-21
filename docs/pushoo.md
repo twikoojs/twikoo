@@ -234,7 +234,7 @@ PS：如果推送失败，日志中出现错误码 60020（not allow to access f
 
 - 进入「应用管理」 → 选择对应自建应用 → 「企业可信 IP」，填入服务器 IP
 - 排查入口：[接口调试工具](https://open.work.weixin.qq.com/devtool/query?e=60020)、[错误码 60020 说明](https://developer.work.weixin.qq.com/document/path/90475#错误码：60020)
-- 云函数等托管部署需查询平台提供的出口 IP（通常为固定网段），本机部署则为公网出口 IP
+- 只有具备稳定出口 IP 的部署才能直接配置可信 IP；其他平台需要配置固定出口（例如 NAT）或持续同步平台公布的完整 IP 网段，本机部署则为公网出口 IP
 
 ### 💬 [Bark](https://github.com/Finb/Bark) <sub>缩写：`bark`</sub>
 

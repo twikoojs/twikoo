@@ -452,3 +452,54 @@ describe("各适配器的重依赖声明完整性", () => {
     ).toEqual([]);
   });
 });
+
+describe("jsdom 必须钉在 CJS 安全版本", () => {
+  /**
+   * jsdom 26+ 的依赖树里有 ESM-only 的包（parse5@8、html-encoding-sniffer@5+ → @exodus/bytes），
+   * 在 Node <20.19（不支持 require(esm)）的平台上会直接 ERR_REQUIRE_ESM。
+   *
+   * 25.0.1 是最后一个 CJS 安全的 jsdom 大版本（parse5@7 双格式、html-encoding-sniffer@4 →
+   * whatwg-encoding@3 → iconv-lite，engines >=18）。
+   *
+   * 本测试强制所有声明 jsdom 的适配器把版本钉在 `~25.`，防止有人不小心把范围放宽到 26+
+   * 导致生产环境炸掉。如果将来 Node 运行时普遍支持 require(esm)（>=20.19 / >=22.12），
+   * 可以放宽到 `~27.` 或更高，但必须同步更新本测试的断言。
+   */
+  const JSDOM_PIN_REGEX = /^~25\./;
+
+  it("所有声明 jsdom 的适配器必须把版本钉在 ~25.x（CJS 安全）", () => {
+    const adapters = readdirSync(join(REPO_ROOT, "packages"))
+      .filter((d) => d.startsWith("server-") || d === "pkg" || d === "client")
+      .filter((d) => existsSync(join(REPO_ROOT, "packages", d, "package.json")));
+
+    const problems: string[] = [];
+    // 检查根目录
+    const rootPj = JSON.parse(readFileSync(join(REPO_ROOT, "package.json"), "utf8"));
+    const rootRange = rootPj.dependencies?.jsdom || rootPj.devDependencies?.jsdom;
+    if (rootRange && !JSDOM_PIN_REGEX.test(rootRange)) {
+      problems.push(`root: jsdom 范围 "${rootRange}" 不符合 ${JSDOM_PIN_REGEX}（必须钉在 ~25.x）`);
+    }
+    // 检查适配器
+    for (const dir of adapters) {
+      const pjPath = join(REPO_ROOT, "packages", dir, "package.json");
+      const pj = JSON.parse(readFileSync(pjPath, "utf8"));
+      const range = pj.dependencies?.jsdom || pj.devDependencies?.jsdom;
+      if (!range) continue; // 该包不声明 jsdom（如 EO 适配器 domPurify=false）
+      if (!JSDOM_PIN_REGEX.test(range)) {
+        problems.push(`${dir}: jsdom 范围 "${range}" 不符合 ${JSDOM_PIN_REGEX}（必须钉在 ~25.x）`);
+      }
+    }
+    expect(
+      problems,
+      `以下位置的 jsdom 范围不在 CJS 安全区间（parse5@8 / html-encoding-sniffer@5+ 为 ESM-only，\n` +
+        `在 Node <20.19 上 require 链会直接 ERR_REQUIRE_ESM）：\n  ${problems.join("\n  ")}`,
+    ).toEqual([]);
+  });
+
+  it("@twikoojs/common 的 optional peer 必须放行 ^25（否则适配器钉 25 会被 peer 冲突拖红）", () => {
+    const pj = JSON.parse(readFileSync(join(REPO_ROOT, "packages/server-common/package.json"), "utf8"));
+    const peer = pj.peerDependencies?.jsdom;
+    expect(peer, "common 必须声明 jsdom 为 optional peer").toBeDefined();
+    expect(peer, "common 的 jsdom peer 必须包含 ^25（否则适配器钉 ~25 会被 peer 冲突拖红）").toMatch(/\^25/);
+  });
+});

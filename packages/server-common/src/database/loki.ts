@@ -266,6 +266,13 @@ export class LokiDatabase implements Database {
     return doc ? stripLokiMeta<CounterDoc>(doc) : null;
   }
 
+  /** 计数：获取全部页面计数（导出用） */
+  async getAllCounters(): Promise<CounterDoc[]> {
+    return this.col("counter")
+      .find({})
+      .map((doc) => stripLokiMeta<CounterDoc>(doc));
+  }
+
   /** 计数：自增（存在则累加，不存在则创建；1.x incCounter L972-990 对齐） */
   async incCounter(url: string, title?: string): Promise<CounterDoc> {
     const counter = this.col("counter");

@@ -196,6 +196,22 @@ export function runDatabaseSemanticSuite(name: string, fixture: DbFixture): void
       }
     });
 
+    it("计数器：getAllCounters 返回全部页面计数（管理员导出用）", async () => {
+      const db = await fixture.create();
+      try {
+        expect(await db.getAllCounters()).toEqual([]);
+        await db.incCounter("/post/1", "第一篇文章");
+        await db.incCounter("/post/1");
+        await db.incCounter("/post/2", "第二篇文章");
+        const all = await db.getAllCounters();
+        expect(all).toHaveLength(2);
+        expect(all.find((c) => c.url === "/post/1")?.time).toBe(2);
+        expect(all.find((c) => c.url === "/post/2")?.title).toBe("第二篇文章");
+      } finally {
+        await fixture.dispose(db);
+      }
+    });
+
     it("配置：未初始化 null → 保存 → 读取往返；保存为合并语义（1.x writeConfig $set 对齐）", async () => {
       const db = await fixture.create();
       try {

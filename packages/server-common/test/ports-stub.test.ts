@@ -39,6 +39,9 @@ const echoComment = async (data: CommentDoc): Promise<CommentDoc> => data;
 /** 无页面计数 */
 const noCounter = async (): Promise<CounterDoc | null> => null;
 
+/** 空页面计数列表 */
+const noCounters = async (): Promise<CounterDoc[]> => [];
+
 /** 归零计数（incCounter 身份实现） */
 const emptyCounter = async (): Promise<CounterDoc> => ({ url: "", time: 0 });
 
@@ -84,6 +87,7 @@ const stubAdapters = {
     deleteComment: noop,
     bulkAddComments: noop,
     getCounter: noCounter,
+    getAllCounters: noCounters,
     incCounter: emptyCounter,
     getConfig: noConfig,
     saveConfig: noop,

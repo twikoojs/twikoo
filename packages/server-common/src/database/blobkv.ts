@@ -48,6 +48,12 @@ export interface BlobKvStoreLike {
    * @param key 键名
    */
   delete(key: string): Promise<void>;
+  /**
+   * 按键前缀列举（计数导出用；平台 SDK 的 list 已默认聚合同名前缀的全部页）
+   * @param options 选项（prefix 前缀过滤）
+   * @returns 匹配的键名列表
+   */
+  list(options?: { prefix?: string }): Promise<{ blobs: Array<{ key: string }> }>;
 }
 
 /** 评论整表键（1.x COMMENTS_KEY 对齐） */
@@ -55,6 +61,18 @@ const COMMENTS_KEY = "comments:all";
 
 /** 配置键（1.x 对齐） */
 const CONFIG_KEY = "config:main";
+
+/** 计数键前缀（1.x key 设计逐字对齐；导出按键前缀枚举） */
+const COUNTER_KEY_PREFIX = "counter:";
+
+/**
+ * 生成计数键（1.x `counter:${encodeURIComponent(url)}` 对齐）。
+ * @param url 页面路径
+ * @returns KV 键名
+ */
+function counterKey(url: string): string {
+  return `${COUNTER_KEY_PREFIX}${encodeURIComponent(url)}`;
+}
 
 /** 生成评论主键（1.x createBlobDatabase 的 uuid 去连字符对齐） */
 function newBlobCommentId(): string {
@@ -218,13 +236,22 @@ export class BlobKvDatabase implements Database {
 
   /** 计数：读取页面计数（缺失 key 返回 null，不抛错） */
   async getCounter(url: string): Promise<CounterDoc | null> {
-    const doc = await this.store.get(`counter:${encodeURIComponent(url)}`, { type: "json" });
+    const doc = await this.store.get(counterKey(url), { type: "json" });
     return (doc as CounterDoc) ?? null;
+  }
+
+  /** 计数：获取全部页面计数（按键前缀枚举后逐个取值；导出用） */
+  async getAllCounters(): Promise<CounterDoc[]> {
+    const { blobs } = await this.store.list({ prefix: COUNTER_KEY_PREFIX });
+    const docs = await Promise.all(
+      blobs.map((blob) => this.store.get(blob.key, { type: "json" }) as Promise<CounterDoc | null>),
+    );
+    return docs.filter((doc) => doc !== null && doc !== undefined);
   }
 
   /** 计数：自增（存在则累加，不存在创建；1.x incCounter 对齐） */
   async incCounter(url: string, title?: string): Promise<CounterDoc> {
-    const key = `counter:${encodeURIComponent(url)}`;
+    const key = counterKey(url);
     const existing = (await this.store.get(key, { type: "json" })) as CounterDoc | null;
     let doc: CounterDoc;
     if (existing) {

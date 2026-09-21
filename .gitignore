@@ -21,3 +21,6 @@ packages/demo/.vendor/
 data/
 
 docs/.vitepress/cache/
+
+.workbuddy/
+.workbuddy-ai/

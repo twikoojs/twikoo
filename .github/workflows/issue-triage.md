@@ -121,7 +121,11 @@ safe-outputs:
   # assign-to-agent:
   #   max: 1
 
-timeout-minutes: 10
+# 实测 agent 步骤耗时 4~10 分钟（取决于 issue 复杂度：需要翻代码 / 关联历史 issue 的
+# 会明显更久）。原先的 10 分钟卡在上限边缘，#1116 那次就撞上
+# 「The action 'Execute GitHub Copilot CLI' has timed out after 10 minutes」而整个 run 失败。
+# 放宽到 20 分钟；单次成本另有 maxAiCredits 护栏，不靠超时兜底。
+timeout-minutes: 20
 ---
 
 # Twikoo Issue 分诊助手

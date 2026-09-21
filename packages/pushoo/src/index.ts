@@ -106,6 +106,7 @@ export type ChannelType =
   | "igot"
   | "telegram"
   | "feishu"
+  | "lark"
   | "ifttt"
   | "wecombot"
   | "discord"
@@ -494,12 +495,15 @@ async function noticeTelegram(options: CommonOptions) {
 }
 
 /**
- * https://www.feishu.cn/hc/zh-CN/articles/360024984973
+ * 飞书 / Lark 机器人推送：两端点仅开放平台 base URL 不同，其余请求语义一致。
+ * @param baseUrl 开放平台 base URL
+ * @param options 推送参数
+ * @returns 接口返回体
  */
-async function noticeFeishu(options: CommonOptions) {
+async function noticeFeishuBot(baseUrl: string, options: CommonOptions) {
   checkParameters(options, ["token", "content"]);
-  const v1 = "https://open.feishu.cn/open-apis/bot/hook/";
-  const v2 = "https://open.feishu.cn/open-apis/bot/v2/hook/";
+  const v1 = `${baseUrl}/open-apis/bot/hook/`;
+  const v2 = `${baseUrl}/open-apis/bot/v2/hook/`;
   let url;
   let params;
   if (options.token.substring(0, 4).toLowerCase() === "http") {
@@ -524,6 +528,20 @@ async function noticeFeishu(options: CommonOptions) {
   }
   const response = await axios.post(url, params);
   return response.data;
+}
+
+/**
+ * https://www.feishu.cn/hc/zh-CN/articles/360024984973
+ */
+async function noticeFeishu(options: CommonOptions) {
+  return noticeFeishuBot("https://open.feishu.cn", options);
+}
+
+/**
+ * Lark（飞书国际版）：https://open.larksuite.com/
+ */
+async function noticeLark(options: CommonOptions) {
+  return noticeFeishuBot("https://open.larksuite.com", options);
 }
 
 /**
@@ -680,6 +698,7 @@ async function notice(channel: ChannelType | string, options: CommonOptions) {
       igot: noticeIgot,
       telegram: noticeTelegram,
       feishu: noticeFeishu,
+      lark: noticeLark,
       ifttt: noticeIfttt,
       wecombot: noticeWecombot,
       discord: noticeDiscord,
@@ -730,6 +749,7 @@ export {
   noticeIgot,
   noticeTelegram,
   noticeFeishu,
+  noticeLark,
   noticeIfttt,
   noticeWecombot,
   noticeDiscord,

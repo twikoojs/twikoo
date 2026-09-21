@@ -114,6 +114,8 @@
   "ADMIN_CONFIG_ITEM_SMTP_USER": "Tên đăng nhập hòm thư gửi thông báo.",
   "ADMIN_CONFIG_RESET": "Đặt lại",
   "ADMIN_CONFIG_SAVE": "Lưu",
+  "ADMIN_CONFIG_EXPORT": "Xuất cấu hình",
+  "ADMIN_CONFIG_IMPORT": "Nhập cấu hình",
   "ADMIN_CREDENTIALS": "File khóa riêng tư",
   "ADMIN_CREDENTIALS_FAQ": "Cách lấy khóa riêng tư",
   "ADMIN_CREDENTIALS_PLACEHOLDER": "Hãy dán nội dung file khóa riêng tư vào đây",

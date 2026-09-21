@@ -19,6 +19,8 @@ import {
   COMMENT_LIKE,
   COMMENT_SET_FOR_ADMIN,
   COMMENT_SUBMIT,
+  CONFIG_EXPORT_FOR_ADMIN,
+  CONFIG_IMPORT_FOR_ADMIN,
   COUNTER_GET,
   EMAIL_TEST,
   GET_COMMENTS_COUNT,
@@ -93,6 +95,10 @@ export async function dispatch(ctx: PipelineContext): Promise<TkResponseBody> {
       return runRegistered(ctx, COMMENT_IMPORT_FOR_ADMIN);
     case COMMENT_EXPORT_FOR_ADMIN:
       return runRegistered(ctx, COMMENT_EXPORT_FOR_ADMIN);
+    case CONFIG_EXPORT_FOR_ADMIN:
+      return runRegistered(ctx, CONFIG_EXPORT_FOR_ADMIN);
+    case CONFIG_IMPORT_FOR_ADMIN:
+      return runRegistered(ctx, CONFIG_IMPORT_FOR_ADMIN);
     case COMMENT_LIKE:
       return runRegistered(ctx, COMMENT_LIKE);
     case COMMENT_SUBMIT:

@@ -114,6 +114,8 @@
   "ADMIN_CONFIG_ITEM_SMTP_USER": "Электрон почта хабарномаси почта қутиси фойдаланувчи номи.",
   "ADMIN_CONFIG_RESET": "Ресет",
   "ADMIN_CONFIG_SAVE": "Сақлаш",
+  "ADMIN_CONFIG_EXPORT": "Sozlamalarni eksport qilish",
+  "ADMIN_CONFIG_IMPORT": "Sozlamalarni import qilish",
   "ADMIN_CREDENTIALS": "Shaxsiy kalit fayli",
   "ADMIN_CREDENTIALS_FAQ": "Shaxsiy kalitni qanday olish mumkin",
   "ADMIN_CREDENTIALS_PLACEHOLDER": "Iltimos, shaxsiy kalit faylining mazmunini joylashtiring",

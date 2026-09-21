@@ -114,6 +114,8 @@
   "ADMIN_CONFIG_ITEM_SMTP_USER": "邮件通知邮箱用户名。",
   "ADMIN_CONFIG_RESET": "重置",
   "ADMIN_CONFIG_SAVE": "保存",
+  "ADMIN_CONFIG_EXPORT": "导出配置",
+  "ADMIN_CONFIG_IMPORT": "导入配置",
   "ADMIN_CREDENTIALS": "私钥文件",
   "ADMIN_CREDENTIALS_FAQ": "如何获得私钥",
   "ADMIN_CREDENTIALS_PLACEHOLDER": "请粘贴私钥文件内容",

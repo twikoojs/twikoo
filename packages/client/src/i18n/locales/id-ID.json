@@ -114,6 +114,8 @@
   "ADMIN_CONFIG_ITEM_SMTP_USER": "Nama pengguna kotak email notifikasi.",
   "ADMIN_CONFIG_RESET": "Reset",
   "ADMIN_CONFIG_SAVE": "Simpan",
+  "ADMIN_CONFIG_EXPORT": "Ekspor Konfigurasi",
+  "ADMIN_CONFIG_IMPORT": "Impor Konfigurasi",
   "ADMIN_CREDENTIALS": "File kunci pribadi",
   "ADMIN_CREDENTIALS_FAQ": "Cara mendapatkan kunci pribadi",
   "ADMIN_CREDENTIALS_PLACEHOLDER": "Silakan tempel isi file kunci pribadi",

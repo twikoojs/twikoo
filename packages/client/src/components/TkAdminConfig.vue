@@ -86,6 +86,12 @@
         <TkButton size="small" type="info" @click="resetConfig">
           {{ t("ADMIN_CONFIG_RESET") }}
         </TkButton>
+        <TkButton size="small" type="success" @click="exportConfig">
+          {{ t("ADMIN_CONFIG_EXPORT") }}
+        </TkButton>
+        <TkButton size="small" type="warning" @click="importConfig">
+          {{ t("ADMIN_CONFIG_IMPORT") }}
+        </TkButton>
       </div>
     </form>
     <div class="tk-admin-config-message">{{ message }}</div>
@@ -809,6 +815,64 @@ async function testEmail(): Promise<void> {
   logger.info("邮件测试", res);
   emailTestResult.value = JSON.stringify(res);
   loading.value = false;
+}
+
+/** 导出配置 */
+async function exportConfig(): Promise<void> {
+  loading.value = true;
+  message.value = "正在导出配置";
+  try {
+    const res = await call(getAppState().tcb, "CONFIG_EXPORT_FOR_ADMIN", {});
+    if (res.code === 0 && res.config) {
+      const blob = new Blob([JSON.stringify(res.config, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `twikoo-config-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      message.value = "配置导出成功";
+    } else {
+      message.value = "配置导出失败";
+    }
+  } catch (e) {
+    logger.error("导出配置失败", e);
+    message.value = "导出配置失败";
+  }
+  loading.value = false;
+}
+
+/** 导入配置 */
+async function importConfig(): Promise<void> {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "application/json";
+  input.onchange = async () => {
+    const file = input.files?.[0];
+    if (!file) return;
+    const mode = confirm('点击"确定"覆盖现有配置，点击"取消"跳过已存在的配置项')
+      ? "overwrite"
+      : "skip";
+    loading.value = true;
+    message.value = `正在导入配置（${mode === "overwrite" ? "覆盖" : "跳过"}模式）`;
+    try {
+      const text = await file.text();
+      const config = JSON.parse(text);
+      const res = await call(getAppState().tcb, "CONFIG_IMPORT_FOR_ADMIN", { config, mode });
+      if (res.code === 0) {
+        message.value = "配置导入成功，正在刷新";
+        await readConfig();
+        busEmit(EVENT_CONFIG_UPDATED);
+      } else {
+        message.value = `配置导入失败：${res.message || "未知错误"}`;
+      }
+    } catch (e) {
+      logger.error("导入配置失败", e);
+      message.value = "导入配置失败：文件格式错误";
+    }
+    loading.value = false;
+  };
+  input.click();
 }
 
 onMounted(() => {

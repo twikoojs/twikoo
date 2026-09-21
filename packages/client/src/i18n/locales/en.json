@@ -114,6 +114,8 @@
   "ADMIN_CONFIG_ITEM_SMTP_USER": "Email notification mailbox username.",
   "ADMIN_CONFIG_RESET": "Reset",
   "ADMIN_CONFIG_SAVE": "Save",
+  "ADMIN_CONFIG_EXPORT": "Export Config",
+  "ADMIN_CONFIG_IMPORT": "Import Config",
   "ADMIN_CREDENTIALS": "Private key file",
   "ADMIN_CREDENTIALS_FAQ": "How to get the private key",
   "ADMIN_CREDENTIALS_PLACEHOLDER": "Please paste the contents of the private key file",

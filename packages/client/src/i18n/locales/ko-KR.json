@@ -114,6 +114,8 @@
   "ADMIN_CONFIG_ITEM_SMTP_USER": "선택한 이메일 알림 서비스 아이디",
   "ADMIN_CONFIG_RESET": "초기화",
   "ADMIN_CONFIG_SAVE": "저장",
+  "ADMIN_CONFIG_EXPORT": "설정 내보내기",
+  "ADMIN_CONFIG_IMPORT": "설정 가져오기",
   "ADMIN_CREDENTIALS": "개인 키 파일",
   "ADMIN_CREDENTIALS_FAQ": "개인 키 발급 방법",
   "ADMIN_CREDENTIALS_PLACEHOLDER": "개인 키 파일 내용을 붙여넣으세요",

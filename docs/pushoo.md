@@ -220,7 +220,7 @@ Push Plus Hxtrip 是中道（苏州）旅游网络科技有限公司提供的第
 4. 创建完成后进入应用详情页，可以得到应用 ID( `agentid` )，应用 Secret( `secret` )，复制<br>
    PS：获取应用 Secret 时，可能会将其推送到企业微信客户端，这时候微信里边是看不到的，需要在企业微信客户端里边才能看到
 5. 自 2022 年 6 月 20 日起，企业微信要求[自建应用配置可信 IP](https://work.weixin.qq.com/nl/act/p/32d807ad4c554975)，且可信 IP 不可公用。在企业微信管理后台进入第 4 步创建的应用详情页，找到「企业可信 IP」配置项，添加调用接口的服务器公网 IP。私有部署填服务器公网 IP 即可；Serverless 等出口 IP 不固定的部署方式可能无法通过校验<br>
-   PS：若推送失败，日志出现「不安全的访问 IP」或错误码 `60020`，即未配置可信 IP 所致，详见[官方错误码说明](https://developer.work.weixin.qq.com/document/path/90475#%E9%94%99%E8%AF%AF%E7%A0%81%EF%BC%9A60020)
+   PS：若推送失败，日志出现「不安全的访问 IP」或错误码 `60020`，表示当前出口 IP 不在可信 IP 列表中，原因可能是未配置、配置错误或配置已过期。详见[官方错误码说明](https://developer.work.weixin.qq.com/document/path/90475#%E9%94%99%E8%AF%AF%E7%A0%81%EF%BC%9A60020)
 6. 进入「[我的企业](https://work.weixin.qq.com/wework_admin/frame#profile)」页面，拉到最下边，可以看到企业 ID，复制
 7. 进入「我的企业」 → 「[微信插件](https://work.weixin.qq.com/wework_admin/frame#profile/wxPlugin)」，拉到下边扫描二维码，关注以后即可收到推送的消息
 8. 将第 4 步和第 6 步取得的 `企业ID#应用Secret#应用ID` 拼到一起，中间用“`#`”号分隔，填入 pushoo 的 token 中

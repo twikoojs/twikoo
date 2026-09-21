@@ -109,6 +109,12 @@ const CHANNELS: Array<{
     bodyContains: ["正文内容"],
   },
   {
+    // lark：与 feishu 同语义，仅开放平台 base URL 不同
+    channel: "lark",
+    urlContains: "open.larksuite.com/open-apis/bot/v2/hook/T0KEN",
+    bodyContains: ["正文内容"],
+  },
+  {
     // ifttt：token = eventName#key（1.x 分段语义）
     channel: "ifttt",
     urlContains: "maker.ifttt.com/trigger/EVT1/with/key/KEY1",

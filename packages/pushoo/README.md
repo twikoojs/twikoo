@@ -35,7 +35,7 @@ console.log(result);
 ```
 
 支持 `webhook`、`qmsg`、`serverchan`、`pushplus`、`dingtalk`、`wecom`、`bark`、`telegram`、
-`feishu`、`discord`、`wxpusher` 等 19 个平台，各平台的 token 获取方式见
+`feishu`、`lark`、`discord`、`wxpusher` 等 20 个平台，各平台的 token 获取方式见
 **<https://twikoo.js.org/pushoo.html>**。
 
 如果您是在 Twikoo 评论系统中使用，则无需自己调用，直接在 Twikoo 管理面板中配置平台名称和 token 即可。

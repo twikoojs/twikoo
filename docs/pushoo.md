@@ -66,7 +66,7 @@ console.log(result);
 
 | 参数     | 必填 | 默认       | 说明                                                                                                                                                                                                                               |
 | -------- | ---- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 平台名称 | ✅   | 无         | 字符串，平台名称的缩写，支持：`webhook`、`qmsg`、`serverchan`、`pushplus`、`pushplushxtrip`、`dingtalk`、`wecom`、`bark`、`gocqhttp`、`atri`、`pushdeer`、`igot`、`telegram`、`feishu`、`ifttt`、`wecombot`、`discord`, `wxpusher` |
+| 平台名称 | ✅   | 无         | 字符串，平台名称的缩写，支持：`webhook`、`qmsg`、`serverchan`、`pushplus`、`pushplushxtrip`、`dingtalk`、`wecom`、`bark`、`gocqhttp`、`atri`、`pushdeer`、`igot`、`telegram`、`feishu`、`lark`、`ifttt`、`wecombot`、`discord`, `wxpusher`                           |
 | token    | ✅   | 无         | 平台用户身份标识，通常情况下是一串数字和字母组合，详情和示例见下方详细说明                                                                                                                                                         |
 | title    |      | 内容第一行 | 可选，消息标题，如果推送平台不支持消息标题，则会拼接在正文首行                                                                                                                                                                     |
 | content  | ✅   | 无         | Markdown 格式的推送内容，如果推送平台不支持 Markdown，pushoo 会自动转换成支持的格式                                                                                                                                                |
@@ -299,6 +299,17 @@ Telegram 是自由的聊天工具，支持机器人 API，免费，中国大陆�
 2. 复制机器人的 Webhook，填入 pushoo 的 token 中
 
 示例 token：`https://open.feishu.cn/open-apis/bot/v2/hook/393df85f-7b2c-4ff6-bd4f-*******3ed54`（完整的 Webhook）或者 `393df85f-7b2c-4ff6-bd4f-*******3ed54`（只保留 access token）
+
+### 💬 [Lark](https://open.larksuite.com/) <sub>缩写：`lark`</sub>
+
+Lark 是飞书的国际版，机器人配置方式与飞书相同，`lark` 通道会把 Webhook 指向 `open.larksuite.com`。
+
+1. 在 Lark 群组中添加自定义机器人，复制机器人的 Webhook
+2. 将 Webhook 或其中的 access token 填入 pushoo 的 token 中
+
+示例 token：`https://open.larksuite.com/open-apis/bot/v2/hook/393df85f-7b2c-4ff6-bd4f-*******3ed54`（完整的 Webhook）或者 `393df85f-7b2c-4ff6-bd4f-*******3ed54`（只保留 access token）
+
+PS：两个开放平台的 API 是互通的，已经填了完整 Webhook 的场景用 `feishu` 也能发出，`lark` 主要用于只持有 access token、需要拼接国际版域名的情况
 
 ### 💬 [IFTTT](https://ifttt.com/maker_webhooks) <sub>缩写：`ifttt`</sub>
 

@@ -184,13 +184,15 @@ export async function getIpRegion(
 ): Promise<string> {
   if (!ip) return "";
   // 本地回环地址（::1 / 127.0.0.1）无法查询属地，直接返回空（#581）
-  // 必须在 normalize 之前判断，因为 normalize 的正则会破坏 ::1
+  // 必须在 normalize 之前判断裸地址，因为 normalize 的正则会破坏 ::1
   if (ip === "::1" || ip === "127.0.0.1") return "";
   try {
     const searcher = await getIpRegionSearcher(caps);
     if (!searcher) return "";
     // 将 IPv6 格式的 IPv4 地址转换为 IPv4 格式；去掉端口号（1.x 对齐）
     const normalized = ip.replace(/^::ffff:/, "").replace(/:[0-9]*$/, "");
+    // normalize 后再次判断回环地址（处理带端口的情况，如 127.0.0.1:8080）
+    if (normalized === "::1" || normalized === "127.0.0.1") return "";
     const result = searcher.binarySearchSync(normalized);
     // 未命中（库在 dataPos === 0 时返回 null）：属地为空
     if (!result) return "";

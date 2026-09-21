@@ -545,6 +545,8 @@ describe("上传解析与预检（services/upload + spam）", () => {
 
 describe("IP 属地（services/comment-dto）", () => {
   it("注入查询器：命中返回格式化属地；未命中返回空串（不抛异常）", async () => {
+    // 记录查询器调用，验证回环地址没有被查询（#581）
+    const queriedIps: string[] = [];
     setCustomLibs({
       DOMPurify: {
         /**
@@ -559,10 +561,12 @@ describe("IP 属地（services/comment-dto）", () => {
          */
         create: () => ({
           /**
-           * 1.1.1.1 模拟未命中（库在 dataPos === 0 时返回 null），其余返回北京移动
+           * 记录调用的 IP，1.1.1.1 模拟未命中（库在 dataPos === 0 时返回 null），其余返回北京移动
            */
-          binarySearchSync: (ip: string) =>
-            ip === "1.1.1.1" ? null : { city: 215, region: "中国|0|北京|北京市|移动" },
+          binarySearchSync: (ip: string) => {
+            queriedIps.push(ip);
+            return ip === "1.1.1.1" ? null : { city: 215, region: "中国|0|北京|北京市|移动" };
+          },
         }),
       },
     });
@@ -580,7 +584,12 @@ describe("IP 属地（services/comment-dto）", () => {
     expect(await getIpRegion(caps, undefined)).toBe("");
     expect(await getIpRegion(caps, "")).toBe("");
     // 本地回环地址（::1 / 127.0.0.1）无法查询属地，直接返回空（#581）
+    // 验证查询器没有被调用（提前返回）
+    queriedIps.length = 0;
     expect(await getIpRegion(caps, "::1")).toBe("");
     expect(await getIpRegion(caps, "127.0.0.1")).toBe("");
+    // 带端口的回环地址也应提前返回（#581 review 反馈）
+    expect(await getIpRegion(caps, "127.0.0.1:8080")).toBe("");
+    expect(queriedIps).toEqual([]);
   });
 });

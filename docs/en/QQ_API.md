@@ -23,7 +23,7 @@ Double-click the executable; it will generate a run script `go-cqhttp_*.exe` as 
 [INFO]: 默认配置文件已生成,请编辑 config.yml 后重启程序.
 ```
 
-Edit `config.yml` as shown below, then double-click the script again.
+Configure `config.yml` using the template below, then double-click the script again.
 
 ```
 [INFO]: 登录成功 欢迎使用: balabala

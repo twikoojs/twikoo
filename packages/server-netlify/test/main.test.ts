@@ -56,13 +56,16 @@ describe("twikoo-netlify 薄适配器", () => {
     expect(fallback.ip).toBe("1.1.1.1");
   });
 
-  it("happy：OPTIONS 204 → 空体返回体", async () => {
+  it("happy：OPTIONS 204 → 空体且保留 CORS 响应头", async () => {
     const fn = makeFunc();
     const result = await fn(
       makeEvent({ httpMethod: "OPTIONS", body: null, headers: { origin: "https://a.com" } }),
     );
     expect(result.statusCode).toBe(204);
     expect(result.body).toBe("");
+    expect(result.headers["Access-Control-Allow-Origin"]).toBe("https://a.com");
+    expect(result.headers["Access-Control-Allow-Methods"]).toBe("POST");
+    expect(result.headers["Access-Control-Allow-Credentials"]).toBe("true");
   });
 
   it("IP 头缺失 → ip 为空串（可定位：IP 用例红即头部映射错误）", () => {

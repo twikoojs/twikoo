@@ -564,16 +564,13 @@ describe("配置导出 / 导入（复用 GET_CONFIG_FOR_ADMIN + SET_CONFIG，不
   }
 
   /**
-   * 挂载导入页签并选好来源与导入方式。
+   * 挂载导入页签并选好来源。
    * @param source 导入来源
-   * @param mode 配置导入方式
    * @returns 组件包装器
    */
-  async function mountImport(source = "twikoo", mode = "overwrite") {
+  async function mountImport(source = "twikoo") {
     const wrapper = mount(TkAdminImport);
-    const selects = wrapper.findAll("select");
-    await selects[0].setValue(source);
-    await selects[1].setValue(mode);
+    await wrapper.find("select").setValue(source);
     return wrapper;
   }
 
@@ -617,24 +614,9 @@ describe("配置导出 / 导入（复用 GET_CONFIG_FOR_ADMIN + SET_CONFIG，不
     wrapper.unmount();
   });
 
-  it("导入配置：跳过模式只提交当前配置里缺失的键", async () => {
-    const calls = useRecordingTcb({
-      GET_CONFIG_FOR_ADMIN: { code: 0, config: { SITE_NAME: "旧站名" } },
-    });
-    const wrapper = await mountImport("twikoo", "skip");
-    injectFile(wrapper, JSON.stringify({ SITE_NAME: "新站名", MASTER_TAG: "博主" }));
-    await findButton(wrapper, t("ADMIN_CONFIG_IMPORT")).trigger("click");
-    // 文件读取走 FileReader 的异步事件，flushPromises 等不到，需轮询
-    await vi.waitFor(() =>
-      expect(calls.map((call) => call.event)).toEqual(["GET_CONFIG_FOR_ADMIN", "SET_CONFIG"]),
-    );
-    expect(calls[1].data.config).toEqual({ MASTER_TAG: "博主" });
-    wrapper.unmount();
-  });
-
-  it("导入配置：覆盖模式提交全部键，且摘除 CREDENTIALS", async () => {
+  it("导入配置：固定覆盖语义提交全部键，且摘除 CREDENTIALS", async () => {
     const calls = useRecordingTcb();
-    const wrapper = await mountImport("twikoo", "overwrite");
+    const wrapper = await mountImport("twikoo");
     injectFile(wrapper, JSON.stringify({ SITE_NAME: "新站名", CREDENTIALS: "试图覆盖" }));
     await findButton(wrapper, t("ADMIN_CONFIG_IMPORT")).trigger("click");
     await vi.waitFor(() => expect(calls.map((call) => call.event)).toEqual(["SET_CONFIG"]));

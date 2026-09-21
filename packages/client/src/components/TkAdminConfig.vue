@@ -818,7 +818,7 @@ function onConfigUpdated(): void {
 
 onMounted(() => {
   void readConfig();
-  // 导入配置已挪到导入页签，配置变更后本页表单需重新回填
+  // 配置变更后本页表单需重新回填
   busOn(EVENT_CONFIG_UPDATED, onConfigUpdated);
 });
 

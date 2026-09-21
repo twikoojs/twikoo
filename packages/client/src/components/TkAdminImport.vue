@@ -23,11 +23,6 @@
     </select>
     <div class="tk-admin-import-label">{{ t("ADMIN_IMPORT_SELECT_FILE") }}</div>
     <input ref="inputFileRef" type="file" value="" />
-    <div class="tk-admin-import-label">{{ t("ADMIN_CONFIG_IMPORT_MODE") }}</div>
-    <select v-model="importMode">
-      <option value="overwrite">{{ t("ADMIN_CONFIG_IMPORT_MODE_OVERWRITE") }}</option>
-      <option value="skip">{{ t("ADMIN_CONFIG_IMPORT_MODE_SKIP") }}</option>
-    </select>
     <div class="tk-admin-import-actions">
       <TkButton size="small" :disabled="loading" @click="uploadFile">
         {{ t("ADMIN_IMPORT_COMMENT") }}
@@ -61,8 +56,6 @@ const loading = ref(false);
 const source = ref("");
 /** 日志文本 */
 const logText = ref("");
-/** 配置导入方式（overwrite 覆盖已有配置项 / skip 跳过已存在的配置项） */
-const importMode = ref<"overwrite" | "skip">("overwrite");
 /** 各来源的提示文案（1.x warnText 同表） */
 const warnText = reactive<Record<string, string>>({
   valine: t("ADMIN_IMPORT_TIP_VALINE"),
@@ -184,8 +177,8 @@ function isPlainConfig(value: unknown): value is Record<string, string | number 
 /**
  * 导入配置（复用 SET_CONFIG 的合并语义，不新增事件）。
  *
- * 覆盖 = 直接提交导入项（同键覆盖）；跳过 = 只提交当前配置里缺失的键。
- * 配置只可能来自 Twikoo 的导出文件，来源选错时提示并中止。
+ * 固定覆盖语义：提交的全部导入项按同键覆盖写入。配置只可能来自 Twikoo 的
+ * 导出文件，来源选错时提示并中止。
  */
 async function importConfig(): Promise<void> {
   if (source.value !== "twikoo") {
@@ -207,15 +200,8 @@ async function importConfig(): Promise<void> {
     // 导出文件不含 CREDENTIALS，手工构造的文件可能带上：摘掉以免覆盖本机凭证
     const imported = { ...parsed };
     delete imported.CREDENTIALS;
-    let payload = imported;
-    if (importMode.value === "skip") {
-      const current = await readCurrentConfig();
-      payload = Object.fromEntries(
-        Object.entries(imported).filter(([key]) => current[key] === undefined),
-      );
-    }
     log(t("ADMIN_CONFIG_IMPORTING"));
-    const res = await call(getAppState().tcb, "SET_CONFIG", { config: payload });
+    const res = await call(getAppState().tcb, "SET_CONFIG", { config: imported });
     const result = (res.result ?? res) as { code?: number; message?: unknown };
     if (result.code === 0) {
       busEmit(EVENT_CONFIG_UPDATED);
@@ -231,15 +217,6 @@ async function importConfig(): Promise<void> {
   loading.value = false;
 }
 
-/**
- * 读取当前配置（跳过模式下用于判断哪些键已存在）。
- * @returns 当前配置（读取失败时返回空对象，等价于全部按「缺失」处理）
- */
-async function readCurrentConfig(): Promise<Record<string, unknown>> {
-  const res = await call(getAppState().tcb, "GET_CONFIG_FOR_ADMIN", {});
-  const result = (res.result ?? res) as { config?: Record<string, unknown> };
-  return result.config ?? {};
-}
 </script>
 
 <style>

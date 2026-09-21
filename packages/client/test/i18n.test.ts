@@ -124,24 +124,36 @@ describe("i18n 拆分", () => {
     expect(t(KNOWN_KEY)).toBe(en[KNOWN_KEY]);
   });
 
-  it("未指定 localeBaseUrl 时从页面 script[src] 自动推导基址", async () => {
+  it("未指定 localeBaseUrl 时从页面 script[src] 推导基址，并用它请求分片", async () => {
     // 回归：localeBaseUrl 初值是空串，若用 `??` 串联则 detectLocaleBaseUrl() 永不执行，
     // 任何非内置语言都会误报「无法推导基址」（2.0.2 线上 twikoo.js.org 即此症状）。
-    // 用 spy 伪造页面上的 twikoo 脚本——happy-dom 对真实 <script src> 会尝试加载并抛错。
+    //
+    // 只断言「没报无法推导」是不够的 —— 一个「静默 return、不加载语言」的实现同样能过。
+    // 这里断言**推导出的基址确实被用于请求分片**：期望 URL 由伪造的 script src 反推得到，
+    // 并要求它出现在失败日志里（该地址不可达，故必然走到 catch）。
+    const scriptSrc = "https://cdn.example.com/twikoo/dist/twikoo.min.js";
+    const expectedChunk = "https://cdn.example.com/twikoo/dist/locales/id-ID.js";
+
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    // 推导优先读 document.currentScript，只有它为 null 才回退扫描 script[src]；
+    // happy-dom 下它未必是 null，显式置空才能确保走到扫描分支。
+    const currentScript = vi.spyOn(document, "currentScript", "get").mockReturnValue(null);
+    // 用 spy 伪造页面上的 twikoo 脚本 —— happy-dom 对真实 <script src> 会尝试加载并抛错
     const querySelectorAll = vi
       .spyOn(document, "querySelectorAll")
       .mockImplementation(((selector: string) =>
         selector === "script[src]"
-          ? [{ src: "https://cdn.example.com/twikoo/dist/twikoo.min.js" }]
+          ? [{ src: scriptSrc }]
           : []) as unknown as typeof document.querySelectorAll);
     try {
       await loadLanguage({ lang: "id-ID" });
-      const messages = warn.mock.calls.map((call) => String(call[0])).join("\n");
-      // 推导已成功 → 只可能因分片取不到而记「加载失败」，绝不出现「无法推导」
-      expect(messages).not.toContain("无法推导");
+      expect(warn).toHaveBeenCalledTimes(1);
+      const [message] = warn.mock.calls[0] as [string];
+      expect(message).toContain(expectedChunk);
+      expect(message).not.toContain("无法推导");
     } finally {
       querySelectorAll.mockRestore();
+      currentScript.mockRestore();
       warn.mockRestore();
     }
   });

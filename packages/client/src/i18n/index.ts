@@ -161,9 +161,9 @@ export async function loadLanguage(
     console.warn(`[twikoo] 无法推导语言分片基址，${target} 回退英文`);
     return;
   }
+  const specifier = `${base}/locales/${target}.js`;
   try {
     // 变量 specifier：打包器不解析，保持运行时原生动态导入（分片不参与主产物打包）
-    const specifier = `${base}/locales/${target}.js`;
     const mod = (await import(/* @vite-ignore */ specifier)) as { default?: Locale } & Locale;
     const table = mod.default ?? mod;
     if (table && typeof table === "object") {
@@ -172,8 +172,9 @@ export async function loadLanguage(
       console.warn(`[twikoo] 语言分片 ${target} 形态异常，回退英文`);
     }
   } catch (e) {
+    // 带上请求的完整地址：基址是从主脚本推导出来的，只报语言名无法定位请求了哪里
     console.warn(
-      `[twikoo] 语言分片 ${target} 加载失败，回退英文：`,
+      `[twikoo] 语言分片 ${specifier} 加载失败，回退英文：`,
       e instanceof Error ? e.message : String(e),
     );
   }

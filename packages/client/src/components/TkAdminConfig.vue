@@ -333,14 +333,17 @@ function createSettings(): SettingGroup[] {
         {
           key: "S3_ACCESS_KEY_ID",
           desc: t("ADMIN_CONFIG_ITEM_S3_ACCESS_KEY_ID"),
-          ph: `${EXAMPLE()}AKIAIOSFODNN7EXAMPLE`,
+          // 打码示例值：不写完整示例串，避免客户端产物（twikoo.all.min.js）被下游仓库
+          // 收进 git 时触发 GitHub 推送保护（secrets 误报，见 #793）
+          ph: `${EXAMPLE()}AKIA****************`,
           value: "",
           showIf: showS3,
         },
         {
           key: "S3_SECRET_ACCESS_KEY",
           desc: t("ADMIN_CONFIG_ITEM_S3_SECRET_ACCESS_KEY"),
-          ph: `${EXAMPLE()}wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY`,
+          // 同上：打码示例值，避免下游仓库触发 secrets 误报（#793）
+          ph: `${EXAMPLE()}wJal********************************EKEY`,
           value: "",
           secret: true,
           showIf: showS3,

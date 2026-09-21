@@ -843,7 +843,7 @@ async function exportConfig(): Promise<void> {
 }
 
 /** 导入配置 */
-async function importConfig(): Promise<void> {
+function importConfig(): void {
   const input = document.createElement("input");
   input.type = "file";
   input.accept = "application/json";
@@ -864,7 +864,7 @@ async function importConfig(): Promise<void> {
         await readConfig();
         busEmit(EVENT_CONFIG_UPDATED);
       } else {
-        message.value = `配置导入失败：${res.message || "未知错误"}`;
+        message.value = `配置导入失败：${typeof res.message === "string" ? res.message : "未知错误"}`;
       }
     } catch (e) {
       logger.error("导入配置失败", e);

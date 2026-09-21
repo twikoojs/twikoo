@@ -18,10 +18,13 @@ export const configImportForAdmin: EventHandler = async (ctx) => {
   }
   const event = ctx.request.body;
   const importedConfig = event.config as ConfigData;
-  const mode = (event.mode as string) || "overwrite"; // overwrite | skip
+  const mode = event.mode;
 
   if (!importedConfig || typeof importedConfig !== "object") {
-    return { code: RES_CODE.PARAM_ERROR, message: "配置格式不合法" };
+    return { code: RES_CODE.FAIL, message: "配置格式不合法" };
+  }
+  if (mode !== "overwrite" && mode !== "skip") {
+    return { code: RES_CODE.FAIL, message: "mode 仅支持 overwrite 或 skip" };
   }
 
   // 合并配置
@@ -32,8 +35,8 @@ export const configImportForAdmin: EventHandler = async (ctx) => {
   } else {
     // 跳过模式：只填充现有配置中不存在的字段
     for (const [key, value] of Object.entries(importedConfig)) {
-      if (mergedConfig[key as keyof ConfigData] === undefined) {
-        mergedConfig[key as keyof ConfigData] = value;
+      if (mergedConfig[key] === undefined) {
+        mergedConfig[key] = value;
       }
     }
   }

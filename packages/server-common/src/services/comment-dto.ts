@@ -8,7 +8,7 @@
 import type { Capabilities } from "../ports/capabilities";
 import type { CommentDoc, ConfigData } from "../ports/database";
 // lib-loader 静态导入即可（惰性在它内部完成，见其头注释「消费方约定」）
-import { getAxios, getBowser, getIpToRegion } from "../utils/lib-loader";
+import { getBowser, getIpToRegion, httpGet } from "../utils/lib-loader";
 import { md5, sha256 } from "../utils/crypto";
 
 /** 前端评论 DTO（1.x toCommentDto 返回形态） */
@@ -312,9 +312,8 @@ export function addQQMailSuffix(mail: string): string {
  */
 export async function getQQAvatar(qq: string): Promise<string | null> {
   try {
-    const axios = await getAxios();
     const qqNum = qq.replace(/@qq.com/gi, "");
-    const result = await axios.get(
+    const result = await httpGet(
       `https://aq.qq.com/cn2/get_img/get_face?img_type=3&uin=${qqNum}`,
     );
     const data = result.data as { url?: string } | undefined;
@@ -333,14 +332,13 @@ export async function getQQAvatar(qq: string): Promise<string | null> {
  */
 export async function getQQNick(qq: string, qqApiKey?: string): Promise<string | null> {
   try {
-    const axios = await getAxios();
     const qqNum = qq.replace(/@qq.com/gi, "");
     /** 请求头（API Key 鉴权可选） */
     const headers: Record<string, string> = {};
     if (qqApiKey) {
       headers.Authorization = `Bearer ${qqApiKey}`;
     }
-    const result = await axios.get(`https://v1.tqq.me/v1/qqname?qq=${qqNum}`, { headers });
+    const result = await httpGet(`https://v1.tqq.me/v1/qqname?qq=${qqNum}`, { headers });
     const data = result.data as {
       code?: number;
       data?: { nick?: string };

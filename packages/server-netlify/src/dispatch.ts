@@ -15,7 +15,7 @@
  */
 import {
   RECURSION_HEADER,
-  getAxios,
+  httpPost,
   getRecursionToken,
   type PostSubmitDispatcher,
 } from "@twikoojs/common";
@@ -51,9 +51,8 @@ export const netlifyPostSubmitDispatcher: PostSubmitDispatcher = {
       ctx.logger.warn("POST_SUBMIT 派发跳过：未取到自身地址（TWIKOO_SELF_URL / URL）");
       return;
     }
-    const axios = await getAxios();
     await Promise.race([
-      axios.post(
+      httpPost(
         url,
         { event: "POST_SUBMIT", comment },
         { headers: { [RECURSION_HEADER]: getRecursionToken(ctx.config) } },

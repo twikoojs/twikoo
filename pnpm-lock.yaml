@@ -320,9 +320,6 @@ importers:
       akismet-api:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@10.2.2)
-      axios:
-        specifier: ^1.20.0
-        version: 1.20.0(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
       bowser:
         specifier: ^2.14.1
         version: 2.14.1
@@ -406,9 +403,6 @@ importers:
       akismet-api:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@10.2.2)
-      axios:
-        specifier: ^1.20.0
-        version: 1.20.0(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
       bowser:
         specifier: ^2.14.1
         version: 2.14.1
@@ -470,9 +464,6 @@ importers:
       akismet-api:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@10.2.2)
-      axios:
-        specifier: ^1.20.0
-        version: 1.20.0(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
       bowser:
         specifier: ^2.14.1
         version: 2.14.1
@@ -525,9 +516,6 @@ importers:
       akismet-api:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@10.2.2)
-      axios:
-        specifier: ^1.6.2
-        version: 1.20.0(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
       bowser:
         specifier: ^2.11.0
         version: 2.14.1
@@ -589,9 +577,6 @@ importers:
       akismet-api:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@10.2.2)
-      axios:
-        specifier: ^1.20.0
-        version: 1.20.0(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
       bowser:
         specifier: ^2.14.1
         version: 2.14.1
@@ -644,9 +629,6 @@ importers:
       '@twikoojs/shared':
         specifier: workspace:*
         version: link:../shared
-      axios:
-        specifier: ^1.20.0
-        version: 1.20.0(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
       bowser:
         specifier: ^2.14.1
         version: 2.14.1
@@ -696,9 +678,6 @@ importers:
       akismet-api:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@10.2.2)
-      axios:
-        specifier: ^1.20.0
-        version: 1.20.0(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
       bowser:
         specifier: ^2.14.1
         version: 2.14.1
@@ -821,9 +800,6 @@ importers:
       akismet-api:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@10.2.2)
-      axios:
-        specifier: ^1.20.0
-        version: 1.20.0(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
       bowser:
         specifier: ^2.14.1
         version: 2.14.1

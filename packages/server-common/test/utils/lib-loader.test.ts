@@ -12,7 +12,7 @@ import {
   LibLoadError,
   defineCapabilities,
   getAkismetClient,
-  getAxios,
+  httpPost,
   getDomPurify,
   getGenerateText,
   getIpToRegion,
@@ -164,17 +164,8 @@ describe("库加载器组合与失败", () => {
     expect(err.message).toContain("Cannot find module");
   });
 
-  it("无能力门约束的轻量库（axios/xml2js）直接动态加载", async () => {
+  it("无能力门约束的轻量库（xml2js）直接动态加载", async () => {
     setLibImporter(async (specifier) => {
-      if (specifier === "axios") {
-        return {
-          /** axios 替身 */
-          default: {
-            /** POST 替身 */
-            post: async () => ({ data: 1 }),
-          },
-        };
-      }
       if (specifier === "xml2js") {
         return {
           /** parseStringPromise 替身 */
@@ -183,8 +174,30 @@ describe("库加载器组合与失败", () => {
       }
       throw new Error(`unexpected: ${specifier}`);
     });
-    expect(typeof (await getAxios()).post).toBe("function");
     expect(typeof (await getXml2js()).parseStringPromise).toBe("function");
+  });
+
+  it("httpPost：JSON 解析返回 data/status", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(JSON.stringify({ ok: true }), { status: 200 })),
+    );
+    const res = await httpPost<{ ok: boolean }>("https://x.test/api", { a: 1 });
+    expect(res.data.ok).toBe(true);
+    expect(res.status).toBe(200);
+  });
+
+  it("httpPost：非 2xx 抛错并携带 response.status/data（axios 错误形态）", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(JSON.stringify({ error: "bad" }), { status: 500 })),
+    );
+    const error = (await httpPost("https://x.test/api", { a: 1 }).catch(
+      (e: unknown) => e,
+    )) as Error & { response?: { status: number; data: unknown } };
+    expect(error.message).toContain("500");
+    expect(error.response?.status).toBe(500);
+    expect(error.response?.data).toEqual({ error: "bad" });
   });
 });
 

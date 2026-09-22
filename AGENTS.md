@@ -177,7 +177,6 @@ flowchart LR
 - `akismet-api`
 - `tencentcloud-sdk-nodejs-tms`
 - `form-data`
-- `axios`
 - `bowser`
 - `marked`
 - `xml2js`

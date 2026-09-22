@@ -9,7 +9,7 @@ import type { Capabilities } from "../ports/capabilities";
 import type { ConfigData } from "../ports/database";
 import type { TkResponseBody } from "../ports/response";
 import { RES_CODE } from "../utils/constants";
-import { getAxios, getFormData, type FormDataLike } from "../utils/lib-loader";
+import { getFormData, httpPost, httpPut, type FormDataLike } from "../utils/lib-loader";
 import { isUrl } from "./comment-dto";
 
 /** 最大图片体积（10 MB） */
@@ -163,7 +163,6 @@ export async function uploadImage(options: {
     ) {
       throw new Error("不支持的图片上传服务");
     }
-    const axios = await getAxios();
     const image = parseImage(photo);
     if (config.NSFW_API_URL) {
       const nsfwResult = await checkNsfw({ image, config, caps });
@@ -175,7 +174,7 @@ export async function uploadImage(options: {
     }
     const FormData = await getFormData(caps);
     /** 上传辅助（各图床共享的上下文） */
-    const ctx = { image, config, res, axios, FormData: FormData as never };
+    const ctx = { image, config, res, FormData: FormData as never };
     // tip: qcloud 图床走前端上传，其他图床走后端上传
     if (imageService === "7bu") {
       await uploadImageToLskyPro({ ...ctx, imageCdn: "https://7bu.top" });
@@ -221,8 +220,7 @@ async function checkNsfw(params: {
     const FormData = await getFormData(caps);
     const formData = new FormData();
     appendImage(formData, "image", image);
-    const axios = await getAxios();
-    const response = await axios.post(`${apiUrl}/classify`, formData, {
+    const response = await httpPost(`${apiUrl}/classify`, formData, {
       headers: (formData as unknown as { getHeaders(): Record<string, string> }).getHeaders(),
       timeout: 30000,
     });
@@ -247,14 +245,13 @@ async function uploadImageToSee(ctx: {
   image: ParsedImage;
   config: ConfigData;
   res: TkResponseBody;
-  axios: Awaited<ReturnType<typeof getAxios>>;
   FormData: never;
   imageCdn: string;
 }): Promise<void> {
   const FormData = ctx.FormData as FormDataLike;
   const formData = new FormData();
   appendImage(formData, "smfile", ctx.image);
-  const uploadResult = await ctx.axios.post(ctx.imageCdn, formData, {
+  const uploadResult = await httpPost(ctx.imageCdn, formData, {
     headers: {
       ...(formData as unknown as { getHeaders(): Record<string, string> }).getHeaders(),
       Authorization: ctx.config.IMAGE_CDN_TOKEN as string,
@@ -279,7 +276,6 @@ async function uploadImageToLskyPro(ctx: {
   image: ParsedImage;
   config: ConfigData;
   res: TkResponseBody;
-  axios: Awaited<ReturnType<typeof getAxios>>;
   FormData: never;
   imageCdn: string;
 }): Promise<void> {
@@ -291,7 +287,7 @@ async function uploadImageToLskyPro(ctx: {
   if (!token.startsWith("Bearer")) {
     token = `Bearer ${token}`;
   }
-  const uploadResult = await ctx.axios.post(url, formData, {
+  const uploadResult = await httpPost(url, formData, {
     headers: {
       ...(formData as unknown as { getHeaders(): Record<string, string> }).getHeaders(),
       Authorization: token,
@@ -318,7 +314,6 @@ async function uploadImageToPicList(ctx: {
   image: ParsedImage;
   config: ConfigData;
   res: TkResponseBody;
-  axios: Awaited<ReturnType<typeof getAxios>>;
   FormData: never;
   imageCdn: string;
 }): Promise<void> {
@@ -329,7 +324,7 @@ async function uploadImageToPicList(ctx: {
   if (ctx.config.IMAGE_CDN_TOKEN) {
     url += `?key=${ctx.config.IMAGE_CDN_TOKEN}`;
   }
-  const uploadResult = await ctx.axios.post(url, formData);
+  const uploadResult = await httpPost(url, formData);
   const data = uploadResult.data as {
     success?: boolean;
     message?: string;
@@ -349,7 +344,6 @@ async function uploadImageToEasyImage(ctx: {
   image: ParsedImage;
   config: ConfigData;
   res: TkResponseBody;
-  axios: Awaited<ReturnType<typeof getAxios>>;
   FormData: never;
 }): Promise<void> {
   const FormData = ctx.FormData as FormDataLike;
@@ -362,7 +356,7 @@ async function uploadImageToEasyImage(ctx: {
   const formData = new FormData();
   formData.append("token", ctx.config.IMAGE_CDN_TOKEN);
   appendImage(formData, "image", ctx.image);
-  const uploadResult = await ctx.axios.post(ctx.config.IMAGE_CDN_URL as string, formData, {
+  const uploadResult = await httpPost(ctx.config.IMAGE_CDN_URL as string, formData, {
     headers: {
       ...(formData as unknown as { getHeaders(): Record<string, string> }).getHeaders(),
       "User-Agent": "Twikoo",
@@ -392,7 +386,6 @@ async function uploadImageToChevereto(ctx: {
   image: ParsedImage;
   config: ConfigData;
   res: TkResponseBody;
-  axios: Awaited<ReturnType<typeof getAxios>>;
   FormData: never;
 }): Promise<void> {
   const FormData = ctx.FormData as FormDataLike;
@@ -407,7 +400,7 @@ async function uploadImageToChevereto(ctx: {
   appendImage(formData, "source", ctx.image);
   formData.append("format", "json");
   const apiUrl = `${ctx.config.IMAGE_CDN_URL}`.replace(/\/$/, "") + "/api/1/upload";
-  const uploadResult = await ctx.axios.post(apiUrl, formData, {
+  const uploadResult = await httpPost(apiUrl, formData, {
     headers: (formData as unknown as { getHeaders(): Record<string, string> }).getHeaders(),
   });
   const data = uploadResult.data as {
@@ -433,7 +426,6 @@ async function uploadImageToS3(ctx: {
   image: ParsedImage;
   config: ConfigData;
   res: TkResponseBody;
-  axios: Awaited<ReturnType<typeof getAxios>>;
   FormData: never;
 }): Promise<void> {
   const { image, config } = ctx;
@@ -498,7 +490,7 @@ async function uploadImageToS3(ctx: {
   );
   const signature = createHmac("sha256", signingKey).update(stringToSign).digest("hex");
   const authorization = `AWS4-HMAC-SHA256 Credential=${config.S3_ACCESS_KEY_ID}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
-  await ctx.axios.put(endpoint, body, {
+  await httpPut(endpoint, body, {
     headers: {
       "Content-Type": mimeType,
       "x-amz-content-sha256": payloadHash,

@@ -3,7 +3,7 @@
  * 全部外部依赖（nodemailer/pushoo/html-to-text/axios/form-data）经
  * setLibImporter 替身注入——零真实网络。
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { sendNotice } from "../../src/services/notify";
 import {
   checkCapCaptcha,
@@ -78,6 +78,10 @@ describe("sendNotice 全链路（services/notify）", () => {
   it("博主评论：不给自己发通知；访客评论：博主邮件 + 回复邮件 + pushoo 三路并发", async () => {
     const sent: Array<Record<string, unknown>> = [];
     const pushed: unknown[] = [];
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(async () => new Response(JSON.stringify({ success: true, data: { url: "https://cdn/x.png" } }), { status: 200 })),
+      );
     setLibImporter(async (specifier) => {
       if (specifier === "nodemailer") {
         return {
@@ -229,6 +233,10 @@ describe("上传分发（services/upload）", () => {
     const pngBase64 =
       "data:image/png;base64," +
       Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3, 4]).toString("base64");
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(async () => new Response(JSON.stringify({ success: true }), { status: 200 })),
+      );
     setLibImporter(async (specifier) => {
       if (specifier === "form-data") {
         return {
@@ -243,16 +251,6 @@ describe("上传分发（services/upload）", () => {
             getHeaders(): Record<string, string> {
               return { "content-type": "multipart/form-data" };
             }
-          },
-        };
-      }
-      if (specifier === "axios") {
-        return {
-          default: {
-            /**
-             *
-             */
-            post: async () => ({ data: { success: true, data: { url: "https://cdn/x.png" } } }),
           },
         };
       }
@@ -272,6 +270,10 @@ describe("上传分发（services/upload）", () => {
   });
 
   it("不支持的图床 → UPLOAD_FAILED + 提示", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(async () => new Response(JSON.stringify({ success: false }), { status: 200 })),
+      );
     setLibImporter(async () => {
       throw new Error("should not be called");
     });
@@ -294,6 +296,10 @@ describe("上传分发（services/upload）", () => {
 
 describe("验证码分支（services/spam）", () => {
   it("Turnstile：axios/form-data 替身 → success true 通过", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(async () => new Response(JSON.stringify({ result: "success" }), { status: 200 })),
+      );
     setLibImporter(async (specifier) => {
       if (specifier === "form-data") {
         return {
@@ -304,16 +310,6 @@ describe("验证码分支（services/spam）", () => {
             getHeaders(): Record<string, string> {
               return {};
             }
-          },
-        };
-      }
-      if (specifier === "axios") {
-        return {
-          default: {
-            /**
-             *
-             */
-            post: async () => ({ data: { success: true } }),
           },
         };
       }
@@ -330,6 +326,10 @@ describe("验证码分支（services/spam）", () => {
   });
 
   it("Turnstile：success false → 报错", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(async () => new Response(JSON.stringify({ result: "fail", reason: "bad sign" }), { status: 200 })),
+      );
     setLibImporter(async (specifier) => {
       if (specifier === "form-data") {
         return {
@@ -347,16 +347,6 @@ describe("验证码分支（services/spam）", () => {
           },
         };
       }
-      if (specifier === "axios") {
-        return {
-          default: {
-            /**
-             *
-             */
-            post: async () => ({ data: { success: false } }),
-          },
-        };
-      }
       throw new Error(`unexpected ${specifier}`);
     });
     await expect(
@@ -365,17 +355,11 @@ describe("验证码分支（services/spam）", () => {
   });
 
   it("Geetest：result success 通过；失败抛原因", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(async () => new Response(JSON.stringify({ success: false, error: "expired" }), { status: 200 })),
+      );
     setLibImporter(async (specifier) => {
-      if (specifier === "axios") {
-        return {
-          default: {
-            /**
-             *
-             */
-            post: async () => ({ data: { result: "success" } }),
-          },
-        };
-      }
       throw new Error(`unexpected ${specifier}`);
     });
     await expect(
@@ -389,16 +373,6 @@ describe("验证码分支（services/spam）", () => {
       }),
     ).resolves.toBeUndefined();
     setLibImporter(async (specifier) => {
-      if (specifier === "axios") {
-        return {
-          default: {
-            /**
-             *
-             */
-            post: async () => ({ data: { result: "fail", reason: "bad sign" } }),
-          },
-        };
-      }
       throw new Error(`unexpected ${specifier}`);
     });
     await expect(
@@ -415,16 +389,6 @@ describe("验证码分支（services/spam）", () => {
 
   it("Cap 外部 Standalone：siteverify success false → 报错", async () => {
     setLibImporter(async (specifier) => {
-      if (specifier === "axios") {
-        return {
-          default: {
-            /**
-             *
-             */
-            post: async () => ({ data: { success: false, error: "expired" } }),
-          },
-        };
-      }
       throw new Error(`unexpected ${specifier}`);
     });
     await expect(

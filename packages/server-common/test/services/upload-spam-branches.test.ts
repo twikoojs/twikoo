@@ -1,10 +1,10 @@
 /**
  * 上传图床分发 + 垃圾后检分支测试（覆盖率补齐 III）。
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { uploadImage } from "../../src/services/upload";
 import { postCheckSpam } from "../../src/services/spam";
-import { setLibImporter } from "../../src/utils/lib-loader";
+import { setCustomLibs, setLibImporter } from "../../src/utils/lib-loader";
 import type { Capabilities } from "../../src/ports/capabilities";
 import type { ConfigData } from "../../src/ports/database";
 import type { RequestLogger } from "../../src/utils/logger";
@@ -67,32 +67,20 @@ function installUploadMocks(options: {
         },
       };
     }
-    if (specifier === "axios") {
-      return {
-        default: {
-          /**
-           *
-           */
-          post: async (url: string) => {
-            calls.push({ url, method: "POST" });
-            return options.postResponse?.(url) ?? { data: {} };
-          },
-          /**
-           *
-           */
-          get: async () => ({ data: {} }),
-          /**
-           *
-           */
-          put: async (url: string) => {
-            calls.push({ url, method: "PUT" });
-            return options.putResponse ?? { data: {} };
-          },
-        },
-      };
-    }
     throw new Error(`unexpected ${specifier}`);
   });
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (url: string | URL, init?: RequestInit) => {
+      const method = init?.method ?? "GET";
+      calls.push({ url: String(url), method });
+      const data =
+        method === "PUT"
+          ? options.putResponse?.data
+          : (options.postResponse?.(String(url)) ?? { data: {} }).data;
+      return new Response(JSON.stringify(data ?? {}), { status: 200 });
+    }),
+  );
   return calls;
 }
 

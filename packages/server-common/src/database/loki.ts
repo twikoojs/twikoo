@@ -337,4 +337,21 @@ export class LokiDatabase implements Database {
     const doc = this.col("cap_kv").findOne({ key });
     if (doc) this.col("cap_kv").remove(doc);
   }
+
+  /**
+   * 验证码：删除已过期记录（cap_kv 的值形如 `{ expires }`）。
+   * @param now 当前时间戳（毫秒）
+   * @returns 删除条数
+   */
+  async capDeleteExpired(now: number): Promise<number> {
+    const col = this.col("cap_kv");
+    const expired = col.find({}).filter((doc) => {
+      const value = doc.value;
+      if (typeof value !== "object" || value === null) return false;
+      const expires = (value as { expires?: unknown }).expires;
+      return typeof expires === "number" && expires < now;
+    });
+    for (const doc of expired) col.remove(doc);
+    return expired.length;
+  }
 }

@@ -363,4 +363,19 @@ export class CloudBaseDatabase implements Database {
   async capDel(key: string): Promise<void> {
     await this.col("cap_kv").where({ key }).remove();
   }
+
+  /**
+   * 验证码：删除已过期记录（cap_kv 的值形如 `{ expires }`）。
+   *
+   * 下推为 `where({ "value.expires": _.lt(now) }).remove()`（嵌套字段点号查询 +
+   * 批量删除），避免把整个 cap_kv 拉回客户端。
+   * @param now 当前时间戳（毫秒）
+   * @returns 删除条数
+   */
+  async capDeleteExpired(now: number): Promise<number> {
+    const result = await this.col("cap_kv")
+      .where({ "value.expires": this.db.command.lt(now) })
+      .remove();
+    return result.deleted ?? 0;
+  }
 }

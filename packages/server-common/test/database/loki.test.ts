@@ -92,3 +92,24 @@ describe("LokiDatabase 持久化与容错", () => {
     await db.close();
   });
 });
+
+describe("LokiDatabase：Cap 过期记录清理（#1174）", () => {
+  it("capDeleteExpired 只删过期记录，保留未过期的挑战与通行 token", async () => {
+    const db = new LokiDatabase({ dataDir: join(workDir, "cap-expired") });
+    await db.init();
+    const now = Date.now();
+    await db.capSet("cap:c:expired", { challenge: "x", expires: now - 1000 });
+    await db.capSet("cap:c:alive", { challenge: "y", expires: now + 60000 });
+    await db.capSet("cap:t:expired", { expires: now - 1 });
+    await db.capSet("cap:t:alive", { expires: now + 60000 });
+
+    expect(await db.capDeleteExpired(now)).toBe(2);
+    expect(await db.capGet("cap:c:expired")).toBeNull();
+    expect(await db.capGet("cap:t:expired")).toBeNull();
+    expect(await db.capGet("cap:c:alive")).toEqual({ challenge: "y", expires: now + 60000 });
+    expect(await db.capGet("cap:t:alive")).toEqual({ expires: now + 60000 });
+    // 幂等：再清一次为 0 条
+    expect(await db.capDeleteExpired(now)).toBe(0);
+    await db.close();
+  });
+});

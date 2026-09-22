@@ -274,4 +274,17 @@ export class MongoDatabase implements Database {
   async capDel(key: string): Promise<void> {
     await this.col("cap_kv").deleteOne({ key });
   }
+
+  /**
+   * 验证码：删除已过期记录（cap_kv 的值形如 `{ expires }`）。
+   *
+   * 下推为 `deleteMany({ "value.expires": { $lt: now } })`——该集合正是
+   * 「过期不清理会无限增长」的那个，绝不能全量拉回再逐条删。
+   * @param now 当前时间戳（毫秒）
+   * @returns 删除条数
+   */
+  async capDeleteExpired(now: number): Promise<number> {
+    const result = await this.col("cap_kv").deleteMany({ "value.expires": { $lt: now } });
+    return result.deletedCount ?? 0;
+  }
 }

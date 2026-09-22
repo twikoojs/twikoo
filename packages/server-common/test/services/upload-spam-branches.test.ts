@@ -261,7 +261,7 @@ describe("postCheckSpam 分支（services/spam）", () => {
   });
 
   it("Jev：noul 达到阈值 → true，并发送正文/昵称/网址", async () => {
-    const fetchMock = vi.fn(async (_url: string | URL, init?: RequestInit) => {
+    const fetchMock = vi.fn(async () => {
       return new Response(
         JSON.stringify({
           model: "jev-1.13.0",

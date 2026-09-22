@@ -312,6 +312,21 @@ describe("tkserver 优雅退出全流程", () => {
     }
   }, 20000);
 
+  it("gracefulShutdown：关闭数据库（shutdown 接收已装配的 database，#1174 回归）", async () => {
+    process.env.TWIKOO_SKIP_BOOT = "1";
+    const { createTkserverServer } = await import("../src/server");
+    let closed = false;
+    const db = {
+      close: () => {
+        closed = true;
+        return Promise.resolve();
+      },
+    } as unknown as Database;
+    const inst = createTkserverServer({ database: db });
+    await inst.gracefulShutdown();
+    expect(closed).toBe(true);
+  });
+
   it("SIGTERM 信号处理：已注册（全平台）", async () => {
     process.env.TWIKOO_SKIP_BOOT = "1";
     const { createTkserverServer } = await import("../src/server");
@@ -346,11 +361,15 @@ describe("tkserver 优雅退出全流程", () => {
   it("健康检查：GET /ping 直接 200 + pong，且不进 pipeline（数据库不可用也不受影响）", async () => {
     process.env.TWIKOO_SKIP_BOOT = "1";
     const { createTkserverServer } = await import("../src/server");
-    /** 任何方法都抛错的数据库替身：走 pipeline 的请求必然失败，/ping 短路则不受影响 */
+    /** 任何方法都抛错的数据库替身：走 pipeline 的请求必然失败，/ping 短路则不受影响
+     * （close 豁免：gracefulShutdown 需要经 shutdown 正常关库） */
     const failingDb = new Proxy({} as Database, {
-      get: (_target, prop) => async () => {
-        throw new Error(`db.${String(prop)} 被调用`);
-      },
+      get: (_target, prop) =>
+        prop === "close"
+          ? () => Promise.resolve()
+          : async () => {
+              throw new Error(`db.${String(prop)} 被调用`);
+            },
     });
     const inst = createTkserverServer({ database: failingDb });
     await new Promise<void>((resolve) => inst.server.listen(0, "127.0.0.1", resolve));

@@ -331,6 +331,8 @@ EdgeOne 部署功能受限：邮件通知仅支持 SendGrid / MailChannels / 自
 | `TWIKOO_LOCALHOST_ONLY` | 为`true`时只监听本地请求，使得 nginx 等服务器反代之后不暴露原始端口 | `null` |
 | `TWIKOO_LOG_LEVEL` | 日志级别，支持 `verbose` / `info` / `warn` / `error` | `info` |
 | `TWIKOO_IP_HEADERS` | 在一些特殊情况下使用，如使用了 `CloudFlare CDN` 它会将请求 IP 写到请求头的 `cf-connecting-ip` 字段上，为了能够正确的获取请求 IP 你可以写成 `["headers.cf-connecting-ip"]` | `[]` |
+| `TWIKOO_MAX_BODY_BYTES` | 单个请求体的字节上限，超出立即返回 413。默认 16 MiB，已覆盖 10 MB 图片经 base64 编码后的载荷；如需导入超大站点评论可调高 | `16777216` |
+| `TWIKOO_BODY_TIMEOUT_MS` | 请求体的读取超时（毫秒），超时返回 408，防止慢速发送长期占用连接 | `15000` |
 
 4. 启动 Twikoo server: `tkserver`
 5. 访问 `http://服务端IP:8080` 测试服务是否启动成功

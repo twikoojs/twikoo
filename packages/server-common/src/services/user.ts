@@ -50,11 +50,19 @@ export function login(config: ConfigData, password: unknown): TkResponseBody {
  */
 export async function setPassword(options: {
   config: ConfigData;
+  /** 本次请求的配置读取是否失败（pipeline 的降级标志） */
+  configReadFailed?: boolean;
   accessToken: string;
   password: unknown;
   saveConfig: (config: ConfigData) => Promise<void>;
 }): Promise<TkResponseBody> {
-  const { config, accessToken, password, saveConfig } = options;
+  const { config, configReadFailed = false, accessToken, password, saveConfig } = options;
+  // 配置读取失败时 config 是空对象，「库里是否已有密码」无从判断，必须失败关闭。
+  // 否则匿名调用者会把「读取失败」当成「尚未设置管理员密码」，直接写入自己的密码
+  // 接管管理权限——触发条件仅为「读失败 + 写成功」（GHSA-v349-m8q5-7x2g）。
+  if (configReadFailed) {
+    return { code: RES_CODE.FAIL, message: "配置读取失败，请稍后重试" };
+  }
   const isAdminUser = isAdmin(config, accessToken);
   // 如果数据库里没有密码，则写入密码；如果已有密码，则只有管理员可以写入
   if (config.ADMIN_PASS && !isAdminUser) {

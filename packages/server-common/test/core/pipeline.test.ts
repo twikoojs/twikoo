@@ -58,6 +58,33 @@ describe("pipeline 八步编排", () => {
     expect(res.body.accessToken).toBeUndefined();
   });
 
+  it("配置读取失败时 SET_PASSWORD 失败关闭（GHSA-v349-m8q5-7x2g：匿名接管）", async () => {
+    const adapters = createMemoryAdapters();
+    const db = adapters.database;
+    // 库里已有管理密码（攻击目标：覆盖它）
+    await db.saveConfig({ ADMIN_PASS: "existing-hash" });
+    const handler = createHandler(adapters);
+    /** 原 getConfig（请求结束后还原） */
+    const originalGetConfig = db.getConfig.bind(db);
+    // 只在本次请求期间让读配置抛错：模拟「配置读取暂时失败，但后续写入成功」。
+    // 注意必须替换**同一个实例**上的方法——用 { ...db } 展开会丢掉原型方法，
+    // 整条链路会因 init() 未定义而提前失败，测试就会「通过得毫无意义」。
+    db.getConfig = async (): Promise<never> => {
+      throw new Error("transient read failure");
+    };
+    try {
+      const res = await handler(
+        makeRequest({ body: { event: "SET_PASSWORD", password: "attacker-md5" } }),
+      );
+      // 改前：降级空配置被当成「尚未设置密码」→ 写入成功 → 匿名接管
+      expect(res.body.code).not.toBe(RES_CODE.SUCCESS);
+    } finally {
+      db.getConfig = originalGetConfig;
+    }
+    // 库里原密码必须原封不动
+    expect((await db.getConfig())?.ADMIN_PASS).toBe("existing-hash");
+  });
+
   it("验收 2：OPTIONS 预检返回 204 且携带 CORS 头", async () => {
     const handler = createHandler(createMemoryAdapters());
     const res = await handler(

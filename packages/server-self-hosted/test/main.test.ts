@@ -313,6 +313,58 @@ describe("tkserver 优雅退出全流程", () => {
     }
   }, 20000);
 
+  it("请求体超限：413 且不进入 pipeline；正常请求不受影响（GHSA-v349-m8q5-7x2g）", async () => {
+    process.env.TWIKOO_SKIP_BOOT = "1";
+    // 把上限压到 1 KB，避免测试真的传 16 MB
+    process.env.TWIKOO_MAX_BODY_BYTES = "1024";
+    const { createTkserverServer } = await import("../src/server");
+    const inst = createTkserverServer();
+    await new Promise<void>((resolve) => inst.server.listen(0, "127.0.0.1", resolve));
+    const port = (inst.server.address() as import("node:net").AddressInfo).port;
+    const url = `http://127.0.0.1:${port}/`;
+    try {
+      // 形态一：Content-Length 已超限 → 快速拒绝（一个字节都不读）
+      const declared = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ event: "GET_FUNC_VERSION", pad: "x".repeat(4096) }),
+      });
+      expect(declared.status).toBe(413);
+
+      // 形态二：分块传输（无 Content-Length）→ 靠「边读边累加」兜底
+      const stream = new ReadableStream<Uint8Array>({
+        /**
+         * 推入超限数据后结束。
+         * @param controller 流控制器
+         */
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode("x".repeat(4096)));
+          controller.close();
+        },
+      });
+      const chunked = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: stream,
+        // Node 的 fetch 要求流式请求体显式声明 half duplex
+        duplex: "half",
+      } as RequestInit & { duplex: "half" });
+      expect(chunked.status).toBe(413);
+
+      // 未超限的请求照常走 pipeline
+      const ok = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ event: "GET_FUNC_VERSION" }),
+      });
+      expect(ok.status).toBe(200);
+      expect(((await ok.json()) as { code: number }).code).toBe(0);
+    } finally {
+      delete process.env.TWIKOO_MAX_BODY_BYTES;
+      await inst.gracefulShutdown();
+    }
+  }, 20000);
+
   it("gracefulShutdown：关闭数据库（shutdown 接收已装配的 database，#1174 回归）", async () => {
     process.env.TWIKOO_SKIP_BOOT = "1";
     const { createTkserverServer } = await import("../src/server");

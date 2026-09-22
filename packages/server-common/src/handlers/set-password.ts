@@ -12,6 +12,7 @@ import { setPassword } from "../services/user";
 export const setPasswordEvent: EventHandler = (ctx) =>
   setPassword({
     config: ctx.config,
+    configReadFailed: ctx.configReadFailed,
     accessToken: ctx.accessToken,
     password: ctx.request.body.password,
     /**

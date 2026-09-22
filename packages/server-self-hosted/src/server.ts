@@ -5,6 +5,7 @@
  */
 import { createServer, type Server } from "node:http";
 import type { AddressInfo, Socket } from "node:net";
+import { BodyTooLargeError, readBodyWithLimit } from "@twikoojs/common";
 import {
   createTkserverHandler,
   getRequestTimesClearInterval,
@@ -69,11 +70,27 @@ export function createTkserverServer(options: { database?: Database } = {}): Tks
       return;
     }
     void (async () => {
-      /** 聚合请求体（JSON 解析失败按空体处理，1.x 语义） */
-      const buffers: Buffer[] = [];
-      for await (const chunk of req) buffers.push(chunk as Buffer);
+      /**
+       * 聚合请求体（累计字节上限 + 读取超时；JSON 解析失败按空体处理，1.x 语义）。
+       *
+       * 上限必须在**读流过程中**生效：先把整条流收进数组再 Buffer.concat 的话，
+       * 未登录攻击者能在限流生效前用超大请求体耗尽内存/CPU（GHSA-v349-m8q5-7x2g）。
+       */
+      let rawBody = "";
       try {
-        (req as ServerRequestShim).body = JSON.parse(Buffer.concat(buffers).toString() || "{}");
+        rawBody = await readBodyWithLimit(req);
+      } catch (e) {
+        /** 超限回 413、超时回 408；直接断开，不进 pipeline */
+        const tooLarge = e instanceof BodyTooLargeError;
+        const status = tooLarge ? 413 : 408;
+        res.writeHead(status, { Connection: "close", "Content-Type": "application/json" });
+        res.end(
+          JSON.stringify({ code: status, message: tooLarge ? "请求体过大" : "请求体读取超时" }),
+        );
+        return;
+      }
+      try {
+        (req as ServerRequestShim).body = JSON.parse(rawBody || "{}");
       } catch {
         (req as ServerRequestShim).body = {};
       }

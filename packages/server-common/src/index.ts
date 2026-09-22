@@ -104,6 +104,17 @@ export { RES_CODE, getMaxRequestTimes } from "./utils/constants";
 export type { RequestLogger } from "./utils/logger";
 export { createRequestLogger } from "./utils/logger";
 export { validateClientFields } from "./utils/validate";
+// ---- Node HTTP 请求体读取（累计字节上限 + 读取超时；自托管 / deta 共用）----
+export type { ReadableRequestBodyLike } from "./utils/body-limit";
+export {
+  BodyReadTimeoutError,
+  BodyTooLargeError,
+  DEFAULT_BODY_READ_TIMEOUT_MS,
+  DEFAULT_MAX_BODY_BYTES,
+  readBodyWithLimit,
+  resolveBodyTimeoutMs,
+  resolveMaxBodyBytes,
+} from "./utils/body-limit";
 // ---- HTTP 客户端（原生 fetch，零依赖）----
 export type { HttpConfig, HttpResult } from "./utils/http";
 export { httpGet, httpPost, httpPut } from "./utils/http";

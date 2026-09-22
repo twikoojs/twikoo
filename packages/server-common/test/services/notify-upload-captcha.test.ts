@@ -101,6 +101,7 @@ function makeCtx(config: Record<string, unknown>): PipelineContext {
     requestId: "ctx-id",
     accessToken: "tok",
     config: config as never,
+    configReadFailed: false,
     adapters,
     logger: {
       /**

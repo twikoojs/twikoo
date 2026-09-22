@@ -123,16 +123,22 @@ function getAllowedOrigin(origin: string, config: ConfigData): string {
  * 步骤 5：读取配置（1.x readConfig 语义对齐）——每次请求读取最新配置；
  * 读取失败降级为空配置并记录错误（1.x 建集合动作属于数据库实现的
  * init() 职责，见 MongoDatabase）。
+ *
+ * ⚠️ 降级结果与「真的没有配置」不可区分，因此必须把 `failed` 一并带出去：
+ * 凡是「配置为空 ⇒ 放行」的分支都要看它（GHSA-v349-m8q5-7x2g）。
  * @param adapters 适配器聚合端口
  * @param logger 请求级日志器
- * @returns 全量配置（无配置为空对象）
+ * @returns 全量配置（无配置为空对象）与该次读取是否失败
  */
-async function readConfig(adapters: TkAdapters, logger: RequestLogger): Promise<ConfigData> {
+async function readConfig(
+  adapters: TkAdapters,
+  logger: RequestLogger,
+): Promise<{ config: ConfigData; failed: boolean }> {
   try {
-    return (await adapters.database.getConfig()) ?? {};
+    return { config: (await adapters.database.getConfig()) ?? {}, failed: false };
   } catch (e) {
     logger.error("读取配置失败：", e);
-    return {};
+    return { config: {}, failed: true };
   }
 }
 
@@ -173,7 +179,7 @@ export function createPipeline(adapters: TkAdapters) {
       validateClientFields(request.body);
       accessToken = anonymousSignIn(request);
       await adapters.database.init();
-      const config = await readConfig(adapters, logger);
+      const { config, failed: configReadFailed } = await readConfig(adapters, logger);
       Object.assign(headers, allowCors(request, config));
       if (request.method === "OPTIONS") {
         return { status: 204, body: {}, headers };
@@ -183,6 +189,7 @@ export function createPipeline(adapters: TkAdapters) {
         requestId: logger.requestId,
         accessToken,
         config,
+        configReadFailed,
         adapters,
         logger,
       };

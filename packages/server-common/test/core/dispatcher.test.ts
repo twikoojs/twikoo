@@ -35,6 +35,7 @@ function makeCtx(body: TkRequestBody): PipelineContext {
     requestId: "test-request-id",
     accessToken: "test-token",
     config: {},
+    configReadFailed: false,
     adapters: createMemoryAdapters(),
     logger: createRequestLogger("test-request-id"),
   };

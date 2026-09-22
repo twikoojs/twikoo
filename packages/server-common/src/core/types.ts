@@ -22,6 +22,14 @@ export interface PipelineContext {
   accessToken: string;
   /** 数据库读取的全量配置（readConfig 后；无配置为空对象） */
   config: ConfigData;
+  /**
+   * 本次配置读取是否**失败**（异常降级）。
+   *
+   * 降级后 `config` 是空对象，与「确实还没写任何配置」不可区分。任何
+   * 「配置为空 ⇒ 放行」的分支都必须先看这个标志，否则会把读取失败误判为
+   * 「尚未初始化」而放行匿名写入（GHSA-v349-m8q5-7x2g：SET_PASSWORD 接管）。
+   */
+  configReadFailed: boolean;
   /** 适配器聚合端口（database / storage / mailer / notifier / capabilities） */
   adapters: TkAdapters;
   /** 请求级日志器（requestId 注入；getText() 可聚合排查，不回传前端） */

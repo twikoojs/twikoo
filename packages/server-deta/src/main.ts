@@ -5,9 +5,11 @@
  * IP 取 cf-connecting-ip——deta.space/docs（查阅 2026-09-17）。
  */
 import {
+  BodyTooLargeError,
   FULL_CAPABILITIES,
   MongoDatabase,
   createHandler,
+  readBodyWithLimit,
   resetRequestTimes,
   scaffoldAdapters,
   type Database,
@@ -138,10 +140,26 @@ export function startDetaServer(options: { database?: Database; port?: number } 
   const timer = setInterval(() => resetRequestTimes(), 10 * 60 * 1000);
   const server = createServer((req, res) => {
     void (async () => {
-      const buffers: Buffer[] = [];
-      for await (const chunk of req) buffers.push(chunk);
+      /**
+       * 聚合请求体（累计字节上限 + 读取超时；与自托管同一份实现）。
+       *
+       * deta 与自托管同为常驻 Node HTTP 服务、同一段手工读流代码，因此存在同一
+       * 个「未登录即可用超大请求体耗尽内存/CPU」的问题（GHSA-v349-m8q5-7x2g）。
+       */
+      let rawBody = "";
       try {
-        (req as { body?: unknown }).body = JSON.parse(Buffer.concat(buffers).toString() || "{}");
+        rawBody = await readBodyWithLimit(req);
+      } catch (e) {
+        const tooLarge = e instanceof BodyTooLargeError;
+        const status = tooLarge ? 413 : 408;
+        res.writeHead(status, { Connection: "close", "Content-Type": "application/json" });
+        res.end(
+          JSON.stringify({ code: status, message: tooLarge ? "请求体过大" : "请求体读取超时" }),
+        );
+        return;
+      }
+      try {
+        (req as { body?: unknown }).body = JSON.parse(rawBody || "{}");
       } catch {
         (req as { body?: unknown }).body = {};
       }

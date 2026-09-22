@@ -104,6 +104,31 @@ describe("twikoo-deta 薄适配器", () => {
   });
 });
 
+describe("twikoo-deta 请求体上限（GHSA-v349-m8q5-7x2g）", () => {
+  it("超限请求体 → 413（与自托管同一份 readBodyWithLimit）", async () => {
+    process.env.TWIKOO_MAX_BODY_BYTES = "1024";
+    const { startDetaServer } = await import("../src/main");
+    const adapters = createMemoryAdapters();
+    const inst = startDetaServer({
+      database: adapters.database as unknown as Database,
+      port: 0,
+    });
+    await new Promise<void>((resolve) => inst.server.once("listening", resolve));
+    const port = (inst.server.address() as import("node:net").AddressInfo).port;
+    try {
+      const res = await fetch(`http://127.0.0.1:${port}/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ event: "GET_FUNC_VERSION", pad: "x".repeat(4096) }),
+      });
+      expect(res.status).toBe(413);
+    } finally {
+      delete process.env.TWIKOO_MAX_BODY_BYTES;
+      await inst.shutdown();
+    }
+  }, 20000);
+});
+
 describe("twikoo-deta 响应透传（fromTkResponse）", () => {
   it("204：无体，且不额外补 Content-Type", () => {
     const { res, out } = makeRes();

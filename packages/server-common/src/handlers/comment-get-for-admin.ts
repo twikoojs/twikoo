@@ -47,7 +47,8 @@ export const commentGetForAdmin: EventHandler = async (ctx) => {
     // 关键词过滤在服务层执行（1.x 为 Mongo $regex $or 的 JS 等价实现）。
     // 关键词形态下总数必须按「过滤后」计数，否则分页控件会与实际页数不符。
     const matched = (await db.getComments(condition as never, { sort: { created: -1 } })).filter(
-      (c) => commentMatchesKeyword(c, keyword),
+      // 管理端搜索可匹配 mail/ip（管理员本就看得到这两个字段）
+      (c) => commentMatchesKeyword(c, keyword, { includeSensitive: true }),
     );
     count = matched.length;
     pageData = matched.slice(per * (page - 1), per * (page - 1) + per);

@@ -70,12 +70,15 @@ export function toTkRequest(event: EoEventLike): TkRequest {
   };
 }
 
-/** 内部统一响应 → EO 返回体（业务 JSON 字符串化）。 */
+/** 内部统一响应 → EO 返回体（状态码与响应头透传；204 无体，业务体 JSON 字符串化）。 */
 export function fromTkResponse(tkRes: TkResponse): EoResult {
+  if (tkRes.status === 204) {
+    return { status: 204, headers: { ...tkRes.headers }, body: "" };
+  }
   return {
-    status: tkRes.status === 204 ? 204 : 200,
+    status: tkRes.status,
     headers: { ...tkRes.headers, "Content-Type": "application/json" },
-    body: tkRes.status === 204 ? "" : JSON.stringify(tkRes.body),
+    body: JSON.stringify(tkRes.body),
   };
 }
 

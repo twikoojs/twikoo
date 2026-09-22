@@ -58,15 +58,31 @@ export function toTkRequest(req: DetaRequestLike): TkRequest {
   };
 }
 
-/** 内部统一响应 → Deta HTTP 响应（业务 JSON；1.x 恒 200）。 */
+/** Node 响应最小结构面（status/json 垫片由 server 引导装配） */
 type MinimalRes = {
   writeHead(code: number, headers: Record<string, string>): unknown;
   end(body?: string): unknown;
 };
 
-/** 内部统一响应 → Deta HTTP 响应（业务 JSON；1.x 恒 200）。 */
+/**
+ * 内部统一响应 → Deta HTTP 响应（状态码与响应头**透传**；204 无体）。
+ *
+ * ⚠️ 不能写死 200 并丢弃 `tkRes.headers`：pipeline 把 5 个 CORS 头算在
+ * `tkRes.headers` 里，OPTIONS 预检依赖它们返回 204 + CORS 头；限流超限则
+ * 依赖 `tkRes.status === 429` 让客户端映射「请求过于频繁」。丢弃后前者会让
+ * 跨源评论直接不可用，后者会让 2.0 的 429 改进在该平台静默失效。
+ *
+ * 与 self-hosted 同为 Node http 形态，实现保持一致。
+ * @param res Node 响应（最小结构面）
+ * @param tkRes 内部统一响应
+ */
 export function fromTkResponse(res: MinimalRes, tkRes: TkResponse): void {
-  res.writeHead(200, { "Content-Type": "application/json" });
+  if (tkRes.status === 204) {
+    res.writeHead(204, tkRes.headers);
+    res.end();
+    return;
+  }
+  res.writeHead(tkRes.status, { ...tkRes.headers, "Content-Type": "application/json" });
   res.end(JSON.stringify(tkRes.body));
 }
 

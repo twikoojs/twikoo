@@ -7,8 +7,9 @@
 import { describe, expect, it } from "vitest";
 import { existsSync } from "node:fs";
 import { getNodemailer, resetCustomLibs } from "@twikoojs/common";
-import { createEoMakersFunc, eoCapabilities, prepareEoRuntime } from "../src/main";
+import { createEoMakersFunc, eoCapabilities, fromTkResponse, prepareEoRuntime } from "../src/main";
 import type { EoEventLike } from "../src/main";
+import type { TkResponse } from "@twikoojs/common";
 
 /** 内存 Blob KV store（JSON 往返模拟持久化） */
 function makeStore(): {
@@ -59,8 +60,36 @@ describe("twikoo-edgeone-makers 薄适配器", () => {
     expect(parsed.code).toBe(0);
   });
 
-  it("受限能力：mail restricted / domPurify false / akismet false / tencentTms false", () => {
-    expect(eoCapabilities.mail).toBe("restricted");
+  it("OPTIONS 预检：204 + CORS 头 + 无体（#1174 同类回归）", async () => {
+    const { store } = makeStore();
+    const fn = createEoMakersFunc({ store });
+    const result = await fn(
+      makeEvent({
+        method: "OPTIONS",
+        headers: { origin: "http://localhost:9820", "access-control-request-method": "POST" },
+        body: {},
+      }),
+    );
+    expect(result.status).toBe(204);
+    expect(result.headers["Access-Control-Allow-Origin"]).toBe("http://localhost:9820");
+    expect(result.headers["Access-Control-Max-Age"]).toBe("600");
+    expect(result.body).toBe("");
+  });
+
+  it("状态码透传：429 不被压成 200（2.0 限流改进依赖它）", () => {
+    const tkRes: TkResponse = {
+      status: 429,
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: { code: 1000, message: "请求过于频繁" },
+    };
+    const result = fromTkResponse(tkRes);
+    expect(result.status).toBe(429);
+    expect(result.headers["Access-Control-Allow-Origin"]).toBe("*");
+    expect(result.headers["Content-Type"]).toBe("application/json");
+    expect(result.body).toContain("请求过于频繁");
+  });
+
+  it("受限能力：mail restricted / domPurify false / akismet false / tencentTms false", () => {    expect(eoCapabilities.mail).toBe("restricted");
     expect(eoCapabilities.domPurify).toBe(false);
     expect(eoCapabilities.akismet).toBe(false);
     expect(eoCapabilities.tencentTms).toBe(false);

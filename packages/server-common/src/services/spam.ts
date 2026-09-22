@@ -6,7 +6,7 @@
  * 1. preCheckSpam 预检（长度 / 屏蔽词 / 人工审核标记 / 违禁词）——同步快速路径；
  * 2. checkCaptcha 验证码（Turnstile / Geetest / Cap 内嵌或外部）；
  * 3. limitFilter 频率限制（单 IP 与全站 10 分钟窗口）；
- * 4. postCheckSpam 后检（腾讯云 TMS / Akismet / LLM，postSubmit 异步阶段）。
+ * 4. postCheckSpam 后检（腾讯云 TMS / Akismet / Jev / LLM，postSubmit 异步阶段）。
  */
 import { createHmac } from "node:crypto";
 import type { Capabilities } from "../ports/capabilities";
@@ -289,6 +289,80 @@ Website: ${commentData.link || ""}`;
 }
 
 /**
+ * Jev 垃圾检测（System One noul 概率判定）。
+ *
+ * 使用固定问题让 Jev 判断整条评论是否为垃圾内容；state 同时包含正文、昵称和网址，
+ * 避免「正文正常但昵称/网址是推广」这类软广告漏判。
+ *
+ * @param comment 评论数据
+ * @param config 全量配置
+ * @param logger 请求日志
+ * @returns 是否垃圾；响应格式异常时抛错，由 postCheckSpam 统一降级为 undefined
+ */
+async function checkByJev(
+  comment: CommentDoc,
+  config: ConfigData,
+  logger: RequestLogger,
+): Promise<boolean> {
+  const endpoint = String(config.JEV_API_ENDPOINT || "https://api.typesafe.ai/v1/systemone");
+  const model = String(config.JEV_MODEL || "jev-latest");
+  const configuredThreshold = Number(config.JEV_SPAM_THRESHOLD);
+  const threshold =
+    config.JEV_SPAM_THRESHOLD !== undefined &&
+    config.JEV_SPAM_THRESHOLD !== "" &&
+    Number.isFinite(configuredThreshold) &&
+    configuredThreshold >= 0 &&
+    configuredThreshold <= 1
+      ? configuredThreshold
+      : 0.9;
+
+  const response = await httpPost<{
+    model?: string;
+    answers?: {
+      spam?: {
+        type?: string;
+        noul?: number;
+      };
+    };
+  }>(
+    endpoint,
+    {
+      model,
+      state: {
+        comment: comment.comment || "",
+        nickname: comment.nick || "",
+        website: comment.link || "",
+      },
+      questions: {
+        spam: {
+          type: "noul",
+          instructions:
+            "Is this submission spam for a personal blog? Treat unsolicited commercial advertisements, promotional links, SEO/link spam, scams, meaningless repetitive content, and automated promotional greetings as spam. Treat genuine questions, technical discussions, constructive feedback, and normal greetings as not spam. Consider all state fields, including nickname and website.",
+        },
+      },
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${String(config.JEV_API_KEY)}`,
+        "Content-Type": "application/json",
+      },
+      timeout: 30000,
+    },
+  );
+
+  const score = response.data?.answers?.spam?.noul;
+  if (typeof score !== "number" || !Number.isFinite(score) || score < 0 || score > 1) {
+    throw new Error("Jev 返回格式不合法：缺少 answers.spam.noul");
+  }
+
+  const isSpam = score >= threshold;
+  logger.info(
+    `Jev 判定为 ${isSpam ? "SPAM" : "HAM"} (score=${score.toFixed(4)}, threshold=${threshold}, model="${response.data.model || model}")`,
+  );
+  return isSpam;
+}
+
+/**
  * LLM 垃圾检测（1.x checkByLLM 对齐：重试 + JSON 校验 + 失败放行兜底）。
  * @param comment 评论数据
  * @param config 全量配置
@@ -346,8 +420,8 @@ async function checkByLLM(
 }
 
 /**
- * 后垃圾评论检测（1.x postCheckSpam 链路对齐：博主豁免 → 腾讯云 →
- * Akismet → LLM；异常不阻断主流程）。
+ * 后垃圾评论检测（1.x postCheckSpam 链路对齐基础上扩展：博主豁免 → 腾讯云 →
+ * Akismet → Jev → LLM；异常不阻断主流程）。
  * @param options 检测入参
  * @returns 是否垃圾；无法判定时 undefined（1.x 兼容）
  */
@@ -434,6 +508,9 @@ export async function postCheckSpam(options: {
         comment_author_url: comment.link,
         comment_content: comment.comment,
       });
+    } else if (config.JEV_API_KEY) {
+      // Jev / System One 概率检测
+      isSpam = await checkByJev(comment, config, logger);
     } else if (config.LLM_API_KEY) {
       // 大语言模型检测
       isSpam = await checkByLLM(comment, config, caps, logger);

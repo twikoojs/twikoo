@@ -509,6 +509,31 @@ function createSettings(): SettingGroup[] {
           value: "",
         },
         {
+          key: "JEV_API_KEY",
+          desc: t("ADMIN_CONFIG_ITEM_JEV_API_KEY"),
+          ph: "your-typesafe-api-key",
+          value: "",
+          secret: true,
+        },
+        {
+          key: "JEV_API_ENDPOINT",
+          desc: t("ADMIN_CONFIG_ITEM_JEV_API_ENDPOINT"),
+          ph: "https://api.typesafe.ai/v1/systemone",
+          value: "",
+        },
+        {
+          key: "JEV_MODEL",
+          desc: t("ADMIN_CONFIG_ITEM_JEV_MODEL"),
+          ph: "jev-latest",
+          value: "",
+        },
+        {
+          key: "JEV_SPAM_THRESHOLD",
+          desc: t("ADMIN_CONFIG_ITEM_JEV_SPAM_THRESHOLD"),
+          ph: "0.9",
+          value: "",
+        },
+        {
           key: "LLM_API_KEY",
           desc: t("ADMIN_CONFIG_ITEM_LLM_API_KEY"),
           ph: "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",

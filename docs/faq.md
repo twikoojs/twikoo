@@ -115,6 +115,17 @@ Akismet (Automattic Kismet) 是应用广泛的一个垃圾留言过滤系统，�
 
 需要注意的是，由于 Akismet 服务响应速度较慢（大约 6 秒），影响用户体验，Twikoo 采取“先放行，后检测”的策略，垃圾评论会在发表后短暂可见。
 
+### 配置 Jev 反垃圾服务
+
+[Jev / System One](https://api.typesafe.ai/docs) 可以直接返回 yes/no 判断的概率值。Twikoo 会将评论正文、昵称和网址一起提交给 Jev，并根据概率阈值判断是否为垃圾评论。
+
+- `JEV_API_KEY`：填写 Jev API 密钥。
+- `JEV_API_ENDPOINT`：填写 API 接口地址（默认 `https://api.typesafe.ai/v1/systemone`）。
+- `JEV_MODEL`：填写模型名称（默认 `jev-latest`）。
+- `JEV_SPAM_THRESHOLD`：垃圾评论概率阈值，范围 0 到 1（默认 `0.9`）。
+
+反垃圾服务按腾讯云内容安全 → Akismet → Jev → LLM 的顺序选择，只会使用第一个已配置的服务。
+
 ### 配置 LLM 反垃圾服务
 
 使用 [OpenAI SDK](https://www.npmjs.com/package/openai) 兼容的 API 服务（如 DeepSeek, OpenAI 等）来实现更智能的垃圾评论检测。管理员可以自定义提示词，灵活定义何为“垃圾评论”。

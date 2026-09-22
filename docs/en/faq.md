@@ -118,6 +118,17 @@ Akismet (Automattic Kismet) is a widely used spam filtering system by Matt Mulle
 1. Register [akismet.com](https://akismet.com)
 2. Select Akismet Personal subscription, copy the Akismet API Key and configure it in the Twikoo admin panel "Anti-Spam" module
 
+### Configure Jev Anti-Spam Service
+
+[Jev / System One](https://api.typesafe.ai/docs) returns a probability for a yes/no decision. Twikoo sends the comment text, nickname, and website together and marks the comment as spam when the returned probability reaches the configured threshold.
+
+- `JEV_API_KEY`: Enter your Jev API key.
+- `JEV_API_ENDPOINT`: Enter the API endpoint URL (default `https://api.typesafe.ai/v1/systemone`).
+- `JEV_MODEL`: Enter the model name (default `jev-latest`).
+- `JEV_SPAM_THRESHOLD`: Spam probability threshold from 0 to 1 (default `0.9`).
+
+Anti-spam services are selected in this order: Tencent Cloud TMS → Akismet → Jev → LLM. Only the first configured service is used.
+
 ### Configure LLM Anti-Spam Service
 
 Use [OpenAI SDK](https://www.npmjs.com/package/openai) compatible API services (such as DeepSeek, OpenAI, etc.) to implement more intelligent spam comment detection. Administrators can customize the prompt to flexibly define what constitutes "spam comments."

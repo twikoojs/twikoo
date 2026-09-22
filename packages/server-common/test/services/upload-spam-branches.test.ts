@@ -260,6 +260,124 @@ describe("postCheckSpam 分支（services/spam）", () => {
     expect(result).toBe(true);
   });
 
+  it("Jev：noul 达到阈值 → true，并发送正文/昵称/网址", async () => {
+    const fetchMock = vi.fn(async (_url: string | URL, init?: RequestInit) => {
+      return new Response(
+        JSON.stringify({
+          model: "jev-1.13.0",
+          answers: { spam: { type: "noul", noul: 0.93 } },
+        }),
+        { status: 200 },
+      );
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await postCheckSpam({
+      comment: {
+        _id: "x",
+        nick: "SEO Agency",
+        link: "https://spam.test",
+        comment: "<p>文章写得不错</p>",
+      },
+      config: {
+        JEV_API_KEY: "jv_test",
+        JEV_API_ENDPOINT: "https://api.test/v1/systemone",
+        JEV_MODEL: "jev-1.13.0",
+        JEV_SPAM_THRESHOLD: "0.9",
+      },
+      caps,
+      logger: noopLogger,
+    });
+
+    expect(result).toBe(true);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe("https://api.test/v1/systemone");
+    expect(init.headers).toMatchObject({
+      Authorization: "Bearer jv_test",
+      "Content-Type": "application/json",
+    });
+    const body = JSON.parse(String(init.body)) as {
+      model: string;
+      state: { comment: string; nickname: string; website: string };
+      questions: { spam: { type: string } };
+    };
+    expect(body.model).toBe("jev-1.13.0");
+    expect(body.state).toEqual({
+      comment: "<p>文章写得不错</p>",
+      nickname: "SEO Agency",
+      website: "https://spam.test",
+    });
+    expect(body.questions.spam.type).toBe("noul");
+  });
+
+  it("Jev：noul 低于阈值 → false", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        return new Response(
+          JSON.stringify({
+            model: "jev-1.13.0",
+            answers: { spam: { type: "noul", noul: 0.42 } },
+          }),
+          { status: 200 },
+        );
+      }),
+    );
+
+    const result = await postCheckSpam({
+      comment: { _id: "x", nick: "reader", comment: "谢谢分享" },
+      config: { JEV_API_KEY: "jv_test", JEV_SPAM_THRESHOLD: "0.8" },
+      caps,
+      logger: noopLogger,
+    });
+
+    expect(result).toBe(false);
+  });
+
+  it("Jev：同时配置 LLM 时优先使用 Jev", async () => {
+    const fetchMock = vi.fn(async () => {
+      return new Response(
+        JSON.stringify({
+          model: "jev-1.13.0",
+          answers: { spam: { type: "noul", noul: 0.99 } },
+        }),
+        { status: 200 },
+      );
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await postCheckSpam({
+      comment: { _id: "x", nick: "SEO", comment: "buy now" },
+      config: { JEV_API_KEY: "jv_test", LLM_API_KEY: "llm_test" },
+      caps,
+      logger: noopLogger,
+    });
+
+    expect(result).toBe(true);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("Jev：返回格式异常 → undefined（失败放行）", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        return new Response(JSON.stringify({ answers: { spam: { type: "noul" } } }), {
+          status: 200,
+        });
+      }),
+    );
+
+    const result = await postCheckSpam({
+      comment: { _id: "x", nick: "reader", comment: "hello" },
+      config: { JEV_API_KEY: "jv_test" },
+      caps,
+      logger: noopLogger,
+    });
+
+    expect(result).toBeUndefined();
+  });
+
   it("空配置 → undefined（无检测器）", async () => {
     const result = await postCheckSpam({
       comment: { _id: "x", mail: "z@t.com" },

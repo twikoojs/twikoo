@@ -49,6 +49,19 @@ describe("@twikoojs/aws-lambda 薄适配器", () => {
     expect(result.statusCode).toBe(200);
   });
 
+  it("204 预检：保留管线产出的 CORS 头（#1174 回归）", async () => {
+    const result = await makeFunc()({
+      requestContext: { http: { method: "OPTIONS", sourceIp: "4.5.6.7" } },
+      headers: { origin: "https://example.com" },
+      body: "",
+      isBase64Encoded: false,
+    });
+    expect(result.statusCode).toBe(204);
+    expect(result.body).toBe("");
+    expect(result.headers["Access-Control-Allow-Origin"]).toBe("https://example.com");
+    expect(result.headers["Access-Control-Allow-Methods"]).toBe("POST");
+  });
+
   it("base64 body 解码", async () => {
     const b64 = Buffer.from(JSON.stringify({ event: "GET_FUNC_VERSION" })).toString("base64");
     const result = await makeFunc()(makeEventV2({ body: b64, isBase64Encoded: true }));

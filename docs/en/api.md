@@ -102,6 +102,27 @@ twikoo.init({
 });
 ```
 
+## On submit
+
+Callback function before the comment is submitted. The parameter is the comment data about to be sent.<br>
+You can modify these fields in place (e.g. rewrite the nickname, append a tag).<br>
+**Throwing an exception in the callback aborts the submission** (the form shows the error); returning `false` does not block it.
+
+### Version
+
+`>= 2.0.7`
+
+### Example
+
+```js
+twikoo.init({
+  ......,
+  onSubmit: function (comment) {
+    comment.nick = comment.nick + ' (from mini program)';
+  }
+});
+```
+
 ## On comment loaded
 
 Callback function after comments are loaded successfully.<br>

@@ -162,6 +162,52 @@ describe("sendNotice 全链路（services/notify）", () => {
     expect(pushed).toHaveLength(1);
   });
 
+  it("PUSHOO_OPTIONS：JSON 附加参数透传给 pushoo（Bark 分组等）", async () => {
+    const pushed: Array<{ options: { bark: Record<string, unknown> } }> = [];
+    setLibImporter(async (specifier) => {
+      if (specifier === "pushoo") {
+        return {
+          /**
+           *
+           */
+          default: async (_c: string, o: unknown) => {
+            pushed.push(o as never);
+            return { code: 200 };
+          },
+        };
+      }
+      if (specifier === "html-to-text") {
+        return {
+          /**
+           *
+           */
+          compile: () => (html: string) => html.replace(/<[^>]+>/g, ""),
+        };
+      }
+      throw new Error(`unexpected ${specifier}`);
+    });
+    const ctx = makeCtx({
+      PUSHOO_CHANNEL: "bark",
+      PUSHOO_TOKEN: "https://bark.test",
+      PUSHOO_OPTIONS: JSON.stringify({ bark: { group: "Twikoo", level: "timeSensitive" } }),
+    });
+    await sendNotice({
+      comment: { _id: "c", nick: "张三", mail: "z@t.com", comment: "内容", url: "/p/1" } as never,
+      config: ctx.config,
+      caps,
+      logger: ctx.logger,
+      /**
+       *
+       */
+      getParentComment: async () => null,
+    });
+    expect(pushed).toHaveLength(1);
+    expect(pushed[0].options.bark.group).toBe("Twikoo");
+    expect(pushed[0].options.bark.level).toBe("timeSensitive");
+    // 内置跳转 url 仍在，且不被附加参数覆盖
+    expect(String(pushed[0].options.bark.url)).toContain("/p/1");
+  });
+
   it("垃圾评论 NOTIFY_SPAM=false：三路全部跳过", async () => {
     const ctx = makeCtx(smtpConfig);
     await sendNotice({

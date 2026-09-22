@@ -225,6 +225,25 @@ export function runContractSuite(name: string, fixture: ContractFixture): void {
       expect(Array.isArray(res.body.data)).toBe(true);
     });
 
+    it("COMMENT_EXPORT_FOR_ADMIN：按 collection 取对应集合，未知集合报错", async () => {
+      await seed();
+      await adapters.database.incCounter("/contract", "契约页");
+      const counters = await postAdmin({
+        event: "COMMENT_EXPORT_FOR_ADMIN",
+        collection: "counter",
+      });
+      expect(counters.body.code).toBe(0);
+      expect(counters.body.data as unknown[]).toHaveLength(1);
+      expect((counters.body.data as Array<{ url: string }>)[0].url).toBe("/contract");
+      // 显式传 comment 与缺省一致
+      const comments = await postAdmin({ event: "COMMENT_EXPORT_FOR_ADMIN", collection: "comment" });
+      expect(comments.body.code).toBe(0);
+      expect((comments.body.data as Array<{ comment?: string }>)[0].comment).toBe("<p>契约评论</p>");
+      const unknown = await postAdmin({ event: "COMMENT_EXPORT_FOR_ADMIN", collection: "profile" });
+      expect(unknown.body.code).toBe(RES_CODE.FAIL);
+      expect(unknown.body.message).toBe("collection 仅支持 comment 或 counter");
+    });
+
     it("COMMENT_LIKE：赞后 ups 含 uid", async () => {
       const id = await seed();
       const res = await post({ event: "COMMENT_LIKE", id, accessToken: "liker" });

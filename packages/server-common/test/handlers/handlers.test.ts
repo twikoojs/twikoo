@@ -232,6 +232,24 @@ describe("COMMENT_IMPORT_FOR_ADMIN / COMMENT_EXPORT_FOR_ADMIN", () => {
     });
     expect(res2.body.log).toContain("不支持 unknown-src");
   });
+
+  it("导出访问量：collection=counter 取计数而非评论", async () => {
+    await seed();
+    await adapters.database.incCounter("/export", "导出页");
+    const res = await postAdmin({ event: "COMMENT_EXPORT_FOR_ADMIN", collection: "counter" });
+    expect(res.body.code).toBe(0);
+    const data = res.body.data as Array<{ url: string; time: number }>;
+    expect(data).toHaveLength(1);
+    expect(data[0].url).toBe("/export");
+    expect(data[0].time).toBe(1);
+  });
+
+  it("导出：未知 collection → FAIL 且不返回数据", async () => {
+    const res = await postAdmin({ event: "COMMENT_EXPORT_FOR_ADMIN", collection: "profile" });
+    expect(res.body.code).toBe(1000);
+    expect(res.body.message).toBe("collection 仅支持 comment 或 counter");
+    expect(res.body.data).toBeUndefined();
+  });
 });
 
 describe("COMMENT_LIKE", () => {

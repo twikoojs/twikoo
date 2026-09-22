@@ -373,4 +373,15 @@ services:
       TWIKOO_THROTTLE: 1000
     volumes:
       - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
 ```
+
+### 健康检查
+
+私有部署提供 `GET /ping`（`/healthz` 等价）作为健康检查端点：它不读取数据库，只要进程在监听就返回 `200`。上面的 `healthcheck` 用的就是它。
+
+镜像基于 alpine，自带 `wget`，无需额外安装。注意该端点反映的是「进程活着」而不是「数据库可用」—— 要探数据库，请改用任意业务事件（如 `GET_FUNC_VERSION`）。

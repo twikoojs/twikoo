@@ -81,7 +81,7 @@ export function toTkRequest(event: NetlifyEventLike): TkRequest {
 /** 内部统一响应 → Netlify 返回体（204 无体；业务体字符串化）。 */
 export function fromTkResponse(tkRes: TkResponse): NetlifyResult {
   if (tkRes.status === 204) {
-    return { statusCode: 204, headers: {}, body: "" };
+    return { statusCode: 204, headers: { ...tkRes.headers }, body: "" };
   }
   return {
     statusCode: tkRes.status,

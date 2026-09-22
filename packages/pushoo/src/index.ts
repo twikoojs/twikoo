@@ -23,6 +23,30 @@ export interface NoticeOptions {
      * url 用于点击通知后跳转的地址
      */
     url?: string;
+    /**
+     * 通知级别（active / timeSensitive / critical / passive）
+     */
+    level?: string;
+    /**
+     * 通知分组（同组通知在系统通知中心折叠展示）
+     */
+    group?: string;
+    /**
+     * 自定义图标地址
+     */
+    icon?: string;
+    /**
+     * 铃声名（Bark App 内置或自定义铃声）
+     */
+    sound?: string;
+    /**
+     * 角标数字
+     */
+    badge?: number | string;
+    /**
+     * 是否保存到通知历史（"1" 保存 / "0" 不保存）
+     */
+    isArchive?: "1" | "0";
   };
   /**
    * IFTTT通知方式的参数配置
@@ -77,6 +101,27 @@ export interface NoticeOptions {
      */
     msgtype?: string;
   };
+  /**
+   * ntfy 通知方式的参数配置
+   */
+  ntfy?: {
+    /**
+     * 访问令牌（topic 受保护时使用，作为 Bearer 认证）
+     */
+    accessToken?: string;
+    /**
+     * 优先级，1-5 或 min/low/default/high/urgent
+     */
+    priority?: string | number;
+    /**
+     * 标签，逗号分隔
+     */
+    tags?: string;
+    /**
+     * 点击通知后跳转的地址
+     */
+    click?: string;
+  };
 }
 export interface CommonOptions {
   token: string;
@@ -105,10 +150,12 @@ export type ChannelType =
   | "igot"
   | "telegram"
   | "feishu"
+  | "lark"
   | "ifttt"
   | "wecombot"
   | "discord"
   | "wxpusher"
+  | "ntfy"
   | "join";
 
 function checkParameters(options: any, requires: string[] = []) {
@@ -139,7 +186,7 @@ async function sendRequest(
   const text = await response.text();
   let data: any = text;
   try {
-    data = text ? JSON.parse(text) : {};
+    data = text ? JSON.parse(text) : text;
   } catch {
     // 非 JSON 响应保持文本形态（与 axios 的 response.data 一致）
   }
@@ -456,9 +503,13 @@ async function noticeBark(options: CommonOptions) {
   if (!url.endsWith("/")) url += "/";
   const title = encodeURIComponent(options.title || getTitle(options.content));
   const content = encodeURIComponent(getTxt(options.content));
-  const params = new URLSearchParams({
-    url: options?.options?.bark?.url || "",
-  });
+  /** url 沿用 1.x：即使未配置也带上（行为基准）；其余可选参数有值才透传 */
+  const params = new URLSearchParams({ url: options?.options?.bark?.url || "" });
+  for (const [key, value] of Object.entries(options?.options?.bark ?? {})) {
+    if (key === "url") continue;
+    if (value === undefined || value === null || value === "") continue;
+    params.set(key, String(value));
+  }
   const response = await httpGet(`${url}${title}/${content}/`, { params });
   return response.data;
 }
@@ -571,12 +622,15 @@ async function noticeTelegram(options: CommonOptions) {
 }
 
 /**
- * https://www.feishu.cn/hc/zh-CN/articles/360024984973
+ * 飞书 / Lark 机器人推送：两端点仅开放平台 base URL 不同，其余请求语义一致。
+ * @param baseUrl 开放平台 base URL
+ * @param options 推送参数
+ * @returns 接口返回体
  */
-async function noticeFeishu(options: CommonOptions) {
+async function noticeFeishuBot(baseUrl: string, options: CommonOptions) {
   checkParameters(options, ["token", "content"]);
-  const v1 = "https://open.feishu.cn/open-apis/bot/hook/";
-  const v2 = "https://open.feishu.cn/open-apis/bot/v2/hook/";
+  const v1 = `${baseUrl}/open-apis/bot/hook/`;
+  const v2 = `${baseUrl}/open-apis/bot/v2/hook/`;
   let url;
   let params;
   if (options.token.substring(0, 4).toLowerCase() === "http") {
@@ -601,6 +655,20 @@ async function noticeFeishu(options: CommonOptions) {
   }
   const response = await httpPost(url, params);
   return response.data;
+}
+
+/**
+ * https://www.feishu.cn/hc/zh-CN/articles/360024984973
+ */
+async function noticeFeishu(options: CommonOptions) {
+  return noticeFeishuBot("https://open.feishu.cn", options);
+}
+
+/**
+ * Lark（飞书国际版）：https://open.larksuite.com/
+ */
+async function noticeLark(options: CommonOptions) {
+  return noticeFeishuBot("https://open.larksuite.com", options);
 }
 
 /**
@@ -737,6 +805,48 @@ async function noticeJoin(options: CommonOptions) {
   return response.data;
 }
 
+/**
+ * 头部值编码：HTTP 头部只接受 latin1，非 ASCII 值按 RFC 2047 编码（ntfy 支持该形式）
+ * @param value 原始头部值
+ * @returns 可写入头部的值
+ */
+function encodeHeaderValue(value: string): string {
+  if (/^[\x20-\x7e]*$/.test(value)) return value;
+  const bytes = new TextEncoder().encode(value);
+  let binary = "";
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+  const base64 =
+    typeof Buffer === "undefined" ? btoa(binary) : Buffer.from(bytes).toString("base64");
+  return `=?UTF-8?B?${base64}?=`;
+}
+
+/**
+ * ntfy 推送
+ * 文档: https://docs.ntfy.sh/publish/
+ * @param options 推送参数
+ * @returns 接口返回体
+ */
+async function noticeNtfy(options: CommonOptions) {
+  checkParameters(options, ["token", "content"]);
+  // token 支持 topic 名（公共实例）或完整 URL（自建实例）
+  const url = options.token.startsWith("http")
+    ? options.token
+    : `https://ntfy.sh/${options.token}`;
+  const ntfy = options.options?.ntfy;
+  const headers: Record<string, string> = {
+    "Content-Type": "text/plain; charset=utf-8",
+    Title: encodeHeaderValue(options.title || getTitle(options.content)),
+  };
+  if (ntfy?.priority !== undefined) headers.Priority = String(ntfy.priority);
+  if (ntfy?.tags) headers.Tags = ntfy.tags;
+  if (ntfy?.click) headers.Click = ntfy.click;
+  if (ntfy?.accessToken) headers.Authorization = `Bearer ${ntfy.accessToken}`;
+  const response = await httpPost(url, getTxt(options.content), { headers });
+  return response.data;
+}
+
 async function notice(channel: ChannelType | string, options: CommonOptions) {
   try {
     let data: any;
@@ -757,10 +867,12 @@ async function notice(channel: ChannelType | string, options: CommonOptions) {
       igot: noticeIgot,
       telegram: noticeTelegram,
       feishu: noticeFeishu,
+      lark: noticeLark,
       ifttt: noticeIfttt,
       wecombot: noticeWecombot,
       discord: noticeDiscord,
       wxpusher: noticeWxPusher,
+      ntfy: noticeNtfy,
       join: noticeJoin,
     }[channel.toLowerCase()];
     if (noticeFn) {
@@ -807,9 +919,11 @@ export {
   noticeIgot,
   noticeTelegram,
   noticeFeishu,
+  noticeLark,
   noticeIfttt,
   noticeWecombot,
   noticeDiscord,
   noticeWxPusher,
+  noticeNtfy,
   noticeJoin,
 };

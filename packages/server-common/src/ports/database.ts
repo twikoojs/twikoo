@@ -3,7 +3,7 @@
  *
  * 抽象要抓**语义**而非 API（规范原文）：MongoDB / LokiJS / Blob KV / CloudBase DB
  * 各自实现同一接口，业务层不再关心用哪个库。方法名与分组见下表：
- * 评论 8 / 计数 2 / 配置 2 / 验证码 3 / 生命周期 2，共 17 个方法。
+ * 评论 8 / 计数 3 / 配置 2 / 验证码 3 / 生命周期 2，共 18 个方法。
  *
  * 形态设计：每个方法以独立的函数类型**方法级导出**，再由 {@link Database} 接口聚合——
  * 四个数据库实现可按方法类型逐一核对签名，契约测试也可按方法粒度引用。
@@ -198,6 +198,9 @@ export type BulkAddComments = (list: CommentDoc[]) => Promise<void>;
 /** 计数：获取页面评论计数；无记录返回 null */
 export type GetCounter = (url: string) => Promise<CounterDoc | null>;
 
+/** 计数：获取全部页面评论计数（管理员导出用） */
+export type GetAllCounters = () => Promise<CounterDoc[]>;
+
 /** 计数：页面评论计数自增（无记录则创建；title 为可选页面标题，1.x 语义）；返回更新后的计数 */
 export type IncCounter = (url: string, title?: string) => Promise<CounterDoc>;
 
@@ -217,8 +220,8 @@ export type CapSet = (key: string, value: unknown) => Promise<void>;
 export type CapDel = (key: string) => Promise<void>;
 
 /**
- * 统一数据库接口（方法表全量聚合：评论 8 / 计数 2 / 配置 2 / 验证码 3 /
- * 生命周期 2，共 17 个方法）。各实现见：MongoDatabase（vercel / cloudbase）、
+ * 统一数据库接口（方法表全量聚合：评论 8 / 计数 3 / 配置 2 / 验证码 3 /
+ * 生命周期 2，共 18 个方法）。各实现见：MongoDatabase（vercel / cloudbase）、
  * LokiDatabase（self-hosted）、BlobKvDatabase（eo-makers）、CloudBaseDatabase（cloudbase）。
  */
 export interface Database {
@@ -244,6 +247,8 @@ export interface Database {
   bulkAddComments: BulkAddComments;
   /** 计数：获取页面评论计数 */
   getCounter: GetCounter;
+  /** 计数：获取全部页面评论计数 */
+  getAllCounters: GetAllCounters;
   /** 计数：页面评论计数自增 */
   incCounter: IncCounter;
   /** 配置：读取配置 */

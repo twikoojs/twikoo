@@ -342,4 +342,30 @@ describe("tkserver 优雅退出全流程", () => {
     },
     20000,
   );
+
+  it("健康检查：GET /ping 直接 200 + pong，且不进 pipeline（数据库不可用也不受影响）", async () => {
+    process.env.TWIKOO_SKIP_BOOT = "1";
+    const { createTkserverServer } = await import("../src/server");
+    /** 任何方法都抛错的数据库替身：走 pipeline 的请求必然失败，/ping 短路则不受影响 */
+    const failingDb = new Proxy({} as Database, {
+      get: (_target, prop) => async () => {
+        throw new Error(`db.${String(prop)} 被调用`);
+      },
+    });
+    const inst = createTkserverServer({ database: failingDb });
+    await new Promise<void>((resolve) => inst.server.listen(0, "127.0.0.1", resolve));
+    const port = (inst.server.address() as AddressInfo).port;
+    try {
+      const ping = await fetch(`http://127.0.0.1:${port}/ping`);
+      expect(ping.status).toBe(200);
+      const body = (await ping.json()) as { code: number; message: string };
+      expect(body.code).toBe(0);
+      expect(body.message).toBe("pong");
+      // 编排系统常用的 /healthz 同名支持
+      const healthz = await fetch(`http://127.0.0.1:${port}/healthz`);
+      expect(healthz.status).toBe(200);
+    } finally {
+      await inst.gracefulShutdown();
+    }
+  }, 20000);
 });

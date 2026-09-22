@@ -66,7 +66,7 @@ console.log(result);
 
 | 参数     | 必填 | 默认       | 说明                                                                                                                                                                                                                               |
 | -------- | ---- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 平台名称 | ✅   | 无         | 字符串，平台名称的缩写，支持：`webhook`、`qmsg`、`serverchan`、`pushplus`、`pushplushxtrip`、`dingtalk`、`wecom`、`bark`、`gocqhttp`、`atri`、`pushdeer`、`igot`、`telegram`、`feishu`、`ifttt`、`wecombot`、`discord`, `wxpusher` |
+| 平台名称 | ✅   | 无         | 字符串，平台名称的缩写，支持：`webhook`、`qmsg`、`serverchan`、`pushplus`、`pushplushxtrip`、`dingtalk`、`wecom`、`bark`、`gocqhttp`、`onebot`、`atri`、`pushdeer`、`igot`、`telegram`、`feishu`、`lark`、`ifttt`、`wecombot`、`discord`、`wxpusher`、`ntfy` |
 | token    | ✅   | 无         | 平台用户身份标识，通常情况下是一串数字和字母组合，详情和示例见下方详细说明                                                                                                                                                         |
 | title    |      | 内容第一行 | 可选，消息标题，如果推送平台不支持消息标题，则会拼接在正文首行                                                                                                                                                                     |
 | content  | ✅   | 无         | Markdown 格式的推送内容，如果推送平台不支持 Markdown，pushoo 会自动转换成支持的格式                                                                                                                                                |
@@ -95,6 +95,30 @@ interface NoticeOptions {
      * url 用于点击通知后跳转的地址
      */
     url?: string;
+    /**
+     * 通知级别（active / timeSensitive / critical / passive）
+     */
+    level?: string;
+    /**
+     * 通知分组（同组通知在系统通知中心折叠展示）
+     */
+    group?: string;
+    /**
+     * 自定义图标地址
+     */
+    icon?: string;
+    /**
+     * 铃声名（Bark App 内置或自定义铃声）
+     */
+    sound?: string;
+    /**
+     * 角标数字
+     */
+    badge?: number | string;
+    /**
+     * 是否保存到通知历史（"1" 保存 / "0" 不保存）
+     */
+    isArchive?: "1" | "0";
   };
   /**
    * IFTTT 通知方式的参数配置
@@ -124,6 +148,27 @@ interface NoticeOptions {
      * 消息类型，目前支持 text、markdown。不设置，默认为 text。
      */
     msgtype?: string;
+  };
+  /**
+   * ntfy 通知方式的参数配置
+   */
+  ntfy?: {
+    /**
+     * 访问令牌（topic 受保护时使用，作为 Bearer 认证）
+     */
+    accessToken?: string;
+    /**
+     * 优先级，1-5 或 min/low/default/high/urgent
+     */
+    priority?: string | number;
+    /**
+     * 标签，逗号分隔
+     */
+    tags?: string;
+    /**
+     * 点击通知后跳转的地址
+     */
+    click?: string;
   };
 }
 ```
@@ -219,9 +264,11 @@ Push Plus Hxtrip 是中道（苏州）旅游网络科技有限公司提供的第
 3. 应用名称填入机器人的名称，应用 logo 选择机器人的头像，可见范围选择公司名
 4. 创建完成后进入应用详情页，可以得到应用 ID( `agentid` )，应用 Secret( `secret` )，复制<br>
    PS：获取应用 Secret 时，可能会将其推送到企业微信客户端，这时候微信里边是看不到的，需要在企业微信客户端里边才能看到
-5. 进入「[我的企业](https://work.weixin.qq.com/wework_admin/frame#profile)」页面，拉到最下边，可以看到企业 ID，复制
-6. 进入「我的企业」 → 「[微信插件](https://work.weixin.qq.com/wework_admin/frame#profile/wxPlugin)」，拉到下边扫描二维码，关注以后即可收到推送的消息
-7. 将第 4 步和第 5 步取得的 `企业ID#应用Secret#应用ID` 拼到一起，中间用“`#`”号分隔，填入 pushoo 的 token 中
+5. 自 2022 年 6 月 20 日起，企业微信要求[自建应用配置可信 IP](https://work.weixin.qq.com/nl/act/p/32d807ad4c554975)，且可信 IP 不可公用。在企业微信管理后台进入第 4 步创建的应用详情页，找到「企业可信 IP」配置项，添加调用接口的服务器公网 IP。私有部署填服务器公网 IP 即可；Serverless 等出口 IP 不固定的部署方式可能无法通过校验<br>
+   PS：若推送失败，日志出现「不安全的访问 IP」或错误码 `60020`，表示当前出口 IP 不在可信 IP 列表中，原因可能是未配置、配置错误或配置已过期。详见[官方错误码说明](https://developer.work.weixin.qq.com/document/path/90475#%E9%94%99%E8%AF%AF%E7%A0%81%EF%BC%9A60020)
+6. 进入「[我的企业](https://work.weixin.qq.com/wework_admin/frame#profile)」页面，拉到最下边，可以看到企业 ID，复制
+7. 进入「我的企业」 → 「[微信插件](https://work.weixin.qq.com/wework_admin/frame#profile/wxPlugin)」，拉到下边扫描二维码，关注以后即可收到推送的消息
+8. 将第 4 步和第 6 步取得的 `企业ID#应用Secret#应用ID` 拼到一起，中间用“`#`”号分隔，填入 pushoo 的 token 中
 
 示例 token：`ww97a01a*****1e5f1#xHapDXmgZtlBgRQQXMb4kfh3y75Ynoubl*****l9ytE#1000005`
 
@@ -229,6 +276,12 @@ PS：如果出现接口请求正常，企业微信接受消息正常，个人微
 
 - 进入「我的企业」 → 「微信插件」，拉到最下方，勾选「允许成员在微信插件中接收和回复聊天消息」
 - 在企业微信客户端「我」 → 「设置」 → 「新消息通知」中关闭「仅在企业微信中接受消息」限制条件
+
+PS：如果推送失败，日志中出现错误码 60020（not allow to access from your ip），说明企业微信对调用方 IP 有限制，需将部署 Twikoo 的服务器出口 IP 加入可信 IP 名单：
+
+- 进入「应用管理」 → 选择对应自建应用 → 「企业可信 IP」，填入服务器 IP
+- 排查入口：[接口调试工具](https://open.work.weixin.qq.com/devtool/query?e=60020)、[错误码 60020 说明](https://developer.work.weixin.qq.com/document/path/90475#错误码：60020)
+- 只有具备稳定出口 IP 的部署才能直接配置可信 IP；其他平台需要配置固定出口（例如 NAT）或持续同步平台公布的完整 IP 网段，本机部署则为公网出口 IP
 
 ### 💬 [Bark](https://github.com/Finb/Bark) <sub>缩写：`bark`</sub>
 
@@ -243,12 +296,25 @@ Bark 是 iOS 通知中心推送工具，可以推送消息到苹果手机上，�
 
 go-cqhttp 是开源 QQ 机器人程序，免费，需自行搭建，插件十分丰富，但“野生”机器人并没有得到 Tencent 官方的支持，有账号被冻结的风险。
 
+PS：go-cqhttp 已停止维护（[仓库](https://github.com/Mrs4s/go-cqhttp) 最后一次提交为 2024-05，最新版本仍是 2023-10 发布的 v1.2.0），新部署建议改用 OneBot 协议的实现（NapCat、Lagrange.OneBot 等），配置方式见下方 OneBot 章节；已配置好的 go-cqhttp 可继续使用，接口本身没有变化。
+
 1. 前往 [go-cqhttp release](https://github.com/Mrs4s/go-cqhttp) 下载对应系统版本
 2. 此处省略安装过程，可参考 [https://docs.go-cqhttp.org/guide/quick_start.html](https://docs.go-cqhttp.org/guide/quick_start.html)
 3. 修改配置文件，配置 `default-middlewares` 下面的 `access-token`，启动 go-cqhttp
 4. 按照示例所示的 API 调用地址，填入 pushoo 的 token 中
 
 示例 token：`http://你的IP或域名:端口号/send_private_msg?user_id=QQ号&access_token=你配置的token`（QQ 号）或 `http://你的IP或域名:端口号/send_group_msg?group_id=群号&access_token=你配置的token`（QQ 群）
+
+### 💬 [OneBot](https://11.onebot.dev/) <sub>缩写：`onebot`</sub>
+
+OneBot 是 QQ 机器人应用层协议标准，NapCat、Lagrange、LLOneBot 等实现均支持，免费，需自行搭建。Twikoo 仅使用其正向 HTTP 通信，不做长连接。
+
+1. 部署一个 OneBot 11 实现（如 [NapCat](https://github.com/NapNeko/NapCatQQ)、[Lagrange.OneBot](https://github.com/LagrangeDev/Lagrange.Core)），启用 HTTP 服务端
+2. 按示例所示的 API 调用地址，填入 pushoo 的 token 中
+
+示例 token：`http://你的IP或域名:端口号/send_private_msg?user_id=QQ号`（QQ 号，鉴权 token 追加 `&access_token=你配置的token`）或 `http://你的IP或域名:端口号/send_group_msg?group_id=群号&access_token=你配置的token`（QQ 群）
+
+PS：`onebot` 与 `gocqhttp` 的 API 路径相同，但请求形态不同——本通道会把 token 里的 `user_id`、`group_id` 从 URL 移到 JSON 请求体中（`access_token` 仍留在 URL 上），而 `gocqhttp` 用表单编码的 `message` 体。若从 go-cqhttp 迁移，按上述格式重填 token 即可，接口文档见 [https://11.onebot.dev/](https://11.onebot.dev/)
 
 ### 💬 [atri](https://github.com/TIANLI0/push-bot-api/) <sub>缩写：`atri`</sub>
 
@@ -293,6 +359,17 @@ Telegram 是自由的聊天工具，支持机器人 API，免费，中国大陆�
 2. 复制机器人的 Webhook，填入 pushoo 的 token 中
 
 示例 token：`https://open.feishu.cn/open-apis/bot/v2/hook/393df85f-7b2c-4ff6-bd4f-*******3ed54`（完整的 Webhook）或者 `393df85f-7b2c-4ff6-bd4f-*******3ed54`（只保留 access token）
+
+### 💬 [Lark](https://open.larksuite.com/) <sub>缩写：`lark`</sub>
+
+Lark 是飞书的国际版，机器人配置方式与飞书相同，`lark` 通道会把 Webhook 指向 `open.larksuite.com`。
+
+1. 在 Lark 群组中添加自定义机器人，复制机器人的 Webhook
+2. 将 Webhook 或其中的 access token 填入 pushoo 的 token 中
+
+示例 token：`https://open.larksuite.com/open-apis/bot/v2/hook/393df85f-7b2c-4ff6-bd4f-*******3ed54`（完整的 Webhook）或者 `393df85f-7b2c-4ff6-bd4f-*******3ed54`（只保留 access token）
+
+PS：两个开放平台的 API 是互通的，已经填了完整 Webhook 的场景用 `feishu` 也能发出，`lark` 主要用于只持有 access token、需要拼接国际版域名的情况
 
 ### 💬 [IFTTT](https://ifttt.com/maker_webhooks) <sub>缩写：`ifttt`</sub>
 
@@ -352,6 +429,17 @@ WxPusher 是一款微信推送平台，免费。
 
 示例 token: `apiKey#deviceId`
 
+### 💬 [ntfy](https://ntfy.sh/) <sub>缩写：`ntfy`</sub>
+
+ntfy 是开源的通知推送服务，支持自建，提供 Android、iOS 客户端和浏览器通知，免费。
+
+1. 在 [ntfy.sh](https://ntfy.sh/) 或自建实例上确定一个 topic 名称（topic 名相当于密码，请勿使用易被猜到的名字）
+2. 把 topic 名称填入 pushoo 的 token 中；自建实例可直接填完整的发布地址
+
+示例 token：`my-topic`（公共实例，等价于 `https://ntfy.sh/my-topic`）或 `https://ntfy.example.com/my-topic`（自建实例）
+
+PS：topic 受保护（用户名密码或访问令牌）时，在 `options` 中设置 `ntfy.accessToken`，pushoo 会以 `Authorization: Bearer` 发送；此外还可用 `ntfy.priority`（1-5 或 `min`/`low`/`default`/`high`/`urgent`）、`ntfy.tags`、`ntfy.click` 设置优先级、标签与点击跳转地址
+
 ## 计划支持的推送平台
 
 - 阿里云短信
@@ -364,3 +452,13 @@ WxPusher 是一款微信推送平台，免费。
 - **API 不变**：`notice()` 与 `NoticeOptions` 的签名与行为保持兼容。
 
 对使用方的影响：如果您在 `package.json` 里写的是 `"pushoo": "^0.1.x"`，**不会**自动升到 2.0.0（major 变更本就跨不过 `^0.1`）——需要手动改成 `"pushoo": "^2.0.0"` 后再安装。升级后原有 `notice()` 调用无需改动。
+
+## Twikoo 中的 Bark 附加参数
+
+Twikoo 配置项 `PUSHOO_OPTIONS` 接受一段 JSON，原样透传给 pushoo 的 `options` 参数。Bark 示例（通知分组、级别、图标）：
+
+```json
+{ "bark": { "group": "Twikoo", "level": "timeSensitive", "icon": "https://example.com/icon.png" } }
+```
+
+该配置项面向高级用户：管理面板暂无输入框，可通过数据库或管理 API 直接写入配置键 `PUSHOO_OPTIONS`。其他平台的附加参数同样经由它透传，键名与各平台的 `options.<channel>` 一致。

@@ -1,5 +1,7 @@
 # QQ 私有化部署文档
 
+> go-cqhttp 已停止维护（最后一次提交为 2024-05，最新版本仍是 2023-10 发布的 v1.2.0），本文档仅适用于继续使用 go-cqhttp 的场景。新部署建议改用 OneBot 协议的实现（NapCat、Lagrange.OneBot 等），pushoo 的配置方式见[推送平台文档](pushoo.md)的 OneBot 章节。
+
 ## 1. 下载 go-cq
 
 前往[go-cqhttp release](https://github.com/Mrs4s/go-cqhttp)下载对应系统版本。

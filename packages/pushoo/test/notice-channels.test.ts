@@ -78,6 +78,23 @@ const CHANNELS: Array<{
     urlContainsDecoded: ["正文内容"],
   },
   {
+    // bark：Bark 原生 query 参数透传（level / group / icon 等，空值不发送）
+    channel: "bark",
+    urlContains: "api.day.app/T0KEN/",
+    bodyContains: [],
+    payload: {
+      options: {
+        bark: {
+          level: "timeSensitive",
+          group: "Twikoo",
+          icon: "https://i.example/icon.png",
+          sound: "calypso",
+        },
+      },
+    },
+    urlContainsDecoded: ["level=timeSensitive", "group=Twikoo", "icon=https://i.example/icon.png"],
+  },
+  {
     // gocqhttp：token 为完整 HTTP 地址（1.x 语义）
     channel: "gocqhttp",
     urlContains: "https://gocq.test/send_private_msg",
@@ -104,6 +121,12 @@ const CHANNELS: Array<{
   {
     channel: "feishu",
     urlContains: "open.feishu.cn/open-apis/bot/v2/hook/T0KEN",
+    bodyContains: ["正文内容"],
+  },
+  {
+    // lark：与 feishu 同语义，仅开放平台 base URL 不同
+    channel: "lark",
+    urlContains: "open.larksuite.com/open-apis/bot/v2/hook/T0KEN",
     bodyContains: ["正文内容"],
   },
   {
@@ -139,6 +162,13 @@ const CHANNELS: Array<{
     bodyContains: ["正文内容"],
     payload: { token: "KEY1#DEV1" },
   },
+  {
+    // ntfy：token 为 topic 名（公共实例），自建实例可填完整 URL
+    channel: "ntfy",
+    urlContains: "ntfy.sh/T0PIC",
+    bodyContains: ["正文内容"],
+    payload: { token: "T0PIC" },
+  },
 ];
 
 describe("pushoo 渠道请求构造", () => {
@@ -164,6 +194,14 @@ describe("pushoo 渠道请求构造", () => {
     expect(httpCalls[httpCalls.length - 1].url).toContain("sctapi.ftqq.com/SCT123ABC.send");
   });
 
+  it("bark：未配置的可选参数不发送（url= 沿用 1.x 保留）", async () => {
+    await notice("bark", base as never);
+    const url = decodeURIComponent(httpCalls[httpCalls.length - 1].url);
+    expect(url).toContain("url=");
+    expect(url).not.toContain("level=");
+    expect(url).not.toContain("group=");
+  });
+
   it("serverchain 与 serverchan 同端点（1.x 别名语义）", async () => {
     await notice("serverchain", base as never);
     expect(httpCalls[httpCalls.length - 1].url).toContain("sc.ftqq.com");
@@ -186,6 +224,64 @@ describe("pushoo 渠道请求构造", () => {
     expect(call.url).toContain("https://my.test/hook?");
     expect(decodeURIComponent(call.url)).toContain("content=正文内容");
     expect(call.method).toBe("GET");
+  });
+
+  it("ntfy：自建实例填完整 URL，认证与优先级走请求头", async () => {
+    await notice("ntfy", {
+      ...base,
+      token: "https://ntfy.test/my-topic",
+      options: {
+        ntfy: { accessToken: "tk_test", priority: 5, tags: "warning", click: "https://blog.test" },
+      },
+    } as never);
+    const call = httpCalls[httpCalls.length - 1];
+    expect(call.url).toBe("https://ntfy.test/my-topic");
+    expect(call.headers).toMatchObject({
+      Authorization: "Bearer tk_test",
+      Priority: "5",
+      Tags: "warning",
+      Click: "https://blog.test",
+    });
+  });
+
+  it("ntfy：非 ASCII 标题按 RFC 2047 编码（HTTP 头部不接受 latin1 以外的字符）", async () => {
+    await notice("ntfy", { ...base, token: "T0PIC", title: "标题" } as never);
+    const headers = httpCalls[httpCalls.length - 1].headers as Record<string, string>;
+    expect(headers.Title).toBe(`=?UTF-8?B?${Buffer.from("标题", "utf8").toString("base64")}?=`);
+  });
+
+  it("ntfy：ASCII 标题原样写入 Title 头", async () => {
+    await notice("ntfy", { ...base, token: "T0PIC", title: "New comment" } as never);
+    const headers = httpCalls[httpCalls.length - 1].headers as Record<string, string>;
+    expect(headers.Title).toBe("New comment");
+  });
+});
+
+describe("原生 fetch 迁移后的请求形态", () => {
+  it("非 2xx 抛错 → notice() 返回 { error }（与 axios 一致）", async () => {
+    mockState.status = 500;
+    const result = await notice("serverchan", base as never);
+    expect(result.error).toBeInstanceOf(Error);
+    expect(String(result.error?.message)).toContain("500");
+  });
+
+  it("GET 参数支持 URLSearchParams 形态（bark 的空串 url 参数不被丢弃）", async () => {
+    await notice("bark", { ...base, token: "T0KEN" } as never);
+    expect(httpCalls[httpCalls.length - 1].url).toMatch(/\?url=$/);
+  });
+
+  it("对象体发 application/json，字符串体发表单编码（对齐 axios 推断）", async () => {
+    await notice("dingtalk", base as never);
+    const jsonCall = httpCalls[httpCalls.length - 1];
+    expect(jsonCall.headers).toMatchObject({ "Content-Type": "application/json" });
+    expect(typeof jsonCall.body).toBe("string");
+
+    await notice("gocqhttp", { ...base, token: "https://gocq.test/send_private_msg" } as never);
+    const formCall = httpCalls[httpCalls.length - 1];
+    expect(formCall.headers).toMatchObject({
+      "Content-Type": "application/x-www-form-urlencoded",
+    });
+    expect(decodeURIComponent(String(formCall.body))).toContain("正文内容");
   });
 });
 

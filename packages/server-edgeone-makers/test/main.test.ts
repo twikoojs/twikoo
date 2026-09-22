@@ -6,7 +6,8 @@
  */
 import { describe, expect, it } from "vitest";
 import { existsSync } from "node:fs";
-import { createEoMakersFunc, eoCapabilities } from "../src/main";
+import { getNodemailer, resetCustomLibs } from "@twikoojs/common";
+import { createEoMakersFunc, eoCapabilities, prepareEoRuntime } from "../src/main";
 import type { EoEventLike } from "../src/main";
 
 /** 内存 Blob KV store（JSON 往返模拟持久化） */
@@ -64,6 +65,26 @@ describe("twikoo-edgeone-makers 薄适配器", () => {
     expect(eoCapabilities.akismet).toBe(false);
     expect(eoCapabilities.tencentTms).toBe(false);
     expect(eoCapabilities.ip2region).toBe(true);
+  });
+
+  it("mail: restricted 名副其实：prepareEoRuntime 注入 HTTP 垫片后 mail 可用", async () => {
+    // 能力门只认 `=== true`，"restricted" 会被判为不支持；EO 靠 setCustomLibs 覆写
+    // 绕开能力门。这条同时锁定「垫片确实被注入」——否则邮件会静默失效。
+    resetCustomLibs();
+    await prepareEoRuntime(makeStore().store);
+    const nodemailer = await getNodemailer(eoCapabilities);
+    expect(typeof nodemailer.createTransport).toBe("function");
+    // SendGrid 形态可用
+    await expect(
+      nodemailer.createTransport({ service: "SendGrid", auth: { user: "u", pass: "p" } }).verify?.(),
+    ).resolves.toBe(true);
+    resetCustomLibs();
+  });
+
+  it("未注入垫片时 mail: restricted 会被能力门挡掉（对照：说明覆写不可缺）", async () => {
+    resetCustomLibs();
+    await expect(getNodemailer(eoCapabilities)).rejects.toThrow(/未声明 mail 能力/);
+    resetCustomLibs();
   });
 
   it("happy：直通 DOMPurify 下 COMMENT_SUBMIT 原样入库（BlobKV 持久化语义）", async () => {

@@ -31,21 +31,23 @@ export type ChannelType =
   | "igot"
   | "telegram"
   | "feishu"
+  | "lark"
   | "ifttt"
   | "wecombot"
   | "discord"
   | "wxpusher"
+  | "ntfy"
   | "join";
 
 /**
  * 2.0 实际支持的推送渠道类型。
  *
- * 等于 {@link ChannelType} 排除 1.x 兼容别名 `serverchain`，共 20 个渠道。
+ * 等于 {@link ChannelType} 排除 1.x 兼容别名 `serverchain`，共 22 个渠道。
  */
 export type ActiveChannelType = Exclude<ChannelType, "serverchain">;
 
 /**
- * PUSHOO 支持的推送渠道清单（20 个，不含 `serverchain`）。
+ * PUSHOO 支持的推送渠道清单（22 个，不含 `serverchain`）。
  *
  * 顺序与命名严格对齐 pushoo 的 `ChannelType`，供国际化（渠道文案键）、
  * 配置界面遍历与推送能力校验统一消费。使用 `as const satisfies` 保证
@@ -67,10 +69,12 @@ export const PUSHOO_CHANNELS = [
   "igot",
   "telegram",
   "feishu",
+  "lark",
   "ifttt",
   "wecombot",
   "discord",
   "wxpusher",
+  "ntfy",
   "join",
 ] as const satisfies readonly ActiveChannelType[];
 

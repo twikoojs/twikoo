@@ -17,6 +17,7 @@ import {
   fromTkResponse,
   shutdown,
   startRequestTimesTimer,
+  toTkRequest,
 } from "../src/main";
 import type { ServerRequestLike, ServerResponseLike } from "../src/main";
 import type { Database, TkResponse } from "@twikoojs/common";
@@ -387,4 +388,81 @@ describe("tkserver 优雅退出全流程", () => {
       await inst.gracefulShutdown();
     }
   }, 20000);
+});
+
+describe("客户端 IP 解析（#1174：恢复 get-user-ip 的直连兜底）", () => {
+  /**
+   * 构造最小 Node 请求。
+   * @param overrides 覆盖字段
+   * @returns 请求对象
+   */
+  function makeReq(overrides: Partial<ServerRequestLike> = {}): ServerRequestLike {
+    return { method: "POST", headers: {}, body: {}, ...overrides };
+  }
+
+  it("代理头优先：x-client-ip > x-real-ip > x-forwarded-for（多跳取首跳）", () => {
+    expect(toTkRequest(makeReq({ headers: { "x-client-ip": "10.0.0.1" } })).ip).toBe("10.0.0.1");
+    expect(toTkRequest(makeReq({ headers: { "x-real-ip": "10.0.0.2" } })).ip).toBe("10.0.0.2");
+    expect(
+      toTkRequest(makeReq({ headers: { "x-forwarded-for": "10.0.0.3, 172.16.0.1" } })).ip,
+    ).toBe("10.0.0.3");
+    // x-client-ip 压过 x-real-ip / x-forwarded-for
+    expect(
+      toTkRequest(
+        makeReq({
+          headers: {
+            "x-client-ip": "10.0.0.1",
+            "x-real-ip": "10.0.0.2",
+            "x-forwarded-for": "10.0.0.3",
+          },
+        }),
+      ).ip,
+    ).toBe("10.0.0.1");
+  });
+
+  it("无代理头时用 connection/socket.remoteAddress 兜底（直连不再全落空 IP）", () => {
+    // 直连：只有 socket
+    expect(toTkRequest(makeReq({ socket: { remoteAddress: "203.0.113.7" } })).ip).toBe(
+      "203.0.113.7",
+    );
+    // connection.remoteAddress 优先于 socket
+    expect(
+      toTkRequest(
+        makeReq({
+          connection: { remoteAddress: "203.0.113.8" },
+          socket: { remoteAddress: "203.0.113.7" },
+        }),
+      ).ip,
+    ).toBe("203.0.113.8");
+    // connection.socket.remoteAddress 兜底
+    expect(
+      toTkRequest(makeReq({ connection: { socket: { remoteAddress: "203.0.113.9" } } })).ip,
+    ).toBe("203.0.113.9");
+  });
+
+  it("全部来源缺失 → 0.0.0.0（1.x get-user-ip 兜底值）", () => {
+    expect(toTkRequest(makeReq()).ip).toBe("0.0.0.0");
+  });
+
+  it("TWIKOO_IP_HEADERS 覆写来源（如 CloudFlare 的 cf-connecting-ip）", () => {
+    process.env.TWIKOO_IP_HEADERS = JSON.stringify(["headers.cf-connecting-ip"]);
+    try {
+      const req = makeReq({
+        headers: { "cf-connecting-ip": "198.51.100.5", "x-real-ip": "10.0.0.2" },
+        socket: { remoteAddress: "203.0.113.7" },
+      });
+      expect(toTkRequest(req).ip).toBe("198.51.100.5");
+    } finally {
+      delete process.env.TWIKOO_IP_HEADERS;
+    }
+  });
+
+  it("TWIKOO_IP_HEADERS 非法 JSON → 回退默认来源顺序（不抛错）", () => {
+    process.env.TWIKOO_IP_HEADERS = "{ not json";
+    try {
+      expect(toTkRequest(makeReq({ headers: { "x-real-ip": "10.0.0.2" } })).ip).toBe("10.0.0.2");
+    } finally {
+      delete process.env.TWIKOO_IP_HEADERS;
+    }
+  });
 });

@@ -532,17 +532,13 @@ describe("EMAIL_TEST / UPLOAD_IMAGE / GET_QQ_NICK（重依赖替身注入）", (
   it("qq nick：缺 qq 报错；替身 axios 返回昵称", async () => {
     const bad = await post({ event: "GET_QQ_NICK" });
     expect(bad.body.message).toBe('参数"qq"不合法');
-    setLibImporter(async (specifier) => {
-      expect(specifier).toBe("axios");
-      return {
-        default: {
-          /**
-           *
-           */
-          get: async () => ({ data: { code: 200, data: { nick: "QQ昵称" } } }),
-        },
-      };
-    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async () =>
+          new Response(JSON.stringify({ code: 200, data: { nick: "QQ昵称" } }), { status: 200 }),
+      ),
+    );
     const ok = await post({ event: "GET_QQ_NICK", qq: "12345" });
     expect(ok.body.code).toBe(0);
     expect(ok.body.nick).toBe("QQ昵称");

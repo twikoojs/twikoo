@@ -285,6 +285,34 @@ describe("原生 fetch 迁移后的请求形态", () => {
   });
 });
 
+describe("原生 fetch 迁移后的请求形态", () => {
+  it("非 2xx 抛错 → notice() 返回 { error }（与 axios 一致）", async () => {
+    mockState.status = 500;
+    const result = await notice("serverchan", base as never);
+    expect(result.error).toBeInstanceOf(Error);
+    expect(String(result.error?.message)).toContain("500");
+  });
+
+  it("GET 参数支持 URLSearchParams 形态（bark 的空串 url 参数不被丢弃）", async () => {
+    await notice("bark", { ...base, token: "T0KEN" } as never);
+    expect(httpCalls[httpCalls.length - 1].url).toMatch(/\?url=$/);
+  });
+
+  it("对象体发 application/json，字符串体发表单编码（对齐 axios 推断）", async () => {
+    await notice("dingtalk", base as never);
+    const jsonCall = httpCalls[httpCalls.length - 1];
+    expect(jsonCall.headers).toMatchObject({ "Content-Type": "application/json" });
+    expect(typeof jsonCall.body).toBe("string");
+
+    await notice("gocqhttp", { ...base, token: "https://gocq.test/send_private_msg" } as never);
+    const formCall = httpCalls[httpCalls.length - 1];
+    expect(formCall.headers).toMatchObject({
+      "Content-Type": "application/x-www-form-urlencoded",
+    });
+    expect(decodeURIComponent(String(formCall.body))).toContain("正文内容");
+  });
+});
+
 describe("pushoo 错误形态", () => {
   it("token 缺失 → 返回 { error } 而非未捕获异常", async () => {
     const result = await notice("serverchan", {

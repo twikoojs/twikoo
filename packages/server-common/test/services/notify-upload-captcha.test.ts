@@ -3,7 +3,7 @@
  * 全部外部依赖（nodemailer/pushoo/html-to-text/axios/form-data）经
  * setLibImporter 替身注入——零真实网络。
  */
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { sendNotice } from "../../src/services/notify";
 import {
   checkCapCaptcha,
@@ -15,6 +15,60 @@ import { createHandler } from "../../src/index";
 import { setCustomLibs, setLibImporter } from "../../src/utils/lib-loader";
 import type { Capabilities } from "../../src/ports/capabilities";
 import type { PipelineContext } from "../../src/index";
+
+afterEach(() => {
+  // 不清理会跨用例泄漏：Cap 用例曾靠上一条 Geetest 的 stub 侥幸通过
+  vi.unstubAllGlobals();
+});
+
+/**
+ * 安装 fetch 替身并按队列依次应答（一个用例多次请求时逐个消费）。
+ * @param responses 依序返回的响应体
+ * @returns fetch 替身（可断言调用参数）
+ */
+function stubFetchQueue(responses: unknown[]): ReturnType<typeof vi.fn> {
+  const fetchMock = vi.fn(async () => {
+    const body = responses.length > 1 ? responses.shift() : responses[0];
+    return new Response(JSON.stringify(body), { status: 200 });
+  });
+  vi.stubGlobal("fetch", fetchMock);
+  return fetchMock;
+}
+
+/**
+ * form-data 包的替身（有 getBuffer，utils/http 的 multipart 路径才真正走到）。
+ * @returns 可注入 setLibImporter 的模块形态
+ */
+function fakeFormDataModule(): unknown {
+  return {
+    default: class {
+      /** 已附加字段 */
+      entries: Array<[string, unknown]> = [];
+      /**
+       * 附加字段
+       * @param name 字段名
+       * @param value 值
+       */
+      append(name: string, value: unknown): void {
+        this.entries.push([name, value]);
+      }
+      /**
+       * multipart 头
+       * @returns 头
+       */
+      getHeaders(): Record<string, string> {
+        return { "content-type": "multipart/form-data" };
+      }
+      /**
+       * 二进制体
+       * @returns Buffer
+       */
+      getBuffer(): Buffer {
+        return Buffer.from("binary");
+      }
+    },
+  };
+}
 
 const caps: Capabilities = {
   mail: true,
@@ -78,6 +132,10 @@ describe("sendNotice 全链路（services/notify）", () => {
   it("博主评论：不给自己发通知；访客评论：博主邮件 + 回复邮件 + pushoo 三路并发", async () => {
     const sent: Array<Record<string, unknown>> = [];
     const pushed: unknown[] = [];
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(async () => new Response(JSON.stringify({ success: true, data: { url: "https://cdn/x.png" } }), { status: 200 })),
+      );
     setLibImporter(async (specifier) => {
       if (specifier === "nodemailer") {
         return {
@@ -225,37 +283,13 @@ describe("sendNotice 全链路（services/notify）", () => {
 });
 
 describe("上传分发（services/upload）", () => {
-  it("S.EE 图床：FormData/axios 替身注入 → 返回 data", async () => {
+  it("S.EE 图床：multipart 上传 → 回传响应 data", async () => {
     const pngBase64 =
       "data:image/png;base64," +
       Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3, 4]).toString("base64");
+    const fetchMock = stubFetchQueue([{ success: true, data: { url: "https://cdn/x.png" } }]);
     setLibImporter(async (specifier) => {
-      if (specifier === "form-data") {
-        return {
-          default: class {
-            /** 已附加字段 */
-            entries: Array<[string, unknown]> = [];
-            /** append 记录 */
-            append(name: string, value: unknown): void {
-              this.entries.push([name, value]);
-            }
-            /** getHeaders 替身 */
-            getHeaders(): Record<string, string> {
-              return { "content-type": "multipart/form-data" };
-            }
-          },
-        };
-      }
-      if (specifier === "axios") {
-        return {
-          default: {
-            /**
-             *
-             */
-            post: async () => ({ data: { success: true, data: { url: "https://cdn/x.png" } } }),
-          },
-        };
-      }
+      if (specifier === "form-data") return fakeFormDataModule();
       throw new Error(`unexpected ${specifier}`);
     });
     const handler = createHandler(
@@ -269,9 +303,18 @@ describe("上传分发（services/upload）", () => {
     );
     // 1.x 语义：上传成功不设 code，仅回传 data
     expect((res.body.data as { url: string }).url).toBe("https://cdn/x.png");
+    // 1.x 对齐：直接 POST 到 imageCdn（不得再拼后缀），token 原样作为 Authorization
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("https://s.ee/api/v1/file/upload");
+    const headers = (fetchMock.mock.calls[0]?.[1] as RequestInit).headers as Record<string, string>;
+    expect(headers.Authorization).toBe("tok");
+    expect(headers["content-type"]).toBe("multipart/form-data");
   });
 
   it("不支持的图床 → UPLOAD_FAILED + 提示", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(async () => new Response(JSON.stringify({ success: false }), { status: 200 })),
+      );
     setLibImporter(async () => {
       throw new Error("should not be called");
     });
@@ -293,30 +336,10 @@ describe("上传分发（services/upload）", () => {
 });
 
 describe("验证码分支（services/spam）", () => {
-  it("Turnstile：axios/form-data 替身 → success true 通过", async () => {
+  it("Turnstile：siteverify success → 通过", async () => {
+    stubFetchQueue([{ success: true }]);
     setLibImporter(async (specifier) => {
-      if (specifier === "form-data") {
-        return {
-          default: class {
-            /** append 记录 */
-            append(): void {}
-            /** getHeaders 替身 */
-            getHeaders(): Record<string, string> {
-              return {};
-            }
-          },
-        };
-      }
-      if (specifier === "axios") {
-        return {
-          default: {
-            /**
-             *
-             */
-            post: async () => ({ data: { success: true } }),
-          },
-        };
-      }
+      if (specifier === "form-data") return fakeFormDataModule();
       throw new Error(`unexpected ${specifier}`);
     });
     await expect(
@@ -330,33 +353,9 @@ describe("验证码分支（services/spam）", () => {
   });
 
   it("Turnstile：success false → 报错", async () => {
+    stubFetchQueue([{ success: false }]);
     setLibImporter(async (specifier) => {
-      if (specifier === "form-data") {
-        return {
-          default: class {
-            /**
-             *
-             */
-            append(): void {}
-            /**
-             *
-             */
-            getHeaders() {
-              return {};
-            }
-          },
-        };
-      }
-      if (specifier === "axios") {
-        return {
-          default: {
-            /**
-             *
-             */
-            post: async () => ({ data: { success: false } }),
-          },
-        };
-      }
+      if (specifier === "form-data") return fakeFormDataModule();
       throw new Error(`unexpected ${specifier}`);
     });
     await expect(
@@ -365,17 +364,8 @@ describe("验证码分支（services/spam）", () => {
   });
 
   it("Geetest：result success 通过；失败抛原因", async () => {
+    stubFetchQueue([{ result: "success" }, { result: "fail", reason: "bad sign" }]);
     setLibImporter(async (specifier) => {
-      if (specifier === "axios") {
-        return {
-          default: {
-            /**
-             *
-             */
-            post: async () => ({ data: { result: "success" } }),
-          },
-        };
-      }
       throw new Error(`unexpected ${specifier}`);
     });
     await expect(
@@ -388,19 +378,6 @@ describe("验证码分支（services/spam）", () => {
         geeTestGenTime: "123",
       }),
     ).resolves.toBeUndefined();
-    setLibImporter(async (specifier) => {
-      if (specifier === "axios") {
-        return {
-          default: {
-            /**
-             *
-             */
-            post: async () => ({ data: { result: "fail", reason: "bad sign" } }),
-          },
-        };
-      }
-      throw new Error(`unexpected ${specifier}`);
-    });
     await expect(
       checkGeeTestCaptcha({
         geeTestCaptchaId: "id",
@@ -414,17 +391,8 @@ describe("验证码分支（services/spam）", () => {
   });
 
   it("Cap 外部 Standalone：siteverify success false → 报错", async () => {
+    stubFetchQueue([{ success: false, error: "expired" }]);
     setLibImporter(async (specifier) => {
-      if (specifier === "axios") {
-        return {
-          default: {
-            /**
-             *
-             */
-            post: async () => ({ data: { success: false, error: "expired" } }),
-          },
-        };
-      }
       throw new Error(`unexpected ${specifier}`);
     });
     await expect(

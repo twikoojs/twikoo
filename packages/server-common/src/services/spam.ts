@@ -13,9 +13,9 @@ import type { Capabilities } from "../ports/capabilities";
 import type { CommentDoc, ConfigData, Database } from "../ports/database";
 import type { RequestLogger } from "../utils/logger";
 // lib-loader 静态导入即可（惰性在它内部完成，见其头注释「消费方约定」）
+import { httpPost } from "../utils/http";
 import {
   getAkismetClient,
-  getAxios,
   getFormData,
   getGenerateText,
   getTencentcloudTms,
@@ -92,12 +92,11 @@ export async function checkTurnstileCaptcha(params: {
 }): Promise<void> {
   try {
     const FormData = await getFormData(params.caps);
-    const axios = await getAxios();
     const formData = new FormData();
     formData.append("secret", params.turnstileTokenSecretKey);
     formData.append("response", params.turnstileToken);
     formData.append("remoteip", params.ip);
-    const response = await axios.post(
+    const response = await httpPost(
       "https://challenges.cloudflare.com/turnstile/v0/siteverify",
       formData,
       {
@@ -124,7 +123,6 @@ export async function checkGeeTestCaptcha(params: {
   geeTestGenTime: string;
 }): Promise<void> {
   try {
-    const axios = await getAxios();
     const signToken = createHmac("sha256", params.geeTestCaptchaKey)
       .update(params.geeTestLotNumber)
       .digest("hex");
@@ -136,7 +134,7 @@ export async function checkGeeTestCaptcha(params: {
       sign_token: signToken,
     });
     const url = `https://gcaptcha4.geetest.com/validate?captcha_id=${params.geeTestCaptchaId}`;
-    const response = await axios.post(url, search.toString(), {
+    const response = await httpPost(url, search.toString(), {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
     const data = response.data as { result?: string; reason?: string; msg?: string };
@@ -171,9 +169,8 @@ export async function checkCapCaptcha(
       return;
     }
     // 外部 Cap Standalone：HTTP siteverify
-    const axios = await getAxios();
     const endpoint = (params.capApiEndpoint ?? "").replace(/\/$/, "");
-    const response = await axios.post(
+    const response = await httpPost(
       `${endpoint}/siteverify`,
       { secret: params.capSecretKey, response: params.capToken },
       { headers: { "Content-Type": "application/json" } },

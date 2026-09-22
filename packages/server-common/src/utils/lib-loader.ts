@@ -107,33 +107,6 @@ export interface FormDataLike {
   };
 }
 
-/** axios 使用面 */
-export interface AxiosLike {
-  /**
-   * POST 请求
-   * @param url 地址
-   * @param data 载荷
-   * @param config 请求配置
-   * @returns 响应
-   */
-  post(url: string, data?: unknown, config?: unknown): Promise<{ data: unknown }>;
-  /**
-   * GET 请求
-   * @param url 地址
-   * @param config 请求配置
-   * @returns 响应
-   */
-  get(url: string, config?: unknown): Promise<{ data: unknown }>;
-  /**
-   * PUT 请求（S3 图床上传）
-   * @param url 地址
-   * @param data 载荷
-   * @param config 请求配置
-   * @returns 响应
-   */
-  put(url: string, data?: unknown, config?: unknown): Promise<{ data: unknown }>;
-}
-
 /** xml2js 使用面（导入 Disqus/Valine 等 XML 格式） */
 export interface Xml2jsLike {
   /**
@@ -255,7 +228,6 @@ export const LITERAL_LOADERS: Record<string, () => Promise<unknown>> = {
   "akismet-api": () => import("akismet-api"),
   "tencentcloud-sdk-nodejs-tms": () => import("tencentcloud-sdk-nodejs-tms"),
   "form-data": () => import("form-data"),
-  axios: () => import("axios"),
   xml2js: () => import("xml2js"),
   "html-to-text": () => import("html-to-text"),
   pushoo: () => import("pushoo"),
@@ -468,13 +440,6 @@ export async function getFormData(caps: Capabilities): Promise<FormDataLike> {
   return pickDefault(await loadLib("form-data")) as FormDataLike;
 }
 
-/**
- * 获取 axios（qqAvatar/HTTP 请求；全部适配器可用）。
- * @returns axios 模块本体
- */
-export async function getAxios(): Promise<AxiosLike> {
-  return pickDefault(await loadLib("axios")) as AxiosLike;
-}
 
 /**
  * 获取 xml2js（导入器使用；全部适配器可用）。

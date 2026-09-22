@@ -31,7 +31,7 @@ export interface Capabilities {
   tencentTms: boolean;
   /** 是否支持图片上传（form-data + 存储） */
   imageUpload: boolean;
-  /** 是否支持 QQ 头像（axios） */
+  /** 是否支持 QQ 头像（原生 fetch） */
   qqAvatar: boolean;
   /** 是否支持 AI 内容生成（@xsai/*） */
   ai: boolean;

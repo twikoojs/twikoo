@@ -26,7 +26,6 @@
  * `TWIKOO_PKG_BUNDLE_ONLY=1` 只验证打包链路（`tsdown.config.mts`），再对产物做依赖字符串探测。
  */
 import * as akismetApi from "akismet-api";
-import * as axios from "axios";
 import * as bowser from "bowser";
 import * as dompurify from "dompurify";
 import * as formData from "form-data";
@@ -55,7 +54,6 @@ const BUNDLED_LIBS: Record<string, unknown> = {
   "akismet-api": akismetApi,
   "tencentcloud-sdk-nodejs-tms": tencentTms,
   "form-data": formData,
-  axios,
   xml2js,
   "html-to-text": htmlToText,
   pushoo,

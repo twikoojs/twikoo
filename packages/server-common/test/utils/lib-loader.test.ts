@@ -12,7 +12,6 @@ import {
   LibLoadError,
   defineCapabilities,
   getAkismetClient,
-  getAxios,
   getDomPurify,
   getGenerateText,
   getIpToRegion,
@@ -164,17 +163,8 @@ describe("库加载器组合与失败", () => {
     expect(err.message).toContain("Cannot find module");
   });
 
-  it("无能力门约束的轻量库（axios/xml2js）直接动态加载", async () => {
+  it("无能力门约束的轻量库（xml2js）直接动态加载", async () => {
     setLibImporter(async (specifier) => {
-      if (specifier === "axios") {
-        return {
-          /** axios 替身 */
-          default: {
-            /** POST 替身 */
-            post: async () => ({ data: 1 }),
-          },
-        };
-      }
       if (specifier === "xml2js") {
         return {
           /** parseStringPromise 替身 */
@@ -183,9 +173,9 @@ describe("库加载器组合与失败", () => {
       }
       throw new Error(`unexpected: ${specifier}`);
     });
-    expect(typeof (await getAxios()).post).toBe("function");
     expect(typeof (await getXml2js()).parseStringPromise).toBe("function");
   });
+
 });
 
 describe("ip2region 覆写（eo-makers 的 fs-free 内存查询器注入）", () => {

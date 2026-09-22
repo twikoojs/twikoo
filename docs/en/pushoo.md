@@ -10,7 +10,7 @@ Since **Twikoo 2.0** pushoo lives in the Twikoo repository (`packages/pushoo`). 
 
 ## Supported platforms
 
-Webhook, [Qmsg](https://qmsg.zendee.cn/), [ServerChan](https://sct.ftqq.com/r/13235), [Push Plus](https://www.pushplus.plus/), [Push Plus Hxtrip](https://pushplus.hxtrip.com/), [DingTalk](https://open.dingtalk.com/document/group/custom-robot-access), [WeCom](https://guole.fun/posts/626/), [WeCom group bot](https://developer.work.weixin.qq.com/document/path/91770), [Bark](https://github.com/Finb/Bark), [go-cqhttp](https://docs.go-cqhttp.org/api/), [atri](https://blog.tianli0.top/), [PushDeer](https://www.pushdeer.com/), [iGot](https://push.hellyw.com/), [Telegram](https://core.telegram.org/bots), [Feishu](https://www.feishu.cn/hc/zh-CN/articles/360024984973), [IFTTT](https://ifttt.com/maker_webhooks), [Discord](https://discord.com/developers/docs/resources/webhook#execute-webhook), [WxPusher](https://wxpusher.zjiecode.com/docs/#/), [Join](https://joaoapps.com/join/).
+Webhook, [Qmsg](https://qmsg.zendee.cn/), [ServerChan](https://sct.ftqq.com/r/13235), [Push Plus](https://www.pushplus.plus/), [DingTalk](https://open.dingtalk.com/document/group/custom-robot-access), [WeCom](https://guole.fun/posts/626/), [WeCom group bot](https://developer.work.weixin.qq.com/document/path/91770), [Bark](https://github.com/Finb/Bark), [go-cqhttp](https://docs.go-cqhttp.org/api/), [atri](https://blog.tianli0.top/), [PushDeer](https://www.pushdeer.com/), [iGot](https://push.hellyw.com/), [Telegram](https://core.telegram.org/bots), [Feishu](https://www.feishu.cn/hc/zh-CN/articles/360024984973), [IFTTT](https://ifttt.com/maker_webhooks), [Discord](https://discord.com/developers/docs/resources/webhook#execute-webhook), [WxPusher](https://wxpusher.zjiecode.com/docs/#/), [Join](https://joaoapps.com/join/).
 
 > Step-by-step token setup guides are maintained in the Chinese documentation: [pushoo](/pushoo).
 
@@ -40,7 +40,7 @@ console.log(result);
 
 | Parameter | Required | Default | Description |
 | ---- | ---- | ---- | ---- |
-| platform | ✅ | — | Platform abbreviation, one of: `webhook`, `qmsg`, `serverchan`, `pushplus`, `pushplushxtrip`, `dingtalk`, `wecom`, `bark`, `gocqhttp`, `atri`, `pushdeer`, `igot`, `telegram`, `feishu`, `ifttt`, `wecombot`, `discord`, `wxpusher` |
+| platform | ✅ | — | Platform abbreviation, one of: `webhook`, `qmsg`, `serverchan`, `pushplus`, `dingtalk`, `wecom`, `bark`, `gocqhttp`, `atri`, `pushdeer`, `igot`, `telegram`, `feishu`, `ifttt`, `wecombot`, `discord`, `wxpusher` |
 | token | ✅ | — | Platform credential (usually a string of digits and letters); see the platform guides |
 | title | | first line of content | Optional. Platforms without title support get it prepended to the body |
 | content | ✅ | — | Markdown content; pushoo converts it to whatever the platform supports |

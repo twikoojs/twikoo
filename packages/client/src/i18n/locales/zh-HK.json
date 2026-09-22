@@ -91,7 +91,7 @@
   "ADMIN_CONFIG_ITEM_LLM_MODEL": "LLM 模型名稱，預設：deepseek-v4-pro",
   "ADMIN_CONFIG_ITEM_LLM_SPAM_PROMPT": "LLM 垃圾檢測提示詞（可選，留空則使用預設提示詞）",
   "ADMIN_CONFIG_ITEM_LLM_MAX_RETRIES": "LLM 檢測最大重試次數（預設 3 次）",
-  "ADMIN_CONFIG_ITEM_PUSHOO_CHANNEL": "即時消息推送平台名称，支持：\"qmsg\"、\"serverchan\"、\"pushplus\"、\"pushplushxtrip\"、\"dingtalk\"、\"wecom\"、\"bark\"、\"gocqhttp\"、\"atri\"、\"pushdeer\"、\"igot\"、\"telegram\"、\"feishu\" 等",
+  "ADMIN_CONFIG_ITEM_PUSHOO_CHANNEL": "即時消息推送平台名称，支持：\"qmsg\"、\"serverchan\"、\"pushplus\"、\"dingtalk\"、\"wecom\"、\"bark\"、\"gocqhttp\"、\"atri\"、\"pushdeer\"、\"igot\"、\"telegram\"、\"feishu\" 等",
   "ADMIN_CONFIG_ITEM_PUSHOO_TOKEN": "即時消息推送 token。请参考 https://pushoo.js.org 里的详细说明配置",
   "ADMIN_CONFIG_ITEM_DISPLAYED_FIELDS": "界面上顯示的輸入框，預設：nick,mail,link",
   "ADMIN_CONFIG_ITEM_REQUIRED_FIELDS": "評論必填信息，設為 nick,mail,link 代表全必填，設為 none 代表全選填，預設：nick,mail",

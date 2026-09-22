@@ -8,9 +8,11 @@ import { ALL_EVENTS, PUSHOO_CHANNELS, VERSION } from "../src";
  * 而非恒真占位——任一常量被误改时本用例必然失败。
  */
 describe("@twikoojs/shared 导出冒烟", () => {
-  it("PUSHOO_CHANNELS 恰为 22 个渠道，且不含 1.x 遗留别名 serverchain", () => {
-    expect(PUSHOO_CHANNELS.length).toBe(22);
+  it("PUSHOO_CHANNELS 恰为 21 个渠道，且不含 1.x 遗留别名 serverchain", () => {
+    expect(PUSHOO_CHANNELS.length).toBe(21);
     expect(PUSHOO_CHANNELS).not.toContain("serverchain");
+    // Push Plus Hxtrip 服务已停止，渠道随之移除
+    expect(PUSHOO_CHANNELS).not.toContain("pushplushxtrip");
     // 渠道名不重复
     expect(new Set(PUSHOO_CHANNELS).size).toBe(PUSHOO_CHANNELS.length);
   });

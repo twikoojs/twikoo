@@ -91,7 +91,7 @@
   "ADMIN_CONFIG_ITEM_LLM_MODEL": "LLM 모델 이름. 기본값: deepseek-v4-pro",
   "ADMIN_CONFIG_ITEM_LLM_SPAM_PROMPT": "LLM 스팸 감지 프롬프트 (옵션, 비워두면 기본값 사용)",
   "ADMIN_CONFIG_ITEM_LLM_MAX_RETRIES": "LLM 감지 최대 재시도 횟수 (기본 3회)",
-  "ADMIN_CONFIG_ITEM_PUSHOO_CHANNEL": "실시간 알림을 받을 서비스 설정. 지원: \"qmsg\", \"serverchan\", \"pushplus\", \"pushplushxtrip\", \"dingtalk\", \"wecom\", \"bark\", \"gocqhttp\", \"atri\", \"pushdeer\", \"igot\", \"telegram\", \"feishu\"",
+  "ADMIN_CONFIG_ITEM_PUSHOO_CHANNEL": "실시간 알림을 받을 서비스 설정. 지원: \"qmsg\", \"serverchan\", \"pushplus\", \"dingtalk\", \"wecom\", \"bark\", \"gocqhttp\", \"atri\", \"pushdeer\", \"igot\", \"telegram\", \"feishu\"",
   "ADMIN_CONFIG_ITEM_PUSHOO_TOKEN": "선택한 실시간 알림 서비스 인증 토큰. 설정 방법은 https://pushoo.js.org 를 참조.",
   "ADMIN_CONFIG_ITEM_DISPLAYED_FIELDS": "화면에 표시할 정보 입력란. 기본값: nick,mail,link",
   "ADMIN_CONFIG_ITEM_REQUIRED_FIELDS": "댓글 작성 시 필수 입력 정보. \"nick,mail,link\"는 모두 필수, \"none\"은 모두 선택 압력. 기본값: nick,mail.",

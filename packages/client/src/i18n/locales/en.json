@@ -91,7 +91,7 @@
   "ADMIN_CONFIG_ITEM_LLM_MODEL": "LLM model name, default: deepseek-v4-pro",
   "ADMIN_CONFIG_ITEM_LLM_SPAM_PROMPT": "LLM spam detection prompt (optional, uses default if left empty)",
   "ADMIN_CONFIG_ITEM_LLM_MAX_RETRIES": "LLM detection maximum retries (default 3)",
-  "ADMIN_CONFIG_ITEM_PUSHOO_CHANNEL": "IM notification push channel. Support: \"qmsg\", \"serverchan\", \"pushplus\", \"pushplushxtrip\", \"dingtalk\", \"wecom\", \"bark\", \"gocqhttp\", \"atri\", \"pushdeer\", \"igot\", \"telegram\", \"feishu\"",
+  "ADMIN_CONFIG_ITEM_PUSHOO_CHANNEL": "IM notification push channel. Support: \"qmsg\", \"serverchan\", \"pushplus\", \"dingtalk\", \"wecom\", \"bark\", \"gocqhttp\", \"atri\", \"pushdeer\", \"igot\", \"telegram\", \"feishu\"",
   "ADMIN_CONFIG_ITEM_PUSHOO_TOKEN": "IM notification push token. See https://pushoo.js.org for details",
   "ADMIN_CONFIG_ITEM_DISPLAYED_FIELDS": "Input boxes displayed on the interface. Default: nick,mail,link",
   "ADMIN_CONFIG_ITEM_REQUIRED_FIELDS": "Required fields for comments. Set to \"nick,mail,link\" means all fields are required. Set to \"none\" means all fields are optional. Default: nick,mail.",

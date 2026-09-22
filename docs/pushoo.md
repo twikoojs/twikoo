@@ -20,7 +20,6 @@ Twikoo 评论系统对不同的消息推送平台做了大量的适配工作，�
 - [Qmsg](https://qmsg.zendee.cn/)
 - [Server 酱](https://sct.ftqq.com/r/13235)
 - [Push Plus](https://www.pushplus.plus/)
-- [Push Plus Hxtrip](https://pushplus.hxtrip.com/)
 - [钉钉](https://open.dingtalk.com/document/group/custom-robot-access)
 - [企业微信](https://guole.fun/posts/626/)
 - [企业微信群机器人](https://developer.work.weixin.qq.com/document/path/91770)
@@ -66,7 +65,7 @@ console.log(result);
 
 | 参数     | 必填 | 默认       | 说明                                                                                                                                                                                                                               |
 | -------- | ---- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 平台名称 | ✅   | 无         | 字符串，平台名称的缩写，支持：`webhook`、`qmsg`、`serverchan`、`pushplus`、`pushplushxtrip`、`dingtalk`、`wecom`、`bark`、`gocqhttp`、`onebot`、`atri`、`pushdeer`、`igot`、`telegram`、`feishu`、`lark`、`ifttt`、`wecombot`、`discord`、`wxpusher`、`ntfy` |
+| 平台名称 | ✅   | 无         | 字符串，平台名称的缩写，支持：`webhook`、`qmsg`、`serverchan`、`pushplus`、`dingtalk`、`wecom`、`bark`、`gocqhttp`、`onebot`、`atri`、`pushdeer`、`igot`、`telegram`、`feishu`、`lark`、`ifttt`、`wecombot`、`discord`、`wxpusher`、`ntfy` |
 | token    | ✅   | 无         | 平台用户身份标识，通常情况下是一串数字和字母组合，详情和示例见下方详细说明                                                                                                                                                         |
 | title    |      | 内容第一行 | 可选，消息标题，如果推送平台不支持消息标题，则会拼接在正文首行                                                                                                                                                                     |
 | content  | ✅   | 无         | Markdown 格式的推送内容，如果推送平台不支持 Markdown，pushoo 会自动转换成支持的格式                                                                                                                                                |
@@ -236,15 +235,6 @@ Push Plus 是苏州破壳网络科技有限公司提供的第三方微信服务�
 2. 点击“一对一推送”，复制“你的 token”下方的 token，填入 pushoo 的 token 中
 
 示例 token：`2832134a66df4da69ef941*****72317`
-
-### 💬 [Push Plus Hxtrip](https://pushplus.hxtrip.com/) <sub>缩写：`pushplushxtrip`</sub>
-
-Push Plus Hxtrip 是中道（苏州）旅游网络科技有限公司提供的第三方微信服务号推送服务，免费无广告
-
-1. 前往 [https://pushplus.hxtrip.com/message](https://pushplus.hxtrip.com/message) 并使用微信登录
-2. 复制“您的 Token”下方的 Token，填入 pushoo 的 token 中
-
-示例 token：`2a00acb27e414ea4bf9d19*****08986`
 
 ### 💬 [钉钉](https://open.dingtalk.com/document/group/custom-robot-access) <sub>缩写：`dingtalk`</sub>
 

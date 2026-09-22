@@ -85,10 +85,10 @@ export function toTkRequest(event: ApiGatewayEventLike): TkRequest {
   };
 }
 
-/** 内部统一响应 → Lambda 返回体（204 无体；body 字符串化）。 */
+/** 内部统一响应 → Lambda 返回体（204 无体但保留 CORS 头；body 字符串化）。 */
 export function fromTkResponse(tkRes: TkResponse): LambdaResult {
   if (tkRes.status === 204) {
-    return { statusCode: 204, headers: {}, body: "" };
+    return { statusCode: 204, headers: { ...tkRes.headers }, body: "" };
   }
   return {
     statusCode: tkRes.status,

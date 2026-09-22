@@ -110,7 +110,7 @@ export function createTkserverServer(options: { database?: Database } = {}): Tks
     isShuttingDown = true;
     await new Promise<void>((resolve) => server.close(() => resolve()));
     for (const socket of sockets) socket.destroy();
-    await shutdown({ timer });
+    await shutdown({ timer, database });
   };
 
   /** SIGTERM / SIGINT → 优雅退出（超时兜底强杀） */

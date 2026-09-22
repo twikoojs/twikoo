@@ -120,14 +120,32 @@ Akismet (Automattic Kismet) is a widely used spam filtering system by Matt Mulle
 
 ### Configure Jev Anti-Spam Service
 
-[Jev / System One](https://api.typesafe.ai/docs) returns a probability for a yes/no decision. Twikoo sends the comment text, nickname, and website together and marks the comment as spam when the returned probability reaches the configured threshold.
+[Jev / System One](https://api.typesafe.ai/docs) is a structured decision model provided by TypeSafe. Unlike an LLM that generates text, Jev returns a predefined yes/no decision with a probability. Twikoo sends the comment text, nickname, and website together as structured state and uses the returned spam probability to classify the comment.
 
-- `JEV_API_KEY`: Enter your Jev API key.
-- `JEV_API_ENDPOINT`: Enter the API endpoint URL (default `https://api.typesafe.ai/v1/systemone`).
-- `JEV_MODEL`: Enter the model name (default `jev-latest`).
-- `JEV_SPAM_THRESHOLD`: Spam probability threshold from 0 to 1 (default `0.85`).
+After obtaining an API key from TypeSafe, configure the following fields in the Twikoo admin panel under Anti-Spam:
 
-Anti-spam services are selected in this order: Tencent Cloud TMS → Akismet → Jev → LLM. Only the first configured service is used.
+- `JEV_API_KEY`: Jev API key.
+- `JEV_API_ENDPOINT`: API endpoint URL, default `https://api.typesafe.ai/v1/systemone`.
+- `JEV_MODEL`: Model name, default `jev-latest`.
+- `JEV_SPAM_THRESHOLD`: Spam probability threshold from 0 to 1, default `0.85`.
+
+Example:
+
+```text
+JEV_API_ENDPOINT=https://api.typesafe.ai/v1/systemone
+JEV_MODEL=jev-latest
+JEV_SPAM_THRESHOLD=0.85
+```
+
+Jev evaluates the comment text, nickname, and website together. For example, a harmless-looking comment may still be classified as spam when the nickname or website is clearly being used for SEO, commercial promotion, or link spam. Genuine personal blogs, developer websites, and project pages are not treated as spam merely because a URL is present.
+
+Anti-spam services are selected in this order:
+
+```text
+Tencent Cloud TMS → Akismet → Jev → LLM
+```
+
+Only the first configured service is used. If Tencent Cloud TMS or Akismet is configured, Jev will not be called. If Jev is configured, the LLM spam detector will not be called.
 
 ### Configure LLM Anti-Spam Service
 

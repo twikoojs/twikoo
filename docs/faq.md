@@ -117,14 +117,32 @@ Akismet (Automattic Kismet) 是应用广泛的一个垃圾留言过滤系统，�
 
 ### 配置 Jev 反垃圾服务
 
-[Jev / System One](https://api.typesafe.ai/docs) 可以直接返回 yes/no 判断的概率值。Twikoo 会将评论正文、昵称和网址一起提交给 Jev，并根据概率阈值判断是否为垃圾评论。
+[Jev / System One](https://api.typesafe.ai/docs) 是 TypeSafe 提供的结构化决策模型。与返回文本的 LLM 不同，Jev 会直接返回预先定义的 yes/no 判断及其概率。Twikoo 会将评论正文、昵称和网址作为结构化状态一起提交给 Jev，并根据返回的垃圾评论概率判断是否为垃圾评论。
 
-- `JEV_API_KEY`：填写 Jev API 密钥。
-- `JEV_API_ENDPOINT`：填写 API 接口地址（默认 `https://api.typesafe.ai/v1/systemone`）。
-- `JEV_MODEL`：填写模型名称（默认 `jev-latest`）。
-- `JEV_SPAM_THRESHOLD`：垃圾评论概率阈值，范围 0 到 1（默认 `0.85`）。
+从 TypeSafe 获取 API Key 后，在 Twikoo 管理面板的「反垃圾」配置中填写：
 
-反垃圾服务按腾讯云内容安全 → Akismet → Jev → LLM 的顺序选择，只会使用第一个已配置的服务。
+- `JEV_API_KEY`：Jev API 密钥。
+- `JEV_API_ENDPOINT`：API 接口地址，默认 `https://api.typesafe.ai/v1/systemone`。
+- `JEV_MODEL`：模型名称，默认 `jev-latest`。
+- `JEV_SPAM_THRESHOLD`：垃圾评论概率阈值，范围 0 到 1，默认 `0.85`。
+
+例如：
+
+```text
+JEV_API_ENDPOINT=https://api.typesafe.ai/v1/systemone
+JEV_MODEL=jev-latest
+JEV_SPAM_THRESHOLD=0.85
+```
+
+Jev 会综合评论正文、昵称和网址进行判断。例如正文看起来正常，但昵称或网址明显用于 SEO、商业推广或链接垃圾时，也可能被判定为垃圾评论；正常的个人博客、开发者网站或项目页面不会仅因为带有网址就被判定为垃圾评论。
+
+反垃圾服务按以下顺序选择：
+
+```text
+腾讯云内容安全 → Akismet → Jev → LLM
+```
+
+只会使用第一个已配置的服务。如果已经配置腾讯云内容安全或 Akismet，则不会调用 Jev；如果配置了 Jev，则不会继续调用 LLM。
 
 ### 配置 LLM 反垃圾服务
 

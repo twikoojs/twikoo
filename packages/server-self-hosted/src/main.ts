@@ -23,20 +23,90 @@ export interface ServerRequestLike {
   headers: Record<string, string | string[] | undefined>;
   url?: string;
   body?: unknown;
-}
-
-/** Node 响应的最小结构面（ServerResponse + 1.x status/json 垫片） */
-export interface ServerResponseLike {
-  statusCode?: number;
-  writableEnded?: boolean;
-  writeHead(code: number, headers: Record<string, string>): unknown;
-  end(body?: string): unknown;
-  status(code: number): ServerResponseLike;
-  json(body: unknown): ServerResponseLike;
+  /** 连接套接字（1.x get-user-ip 的 connection/socket 兜底来源） */
+  socket?: { remoteAddress?: string };
+  /** 连接对象（Node 的 req.connection，同上） */
+  connection?: { remoteAddress?: string; socket?: { remoteAddress?: string } };
 }
 
 /**
- * Node 请求 → 内部统一请求（headers 小写化；x-real-ip/转发首跳取 IP）。
+ * 默认 IP 来源顺序（1.7.24 `get-user-ip` 的 `defaultHeaders` 逐项对齐）。
+ *
+ * 前三个是代理头，后三个是**直连兜底**——2.0 曾只保留代理头，导致直连访客
+ * 的 IP 全落到空串、共用同一个限流桶（#1174）。
+ */
+export const DEFAULT_IP_SOURCES = [
+  "headers.x-client-ip",
+  "headers.x-real-ip",
+  "headers.x-forwarded-for",
+  "connection.remoteAddress",
+  "socket.remoteAddress",
+  "connection.socket.remoteAddress",
+] as const;
+
+/** 找不到任何来源时的兜底值（1.x get-user-ip 返回 `0.0.0.0`） */
+const FALLBACK_IP = "0.0.0.0";
+
+/**
+ * 解析单个 IP 来源（`headers.<name>` 与 `connection/socket.remoteAddress` 两类点路径）。
+ * @param req 原始 Node 请求
+ * @param headers 已小写化的请求头
+ * @param source 点路径来源
+ * @returns 命中的 IP；未命中返回空串
+ */
+function resolveIpSource(
+  req: ServerRequestLike,
+  headers: Record<string, string>,
+  source: string,
+): string {
+  if (source.startsWith("headers.")) {
+    const name = source.slice("headers.".length).toLowerCase();
+    const value = headers[name];
+    if (!value) return "";
+    // x-forwarded-for 是多跳列表（客户端 IP, 代理 1, 代理 2...），取首跳
+    return (name === "x-forwarded-for" ? value.split(",")[0] : value).trim();
+  }
+  switch (source) {
+    case "connection.remoteAddress":
+      return req.connection?.remoteAddress ?? "";
+    case "socket.remoteAddress":
+      return req.socket?.remoteAddress ?? "";
+    case "connection.socket.remoteAddress":
+      return req.connection?.socket?.remoteAddress ?? "";
+    default:
+      return "";
+  }
+}
+
+/**
+ * 按来源顺序解析客户端 IP（1.x getIp 语义：TWIKOO_IP_HEADERS 覆写来源顺序）。
+ * @param req 原始 Node 请求
+ * @param headers 已小写化的请求头
+ * @returns 客户端 IP；全部未命中时返回 `0.0.0.0`
+ */
+function resolveClientIp(req: ServerRequestLike, headers: Record<string, string>): string {
+  let sources: string[] = [...DEFAULT_IP_SOURCES];
+  if (process.env.TWIKOO_IP_HEADERS) {
+    try {
+      const parsed = JSON.parse(process.env.TWIKOO_IP_HEADERS) as unknown;
+      if (Array.isArray(parsed) && parsed.every((item) => typeof item === "string")) {
+        // 1.x 语义：自定义来源**优先**，未命中时继续按默认顺序找
+        sources = [...parsed, ...DEFAULT_IP_SOURCES];
+      }
+    } catch (e) {
+      console.error("获取 IP 错误信息：", e);
+    }
+  }
+  for (const source of sources) {
+    const ip = resolveIpSource(req, headers, source);
+    if (ip) return ip;
+  }
+  return FALLBACK_IP;
+}
+
+/**
+ * Node 请求 → 内部统一请求（headers 小写化；IP 来源顺序见
+ * {@link DEFAULT_IP_SOURCES}，可用 TWIKOO_IP_HEADERS 覆写）。
  * @param req Node 请求
  * @returns 内部统一请求
  */
@@ -45,8 +115,7 @@ export function toTkRequest(req: ServerRequestLike): TkRequest {
   for (const [key, value] of Object.entries(req.headers ?? {})) {
     if (value !== undefined) headers[key.toLowerCase()] = Array.isArray(value) ? value[0] : value;
   }
-  const forwarded = headers["x-forwarded-for"];
-  const ip = headers["x-real-ip"] ?? (forwarded ? forwarded.split(",")[0].trim() : "") ?? "";
+  const ip = resolveClientIp(req, headers);
   const body = (req.body && typeof req.body === "object" ? req.body : {}) as TkRequest["body"];
   return {
     method: String(req.method ?? "POST").toUpperCase(),
@@ -57,6 +126,16 @@ export function toTkRequest(req: ServerRequestLike): TkRequest {
     ip,
     raw: req,
   };
+}
+
+/** Node 响应的最小结构面（ServerResponse + 1.x status/json 垫片） */
+export interface ServerResponseLike {
+  statusCode?: number;
+  writableEnded?: boolean;
+  writeHead(code: number, headers: Record<string, string>): unknown;
+  end(body?: string): unknown;
+  status(code: number): ServerResponseLike;
+  json(body: unknown): ServerResponseLike;
 }
 
 /**

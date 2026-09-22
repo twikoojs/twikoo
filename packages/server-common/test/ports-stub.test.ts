@@ -94,6 +94,7 @@ const stubAdapters = {
     capGet: noValue,
     capSet: noop,
     capDel: noop,
+    capDeleteExpired: async () => 0,
   },
   storage: {
     challenges: {

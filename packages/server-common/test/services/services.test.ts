@@ -526,6 +526,27 @@ describe("Cap 服务（services/cap）", () => {
     await storage.tokens.deleteExpired();
   });
 
+  it("deleteExpired：真正删除过期记录，而非读取时过滤（#1174）", async () => {
+    const adapters = createMemoryAdapters();
+    const storage = databaseCapStorage(adapters.database);
+    const db = adapters.database;
+    const now = Date.now();
+    await storage.challenges.store("c-expired", { challenge: "x", expires: now - 1 });
+    await storage.challenges.store("c-alive", { challenge: "y", expires: now + 60000 });
+    await storage.tokens.store("t-expired", now - 1);
+    await storage.tokens.store("t-alive", now + 60000);
+
+    // 此前是无操作空实现：过期记录只被「读取时过滤」，永远留在库里无限增长
+    await storage.challenges.deleteExpired();
+
+    // 断言键被**真正删除**（capGet 直查底层，绕过读取时的过期过滤）
+    expect(await db.capGet("cap:c:c-expired")).toBeNull();
+    expect(await db.capGet("cap:t:t-expired")).toBeNull();
+    // 未过期的必须保留
+    expect(await db.capGet("cap:c:c-alive")).toEqual({ challenge: "y", expires: now + 60000 });
+    expect(await db.capGet("cap:t:t-alive")).toEqual({ expires: now + 60000 });
+  });
+
   it("isBuiltinCap / validateToken", async () => {
     expect(isBuiltinCap({ CAPTCHA_PROVIDER: "Cap" })).toBe(true);
     expect(isBuiltinCap({ CAPTCHA_PROVIDER: "Cap", CAP_API_ENDPOINT: "https://x" })).toBe(false);

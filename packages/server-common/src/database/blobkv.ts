@@ -65,6 +65,9 @@ const CONFIG_KEY = "config:main";
 /** 计数键前缀（1.x key 设计逐字对齐；导出按键前缀枚举） */
 const COUNTER_KEY_PREFIX = "counter:";
 
+/** 验证码键前缀（cap:c:<token> / cap:t:<key>；过期清理按键前缀枚举） */
+const CAP_KEY_PREFIX = "cap:";
+
 /**
  * 生成计数键（1.x `counter:${encodeURIComponent(url)}` 对齐）。
  * @param url 页面路径
@@ -303,5 +306,27 @@ export class BlobKvDatabase implements Database {
     } catch {
       // 删除不存在的 key 容错（1.x capDel try/catch 对齐）
     }
+  }
+
+  /**
+   * 验证码：删除已过期记录（cap_kv 的值形如 `{ expires }`）。
+   *
+   * BlobKV 无「按键前缀批量删除」原语，故按前缀 list 后逐个判过期再删。
+   * @param now 当前时间戳（毫秒）
+   * @returns 删除条数
+   */
+  async capDeleteExpired(now: number): Promise<number> {
+    const { blobs } = await this.store.list({ prefix: CAP_KEY_PREFIX });
+    let deleted = 0;
+    for (const blob of blobs) {
+      const value = await this.store.get(blob.key, { type: "json" });
+      if (typeof value !== "object" || value === null) continue;
+      const expires = (value as { expires?: unknown }).expires;
+      if (typeof expires === "number" && expires < now) {
+        await this.capDel(blob.key);
+        deleted += 1;
+      }
+    }
+    return deleted;
   }
 }

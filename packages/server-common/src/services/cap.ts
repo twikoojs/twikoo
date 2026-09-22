@@ -2,9 +2,10 @@
  * 内嵌 Cap 验证码服务（1.x utils/cap.js 移植；@cap.js/server 为常规依赖）。
  *
  * 存储：1.x 的 mongoStorage / lokiStorage / tcbStorage / kvStorage 四份复制
- * 收敛为**单一 Database 存储适配器**——基于 Database 端口的 cap 三方法
- * （capGet/capSet/capDel），键设计沿用 1.x kvStorage 的 `cap:c:<token>` /
- * `cap:t:<key>` 形态（JSON 序列化值自带过期时间，读取时过滤）。
+ * 收敛为**单一 Database 存储适配器**——基于 Database 端口的 cap 四方法
+ * （capGet/capSet/capDel/capDeleteExpired），键设计沿用 1.x kvStorage 的
+ * `cap:c:<token>` / `cap:t:<key>` 形态（JSON 序列化值自带过期时间：读取时过滤，
+ * 并由 `deleteExpired` 定期下推清理，见 #1174）。
  */
 import Cap from "@cap.js/server";
 import type { Database } from "../ports/database";
@@ -49,8 +50,15 @@ export function databaseCapStorage(db: Database): Storage {
       async delete(token: string): Promise<void> {
         await db.capDel(`cap:c:${token}`);
       },
-      /** 清理过期（JSON 值自带过期时间，读取时惰性过滤，空实现） */
-      async deleteExpired(): Promise<void> {},
+      /**
+       * 清理过期挑战（Cap 的 `_lazyCleanup` 最多每 5 分钟调一次）。
+       *
+       * 过期清理**下推给数据库**（`capDeleteExpired`），而不是拉回全部键逐条判断：
+       * 该集合正是「匿名者可反复申请挑战并弃用、过期不删就无限增长」的那一个（#1174）。
+       */
+      async deleteExpired(): Promise<void> {
+        await db.capDeleteExpired(Date.now());
+      },
     },
     tokens: {
       /** 存储通行 token */
@@ -67,8 +75,15 @@ export function databaseCapStorage(db: Database): Storage {
       async delete(key: string): Promise<void> {
         await db.capDel(`cap:t:${key}`);
       },
-      /** 清理过期（同上，空实现） */
-      async deleteExpired(): Promise<void> {},
+      /**
+       * 清理过期通行 token。
+       *
+       * 与挑战侧共用同一个下推删除（cap_kv 整体清理）；Cap 会对两个钩子各调一次，
+       * 第二次通常为 0 条——幂等，无需额外去重。
+       */
+      async deleteExpired(): Promise<void> {
+        await db.capDeleteExpired(Date.now());
+      },
     },
   };
 }

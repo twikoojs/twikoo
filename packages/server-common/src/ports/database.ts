@@ -220,8 +220,18 @@ export type CapSet = (key: string, value: unknown) => Promise<void>;
 export type CapDel = (key: string) => Promise<void>;
 
 /**
- * 统一数据库接口（方法表全量聚合：评论 8 / 计数 3 / 配置 2 / 验证码 3 /
- * 生命周期 2，共 18 个方法）。各实现见：MongoDatabase（vercel / cloudbase）、
+ * 验证码：删除已过期记录（cap_kv 的值形如 `{ expires }`，`expires < now` 即过期）。
+ *
+ * 由数据库实现**下推为批量删除**（各实现用自家最高效的形态），而不是「全量拉回
+ * 再逐条删」——cap_kv 正是「过期不清理会无限增长」的那个集合（#1174）。
+ * @param now 当前时间戳（毫秒）
+ * @returns 实际删除的条数
+ */
+export type CapDeleteExpired = (now: number) => Promise<number>;
+
+/**
+ * 统一数据库接口（方法表全量聚合：评论 8 / 计数 3 / 配置 2 / 验证码 4 /
+ * 生命周期 2，共 19 个方法）。各实现见：MongoDatabase（vercel / cloudbase）、
  * LokiDatabase（self-hosted）、BlobKvDatabase（eo-makers）、CloudBaseDatabase（cloudbase）。
  */
 export interface Database {
@@ -261,4 +271,6 @@ export interface Database {
   capSet: CapSet;
   /** 验证码：删除 */
   capDel: CapDel;
+  /** 验证码：删除已过期记录（Cap 的 deleteExpired 钩子用） */
+  capDeleteExpired: CapDeleteExpired;
 }

@@ -54,6 +54,21 @@ runDatabaseSemanticSuite("BlobKvDatabase", {
 });
 
 describe("BlobKvDatabase 平台语义", () => {
+  it("capDeleteExpired：按 cap: 前缀枚举后只删过期记录（#1174）", async () => {
+    const db = new BlobKvDatabase(new MemoryBlobStore());
+    const now = Date.now();
+    await db.capSet("cap:c:expired", { challenge: "x", expires: now - 1 });
+    await db.capSet("cap:c:alive", { challenge: "y", expires: now + 60000 });
+    await db.capSet("cap:t:alive", { expires: now + 60000 });
+    // 非 cap 键不得被误删（前缀枚举的边界）
+    await db.capSet("counter:/p", { url: "/p", time: 3 });
+
+    expect(await db.capDeleteExpired(now)).toBe(1);
+    expect(await db.capGet("cap:c:expired")).toBeNull();
+    expect(await db.capGet("cap:c:alive")).toEqual({ challenge: "y", expires: now + 60000 });
+    expect(await db.capGet("counter:/p")).toEqual({ url: "/p", time: 3 });
+  });
+
   it("缺失 key 返回空而非抛错（getAllComments/config/counter/cap，1.7.24 行为）", async () => {
     const db = new BlobKvDatabase(new MemoryBlobStore());
     await expect(db.getAllComments()).resolves.toEqual([]);

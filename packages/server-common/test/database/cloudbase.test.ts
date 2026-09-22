@@ -34,6 +34,19 @@ function isCommand(v: unknown): v is MockCommand {
   return typeof v === "object" && v !== null && "__op" in v;
 }
 
+/**
+ * 按（可带点的）字段路径取值，还原 TCB 的嵌套字段查询语义。
+ * @param doc 文档
+ * @param path 字段路径（如 `value.expires`）
+ * @returns 取到的值；任一层缺失返回 undefined
+ */
+function resolvePath(doc: Record<string, unknown>, path: string): unknown {
+  return path.split(".").reduce<unknown>((acc, part) => {
+    if (typeof acc !== "object" || acc === null) return undefined;
+    return (acc as Record<string, unknown>)[part];
+  }, doc);
+}
+
 /** 32 位 hex 主键（mock SDK 生成，与语义套件的 uuid 形态断言对齐） */
 function mockId(): string {
   return randomUUID().replace(/-/g, "");
@@ -52,7 +65,7 @@ class MockTcbCollection implements CloudBaseCollectionLike {
    */
   private matches(doc: Record<string, unknown>, cond: Record<string, unknown>): boolean {
     return Object.entries(cond).every(([key, expected]) => {
-      const actual = doc[key];
+      const actual = resolvePath(doc, key);
       if (isCommand(expected) && expected.__op === "in") {
         const list = expected.list ?? [];
         // TCB 语义：null 在列表中命中「字段缺失」
@@ -273,5 +286,27 @@ describe("CloudBaseDatabase 平台语义", () => {
     expect(counter?.docs).toHaveLength(1);
     expect(counter?.docs[0].time).toBe(2);
     expect(counter?.docs[0].title).toBe("标题");
+  });
+
+  it("capDeleteExpired：下推为 where({ 'value.expires': _.lt(now) }).remove()（#1174）", async () => {
+    const mock = new MockTcbDatabase();
+    const db = new CloudBaseDatabase({ database: mock });
+    const now = Date.now();
+    await db.capSet("cap:c:expired", { challenge: "x", expires: now - 1 });
+    await db.capSet("cap:c:alive", { challenge: "y", expires: now + 60000 });
+    await db.capSet("cap:t:expired", { expires: now - 1 });
+
+    const deleted = await db.capDeleteExpired(now);
+    // 条件形态断言（须在后续 capGet 之前取：capGet 也会 where，会顶掉 at(-1)）
+    const capKv = mock.collections.get("cap_kv");
+    const captured = capKv?.capturedConditions.at(-1);
+    const expires = captured?.["value.expires"] as MockCommand | undefined;
+    expect(expires?.__op).toBe("lt");
+    expect(expires?.value).toBe(now);
+
+    expect(deleted).toBe(2);
+    expect(await db.capGet("cap:c:expired")).toBeNull();
+    expect(await db.capGet("cap:t:expired")).toBeNull();
+    expect(await db.capGet("cap:c:alive")).toEqual({ challenge: "y", expires: now + 60000 });
   });
 });

@@ -91,7 +91,7 @@
   "ADMIN_CONFIG_ITEM_LLM_MODEL": "Nama model LLM, bawaan: deepseek-v4-pro",
   "ADMIN_CONFIG_ITEM_LLM_SPAM_PROMPT": "Prompt deteksi spam LLM (opsional, kosongkan untuk menggunakan default)",
   "ADMIN_CONFIG_ITEM_LLM_MAX_RETRIES": "Maksimal percobaan ulang deteksi LLM (bawaan 3)",
-  "ADMIN_CONFIG_ITEM_PUSHOO_CHANNEL": "Saluran push notifikasi IM. Mendukung: \"qmsg\", \"serverchan\", \"pushplus\", \"pushplushxtrip\", \"dingtalk\", \"wecom\", \"bark\", \"gocqhttp\", \"atri\", \"pushdeer\", \"igot\", \"telegram\", \"feishu\"",
+  "ADMIN_CONFIG_ITEM_PUSHOO_CHANNEL": "Saluran push notifikasi IM. Mendukung: \"qmsg\", \"serverchan\", \"pushplus\", \"dingtalk\", \"wecom\", \"bark\", \"gocqhttp\", \"atri\", \"pushdeer\", \"igot\", \"telegram\", \"feishu\"",
   "ADMIN_CONFIG_ITEM_PUSHOO_TOKEN": "Token push notifikasi IM. Lihat https://pushoo.js.org untuk detailnya",
   "ADMIN_CONFIG_ITEM_DISPLAYED_FIELDS": "Kotak input yang ditampilkan di antarmuka. Bawaan: nick,mail,link",
   "ADMIN_CONFIG_ITEM_REQUIRED_FIELDS": "Kolom wajib untuk komentar. Atur ke \"nick,mail,link\" berarti semua wajib, \"none\" berarti semua opsional. Bawaan: nick,mail.",

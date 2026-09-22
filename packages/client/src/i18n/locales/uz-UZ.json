@@ -91,7 +91,7 @@
   "ADMIN_CONFIG_ITEM_LLM_MODEL": "LLM model nomi, standart: deepseek-v4-pro",
   "ADMIN_CONFIG_ITEM_LLM_SPAM_PROMPT": "LLM spam prompt (ixtiyoriy, bo'sh qolsa standart ishlatiladi)",
   "ADMIN_CONFIG_ITEM_LLM_MAX_RETRIES": "LLM aniqlash uchun maksimal qayta urinishlar soni (standart 3)",
-  "ADMIN_CONFIG_ITEM_PUSHOO_CHANNEL": "ИМ билдиришномаси суриш канали. Қўллаб-қувватлаш: \"qmsg\", \"serverchan\", \"pushplus\", \"pushplushxtrip\", \"dingtalk\", \"wecom\", \"bark\", \"gocqhttp\", \"atri\", \"pushdeer\", \"igot\", \"telegram\", \"feishu\"",
+  "ADMIN_CONFIG_ITEM_PUSHOO_CHANNEL": "ИМ билдиришномаси суриш канали. Қўллаб-қувватлаш: \"qmsg\", \"serverchan\", \"pushplus\", \"dingtalk\", \"wecom\", \"bark\", \"gocqhttp\", \"atri\", \"pushdeer\", \"igot\", \"telegram\", \"feishu\"",
   "ADMIN_CONFIG_ITEM_PUSHOO_TOKEN": "ИМ билдиришномаси пуш токени. Тафсилотлар учун https://pushoo.js.org га қаранг",
   "ADMIN_CONFIG_ITEM_DISPLAYED_FIELDS": "Поля ввода, отображаемые на интерфейсе, Стандарт: nick,mail,link",
   "ADMIN_CONFIG_ITEM_REQUIRED_FIELDS": "Шарҳлар учун зарур майдонлар. «Ниск,маил,линк» га ўрнатилган бўлса, барча майдонлар талаб қилинади. «Йўқ» га ўрнатилиши барча майдонлар ихтиёрий эканлигини англатади. Стандарт: ник, почта.",

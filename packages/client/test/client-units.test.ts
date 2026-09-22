@@ -34,9 +34,9 @@ afterEach(() => {
 });
 
 describe("constants", () => {
-  it("pushooChannels 与 @twikoojs/shared 的 PUSHOO_CHANNELS 同步（22 渠道，不含 serverchain）", () => {
+  it("pushooChannels 与 @twikoojs/shared 的 PUSHOO_CHANNELS 同步（21 渠道，不含 serverchain）", () => {
     expect(pushooChannels).toEqual([...PUSHOO_CHANNELS]);
-    expect(pushooChannels).toHaveLength(22);
+    expect(pushooChannels).toHaveLength(21);
     expect(pushooChannels).not.toContain("serverchain");
   });
 

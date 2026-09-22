@@ -327,4 +327,25 @@ describe("pushoo 错误形态", () => {
     const result = await notice("no-such-channel", base as never);
     expect(String(result.error?.message)).toContain("is not supported");
   });
+
+  it("pushplushxtrip 渠道已移除（服务停止运营）→ 返回 { error }", async () => {
+    const result = await notice("pushplushxtrip", base as never);
+    expect(String(result.error?.message)).toContain("is not supported");
+    expect(httpCalls).toHaveLength(0);
+  });
+});
+
+describe("Markdown 转纯文本（getTxt：remove-markdown）", () => {
+  it("标题缺省时从 Markdown 正文提取，且去掉标记符号", async () => {
+    // pushplus 的 title 缺省走 getTitle(content) = getTxt(content).split("\n")[0]
+    await notice("pushplus", { token: "T0KEN", content: "# 一级标题\n\n正文 **加粗**" } as never);
+    const body = JSON.parse(bodyText(httpCalls[httpCalls.length - 1].body)) as { title: string };
+    expect(body.title).toBe("一级标题");
+  });
+
+  it("无标题的纯文本正文原样取首行（不引入多余空白）", async () => {
+    await notice("pushplus", { token: "T0KEN", content: "第一行\n第二行" } as never);
+    const body = JSON.parse(bodyText(httpCalls[httpCalls.length - 1].body)) as { title: string };
+    expect(body.title).toBe("第一行");
+  });
 });

@@ -9,7 +9,9 @@
 自 Twikoo 2.0 起，pushoo 迁入 Twikoo monorepo，**包名 `pushoo` 不变**，但：
 
 - **版本号不再独立演进**：由 `0.1.12` 直接跳到 **`2.0.0`**，此后跟随 Twikoo 统一版本；
-- **HTTP 层改用原生 `fetch`**：不再依赖 `axios`（axios 依赖 Node 的 `http` 模块，在 Cloudflare Workers 等运行时不可用），`marked` 4 → 18；
+- **HTTP 层改用原生 `fetch`**：不再依赖 `axios`（axios 依赖 Node 的 `http` 模块，在 Cloudflare Workers 等运行时不可用）；
+- **依赖精简**：Markdown 转纯文本由 `markdown-to-txt` 换成仍在维护的 `remove-markdown`；移除已不再使用的 `marked`、`lodash`；
+- **移除 Push Plus Hxtrip**：该服务已停止运营，`pushplushxtrip` 渠道及其 `noticePushPlusHxtrip` 导出被删除；
 - **API 不变**：`notice()` 与 `NoticeOptions` 的签名与行为保持兼容。
 
 对使用方的影响：如果您在 `package.json` 里写的是 `"pushoo": "^0.1.x"`，
@@ -35,7 +37,7 @@ console.log(result);
 ```
 
 支持 `webhook`、`qmsg`、`serverchan`、`pushplus`、`dingtalk`、`wecom`、`bark`、`telegram`、
-`feishu`、`lark`、`discord`、`wxpusher` 等 20 个平台，各平台的 token 获取方式见
+`feishu`、`lark`、`discord`、`wxpusher` 等 21 个平台，各平台的 token 获取方式见
 **<https://twikoo.js.org/pushoo.html>**。
 
 如果您是在 Twikoo 评论系统中使用，则无需自己调用，直接在 Twikoo 管理面板中配置平台名称和 token 即可。

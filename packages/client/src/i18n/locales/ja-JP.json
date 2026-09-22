@@ -91,7 +91,7 @@
   "ADMIN_CONFIG_ITEM_LLM_MODEL": "LLMモデル名。デフォルト：deepseek-v4-pro",
   "ADMIN_CONFIG_ITEM_LLM_SPAM_PROMPT": "LLMスパム検出プロンプト（オプション。空の場合はデフォルトが使用されます）",
   "ADMIN_CONFIG_ITEM_LLM_MAX_RETRIES": "LLM検出最大リトライ回数（デフォルト3回）",
-  "ADMIN_CONFIG_ITEM_PUSHOO_CHANNEL": "即時メッセージプッシュプラットフォームの名前。\"qmsg\"、\"serverchan\"、\"pushplus\"、\"pushplushxtrip\"、\"dingtalk\"、\"wecom\"、\"bark\"、\"gocqhttp\"、\"atri\"、\"pushdeer\"、\"igot\"、\"telegram\"、\"feishu\" などに対応しています。",
+  "ADMIN_CONFIG_ITEM_PUSHOO_CHANNEL": "即時メッセージプッシュプラットフォームの名前。\"qmsg\"、\"serverchan\"、\"pushplus\"、\"dingtalk\"、\"wecom\"、\"bark\"、\"gocqhttp\"、\"atri\"、\"pushdeer\"、\"igot\"、\"telegram\"、\"feishu\" などに対応しています。",
   "ADMIN_CONFIG_ITEM_PUSHOO_TOKEN": "即時メッセージプッシュトークン。詳細な設定については、https://pushoo.js.org の説明をご覧ください",
   "ADMIN_CONFIG_ITEM_DISPLAYED_FIELDS": "画面に表示される入力欄。デフォルト：nick,mail,link",
   "ADMIN_CONFIG_ITEM_REQUIRED_FIELDS": "コメント必須項目。すべてを必須にする場合は nick,mail,link に設定、すべてを任意にする場合はnoneに設定してください。デフォルト：nick,mail",

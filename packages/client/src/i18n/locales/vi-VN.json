@@ -91,7 +91,7 @@
   "ADMIN_CONFIG_ITEM_LLM_MODEL": "Tên mô hình LLM, mặc định: deepseek-v4-pro",
   "ADMIN_CONFIG_ITEM_LLM_SPAM_PROMPT": "Prompt phát hiện spam LLM (tùy chọn, để trống dùng mặc định)",
   "ADMIN_CONFIG_ITEM_LLM_MAX_RETRIES": "Số lần thử lại tối đa của LLM (mặc định 3)",
-  "ADMIN_CONFIG_ITEM_PUSHOO_CHANNEL": "Kênh gửi thông báo IM tức thì. \"qmsg\", \"serverchan\", \"pushplus\", \"pushplushxtrip\", \"dingtalk\", \"wecom\", \"bark\", \"gocqhttp\", \"atri\", \"pushdeer\", \"igot\", \"telegram\", \"feishu\"",
+  "ADMIN_CONFIG_ITEM_PUSHOO_CHANNEL": "Kênh gửi thông báo IM tức thì. \"qmsg\", \"serverchan\", \"pushplus\", \"dingtalk\", \"wecom\", \"bark\", \"gocqhttp\", \"atri\", \"pushdeer\", \"igot\", \"telegram\", \"feishu\"",
   "ADMIN_CONFIG_ITEM_PUSHOO_TOKEN": "Token gửi thông báo IM. Xem https://pushoo.js.org để biết chi tiết",
   "ADMIN_CONFIG_ITEM_DISPLAYED_FIELDS": "Các ô nhập liệu hiển thị trên giao diện. Mặc định: nick,mail,link",
   "ADMIN_CONFIG_ITEM_REQUIRED_FIELDS": "Trường bắt buộc khi bình luận. \"nick,mail,link\" là tất cả bắt buộc, \"none\" là tất cả tùy chọn. Mặc định: nick,mail.",

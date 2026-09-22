@@ -122,7 +122,7 @@ Akismet (Automattic Kismet) 是应用广泛的一个垃圾留言过滤系统，�
 - `JEV_API_KEY`：填写 Jev API 密钥。
 - `JEV_API_ENDPOINT`：填写 API 接口地址（默认 `https://api.typesafe.ai/v1/systemone`）。
 - `JEV_MODEL`：填写模型名称（默认 `jev-latest`）。
-- `JEV_SPAM_THRESHOLD`：垃圾评论概率阈值，范围 0 到 1（默认 `0.9`）。
+- `JEV_SPAM_THRESHOLD`：垃圾评论概率阈值，范围 0 到 1（默认 `0.85`）。
 
 反垃圾服务按腾讯云内容安全 → Akismet → Jev → LLM 的顺序选择，只会使用第一个已配置的服务。
 

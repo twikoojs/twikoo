@@ -89,7 +89,7 @@
   "ADMIN_CONFIG_ITEM_JEV_API_KEY": "Jev API Key for AI spam detection. Used only when Tencent Cloud and Akismet are not configured, and takes precedence over LLM.",
   "ADMIN_CONFIG_ITEM_JEV_API_ENDPOINT": "Jev API endpoint URL, default: https://api.typesafe.ai/v1/systemone",
   "ADMIN_CONFIG_ITEM_JEV_MODEL": "Jev model name, default: jev-latest",
-  "ADMIN_CONFIG_ITEM_JEV_SPAM_THRESHOLD": "Jev spam probability threshold from 0 to 1, default: 0.9",
+  "ADMIN_CONFIG_ITEM_JEV_SPAM_THRESHOLD": "Jev spam probability threshold from 0 to 1, default: 0.85",
   "ADMIN_CONFIG_ITEM_LLM_API_KEY": "LLM API Key for AI spam detection. Used only when Tencent Cloud, Akismet, and Jev are not configured.",
   "ADMIN_CONFIG_ITEM_LLM_API_ENDPOINT": "LLM API endpoint URL, defaults to https://api.deepseek.com/v1",
   "ADMIN_CONFIG_ITEM_LLM_MODEL": "LLM model name, default: deepseek-v4-pro",

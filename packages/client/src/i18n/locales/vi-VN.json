@@ -89,7 +89,7 @@
   "ADMIN_CONFIG_ITEM_JEV_API_KEY": "Jev API Key dùng để phát hiện bình luận spam bằng AI. Chỉ có hiệu lực khi Tencent Cloud và Akismet chưa được cấu hình, và được ưu tiên trước LLM.",
   "ADMIN_CONFIG_ITEM_JEV_API_ENDPOINT": "Địa chỉ Jev API endpoint, mặc định: https://api.typesafe.ai/v1/systemone",
   "ADMIN_CONFIG_ITEM_JEV_MODEL": "Tên mô hình Jev, mặc định: jev-latest",
-  "ADMIN_CONFIG_ITEM_JEV_SPAM_THRESHOLD": "Ngưỡng xác suất spam của Jev từ 0 đến 1, mặc định: 0.9",
+  "ADMIN_CONFIG_ITEM_JEV_SPAM_THRESHOLD": "Ngưỡng xác suất spam của Jev từ 0 đến 1, mặc định: 0.85",
   "ADMIN_CONFIG_ITEM_LLM_API_KEY": "LLM API Key dùng để phát hiện spam bằng AI. Chỉ có hiệu lực khi Tencent Cloud, Akismet và Jev chưa được cấu hình.",
   "ADMIN_CONFIG_ITEM_LLM_API_ENDPOINT": "Địa chỉ LLM API endpoint, mặc định: https://api.deepseek.com/v1",
   "ADMIN_CONFIG_ITEM_LLM_MODEL": "Tên mô hình LLM, mặc định: deepseek-v4-pro",

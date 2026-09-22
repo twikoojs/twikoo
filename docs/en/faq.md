@@ -125,7 +125,7 @@ Akismet (Automattic Kismet) is a widely used spam filtering system by Matt Mulle
 - `JEV_API_KEY`: Enter your Jev API key.
 - `JEV_API_ENDPOINT`: Enter the API endpoint URL (default `https://api.typesafe.ai/v1/systemone`).
 - `JEV_MODEL`: Enter the model name (default `jev-latest`).
-- `JEV_SPAM_THRESHOLD`: Spam probability threshold from 0 to 1 (default `0.9`).
+- `JEV_SPAM_THRESHOLD`: Spam probability threshold from 0 to 1 (default `0.85`).
 
 Anti-spam services are selected in this order: Tencent Cloud TMS → Akismet → Jev → LLM. Only the first configured service is used.
 

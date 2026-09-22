@@ -530,7 +530,7 @@ function createSettings(): SettingGroup[] {
         {
           key: "JEV_SPAM_THRESHOLD",
           desc: t("ADMIN_CONFIG_ITEM_JEV_SPAM_THRESHOLD"),
-          ph: "0.9",
+          ph: "0.85",
           value: "",
         },
         {

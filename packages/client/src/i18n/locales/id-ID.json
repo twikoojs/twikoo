@@ -89,7 +89,7 @@
   "ADMIN_CONFIG_ITEM_JEV_API_KEY": "Jev API Key untuk deteksi komentar spam dengan AI. Hanya berlaku jika Tencent Cloud dan Akismet tidak dikonfigurasi, dan diprioritaskan sebelum LLM.",
   "ADMIN_CONFIG_ITEM_JEV_API_ENDPOINT": "URL endpoint Jev API, bawaan: https://api.typesafe.ai/v1/systemone",
   "ADMIN_CONFIG_ITEM_JEV_MODEL": "Nama model Jev, bawaan: jev-latest",
-  "ADMIN_CONFIG_ITEM_JEV_SPAM_THRESHOLD": "Ambang probabilitas spam Jev dari 0 hingga 1, bawaan: 0.9",
+  "ADMIN_CONFIG_ITEM_JEV_SPAM_THRESHOLD": "Ambang probabilitas spam Jev dari 0 hingga 1, bawaan: 0.85",
   "ADMIN_CONFIG_ITEM_LLM_API_KEY": "LLM API Key untuk deteksi komentar spam dengan AI. Hanya berlaku jika Tencent Cloud, Akismet, dan Jev tidak dikonfigurasi.",
   "ADMIN_CONFIG_ITEM_LLM_API_ENDPOINT": "URL endpoint LLM API, bawaan: https://api.deepseek.com/v1",
   "ADMIN_CONFIG_ITEM_LLM_MODEL": "Nama model LLM, bawaan: deepseek-v4-pro",

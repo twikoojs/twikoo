@@ -314,7 +314,7 @@ async function checkByJev(
     configuredThreshold >= 0 &&
     configuredThreshold <= 1
       ? configuredThreshold
-      : 0.9;
+      : 0.85;
 
   const response = await httpPost<{
     model?: string;
@@ -336,8 +336,25 @@ async function checkByJev(
       questions: {
         spam: {
           type: "noul",
-          instructions:
-            "Is this submission spam for a personal blog? Treat unsolicited commercial advertisements, promotional links, SEO/link spam, scams, meaningless repetitive content, and automated promotional greetings as spam. Treat genuine questions, technical discussions, constructive feedback, and normal greetings as not spam. Consider all state fields, including nickname and website.",
+          instructions: `
+Is this submission spam for a personal blog?
+
+Evaluate the comment text, nickname, and website together.
+
+Treat the submission as spam when it contains or represents:
+- Unsolicited commercial advertisements or promotions.
+- SEO spam, link-building spam, marketing, or lead-generation services.
+- Scams, gambling, adult services, or financial promotions.
+- Meaningless repetitive content or automated promotional greetings.
+- Generic praise, thanks, or greetings when the nickname or website clearly represents a commercial, SEO, marketing, or promotional service.
+
+Important:
+- A harmless-looking comment does not make the submission legitimate if the nickname or website is primarily being used for promotion.
+- Do not judge only the comment text. Consider nickname and website as equally important signals.
+- Do not penalize genuine personal blogs, developer websites, project pages, or personal homepages when the comment contains relevant, substantive discussion or normal community interaction.
+
+Treat genuine questions, technical discussions, constructive feedback, relevant experience sharing, and normal greetings from ordinary users as not spam.
+`.trim(),
         },
       },
     },

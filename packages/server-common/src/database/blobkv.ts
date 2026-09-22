@@ -6,6 +6,9 @@
  * - 评论以**整表 JSON** 存于单键 `comments:all`（进程内缓存读放大消除，
  *   1.x commentsCache 语义）；配置 `config:main`；计数器
  *   `counter:${encodeURIComponent(url)}`（1.x key 设计逐字对齐）；
+ * - **变更（增/改/删）一律先回源取最新整表再写回**（见 `mutate`）：
+ *   本类在 serverless 下是「一请求一实例」，缓存只对本请求有效，基于陈旧缓存
+ *   整表写回会导致并发请求互相覆盖（#1174）；
  * - 语义查询在 JS 层过滤（ABSENT = 缺失/null/空串，与 Mongo/Loki 等价）；
  * - 缺失 key 返回空值而非抛错（getAllComments → []、getCounter → null、
  *   capGet → null，1.7.24 行为一致）；
@@ -164,6 +167,27 @@ export class BlobKvDatabase implements Database {
     await this.store.setJSON(COMMENTS_KEY, comments);
   }
 
+  /**
+   * 评论：读-改-写（**强制回源**取最新整表，应用变更后写回）。
+   *
+   * 为什么必须回源：EO Makers 是 serverless，每个请求各自 new 一个本类实例
+   * （见适配器 `createEoMakersFunc`），进程内缓存只对「本请求」有意义。若直接
+   * 基于可能陈旧的缓存改再整表写回，并发请求之间会互相覆盖——新增的评论丢失、
+   * 已删除的评论被写回（#1174）。故每次变更前先丢弃缓存回源一次，把
+   * 「读 → 写」窗口从「整个请求时长」压缩到「一次回源往返」。
+   *
+   * **已知限制**：EO BlobKV 的写入只提供 `onlyIfNew` 条件写，**没有 If-Match /
+   * CAS / 事务**，因此做不到真正的原子读-改-写；两个请求的「回源→写回」窗口
+   * 若完全重叠，仍可能互相覆盖（概率远低于改前）。彻底解决需平台提供条件写，
+   * 或改成「一评论一键」的存储布局（读取侧将退化为 list + N 次 get，代价过高）。
+   * @param mutate 基于最新整表产出新整表
+   */
+  private async mutate(mutate: (comments: CommentDoc[]) => CommentDoc[]): Promise<void> {
+    this.commentsCache = null;
+    const latest = await this.getAllComments();
+    await this.saveAllComments(mutate(latest));
+  }
+
   /** 评论：语义查询 + 排序/分页（JS 层实现；1.x 无 options，2.0 端口统一后补齐） */
   async getComments(query: SemanticQuery, options?: QueryOptions): Promise<CommentDoc[]> {
     const matched = filterComments(await this.getAllComments(), query);
@@ -197,41 +221,41 @@ export class BlobKvDatabase implements Database {
     return comments.find((c) => c._id === id) ?? null;
   }
 
-  /** 评论：新增（_id 缺失生成 32 位 uuid 串；整表写回） */
+  /** 评论：新增（_id 缺失生成 32 位 uuid 串；回源后整表写回） */
   async addComment(data: CommentDoc): Promise<CommentDoc> {
     const doc: CommentDoc = { ...data, _id: data._id ?? newBlobCommentId() };
-    const comments = await this.getAllComments();
-    comments.push(doc);
-    await this.saveAllComments(comments);
+    await this.mutate((comments) => {
+      // 回源后同 id 已存在（重试 / 并发写入同一 id）：不重复插入
+      if (comments.some((c) => c._id === doc._id)) return comments;
+      return [...comments, doc];
+    });
     return doc;
   }
 
-  /** 评论：按 id 部分更新（未命中为空操作） */
+  /** 评论：按 id 部分更新（回源后未命中为空操作） */
   async updateComment(id: string, data: Partial<CommentDoc>): Promise<void> {
-    const comments = await this.getAllComments();
-    const target = comments.find((c) => c._id === id);
-    if (!target) return;
-    Object.assign(target, data);
-    await this.saveAllComments(comments);
+    await this.mutate((comments) => {
+      const target = comments.find((c) => c._id === id);
+      if (target) Object.assign(target, data);
+      return comments;
+    });
   }
 
-  /** 评论：按 id 删除（未命中为空操作） */
+  /** 评论：按 id 删除（回源后未命中为空操作；删除结果不会被并发写回复活） */
   async deleteComment(id: string): Promise<void> {
-    const comments = await this.getAllComments();
-    const index = comments.findIndex((c) => c._id === id);
-    if (index === -1) return;
-    comments.splice(index, 1);
-    await this.saveAllComments(comments);
+    await this.mutate((comments) => comments.filter((c) => c._id !== id));
   }
 
-  /** 评论：批量导入（缺失 _id 补齐；单次整表写回） */
+  /** 评论：批量导入（缺失 _id 补齐；回源后单次整表写回，已存在的 id 跳过） */
   async bulkAddComments(list: CommentDoc[]): Promise<void> {
     if (!list.length) return;
-    const comments = await this.getAllComments();
-    for (const item of list) {
-      comments.push({ ...item, _id: item._id ?? newBlobCommentId() });
-    }
-    await this.saveAllComments(comments);
+    await this.mutate((comments) => {
+      const existing = new Set(comments.map((c) => c._id));
+      const added = list
+        .map((item) => ({ ...item, _id: item._id ?? newBlobCommentId() }))
+        .filter((item) => !existing.has(item._id));
+      return [...comments, ...added];
+    });
   }
 
   /** 计数：读取页面计数（缺失 key 返回 null，不抛错） */

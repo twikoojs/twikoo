@@ -62,19 +62,22 @@ describe("BlobKvDatabase 平台语义", () => {
     await expect(db.capGet("no-such-key")).resolves.toBeNull();
   });
 
-  it("comments:all 进程内缓存：首个请求读 KV，后续请求走缓存；写入同步缓存", async () => {
+  it("comments:all 进程内缓存：读取走缓存；变更强制回源后写回并刷新缓存", async () => {
     const store = new MemoryBlobStore();
     const db = new BlobKvDatabase(store);
     await db.getAllComments();
     const firstReads = store.getCalls;
     await db.getAllComments();
     await db.getAllComments();
-    // 缓存命中：不再产生 KV 读
+    // 纯读取命中缓存：不再产生 KV 读
     expect(store.getCalls).toBe(firstReads);
-    // 写入后缓存同步（getComment 立即可见，不重读 KV）
+    // 变更**强制回源**（并发安全的前提，见 #1174）：addComment 多出 1 次 KV 读
     await db.addComment({ _id: "cache-1", nick: "缓存" });
-    expect(store.getCalls).toBe(firstReads);
+    expect(store.getCalls).toBe(firstReads + 1);
+    // 写回后的缓存即最新整表：随后读取不再回源
+    const readsAfterWrite = store.getCalls;
     expect((await db.getComment("cache-1"))?.nick).toBe("缓存");
+    expect(store.getCalls).toBe(readsAfterWrite);
     // 落 KV：全新实例（无缓存）可读回持久化数据
     const db2 = new BlobKvDatabase(store);
     expect((await db2.getComment("cache-1"))?.nick).toBe("缓存");
@@ -87,5 +90,38 @@ describe("BlobKvDatabase 平台语义", () => {
     }
     const page = await db.getComments({}, { sort: { created: -1 }, skip: 1, limit: 2 });
     expect(page.map((c) => c.created)).toEqual([1003, 1002]);
+  });
+
+  it("并发写不丢评论：变更前回源，后写者包含先写者的新增（#1174）", async () => {
+    const store = new MemoryBlobStore();
+    // 两个实例模拟「两个并发请求各自的 serverless 实例」（EO 为一请求一实例）
+    const reqA = new BlobKvDatabase(store);
+    const reqB = new BlobKvDatabase(store);
+
+    await reqA.addComment({ _id: "a-1", nick: "A" });
+    // B 在本请求早期读过一次 → 陈旧快照进了 B 的进程内缓存（改前的踩雷路径）
+    await reqB.getAllComments();
+    await reqA.addComment({ _id: "a-2", nick: "A2" });
+    await reqB.addComment({ _id: "b-1", nick: "B" });
+
+    const final = await new BlobKvDatabase(store).getAllComments();
+    // 改前 B 会把陈旧快照整表写回，a-2 丢失
+    expect(final.map((c) => c._id).sort()).toEqual(["a-1", "a-2", "b-1"]);
+  });
+
+  it("并发写不复活已删评论：后写者回源后不会把删除前的快照写回（#1174）", async () => {
+    const store = new MemoryBlobStore();
+    const reqA = new BlobKvDatabase(store);
+    const reqB = new BlobKvDatabase(store);
+
+    await reqA.addComment({ _id: "x-1", nick: "X" });
+    // B 缓存了「删除前」的快照
+    await reqB.getAllComments();
+    await reqA.deleteComment("x-1");
+    await reqB.addComment({ _id: "y-1", nick: "Y" });
+
+    const final = await new BlobKvDatabase(store).getAllComments();
+    // 改前 B 会把 x-1 一起写回，已删评论复活
+    expect(final.map((c) => c._id)).toEqual(["y-1"]);
   });
 });

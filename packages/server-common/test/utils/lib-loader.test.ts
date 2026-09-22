@@ -12,7 +12,6 @@ import {
   LibLoadError,
   defineCapabilities,
   getAkismetClient,
-  httpPost,
   getDomPurify,
   getGenerateText,
   getIpToRegion,
@@ -177,28 +176,6 @@ describe("库加载器组合与失败", () => {
     expect(typeof (await getXml2js()).parseStringPromise).toBe("function");
   });
 
-  it("httpPost：JSON 解析返回 data/status", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async () => new Response(JSON.stringify({ ok: true }), { status: 200 })),
-    );
-    const res = await httpPost<{ ok: boolean }>("https://x.test/api", { a: 1 });
-    expect(res.data.ok).toBe(true);
-    expect(res.status).toBe(200);
-  });
-
-  it("httpPost：非 2xx 抛错并携带 response.status/data（axios 错误形态）", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async () => new Response(JSON.stringify({ error: "bad" }), { status: 500 })),
-    );
-    const error = (await httpPost("https://x.test/api", { a: 1 }).catch(
-      (e: unknown) => e,
-    )) as Error & { response?: { status: number; data: unknown } };
-    expect(error.message).toContain("500");
-    expect(error.response?.status).toBe(500);
-    expect(error.response?.data).toEqual({ error: "bad" });
-  });
 });
 
 describe("ip2region 覆写（eo-makers 的 fs-free 内存查询器注入）", () => {

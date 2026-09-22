@@ -104,12 +104,14 @@ export { RES_CODE, getMaxRequestTimes } from "./utils/constants";
 export type { RequestLogger } from "./utils/logger";
 export { createRequestLogger } from "./utils/logger";
 export { validateClientFields } from "./utils/validate";
+// ---- HTTP 客户端（原生 fetch，零依赖）----
+export type { HttpConfig, HttpResult } from "./utils/http";
+export { httpGet, httpPost, httpPut } from "./utils/http";
 // ---- 库加载器（依赖外部化）----
 export type {
   NodemailerLike,
   DOMPurifyLike,
   Ip2RegionLike,
-  HttpConfig, HttpResult,
   CustomLibs,
   LibImporter,
 } from "./utils/lib-loader";
@@ -126,9 +128,6 @@ export {
   getAkismetClient,
   getTencentcloudTms,
   getFormData,
-  httpGet,
-  httpPost,
-  httpPut,
   getXml2js,
   getHtmlToText,
   getBowser,

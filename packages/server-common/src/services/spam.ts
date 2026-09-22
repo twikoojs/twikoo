@@ -13,9 +13,9 @@ import type { Capabilities } from "../ports/capabilities";
 import type { CommentDoc, ConfigData, Database } from "../ports/database";
 import type { RequestLogger } from "../utils/logger";
 // lib-loader 静态导入即可（惰性在它内部完成，见其头注释「消费方约定」）
+import { httpPost } from "../utils/http";
 import {
   getAkismetClient,
-  httpPost,
   getFormData,
   getGenerateText,
   getTencentcloudTms,

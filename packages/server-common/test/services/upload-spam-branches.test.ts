@@ -4,7 +4,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { uploadImage } from "../../src/services/upload";
 import { postCheckSpam } from "../../src/services/spam";
-import { setCustomLibs, setLibImporter } from "../../src/utils/lib-loader";
+import { setLibImporter } from "../../src/utils/lib-loader";
 import type { Capabilities } from "../../src/ports/capabilities";
 import type { ConfigData } from "../../src/ports/database";
 import type { RequestLogger } from "../../src/utils/logger";

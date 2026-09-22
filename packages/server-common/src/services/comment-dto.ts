@@ -8,7 +8,8 @@
 import type { Capabilities } from "../ports/capabilities";
 import type { CommentDoc, ConfigData } from "../ports/database";
 // lib-loader 静态导入即可（惰性在它内部完成，见其头注释「消费方约定」）
-import { getBowser, getIpToRegion, httpGet } from "../utils/lib-loader";
+import { httpGet } from "../utils/http";
+import { getBowser, getIpToRegion } from "../utils/lib-loader";
 import { md5, sha256 } from "../utils/crypto";
 
 /** 前端评论 DTO（1.x toCommentDto 返回形态） */

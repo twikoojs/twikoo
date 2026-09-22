@@ -9,7 +9,8 @@ import type { Capabilities } from "../ports/capabilities";
 import type { ConfigData } from "../ports/database";
 import type { TkResponseBody } from "../ports/response";
 import { RES_CODE } from "../utils/constants";
-import { getFormData, httpPost, httpPut, type FormDataLike } from "../utils/lib-loader";
+import { httpPost, httpPut } from "../utils/http";
+import { getFormData, type FormDataLike } from "../utils/lib-loader";
 import { isUrl } from "./comment-dto";
 
 /** 最大图片体积（10 MB） */

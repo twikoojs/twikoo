@@ -100,6 +100,24 @@ describe("HTTP 客户端", () => {
     expect(calls[0]?.init.headers).toMatchObject({ "content-type": "multipart/form-data" });
   });
 
+  it("原生 FormData 形式载荷直通：不 JSON 序列化、不补 Content-Type（边界由 fetch 生成）", async () => {
+    const calls = useFakeFetch();
+    const formData = new FormData();
+    formData.append("file", new Blob([new Uint8Array([1, 2, 3])], { type: "image/png" }), "a.png");
+    await httpPost("https://x.test/upload", formData);
+    // 直通：body 就是那个 FormData 实例（1.x 的 form-data 包实例走的是 getBuffer 分支）
+    expect(calls[0]?.init.body).toBe(formData);
+    expect((calls[0]?.init.headers as Record<string, string>)["Content-Type"]).toBeUndefined();
+  });
+
+  it("原生 URLSearchParams 形式载荷直通（不经 JSON 序列化）", async () => {
+    const calls = useFakeFetch();
+    const params = new URLSearchParams({ a: "1", b: "2" });
+    await httpPost("https://x.test/form", params);
+    expect(calls[0]?.init.body).toBe(params);
+    expect((calls[0]?.init.headers as Record<string, string>)["Content-Type"]).toBeUndefined();
+  });
+
   it("timeout 下发 AbortSignal", async () => {
     const calls = useFakeFetch();
     await httpGet("https://x.test/api", { timeout: 5000 });

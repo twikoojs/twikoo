@@ -122,6 +122,7 @@ export { httpGet, httpPost, httpPut } from "./utils/http";
 export type {
   NodemailerLike,
   DOMPurifyLike,
+  FormDataLike,
   Ip2RegionLike,
   CustomLibs,
   LibImporter,

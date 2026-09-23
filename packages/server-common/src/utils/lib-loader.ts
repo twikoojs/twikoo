@@ -186,6 +186,17 @@ export interface CustomLibs {
   /** 自定义 nodemailer（eo-makers 精简邮件形态） */
   nodemailer?: NodemailerLike;
   /**
+   * 自定义 FormData 构造器（cloudflare 注入原生 FormData 垫片形态）。
+   *
+   * 动机：`form-data` 包把载荷编成 **Node 可读流**，而 edge 运行时（Cloudflare
+   * Workers）只接受原生 `FormData`/`Blob` 作为 fetch body —— 声明该依赖也发不出
+   * multipart 请求。垫片把 append 的 Buffer 转成 Blob，multipart 边界交给 fetch
+   * 自己生成（故 `getHeaders()` 返回空对象），既保住 `imageUpload` 能力
+   * （图片上传 / Turnstile 验证码 / NSFW 检测三条链路都经 `getFormData`），
+   * 又不必把 form-data 打进 Worker 产物。
+   */
+  "form-data"?: FormDataLike;
+  /**
    * 自定义 ip2region 查询器（eo-makers 的 fs-free 内存查询器注入形态）。
    *
    * 键按包名取（与「其余覆写项按包名索键」的约定一致）——覆写的是**加载来源**，
@@ -431,11 +442,13 @@ export async function getTencentcloudTms(caps: Capabilities): Promise<Tencentclo
 }
 
 /**
- * 获取 FormData（imageUpload 能力）。
+ * 获取 FormData（imageUpload 能力；覆写优先——edge 运行时以原生 FormData 垫片注入，
+ * 绕过只认 Node 流的 `form-data` 包）。
  * @param caps 平台能力声明
  * @returns FormData 构造器
  */
 export async function getFormData(caps: Capabilities): Promise<FormDataLike> {
+  if (customLibs["form-data"]) return customLibs["form-data"];
   requireCapability(caps, "imageUpload", "form-data");
   return pickDefault(await loadLib("form-data")) as FormDataLike;
 }

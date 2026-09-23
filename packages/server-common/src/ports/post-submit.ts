@@ -13,7 +13,7 @@
  *
  * | 平台 | 1.x 机制 |
  * | --- | --- |
- * | vercel / netlify / deta / aws-lambda | HTTP 递归自调用（netlify/deta/aws-lambda 在 1.x 是 `require('twikoo-vercel')` 转发，自动继承） |
+ * | vercel / netlify / aws-lambda | HTTP 递归自调用（netlify / aws-lambda 在 1.x 是 `require('twikoo-vercel')` 转发，自动继承） |
  * | CloudBase | `app.callFunction` 递归自调用（`timeout: 300` 实现异步） |
  * | self-hosted | 进程内直调 `postSubmit(comment)`，不 await |
  * | eo-makers | 进程内 `postSubmit(...).catch(...)`，不 await |

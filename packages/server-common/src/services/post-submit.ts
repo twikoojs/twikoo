@@ -6,7 +6,7 @@
  *
  * - 单次执行平台（cloudbase / vercel / netlify / aws-lambda）：由适配器的
  *   {@link PostSubmitDispatcher} 递归自调用，经 POST_SUBMIT 事件处理器进入；
- * - 常驻进程平台（self-hosted / deta）与 eo-makers：由适配器的派发端口
+ * - 常驻进程平台（self-hosted）与 eo-makers：由适配器的派发端口
  *   进程内直接调用，不 await。
  *
  * 两条路径调用的是同一个服务，因此副作用完全一致。

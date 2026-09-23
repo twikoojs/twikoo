@@ -13,6 +13,7 @@ import {
   defineCapabilities,
   getAkismetClient,
   getDomPurify,
+  getFormData,
   getGenerateText,
   getIpToRegion,
   getNodemailer,
@@ -108,6 +109,34 @@ describe("库加载器三路径", () => {
     setCustomLibs({ DOMPurify: passthrough });
     const purify = await getDomPurify(eoCaps);
     expect(purify.sanitize('<img onerror="x">')).toBe('<img onerror="x">');
+    expect(silentImporter).not.toHaveBeenCalled();
+  });
+
+  it("form-data 覆写（cloudflare 原生 FormData 垫片）：优先于能力门与动态加载", async () => {
+    setLibImporter(silentImporter);
+    /** 原生 FormData 垫片的最小结构面（cloudflare 适配器注入的形态） */
+    class ShimFormData {
+      /**
+       * 附加字段（垫片实现略）
+       * @param name 字段名
+       * @param value 字段值
+       */
+      append(name: string, value: unknown): void {
+        void name;
+        void value;
+      }
+    }
+    setCustomLibs({ "form-data": ShimFormData });
+    // imageUpload 为 true 时若不注入覆写会去动态 import form-data 包
+    const FormDataCtor = await getFormData(eoCaps);
+    expect(FormDataCtor).toBe(ShimFormData);
+    expect(silentImporter).not.toHaveBeenCalled();
+  });
+
+  it("form-data：无覆写且能力为 false 时被能力门拦下", async () => {
+    setLibImporter(silentImporter);
+    const noUploadCaps = defineCapabilities({ ...eoCaps, imageUpload: false });
+    await expect(getFormData(noUploadCaps)).rejects.toThrow(/未声明 imageUpload 能力/);
     expect(silentImporter).not.toHaveBeenCalled();
   });
 });

@@ -87,13 +87,19 @@ const KNOWN_GAPS: Record<string, string[]> = {};
  * 条目格式 `"<能力>=<包名>"`；下方有守卫用例，要求适配器源码里真的出现该包名的
  * 字符串字面量（即「确实注入了一个以该包名为键的覆写」），不允许只填一行表就蒙混过关。
  *
- * 目前仅 EO 的 ip2region：库靠 `fs` 随机读 8.33 MB 的 db，而 EO 的部署产物是 JS bundle，
- * 没有可读的兄弟数据文件 —— 声明依赖只会把 8.5 MB 装进去却仍然读不到 db。改为把 db
- * gzip+base64 内联成独立模块 + fs-free 内存查询器（见
- * `packages/server-edgeone-makers/src/ip2region/`，对照实验见该包 `test/ip2region.test.ts`）。
+ * 目前两处：
+ *
+ * - EO 的 ip2region：库靠 `fs` 随机读 8.33 MB 的 db，而 EO 的部署产物是 JS bundle，
+ *   没有可读的兄弟数据文件 —— 声明依赖只会把 8.5 MB 装进去却仍然读不到 db。改为把 db
+ *   gzip+base64 内联成独立模块 + fs-free 内存查询器（见
+ *   `packages/server-edgeone-makers/src/ip2region/`，对照实验见该包 `test/ip2region.test.ts`）。
+ * - Cloudflare 的 ip2region 与 imageUpload：Workers 既读不到 ip2region 的 db，也发不出
+ *   `form-data` 包的 Node 流式载荷 —— 前者改由 `request.cf` + 随评论落库的属地满足，
+ *   后者改注入原生 FormData 垫片（见 `packages/server-cloudflare/src/`）。
  */
 const OVERRIDE_SATISFIED: Record<string, string[]> = {
   "server-edgeone-makers": ["ip2region=@imaegoo/node-ip2region"],
+  "server-cloudflare": ["ip2region=@imaegoo/node-ip2region", "imageUpload=form-data"],
 };
 
 /** 已解析的 lib-loader AST（`setParentNodes` 打开，用于回溯所属函数） */

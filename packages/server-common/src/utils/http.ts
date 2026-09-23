@@ -47,6 +47,7 @@ function urlWithParams(url: string, params?: Record<string, string> | URLSearchP
 
 /**
  * 请求载荷归一：FormData（form-data 包实例）转 Buffer 并补 multipart 头，
+ * 原生 FormData / URLSearchParams **直通**（multipart 边界由 fetch 自己生成），
  * 其余 JSON 对象序列化、字符串原样。
  * @param data 载荷
  * @param headers 请求头（会被补写 Content-Type）
@@ -58,6 +59,12 @@ function toFetchBody(
 ): BodyInit | Buffer | undefined {
   if (data === undefined || data === null) return undefined;
   if (Buffer.isBuffer(data)) return data;
+  // 原生 FormData / URLSearchParams 直通：edge 运行时（Cloudflare Workers 等）经
+  // `setCustomLibs` 注入原生 FormData 垫片时，这类实例没有 getBuffer()/getHeaders()，
+  // 落到下面的序列化分支会被 JSON.stringify 成 "{}"（上传与验证码请求静默失败）。
+  // 边界与 Content-Type 交给 fetch 生成，故此处不补头。
+  if (typeof FormData !== "undefined" && data instanceof FormData) return data;
+  if (typeof URLSearchParams !== "undefined" && data instanceof URLSearchParams) return data;
   const withBuffer = data as { getBuffer: () => Buffer; getHeaders: () => Record<string, string> };
   if (typeof withBuffer.getBuffer === "function") {
     Object.assign(headers, withBuffer.getHeaders());

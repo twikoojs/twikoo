@@ -1,0 +1,44 @@
+{
+  "name": "@twikoojs/cloudflare",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Twikoo comment system backend for Cloudflare Workers",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/twikoojs/twikoo.git"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "schema.sql"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@cap.js/server": "^4.0.5",
+    "@twikoojs/common": "workspace:*",
+    "@twikoojs/shared": "workspace:*",
+    "bowser": "^2.14.1",
+    "html-to-text": "^10.0.1",
+    "marked": "^18.0.13",
+    "pushoo": "workspace:^",
+    "xml2js": "^0.6.2",
+    "xss": "^1.0.15"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.1"
+  }
+}

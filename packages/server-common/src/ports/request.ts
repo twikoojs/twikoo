@@ -45,8 +45,8 @@ export interface TkRequest {
    *
    * 语义：适配器按各自平台解析后填入，公共库不再感知 TWIKOO_IP_HEADERS
    * 环境变量。netlify 填 headers.x-nf-client-connection-ip、aws-lambda 填
-   * headers.requestContext.http.sourceIp、deta 填 headers.cf-connecting-ip，
-   * 默认走通用取 IP 逻辑（x-forwarded-for 逐跳剥离等，随 utils/ip 迁入）。
+   * headers.requestContext.http.sourceIp，其余默认走通用取 IP 逻辑
+   * （x-forwarded-for 逐跳剥离等，随 utils/ip 迁入）。
    */
   ip: string;
   /** 平台原始载荷（CloudBase event / Vercel req / ...），供适配器回查与调试日志 */

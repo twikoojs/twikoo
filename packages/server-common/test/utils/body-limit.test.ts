@@ -1,7 +1,7 @@
 /**
  * 请求体读取（累计字节上限 + 读取超时）测试。
  *
- * 回归目标 GHSA-v349-m8q5-7x2g：自托管 / deta 原先「读全流 → Buffer.concat →
+ * 回归目标 GHSA-v349-m8q5-7x2g：自托管原先「读全流 → Buffer.concat →
  * JSON.parse」，未登录攻击者可在限流生效前用超大请求体耗尽内存与 CPU。
  */
 import { describe, expect, it } from "vitest";

@@ -22,7 +22,7 @@ import { RES_CODE } from "../utils/constants";
  *   （`callFunction` / HTTP 自调用 / Lambda Invoke Event），副作用因此拥有
  *   自己的执行时间预算——用户请求可以立即返回，云函数超时也不会让「评论已
  *   入库」变成客户端错误。
- * - 常驻进程平台（self-hosted / deta）与 eo-makers：适配器直接进程内调用
+ * - 常驻进程平台（self-hosted）与 eo-makers：适配器直接进程内调用
  *   同一个 postSubmit 服务，不经本事件。
  *
  * **防外部滥用**：本事件若允许外部直接调用，任何人都能凭空触发垃圾检测与

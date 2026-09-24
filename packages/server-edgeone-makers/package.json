@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "description": "Twikoo comment system backend for Tencent EdgeOne Makers",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/twikoojs/twikoo.git"
+  },
   "type": "module",
   "main": "./dist/cloud-functions/index.js",
   "module": "./dist/cloud-functions/index.js",

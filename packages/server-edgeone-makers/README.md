@@ -1,50 +1,94 @@
-# twikoo-edgeone-makers
+# @twikoojs/edgeone-makers
 
 Twikoo 2.0 服务端适配器。业务逻辑在 `@twikoojs/common`，本包仅做平台入口与注入。
 
 ## 部署（腾讯云 EdgeOne Makers）
 
-1. EdgeOne Makers 控制台 → Makers 函数 → 绑定本目录
-2. `npm run build`（先 `tsdown` 产出 `dist/`，再生成 ip2region 内联数据；见下）
-3. Blob KV：平台自动提供 `@edgeone/pages-blob`（name: twikoo, strong 一致性）
-4. SMTP：Go SMTP Bridge（smtp.go）或 SendGrid / MailChannels 通道
+**面向用户的方式**：下载 [`templates/edgeone-makers/twikoo-edgeone-makers.zip`](../../templates/edgeone-makers/twikoo-edgeone-makers.zip)，
+在控制台「创建项目 → 直接上传」时上传该 ZIP 即可。完整步骤（含自定义域名与 HTTPS 证书）
+见[文档站](https://twikoo.js.org/backend)。
 
-### 构建步骤与 ip2region 数据
+那个 ZIP 是**最小部署包**（两个文件，约 1 KB），只声明依赖：
 
-`npm run build` = `tsdown && node scripts/build-ip2region-data.mjs`。第二步产出
-**gzip + base64 内联的 ip2region.db**：
+| ZIP 内路径 | 内容 |
+| --- | --- |
+| `cloud-functions/index.js` | 一行转发：`export { onRequest } from "@twikoojs/edgeone-makers"` |
+| `package.json` | `dependencies: { "@twikoojs/edgeone-makers": "latest" }` |
+
+**本包在流水线中的角色**：`npm run build` 产出 `dist/`（发布到 npm 的实现）与上面那个 ZIP。
+两者分工的依据是两条**实测确认**的平台行为（2026-09-24，真实项目）：
+
+1. 部署包声明了依赖时，平台会执行 `npm install`
+   （构建日志：`[builder] InstallCommand: npm install` / `changed 1 package`）；
+2. 平台的函数构建用打包器把函数打成**单文件**，能解析到的 `node_modules` 依赖会被内联
+   （构建日志：`[cli] ✨ Node functions build completed successfully`）。
+
+因此依赖写 `latest` 后，**升级 Twikoo 只需在项目里点「重新部署」**，无需重新下载部署包。
+
+### 平台契约（2026-09-24 在真实项目实测）
+
+- 函数目录 `cloud-functions/`，入口导出 `onRequest(context)`，**必须返回 Web 标准 `Response`**
+- `context` 实测键：`clientIp` / `env` / `geo` / `params` / `request` / `server` / `uuid`
+- `context.clientIp` 可用；环境变量 `context.env` 与 `process.env` 高度重叠，入口以
+  `context.env` 为准合并进 `process.env`（`@twikoojs/common` 按 Node 惯例读后者）
+- 运行时 **Node v20.19.3**；构建环境 Node v22.21.1（两者不同）
+- 默认域名（`*.edgeone.cool`）**仅 3 小时限时预览**，不带校验参数直接访问返回 401，
+  故生产必须绑定自定义域名
+- **静态资源与函数路由冲突时静态资源优先**：根目录存在 `index.html` 时 `/` 返回网页而非函数
+- **「构建产物」页只保留 `package.json` / `package-lock.json`** —— `cloud-functions/` 下的
+  非入口文件不会落到运行时文件系统（函数运行时路径是 `/var/user/index.mjs`）
+- 平台侧打包器**解析不到任何裸导入就直接构建失败**（实测报
+  `✘ [ERROR] Could not resolve "nodemailer"`）
+
+### 已知差异与待办
+
+- **SMTP 桥接服务端尚未移植**：1.x 的 `cloud-functions/smtp.go`（Go 函数，挂 `/smtp` 路由）
+  在本包中缺失，因此「自建 SMTP 桥接」通道暂不可用；SendGrid / MailChannels 的 HTTP 通道正常。
+
+## 构建
+
+```sh
+npm run build   # = node scripts/build-ip2region-data.mjs && tsdown && node scripts/build-zip.mjs
+```
+
+**顺序不能换**：ip2region 数据必须在 tsdown **之前**生成，否则 `inline.ts` 的字面量
+specifier 解析不到。
+
+| 步骤 | 产物 |
+| --- | --- |
+| `build-ip2region-data.mjs` | `src/ip2region/generated/ip2region-data.js`（**不进 git**） |
+| `tsdown` | `dist/cloud-functions/index.js`（单文件，约 7.4 MB，含内联数据） |
+| `build-zip.mjs` | `templates/edgeone-makers/twikoo-edgeone-makers.zip` |
+
+### 为什么 ip2region 数据必须内联
+
+`@imaegoo/node-ip2region` 的 `binarySearchSync` 靠 `fs` 随机读 8.33 MB 的 db，而平台上
+没有可读的兄弟数据文件。1.x 的做法是把 db gzip + base64 成独立模块、运行时按相对路径
+**懒加载**；2.0 一开始照搬，但实测**不成立**：
+
+> 平台「构建产物」页只保留 `package.json` / `package-lock.json`，`cloud-functions/generated/`
+> 不会落到运行时文件系统 → `import("./generated/…")` 解析不到 → `ipRegion` 恒为空
+> （被 `comment-dto` 的 `try/catch` 吞掉，**站长和访客都看不到任何报错**）。
+
+所以现在数据由打包器**内联进函数单文件**：
 
 | 阶段 | 大小 |
 | --- | --- |
-| `@imaegoo/node-ip2region` 的 `data/ip2region.db` | 8.33 MB |
+| `data/ip2region.db` | 8.33 MB |
 | gzip -9 | 4.54 MB |
-| base64（base64 有 4/3 膨胀） | 6.06 MB |
+| base64（4/3 膨胀） | 6.06 MB |
 
-**为什么必须内联**：库的 `binarySearchSync` 靠 `fs` 随机读那个 db，而 EO Makers 的部署
-产物是 JS bundle，没有可读的兄弟数据文件 —— 直接声明依赖只会把 8.5 MB 装进去却仍然读不到
-db（IP 属地会被 `comment-dto` 的 `try/catch` 吞成空串，**站长和访客都看不到任何报错**）。
-所以本包在运行时经 `setCustomLibs` 注入一个 fs-free 的内存查询器（`src/ip2region/`），
-`lib-loader` 的覆写优先于能力门与动态加载，因此**运行时不会去解析
-`@imaegoo/node-ip2region`**（它只作为 devDependency 存在于构建期，用来取 `.db`）。
-
-生成物落在两处（都不进 git）：
-
-- `src/ip2region/generated/ip2region-data.js`（源码相对路径的兄弟模块）
-- `dist/generated/ip2region-data.js`（`dist/index.js` 按相对 specifier 懒加载它）
-
-`inline.ts` 用**变量 specifier** 动态 import，因此 6.06 MB 不会被 rolldown 打进
-`dist/index.js`（代码产物仅 ~29 KB），且只在真正要查 IP 属地时才加载。类型由同目录**入库**的
-`ip2region-data.d.ts` 承担，所以生成物缺失时 `tsc --noEmit` 仍能通过，只是运行时跳过注入
-（回落既有降级路径：属地为空）。
+代价是产物从 ~950 KB 涨到 ~7.4 MB（gzip 后约 226 KB），换来的是**真的能用**。
+`getIp2RegionOverride()` 里的 specifier 必须是**字面量**，改成变量就会静默失去 IP 属地
+（`src/ip2region/inline.ts` 里有详细说明；`loadIp2RegionOverride(specifier)` 那条参数化
+路径只服务于降级测试）。
 
 自检：
 
 ```sh
 npm run check:ip2region   # 生成物存在、格式正确、能解压出合法 db 头部
-npm run check:size        # 依赖清单 + 代码产物 ≤ 5MB + 数据分片在预期区间
+npm run check:bundle      # 依赖清单 + 产物自包含（裸导入）+ 体积区间
 ```
-
-> 首次部署前必须跑过 `npm run build`，否则 `check:size` 会因缺少数据分片而红。
 
 ## 能力限制（能力矩阵）
 
@@ -62,13 +106,21 @@ npm test
 
 - `test/ip2region.test.ts`：内联查询器 vs 真实库的**大样本等价性**（85,000+ 个 IP，
   含全部 /16 块首地址、区间边界、各省代表性 IP，要求 100% 一致）
-- `test/ip2region-inline.test.ts`：生成物 → 懒加载 → 注入 → common 取用的整条链路
+- `test/ip2region-inline.test.ts`：生成物 → 加载 → 注入 → common 取用的整条链路
   （含 db 逐字节 sha256 比对、降级路径、进程级缓存）
-- `test/main.test.ts`：契约核心事件 + 受限能力形态 + 体积门禁脚本
+- `test/main.test.ts`：契约核心事件 + 受限能力形态 + 产物门禁脚本
 
-## 平台核对清单（查阅日期 2026-09-17）
+## 平台核对清单（查阅日期 2026-09-24，除注明外均为真实部署实测）
 
-- [x] Makers 云函数请求对象与 Blob KV API（EdgeOne Makers 官方文档）
-- [x] 运行时版本（Node 20）与构建期可选版本差异
-- [ ] EO Node 20 跑 ES2022 产物实测（人工项；残留）
-- [ ] Go SMTP Bridge 协同构建实测（人工项）
+- [x] 函数目录与路由规则：`cloud-functions/index.js` → `PATH: /`（控制台「函数」页路由表确认）
+- [x] 静态资源优先：根目录存在 `index.html` 时 `/` 返回网页而非函数
+- [x] `onRequest(context)` 契约与 Web `Response` 返回值
+- [x] `context` 实际键：`clientIp` / `env` / `geo` / `params` / `request` / `server` / `uuid`
+- [x] `context.clientIp` 可用（实测取到公网 IP）
+- [x] 运行时 Node **v20.19.3**（构建环境为 v22.21.1）
+- [x] 平台会 `npm install` 部署包声明的依赖，并把函数打成单文件
+- [x] 「构建产物」只保留 `package.json` / `package-lock.json`（故兄弟数据文件必须内联）
+- [x] `@edgeone/pages-blob` **平台不自带**，需由依赖提供
+- [x] 默认域名仅 3 小时限时预览，生产必须绑定自定义域名
+- [x] 端到端：`GET /` 健康检查、`GET_FUNC_VERSION`、`COMMENT_SUBMIT` 写入、`GET_COMMENTS_COUNT` 读取
+- [ ] Go SMTP Bridge 服务端移植与协同构建实测（人工项；见「已知差异与待办」）

@@ -102,6 +102,8 @@ jobs:
             dir: packages/server-netlify
           - package: "@twikoojs/aws-lambda"
             dir: packages/server-aws-lambda
+          - package: "@twikoojs/edgeone-makers"
+            dir: packages/server-edgeone-makers
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -125,7 +127,7 @@ jobs:
         run: pnpm publish --provenance --no-git-checks --tag "$NPM_TAG"
 
   verify:
-    name: Gate · 9 个包在 npm 可见
+    name: Gate · 10 个包在 npm 可见
     needs: [validate, publish]
     runs-on: ubuntu-latest
     steps:
@@ -152,7 +154,7 @@ jobs:
   #      `twikoo-vercel@latest` 仍解析到旧版本 —— 等于白重建。
   # 未配置 hook secret 时**跳过而非失败** —— 不阻塞发版主流程。
   #
-  # 依赖 `verify`（9 个包在 npm 可见）而不是 `publish`：只有包真的上线了才值得重建后端。
+  # 依赖 `verify`（10 个包在 npm 可见）而不是 `publish`：只有包真的上线了才值得重建后端。
   #
   # **只在稳定版发布时触发**：预发布走 `beta` dist-tag，而 Vercel 后端装的是
   # `twikoo-vercel@latest`（稳定版）—— 发 beta 时重建只会装回上一个稳定版，

@@ -140,4 +140,4 @@ pnpm --filter @twikoojs/cloudflare test
 本包当前 `private: true`（与 `packages/server-edgeone-makers` 一致，避免在发布流水线尚未配置
 Trusted Publisher 时污染 `publish.yml` 的可见性 gate）。若要改为 npm 发布，需要三步：
 从 `package.json` 去掉 `private`、把包登记进 `scripts/release-packages.mjs` 的
-`PUBLISH_PACKAGES`（并更新「9 个包」的文案）、在 npmjs.com 上为该包配置 Trusted Publisher。
+`PUBLISH_PACKAGES`（并更新「10 个包」的文案）、在 npmjs.com 上为该包配置 Trusted Publisher。

@@ -11,7 +11,7 @@
 | [Hugging Face 部署](#hugging-face-部署) | ★★★☆☆ | 免费，中国大陆访问速度不错。允许通过 Cloudflare Tunnels 自定义域名。 |
 | [AWS Lambda 部署](#aws-lambda-部署) | ★★★☆☆ | 全球最大的云平台，适合已经使用 AWS 全家桶的用户。 |
 | [Cloudflare workers 部署](#cloudflare-workers-部署) | ★★☆☆☆ | 部署需使用命令行，冷启动时间较短，功能有部分限制。2.0 起使用 Cloudflare D1 数据库，适配器在 [packages/server-cloudflare](https://github.com/twikoojs/twikoo/tree/main/packages/server-cloudflare)。 |
-| [EdgeOne Makers 部署](#edgeone-makers-部署) | ★★☆☆☆ | 腾讯云 EdgeOne Makers 的函数部署。功能受限：邮件仅支持部分通道，无垃圾评论检测与 AI 功能。 |
+| [EdgeOne Makers 部署](#edgeone-makers-部署) | ★★☆☆☆ | 腾讯云 EdgeOne Makers 的函数部署，网页控制台上传 ZIP 即可，无需命令行。**必须绑定自定义域名**（默认域名链接仅 3 小时有效）。功能受限：邮件仅支持部分通道，无垃圾评论检测与 AI 功能。 |
 | [私有部署](#私有部署) | ★★☆☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 | [私有部署 (Docker)](#私有部署-docker) | ★★★☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 
@@ -324,22 +324,53 @@ Cloudflare 部署的功能限制：邮件通知仅支持 SendGrid / MailChannels
 ## EdgeOne Makers 部署
 
 ::: warning 注意
-EdgeOne 部署功能受限：邮件通知仅支持 SendGrid / MailChannels / 自建 SMTP 桥接通道；不支持 Akismet、腾讯云内容审核等垃圾评论检测，也没有 AI 功能。
+EdgeOne Makers 部署有两项前置约束：
+
+1. **必须绑定自定义域名**。平台默认域名（`*.edgeone.cool`）的链接**仅有 3 小时限时预览**，且不带校验参数直接访问会返回 401；Twikoo 需要一个长期稳定的 `envId`，因此自定义域名是硬性前提。
+2. **功能受限**：邮件通知仅支持 SendGrid / MailChannels / 自建 SMTP 桥接通道；不支持 Akismet、腾讯云内容审核等垃圾评论检测，也没有 AI 功能。
+   :::
+
+部署全程在网页控制台完成，无需命令行、无需 Git。
+
+1. 下载一键部署包：[twikoo-edgeone-makers.zip](https://github.com/twikoojs/twikoo/raw/main/templates/edgeone-makers/twikoo-edgeone-makers.zip)
+
+   该 ZIP 只有两个文件（函数入口与依赖声明），**请勿解压**，直接用于下一步上传。云函数实现由平台从 npm 上的 `@twikoojs/edgeone-makers` 自动取回，因此升级 Twikoo 只需在项目里点**重新部署**，无需重新下载。
+
+2. 进入 [EdgeOne Makers 控制台](https://console.cloud.tencent.com/edgeone/makers)，在「项目」标签页点击**直接上传**
+
+3. 填写项目名称（5-50 字符，仅小写字母、数字与连字符，连字符不能位于开头、结尾或连续出现），选择加速区域，把上一步下载的 ZIP 拖入上传区域，点击**开始部署**
+
+4. 等待状态变为**成功**。此时云函数已就绪，但还不能用于博客，请继续配置自定义域名。
+
+### 绑定自定义域名
+
+1. 进入项目的**域名管理**页，点击**添加自定义域名**
+2. 输入你的域名，「需要关联的环境」选择**生产**，点击**下一步**
+3. 等待状态从「部署中」变为「请添加 CNAME」，复制页面上显示的 CNAME 值
+4. 到你的域名提供商处，为该域名添加一条 CNAME 记录，指向复制的值
+5. 回到域名管理页，点击 **HTTPS 配置**下的**配置**
+6. 点击**边缘 HTTPS 证书**下的**配置**，选择**申请免费证书**，点击**自动验证**，然后点击**保存**
+
+   下方「强制 HTTPS」「HTTP Strict Transport Security (HSTS)」「OCSP 装订」三项可按需开启，推荐开启**强制 HTTPS**与**OCSP 装订**。
+
+7. 等待页面状态变为**已生效**，自定义域名即配置完成
+
+### 配置前端
+
+域名生效后，浏览器访问 `https://你的域名/`，应看到 `Twikoo 云函数运行正常，请参考…`。该地址（含 `https://`，不带路径）即为前端的 `envId`。
+
+::: tip 为什么 `envId` 是域名根
+部署包把云函数放在 `cloud-functions/index.js`，平台会将其映射到 `PATH: /`。因此部署包根目录**刻意不含** `index.html`——静态资源与函数路由冲突时静态资源优先，一旦根目录存在 `index.html`，`/` 就会返回网页而不是云函数。
 :::
 
-1. 克隆本仓库，进入 `packages/server-edgeone-makers` 目录
-2. 安装依赖并构建（构建会把 IP 属地数据库内联为独立数据分片）：
+### 邮件通知（可选）
 
-   ```sh
-   npm install
-   npm run build
-   ```
+EdgeOne Makers 的 Node.js 函数运行时不支持 TCP socket，无法直连 SMTP。可用通道：
 
-3. 进入 EdgeOne Makers 控制台，创建 Makers 函数并绑定该目录
-4. 数据库使用平台自动提供的 Blob KV，无需额外配置
-5. 如需邮件通知，请自行部署 SMTP 通道（Go SMTP Bridge，或使用 SendGrid / MailChannels）
+- **SendGrid / MailChannels**：在 Twikoo 管理面板的邮件配置中把发信服务选为对应项并填入 API Key
+- **自建 SMTP 桥接**：自行部署一个 HTTP 到 SMTP 的桥接服务，把地址与令牌配置到项目环境变量 `TWIKOO_SMTP_BRIDGE_TOKEN` 以及 Twikoo 管理面板的 `SMTP_HOST` 等项
 
-更多细节见[适配器 README](https://github.com/twikoojs/twikoo/tree/main/packages/server-edgeone-makers)。
+更多细节（能力矩阵、IP 属地实现、构建方式）见[适配器 README](https://github.com/twikoojs/twikoo/tree/main/packages/server-edgeone-makers)与[模板说明](https://github.com/twikoojs/twikoo/tree/main/templates/edgeone-makers)。
 
 ## 私有部署
 

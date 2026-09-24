@@ -8,12 +8,16 @@
  * `lib-loader` 的 `getIpToRegion` 覆写优先，于是**运行时不会去解析
  * `@imaegoo/node-ip2region`**（它只作为本包的 devDependency 存在于构建期）。
  *
- * **为什么数据必须「静态可追踪」（2.0 的平台产物形态决定）**：平台的「构建产物」页实测
- * 只保留 `package.json` / `package-lock.json` —— `cloud-functions/` 目录下的**非入口文件
- * 不会落到运行时文件系统**，函数就是被打包器打成的那个单文件（运行时路径
- * `/var/user/index.mjs`）。所以 1.x「数据分片 + 变量 specifier 运行时懒加载」的做法在 2.0
- * 不成立：实测部署后 `ipRegion` 恒为空（降级路径静默生效）。
- * 因此 `getIp2RegionOverride` 里的 specifier 必须是**字面量**，让打包器把数据内联进单文件。
+ * **为什么数据必须「静态可追踪」**：平台「构建产物」页实测只列出 `package.json` /
+ * `package-lock.json`，`cloud-functions/` 下的**兄弟文件不在其中**（函数运行时是打包器
+ * 打出的单文件，路径 `/var/user/index.mjs`）。也就是说「数据分片 + 变量 specifier 运行时
+ * 懒加载」依赖的是**平台未文档化的行为**：即使某些情况下文件确实落到了运行时目录，
+ * 也没有任何保证，且失效时是**静默的**（`comment-dto` 的 `try/catch` 会把异常吞成
+ * 「属地为空」，站长和访客都看不到报错）。
+ *
+ * 因此 `getIp2RegionOverride` 里的 specifier 必须是**字面量**，让打包器把数据内联进单文件 ——
+ * 这既是「最小部署包」形态的硬性要求（函数实现来自 npm，无法携带兄弟文件），
+ * 也让产物不再依赖平台是否复制非入口文件。
  */
 import type { CustomLibs } from "@twikoojs/common";
 import { createInMemoryIp2Region } from "./searcher";

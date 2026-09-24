@@ -20,10 +20,11 @@
  * 好处：部署包 ~1 KB；实现随 npm 发版更新，用户**重新部署**即可拿到新版，无需重新上传；
  * 不必把 6 MB 的 IP 属地数据塞进 ZIP。
  *
- * **为什么数据必须内联进函数单文件**：平台「构建产物」页实测只保留
- * `package.json` / `package-lock.json` —— `cloud-functions/` 下的非入口文件不会落到运行时
- * 文件系统（函数运行时路径是 `/var/user/index.mjs`）。所以 `generated/` 之类的兄弟文件
- * 在平台上取不到，数据必须由打包器内联（见 `src/ip2region/inline.ts` 的字面量 specifier）。
+ * **为什么数据必须内联进函数单文件**：平台「构建产物」页实测只列出
+ * `package.json` / `package-lock.json` —— `cloud-functions/` 下的兄弟文件不在其中
+ * （函数运行时是打包器打出的单文件 `/var/user/index.mjs`）。兄弟文件能否落到运行时目录
+ * 属未文档化行为，且失效时静默（IP 属地变空、无任何报错），故数据由打包器内联，
+ * 见 `src/ip2region/inline.ts` 的字面量 specifier。
  *
  * **刻意不放的东西**：
  *

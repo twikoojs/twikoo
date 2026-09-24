@@ -31,7 +31,8 @@ Twikoo 2.0 服务端适配器。业务逻辑在 `@twikoojs/common`，本包仅�
 - `context` 实测键：`clientIp` / `env` / `geo` / `params` / `request` / `server` / `uuid`
 - `context.clientIp` 可用；环境变量 `context.env` 与 `process.env` 高度重叠，入口以
   `context.env` 为准合并进 `process.env`（`@twikoojs/common` 按 Node 惯例读后者）
-- 运行时 **Node v20.19.3**；构建环境 Node v22.21.1（两者不同）
+- 运行时 **Node v20.19.3**；构建环境默认 Node v22.21.1，可在「项目设置 → Node.js 版本」调整
+  （文档站部署步骤要求设为 **24.18.0**；该项变更需再部署一次才生效）
 - 默认域名（`*.edgeone.cool`）**仅 3 小时限时预览**，不带校验参数直接访问返回 401，
   故生产必须绑定自定义域名
 - **静态资源与函数路由冲突时静态资源优先**：根目录存在 `index.html` 时 `/` 返回网页而非函数
@@ -64,13 +65,20 @@ specifier 解析不到。
 
 `@imaegoo/node-ip2region` 的 `binarySearchSync` 靠 `fs` 随机读 8.33 MB 的 db，而平台上
 没有可读的兄弟数据文件。1.x 的做法是把 db gzip + base64 成独立模块、运行时按相对路径
-**懒加载**；2.0 一开始照搬，但实测**不成立**：
+**懒加载**；2.0 改成**内联进函数单文件**，理由有两条：
 
-> 平台「构建产物」页只保留 `package.json` / `package-lock.json`，`cloud-functions/generated/`
-> 不会落到运行时文件系统 → `import("./generated/…")` 解析不到 → `ipRegion` 恒为空
-> （被 `comment-dto` 的 `try/catch` 吞掉，**站长和访客都看不到任何报错**）。
+1. **平台「构建产物」页只列出 `package.json` / `package-lock.json`**，`cloud-functions/`
+   下的兄弟文件不在其中（函数运行时是打包器打出的单文件 `/var/user/index.mjs`）。
+   兄弟文件能否落到运行时目录属**未文档化行为**，且失效时是**静默的**
+   —— `comment-dto` 的 `try/catch` 会把异常吞成「属地为空」，站长和访客都看不到报错。
+2. **最小部署包形态要求如此**：函数实现来自 npm 上的本包，无法携带兄弟文件。
 
-所以现在数据由打包器**内联进函数单文件**：
+内联后不再依赖平台是否复制非入口文件。代价是产物从 ~950 KB 涨到 ~7.4 MB
+（gzip 后约 226 KB），换来的是确定性。
+
+> 顺带记一条排查经验：`ipRegion` 为空**未必**是数据没加载 —— `comment-dto` 里
+> `ipRegion: showRegion ? … : ""`，配置项 `SHOW_REGION` 未开启时一律为空。
+> 判断数据是否可用要先把 `SHOW_REGION` 打开（实测开启后返回 `河南`，说明内联数据可用）。
 
 | 阶段 | 大小 |
 | --- | --- |
@@ -78,7 +86,6 @@ specifier 解析不到。
 | gzip -9 | 4.54 MB |
 | base64（4/3 膨胀） | 6.06 MB |
 
-代价是产物从 ~950 KB 涨到 ~7.4 MB（gzip 后约 226 KB），换来的是**真的能用**。
 `getIp2RegionOverride()` 里的 specifier 必须是**字面量**，改成变量就会静默失去 IP 属地
 （`src/ip2region/inline.ts` 里有详细说明；`loadIp2RegionOverride(specifier)` 那条参数化
 路径只服务于降级测试）。
@@ -119,8 +126,10 @@ npm test
 - [x] `context.clientIp` 可用（实测取到公网 IP）
 - [x] 运行时 Node **v20.19.3**（构建环境为 v22.21.1）
 - [x] 平台会 `npm install` 部署包声明的依赖，并把函数打成单文件
-- [x] 「构建产物」只保留 `package.json` / `package-lock.json`（故兄弟数据文件必须内联）
+- [x] 「构建产物」只列出 `package.json` / `package-lock.json`（`cloud-functions/` 下的兄弟文件不在其中）
 - [x] `@edgeone/pages-blob` **平台不自带**，需由依赖提供
 - [x] 默认域名仅 3 小时限时预览，生产必须绑定自定义域名
 - [x] 端到端：`GET /` 健康检查、`GET_FUNC_VERSION`、`COMMENT_SUBMIT` 写入、`GET_COMMENTS_COUNT` 读取
+- [x] IP 属地：`SHOW_REGION=true` 时返回真实属地（如 `河南`），内联数据可用
+- [x] 最小部署包（ZIP 仅 `cloud-functions/index.js` + `package.json`）真实部署跑通
 - [ ] Go SMTP Bridge 服务端移植与协同构建实测（人工项；见「已知差异与待办」）

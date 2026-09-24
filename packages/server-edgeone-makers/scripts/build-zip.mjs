@@ -33,7 +33,7 @@
  * - 任何源码或构建配置：平台侧只认 `cloud-functions/` 下已就绪的入口。
  */
 import { deflateRawSync } from "node:zlib";
-import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -59,6 +59,15 @@ const ENTRY_SOURCE = `/**
  */
 export { onRequest, onRequest as default } from "@twikoojs/edgeone-makers";
 `;
+
+/**
+ * Go SMTP 桥接的源码位置。
+ *
+ * 它**必须随 ZIP 交付**：平台按 `cloud-functions/` 下的 `.go` 文件编译 Go 函数并生成同名路由
+ * （见 makers.edgeone.link/document/go），不会去 node_modules 里找 `.go`。
+ * 故它是本包唯一一个「源码直接进部署包」的文件。
+ */
+const SMTP_BRIDGE_SOURCE = join(PACKAGE_ROOT, "src", "cloud-functions", "smtp.go");
 
 /** 部署包 package.json：依赖写 latest，跟随 npm 稳定通道 */
 const DEPLOY_PACKAGE_JSON = {
@@ -178,6 +187,13 @@ function main() {
     ["package.json", Buffer.from(`${JSON.stringify(DEPLOY_PACKAGE_JSON, null, 2)}\n`, "utf8")],
   ];
 
+  // Go SMTP 桥接：平台按 .go 文件名生成路由（smtp.go → /smtp），必须随 ZIP 交付
+  if (!existsSync(SMTP_BRIDGE_SOURCE)) {
+    console.error(`✗ 未找到 ${SMTP_BRIDGE_SOURCE}；自建 SMTP 通道会缺少服务端`);
+    process.exit(1);
+  }
+  entries.push(["cloud-functions/smtp.go", readFileSync(SMTP_BRIDGE_SOURCE)]);
+
   const zip = buildZip(entries);
   mkdirSync(TEMPLATE_DIR, { recursive: true });
   const outPath = join(TEMPLATE_DIR, ZIP_NAME);
@@ -200,6 +216,7 @@ function main() {
       "| 路径 | 作用 |",
       "| --- | --- |",
       "| `cloud-functions/index.js` | 一行转发到 `@twikoojs/edgeone-makers`，映射到域名根路径 `/` |",
+      "| `cloud-functions/smtp.go` | SMTP 桥接（Go 函数，映射到 `/smtp`），供自建 SMTP 通道使用 |",
       "| `package.json` | 声明 `@twikoojs/edgeone-makers: latest`，平台据此 `npm install` |",
       "",
       "## 为什么这么小",

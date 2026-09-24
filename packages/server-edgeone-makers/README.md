@@ -8,12 +8,17 @@ Twikoo 2.0 服务端适配器。业务逻辑在 `@twikoojs/common`，本包仅�
 在控制台「创建项目 → 直接上传」时上传该 ZIP 即可。完整步骤（含自定义域名与 HTTPS 证书）
 见[文档站](https://twikoo.js.org/backend)。
 
-那个 ZIP 是**最小部署包**（两个文件，约 1 KB），只声明依赖：
+那个 ZIP 是**最小部署包**（三个文件，约 5 KB），只声明依赖 + 一个 Go 桥接源码：
 
 | ZIP 内路径 | 内容 |
 | --- | --- |
 | `cloud-functions/index.js` | 一行转发：`export { onRequest } from "@twikoojs/edgeone-makers"` |
+| `cloud-functions/smtp.go` | SMTP 桥接（Go 函数，映射到 `/smtp`），供自建 SMTP 通道使用 |
 | `package.json` | `dependencies: { "@twikoojs/edgeone-makers": "latest" }` |
+
+`package.json` 的 `files` 白名单写的是 `dist/cloud-functions/index.js`（而不是整个 `dist`）：
+本包唯一要交付的就是那个入口，**sourcemap 不进 npm 包**（7.9 MB，对平台无意义）。
+注意 npm 在 `files` 存在时会忽略根 `.npmignore`，所以排除只能靠白名单本身。
 
 **本包在流水线中的角色**：`npm run build` 产出 `dist/`（发布到 npm 的实现）与上面那个 ZIP。
 两者分工的依据是两条**实测确认**的平台行为（2026-09-24，真实项目）：
@@ -41,10 +46,19 @@ Twikoo 2.0 服务端适配器。业务逻辑在 `@twikoojs/common`，本包仅�
 - 平台侧打包器**解析不到任何裸导入就直接构建失败**（实测报
   `✘ [ERROR] Could not resolve "nodemailer"`）
 
-### 已知差异与待办
+### 自建 SMTP 通道
 
-- **SMTP 桥接服务端尚未移植**：1.x 的 `cloud-functions/smtp.go`（Go 函数，挂 `/smtp` 路由）
-  在本包中缺失，因此「自建 SMTP 桥接」通道暂不可用；SendGrid / MailChannels 的 HTTP 通道正常。
+Node 侧无法直连 SMTP，故由同项目的 Go 函数 `cloud-functions/smtp.go`（路由 `/smtp`）承担
+「HTTP → SMTP」转发。Node 侧的客户端在 `src/mail/smtp-bridge.ts`，两侧的请求/响应字段必须一致。
+
+启用步骤：
+
+1. 在项目环境变量中配置 `TWIKOO_SMTP_BRIDGE_TOKEN`（随机长字符串，**不是** SMTP 密码），
+   可用 `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` 生成
+2. 在 Twikoo 管理面板配置 `SMTP_HOST` / `SMTP_PORT` / `SMTP_SECURE` / `SMTP_USER` / `SMTP_PASS` / `SENDER_EMAIL`
+3. **不要**同时配置 `SMTP_SERVICE` —— 配了会走 SendGrid / MailChannels 的 HTTP 通道，不经过 Go 桥接
+
+> 未实测项：Go 桥接与 Node 侧的协同构建在平台上尚未走通一次完整投递（见下方核对清单）。
 
 ## 构建
 
@@ -59,7 +73,7 @@ specifier 解析不到。
 | --- | --- |
 | `build-ip2region-data.mjs` | `src/ip2region/generated/ip2region-data.js`（**不进 git**） |
 | `tsdown` | `dist/cloud-functions/index.js`（单文件，约 7.4 MB，含内联数据） |
-| `build-zip.mjs` | `templates/edgeone-makers/twikoo-edgeone-makers.zip` |
+| `build-zip.mjs` | `templates/edgeone-makers/twikoo-edgeone-makers.zip`（入口 + `smtp.go` + `package.json`） |
 
 ### 为什么 ip2region 数据必须内联
 
@@ -131,5 +145,5 @@ npm test
 - [x] 默认域名仅 3 小时限时预览，生产必须绑定自定义域名
 - [x] 端到端：`GET /` 健康检查、`GET_FUNC_VERSION`、`COMMENT_SUBMIT` 写入、`GET_COMMENTS_COUNT` 读取
 - [x] IP 属地：`SHOW_REGION=true` 时返回真实属地（如 `河南`），内联数据可用
-- [x] 最小部署包（ZIP 仅 `cloud-functions/index.js` + `package.json`）真实部署跑通
-- [ ] Go SMTP Bridge 服务端移植与协同构建实测（人工项；见「已知差异与待办」）
+- [x] 最小部署包（ZIP 仅 `cloud-functions/index.js` + `cloud-functions/smtp.go` + `package.json`）真实部署跑通
+- [ ] Go SMTP Bridge 协同构建与一次完整投递实测（人工项；需要真实 SMTP 账号）

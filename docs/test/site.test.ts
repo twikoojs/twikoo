@@ -241,11 +241,19 @@ describe("一键部署模板", () => {
     expect(names, "ZIP 缺少 cloud-functions/index.js").toContain("cloud-functions/index.js");
     // 静态资源与函数路由冲突时静态资源优先：有 index.html 就会让 / 失效
     expect(names, "ZIP 不得含 index.html（会抢占根路径）").not.toContain("index.html");
-    // 平台侧不跑本仓库构建：cloud-functions/ 下只能是已构建的 .js
-    expect(names.filter((n) => n.startsWith("cloud-functions/") && !n.endsWith(".js"))).toEqual([]);
+    // 平台侧不跑本仓库构建：cloud-functions/ 下只能是已构建的 .js 与 Go 桥接源码 .go
+    expect(
+      names.filter(
+        (n) => n.startsWith("cloud-functions/") && !n.endsWith(".js") && !n.endsWith(".go"),
+      ),
+    ).toEqual([]);
 
-    // 最小部署包：只声明依赖，实现由平台 npm install 取回并内联（实测平台会跑 npm install）
-    expect(names.slice().sort()).toEqual(["cloud-functions/index.js", "package.json"]);
+    // 最小部署包：只声明依赖 + 一个 Go 桥接源码，实现由平台 npm install 取回并内联
+    expect(names.slice().sort()).toEqual([
+      "cloud-functions/index.js",
+      "cloud-functions/smtp.go",
+      "package.json",
+    ]);
   });
 
   it("EdgeOne Makers 适配器在发布清单里（模板要靠它产出）", () => {

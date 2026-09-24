@@ -10,6 +10,7 @@
 | 路径 | 作用 |
 | --- | --- |
 | `cloud-functions/index.js` | 一行转发到 `@twikoojs/edgeone-makers`，映射到域名根路径 `/` |
+| `cloud-functions/smtp.go` | SMTP 桥接（Go 函数，映射到 `/smtp`），供自建 SMTP 通道使用 |
 | `package.json` | 声明 `@twikoojs/edgeone-makers: latest`，平台据此 `npm install` |
 
 ## 为什么这么小

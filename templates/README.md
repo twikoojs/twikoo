@@ -33,15 +33,19 @@
 其余模板都是「目录 + 一行转发」的形态，EdgeOne Makers 不能照抄：平台只认
 `cloud-functions/` 目录下的入口，而用户手上没有仓库，所以这里交付的是**可上传的 ZIP**。
 
-ZIP 是**最小部署包**（两个文件，约 1 KB）：
+ZIP 是**最小部署包**（三个文件，约 5 KB）：
 
 | 路径 | 内容 |
 | --- | --- |
 | `cloud-functions/index.js` | 一行转发到 `@twikoojs/edgeone-makers`，映射到域名根路径 `/` |
+| `cloud-functions/smtp.go` | SMTP 桥接（Go 函数，映射到 `/smtp`），供自建 SMTP 通道使用 |
 | `package.json` | `dependencies: { "@twikoojs/edgeone-makers": "latest" }` |
 
 这仍然满足上面三条硬约束：入口是纯 JS 转发壳、依赖写 `latest`、不引用 monorepo 内部路径。
 实现由平台执行 `npm install` 取回（实测平台确实会跑），因此升级只需点「重新部署」。
+
+`cloud-functions/smtp.go` 是本模板里唯一「源码直接进部署包」的文件 —— 平台按 `.go` 文件名
+编译 Go 函数并生成同名路由，不会去 `node_modules` 里找 `.go`。
 
 由 `packages/server-edgeone-makers/scripts/build-zip.mjs` 在构建期生成。
 **不要手工改这个 ZIP**，改 `packages/server-edgeone-makers` 后重新构建即可。

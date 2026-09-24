@@ -6,7 +6,7 @@
 | Vercel | ★★★☆☆ | Good free tier. Slower or unreachable from mainland China; bind your own domain to improve speed. |
 | Netlify | ★★★★☆ | Generous free tier and decent speed from mainland China. |
 | AWS Lambda | ★★★☆☆ | Best fit if you already use AWS. |
-| EdgeOne Pages Makers | ★★☆☆☆ | Tencent Cloud EdgeOne. **Restricted capabilities**: email via limited channels only; no spam filtering or AI features. See the [adapter README](https://github.com/twikoojs/twikoo/tree/main/packages/server-edgeone-makers) for details. |
+| EdgeOne Makers | ★★☆☆☆ | Tencent Cloud EdgeOne. **Restricted capabilities**: email via limited channels only; no spam filtering or AI features. See the [adapter README](https://github.com/twikoojs/twikoo/tree/main/packages/server-edgeone-makers) for details. |
 | Self-hosted (Node / Docker) | ★★★☆☆ | For users with their own server; you need your own HTTPS certificate. |
 
 > Step-by-step walkthroughs with screenshots are maintained in the Chinese documentation: [云函数部署](/backend).

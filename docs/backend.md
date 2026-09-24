@@ -11,7 +11,7 @@
 | [Hugging Face 部署](#hugging-face-部署) | ★★★☆☆ | 免费，中国大陆访问速度不错。允许通过 Cloudflare Tunnels 自定义域名。 |
 | [AWS Lambda 部署](#aws-lambda-部署) | ★★★☆☆ | 全球最大的云平台，适合已经使用 AWS 全家桶的用户。 |
 | [Cloudflare workers 部署](#cloudflare-workers-部署) | ★★☆☆☆ | 部署需使用命令行，冷启动时间较短，功能有部分限制。2.0 起使用 Cloudflare D1 数据库，适配器在 [packages/server-cloudflare](https://github.com/twikoojs/twikoo/tree/main/packages/server-cloudflare)。 |
-| [EdgeOne Pages Makers 部署](#edgeone-pages-makers-部署) | ★★☆☆☆ | 腾讯云 EdgeOne Pages 的 Makers 函数部署。功能受限：邮件仅支持部分通道，无垃圾评论检测与 AI 功能。 |
+| [EdgeOne Makers 部署](#edgeone-makers-部署) | ★★☆☆☆ | 腾讯云 EdgeOne Makers 的函数部署。功能受限：邮件仅支持部分通道，无垃圾评论检测与 AI 功能。 |
 | [私有部署](#私有部署) | ★★☆☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 | [私有部署 (Docker)](#私有部署-docker) | ★★★☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 
@@ -321,7 +321,7 @@ Cloudflare 部署的功能限制：邮件通知仅支持 SendGrid / MailChannels
 
 从 1.x 的 [twikoojs/twikoo-cloudflare](https://github.com/twikoojs/twikoo-cloudflare) 升级：D1 表形态与 1.x 一致，数据可以直接沿用，云函数首次请求会自动补上 2.0 新增的列。更多细节（能力矩阵、邮件与图床配置、IP 属地实现）见[适配器 README](https://github.com/twikoojs/twikoo/tree/main/packages/server-cloudflare)。
 
-## EdgeOne Pages Makers 部署
+## EdgeOne Makers 部署
 
 ::: warning 注意
 EdgeOne 部署功能受限：邮件通知仅支持 SendGrid / MailChannels / 自建 SMTP 桥接通道；不支持 Akismet、腾讯云内容审核等垃圾评论检测，也没有 AI 功能。
@@ -335,7 +335,7 @@ EdgeOne 部署功能受限：邮件通知仅支持 SendGrid / MailChannels / 自
    npm run build
    ```
 
-3. 进入 EdgeOne Pages 控制台，创建 Makers 函数并绑定该目录
+3. 进入 EdgeOne Makers 控制台，创建 Makers 函数并绑定该目录
 4. 数据库使用平台自动提供的 Blob KV，无需额外配置
 5. 如需邮件通知，请自行部署 SMTP 通道（Go SMTP Bridge，或使用 SendGrid / MailChannels）
 

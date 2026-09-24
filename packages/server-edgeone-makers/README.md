@@ -2,9 +2,9 @@
 
 Twikoo 2.0 服务端适配器。业务逻辑在 `@twikoojs/common`，本包仅做平台入口与注入。
 
-## 部署（腾讯云 EdgeOne Pages Makers）
+## 部署（腾讯云 EdgeOne Makers）
 
-1. EdgeOne Pages → Makers 函数 → 绑定本目录
+1. EdgeOne Makers 控制台 → Makers 函数 → 绑定本目录
 2. `npm run build`（先 `tsdown` 产出 `dist/`，再生成 ip2region 内联数据；见下）
 3. Blob KV：平台自动提供 `@edgeone/pages-blob`（name: twikoo, strong 一致性）
 4. SMTP：Go SMTP Bridge（smtp.go）或 SendGrid / MailChannels 通道
@@ -68,7 +68,7 @@ npm test
 
 ## 平台核对清单（查阅日期 2026-09-17）
 
-- [x] Makers 云函数请求对象与 Blob KV API（EdgeOne Pages 官方文档）
+- [x] Makers 云函数请求对象与 Blob KV API（EdgeOne Makers 官方文档）
 - [x] 运行时版本（Node 20）与构建期可选版本差异
 - [ ] EO Node 20 跑 ES2022 产物实测（人工项；残留）
 - [ ] Go SMTP Bridge 协同构建实测（人工项）

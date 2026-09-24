@@ -2,7 +2,7 @@
  * twikoo-edgeone-makers 主逻辑（EdgeOne Makers 薄适配器）。
  * 受限能力：mail restricted（SendGrid/MailChannels/Go SMTP Bridge）、domPurify false
  * （直通注入）、akismet/tencentTms false；BlobKV 注入 BlobKvDatabase；
- * ip2region 注入 fs-free 内存查询器（db 内联，见 `ip2region/`）。核对：EdgeOne Pages 官方文档（2026-09-17）。
+ * ip2region 注入 fs-free 内存查询器（db 内联，见 `ip2region/`）。核对：EdgeOne Makers 官方文档（2026-09-17）。
  */
 import {
   BlobKvDatabase,

@@ -32,6 +32,7 @@ twikoo/
 │   ├── server-common/         # @twikoojs/common        ← 公共后端库，核心交付
 │   ├── server-aws-lambda/     # @twikoojs/aws-lambda    ← AWS Lambda 适配器
 │   ├── server-cloudbase/      # twikoo-func             ← 腾讯云 CloudBase 适配器
+│   ├── server-cloudflare/     # @twikoojs/cloudflare    ← Cloudflare Workers 适配器
 │   ├── server-edgeone-makers/ # @twikoojs/edgeone-makers ← EdgeOne Makers 适配器
 │   ├── server-netlify/        # twikoo-netlify          ← Netlify 适配器
 │   ├── server-vercel/         # twikoo-vercel           ← Vercel 适配器
@@ -43,7 +44,8 @@ twikoo/
     ├── aws-lambda/src/        #   AWS Lambda（terraform/main.tf 的 source_path 指向它）
     ├── cloudbase/twikoo/      #   腾讯云开发（仓库根 cloudbaserc.json 指向它）
     ├── vercel-min/            #   Vercel（api/index.js + vercel.json + package.json）
-    └── hf-space/              #   Hugging Face Space（Dockerfile + src/start.sh）
+    ├── hf-space/              #   Hugging Face Space（Dockerfile + src/start.sh）
+    └── edgeone-makers/        #   腾讯云 EdgeOne Makers（ZIP 由构建期生成，控制台直接上传）
 ```
 
 ## 常用命令

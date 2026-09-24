@@ -342,6 +342,10 @@ EdgeOne Makers 部署有两项前置约束：
 
 4. 等待状态变为**成功**
 
+   ::: tip 数据库无需配置
+   评论数据存放在平台自动提供的 **Blob KV** 中：首次写入时平台会自动创建命名空间，**无需任何额外配置**，也不需要自备数据库。
+   :::
+
 5. 进入**项目设置**，把**Node.js 版本**改为 `24.18.0` 并保存
 
    该项决定**构建时**使用的 Node.js 版本，平台默认值偏低，与 2.0 的产物与依赖要求不符。注意控制台提示「变更后将在下一次部署时生效」，因此保存后需回到**构建部署**页点一次**重新部署**。
@@ -374,14 +378,21 @@ EdgeOne Makers 部署有两项前置约束：
 EdgeOne Makers 的 Node.js 函数运行时不支持 TCP socket，无法直连 SMTP。可用通道：
 
 - **SendGrid / MailChannels**：在 Twikoo 管理面板的邮件配置中把发信服务选为对应项并填入 API Key
-- **自建 SMTP 桥接**：部署包内的 `cloud-functions/smtp.go` 会由平台编译成 `/smtp` 路由，
-  负责真正的 SMTP 建连。启用步骤：
+- **自建 SMTP 桥接**：**无需另建服务** —— 部署包内的 `cloud-functions/smtp.go` 会被平台编译成
+  同一个项目下的 `/smtp` 路由，由它负责真正的 SMTP 建连；Twikoo 云函数会向自己的域名请求
+  `/smtp`。启用步骤：
   1. 在**项目设置 → 环境变量**中新增 `TWIKOO_SMTP_BRIDGE_TOKEN`，值用随机长字符串
      （可用 `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` 生成；
      它用于保护 `/smtp` 路由，**不是** SMTP 密码）
   2. 在 Twikoo 管理面板配置 `SMTP_HOST`、`SMTP_PORT`、`SMTP_SECURE`、`SMTP_USER`、
      `SMTP_PASS`、`SENDER_EMAIL`（465 端口通常 `SMTP_SECURE=true`，587 端口通常为 `false`）
   3. **不要**同时配置 `SMTP_SERVICE`，否则会走 SendGrid / MailChannels 的 HTTP 通道
+
+  ::: tip 桥接地址不需要你填
+  Twikoo 云函数按「前端配置的 `envId` → `Origin` 头 → `Host` 头」的顺序推断桥接地址，
+  三者都指向本项目自己的域名，再拼上 `/smtp`。因此**不需要**在配置里填桥接地址，
+  自定义域名生效后也会自动跟随。
+  :::
 
 更多细节（能力矩阵、IP 属地实现、构建方式）见[适配器 README](https://github.com/twikoojs/twikoo/tree/main/packages/server-edgeone-makers)与[模板说明](https://github.com/twikoojs/twikoo/tree/main/templates/edgeone-makers)。
 

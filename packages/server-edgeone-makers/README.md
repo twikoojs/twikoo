@@ -20,6 +20,9 @@ Twikoo 2.0 服务端适配器。业务逻辑在 `@twikoojs/common`，本包仅�
 本包唯一要交付的就是那个入口，**sourcemap 不进 npm 包**（7.9 MB，对平台无意义）。
 注意 npm 在 `files` 存在时会忽略根 `.npmignore`，所以排除只能靠白名单本身。
 
+**数据库零配置**：评论数据存在平台自动提供的 **Blob KV**（`@edgeone/pages-blob`，强一致读取）中，
+首次写入时平台自动创建命名空间，用户不需要配置任何东西，也不需要自备数据库。
+
 **本包在流水线中的角色**：`npm run build` 产出 `dist/`（发布到 npm 的实现）与上面那个 ZIP。
 两者分工的依据是两条**实测确认**的平台行为（2026-09-24，真实项目）：
 
@@ -48,8 +51,13 @@ Twikoo 2.0 服务端适配器。业务逻辑在 `@twikoojs/common`，本包仅�
 
 ### 自建 SMTP 通道
 
-Node 侧无法直连 SMTP，故由同项目的 Go 函数 `cloud-functions/smtp.go`（路由 `/smtp`）承担
-「HTTP → SMTP」转发。Node 侧的客户端在 `src/mail/smtp-bridge.ts`，两侧的请求/响应字段必须一致。
+Node 侧无法直连 SMTP，故由**同项目**的 Go 函数 `cloud-functions/smtp.go`（路由 `/smtp`）承担
+「HTTP → SMTP」转发 —— **不需要另外部署一个桥接服务**。Node 侧的客户端在
+`src/mail/smtp-bridge.ts`，两侧的请求/响应字段必须一致。
+
+桥接地址由客户端自行推断（`createMailBridgeContext`）：按「请求体里的 `envId` → `Origin` 头 →
+`Host` 头」依次取候选，再统一规范到路径 `/smtp`，三者都指向本项目自己的域名，
+因此**没有需要用户填写的桥接地址配置**，换自定义域名后也会自动跟随。
 
 启用步骤：
 

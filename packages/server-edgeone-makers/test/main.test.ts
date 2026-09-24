@@ -138,17 +138,18 @@ describe("twikoo-edgeone-makers 薄适配器", () => {
     expect(data.data[0].comment).toContain("加粗");
   });
 
-  it("体积门禁脚本：依赖清单无 nodemailer/jsdom（语义）", async () => {
+  it("产物门禁脚本：依赖清单无 nodemailer/jsdom（语义）", async () => {
     const { execFileSync } = await import("node:child_process");
     // 正向：脚本对当前 package.json 绿
-    const out = execFileSync(process.execPath, ["scripts/check-eo-size.mjs"], {
+    const out = execFileSync(process.execPath, ["scripts/check-eo-bundle.mjs"], {
       cwd: new URL("..", import.meta.url).pathname.replace(/^\/([A-Z]:)/, "$1"),
       encoding: "utf8",
     });
-    // dist 已构建时（CI 里 pnpm build 是 test 的前置），必须真的断言到数据分片——
-    // 否则「数据分片存在」这条判据被静默跳过时，本用例仍会绿
+    // dist 已构建时（CI 里 pnpm build 是 test 的前置），必须真的断言到「产物自包含 + 体积」——
+    // 否则这两条判据被静默跳过时，本用例仍会绿
     if (existsSync(new URL("../dist", import.meta.url))) {
-      expect(out).toContain("数据分片");
+      expect(out).toContain("产物自包含");
+      expect(out).toContain("体积在预期区间");
     }
     // 反向：临时注入 nodemailer 依赖 → 红
     const { readFileSync: rf, writeFileSync: wf } = await import("node:fs");
@@ -162,7 +163,7 @@ describe("twikoo-edgeone-makers 薄适配器", () => {
     wf(pkgPath, JSON.stringify(pkg, null, 2));
     let failed = false;
     try {
-      execFileSync(process.execPath, ["scripts/check-eo-size.mjs"], {
+      execFileSync(process.execPath, ["scripts/check-eo-bundle.mjs"], {
         cwd: new URL("..", import.meta.url).pathname.replace(/^\/([A-Z]:)/, "$1"),
       });
     } catch {

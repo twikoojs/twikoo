@@ -6,19 +6,23 @@
  * 而 EO Makers 的部署产物是 JS bundle，没有可读的兄弟数据文件。1.x 的做法是把 db
  * gzip + base64 内联成一个模块（`cloud-functions/ip2region-data.js`，由 `build.cjs` 的
  * 「步骤 0」在 `postinstall` 里生成），运行时用 `pako` 解压 —— 本脚本是它的 2.0 版：
- * 产出 `src/ip2region/generated/ip2region-data.js`，并同步一份到 `dist/generated/`。
+ * 产出 `src/ip2region/generated/ip2region-data.js`，由 tsdown 按 `inline.ts` 的**字面量**
+ * specifier 静态追踪、内联进函数单文件。
+ *
+ * **注意顺序**：本脚本必须在 tsdown **之前**跑（见 package.json 的 `build`），否则内联时
+ * 解析不到该模块。
  *
  * **产物不进 git**（见包内 `.gitignore`）；类型由同目录**入库**的 `ip2region-data.d.ts` 承担，
  * 因此生成物缺失时 `tsc --noEmit` 仍能通过，只是运行时注入会被跳过（见 `inline.ts`）。
  *
  * 用法：
- *   node scripts/build-ip2region-data.mjs          # 生成（已是最新则跳过）+ 同步到 dist
+ *   node scripts/build-ip2region-data.mjs          # 生成（已是最新则跳过）
  *   node scripts/build-ip2region-data.mjs --force  # 强制重新生成
  *   node scripts/build-ip2region-data.mjs --check   # 只校验生成物可用（CI/部署前自检）
  */
 import { createHash } from "node:crypto";
 import { createRequire } from "node:module";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gzipSync, gunzipSync } from "node:zlib";
@@ -26,11 +30,8 @@ import { gzipSync, gunzipSync } from "node:zlib";
 const require_ = createRequire(import.meta.url);
 const PACKAGE_ROOT = fileURLToPath(new URL("..", import.meta.url));
 
-/** 生成物路径（运行时由 `src/ip2region/inline.ts` 按相对 specifier 懒加载） */
+/** 数据模块的落点（`src/ip2region/inline.ts` 按**字面量**相对 specifier 静态引入它，由打包器内联） */
 const SOURCE_OUTPUT = join(PACKAGE_ROOT, "src/ip2region/generated/ip2region-data.js");
-
-/** dist 内的同步副本（tsdown 的 `clean` 会清空 dist，故在它之后跑） */
-const DIST_OUTPUT = join(PACKAGE_ROOT, "dist/generated/ip2region-data.js");
 
 /** gzip 压缩级别（1.x 用的也是最高级；db 已高度可压缩，级别影响很小） */
 const GZIP_LEVEL = 9;
@@ -135,19 +136,6 @@ function build() {
 }
 
 /**
- * 把生成物同步到 dist（dist 由 tsdown 产出，且它的 clean 会清空整个目录）。
- */
-function syncToDist() {
-  if (!existsSync(join(PACKAGE_ROOT, "dist"))) {
-    console.log("= dist 不存在，跳过同步（先跑 tsdown）");
-    return;
-  }
-  mkdirSync(dirname(DIST_OUTPUT), { recursive: true });
-  copyFileSync(SOURCE_OUTPUT, DIST_OUTPUT);
-  console.log(`✓ 已同步到 ${DIST_OUTPUT.replace(`${PACKAGE_ROOT}/`, "")}`);
-}
-
-/**
  * 校验生成物可用：存在、格式正确、能解压出合法的 db 头部。
  */
 function check() {
@@ -182,5 +170,4 @@ if (checkOnly) {
   check();
 } else {
   build();
-  syncToDist();
 }

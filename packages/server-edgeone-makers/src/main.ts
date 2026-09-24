@@ -2,7 +2,7 @@
  * twikoo-edgeone-makers 主逻辑（EdgeOne Makers 薄适配器）。
  * 受限能力：mail restricted（SendGrid/MailChannels/Go SMTP Bridge）、domPurify false
  * （直通注入）、akismet/tencentTms false；BlobKV 注入 BlobKvDatabase；
- * ip2region 注入 fs-free 内存查询器（db 内联，见 `ip2region/`）。核对：EdgeOne Pages 官方文档（2026-09-17）。
+ * ip2region 注入 fs-free 内存查询器（db 内联，见 `ip2region/`）。核对：EdgeOne Makers 官方文档（2026-09-17）。
  */
 import {
   BlobKvDatabase,
@@ -35,6 +35,10 @@ export interface EoEventLike {
   method?: string;
   headers: Record<string, string | string[] | undefined>;
   body?: unknown;
+  /** 平台解析好的客户端 IP（`context.clientIp`；缺省时由转发头回落，见 `toTkRequest`） */
+  ip?: string;
+  /** 平台环境变量（`context.env`；入口已合并进 `process.env`，此处仅留档备查） */
+  env?: Record<string, string | undefined>;
 }
 
 /** EO 返回体（HTTP 形态） */
@@ -44,10 +48,13 @@ export interface EoResult {
   body: string;
 }
 
-/** EO 事件 → 内部统一请求（headers 小写化；IP 取 x-real-ip/转发首跳）。 */
-
 /**
+ * EO 事件 → 内部统一请求（headers 小写化）。
  *
+ * IP 优先取入口从 `context.clientIp` 填入的 `event.ip`（平台解析，不依赖部署形态）；
+ * 缺省时回落 `x-real-ip` / `x-forwarded-for` 首跳。
+ * @param event 平台事件
+ * @returns 内部统一请求
  */
 export function toTkRequest(event: EoEventLike): TkRequest {
   const headers: Record<string, string> = {};
@@ -55,7 +62,7 @@ export function toTkRequest(event: EoEventLike): TkRequest {
     if (value !== undefined) headers[key.toLowerCase()] = Array.isArray(value) ? value[0] : value;
   }
   const forwarded = headers["x-forwarded-for"];
-  const ip = headers["x-real-ip"] ?? (forwarded ? forwarded.split(",")[0].trim() : "") ?? "";
+  const ip = event.ip || headers["x-real-ip"] || (forwarded ? forwarded.split(",")[0].trim() : "");
   const body = (
     event.body && typeof event.body === "object" ? event.body : {}
   ) as TkRequest["body"];

@@ -22,10 +22,36 @@
 | `cloudbase/twikoo/` | 腾讯云开发（CloudBase）          | `index.js`                    | 仓库根 `cloudbaserc.json` 的 `functionRoot`           | `packages/server-cloudbase`   |
 | `aws-lambda/src/`   | AWS Lambda                       | `index.js`                    | `terraform/` 里的 `source_path = "../src"`            | `packages/server-aws-lambda`  |
 | `hf-space/`         | Hugging Face Space（自定义域名） | `Dockerfile` + `src/start.sh` | 手动复制进 Space 仓库                                 | `packages/server-self-hosted` |
+| `edgeone-makers/`   | 腾讯云 EdgeOne Makers            | ZIP 内 `cloud-functions/index.js` | 控制台「直接上传」上传 ZIP                        | `packages/server-edgeone-makers` |
 
 > 每个模板的目录形状跟着**平台约定**走，没有强行统一：Vercel 必须把函数放进 `api/`、
 > CloudBase 按 `functionRoot/<函数名>/` 找代码、Lambda 需要一个能被 Terraform 整个打包的源码目录。
 > 判据只有一条：**平台照文档里的路径能找到入口，且入口不需要构建**。
+
+### `edgeone-makers/` 为什么是 ZIP 而不是目录
+
+其余模板都是「目录 + 一行转发」的形态，EdgeOne Makers 不能照抄：平台只认
+`cloud-functions/` 目录下的入口，而用户手上没有仓库，所以这里交付的是**可上传的 ZIP**。
+
+ZIP 是**最小部署包**（三个文件，约 5 KB）：
+
+| 路径 | 内容 |
+| --- | --- |
+| `cloud-functions/index.js` | 一行转发到 `@twikoojs/edgeone-makers`，映射到域名根路径 `/` |
+| `cloud-functions/smtp.go` | SMTP 桥接（Go 函数，映射到 `/smtp`），供自建 SMTP 通道使用 |
+| `package.json` | `dependencies: { "@twikoojs/edgeone-makers": "latest" }` |
+
+这仍然满足上面三条硬约束：入口是纯 JS 转发壳、依赖写 `latest`、不引用 monorepo 内部路径。
+实现由平台执行 `npm install` 取回（实测平台确实会跑），因此升级只需点「重新部署」。
+
+`cloud-functions/smtp.go` 是本模板里唯一「源码直接进部署包」的文件 —— 平台按 `.go` 文件名
+编译 Go 函数并生成同名路由，不会去 `node_modules` 里找 `.go`。
+
+由 `packages/server-edgeone-makers/scripts/build-zip.mjs` 在构建期生成。
+**不要手工改这个 ZIP**，改 `packages/server-edgeone-makers` 后重新构建即可。
+
+ZIP 内**刻意不含** `index.html`：静态资源与函数路由冲突时静态资源优先，根目录出现
+`index.html` 会让 `/` 返回网页，Twikoo 的 envId 随即失效。
 
 ## 与 `packages/*` 的区别
 

@@ -4,7 +4,7 @@
  *
  * 用法：
  *   node scripts/release-set-version.mjs --check        # 只校验基线（9 包全 0.0.0）
- *   node scripts/release-set-version.mjs 2.0.0-beta.1   # 校验基线后把版本覆写到 9 个包
+ *   node scripts/release-set-version.mjs 2.0.0-beta.1   # 校验基线后把版本覆写到 10 个包
  *
  * 设计要点：
  * - 版本号**不进入 git**：仓库内恒为 `0.0.0`，CI 覆写后直接发布；
@@ -68,7 +68,7 @@ if (!VERSION_PATTERN.test(arg)) {
   process.exit(1);
 }
 
-/** 3. 覆写 9 个包 */
+/** 3. 覆写 10 个包 */
 for (const { name, dir } of PUBLISH_PACKAGES) {
   const { path, pkg } = readPackage(dir);
   pkg.version = arg;

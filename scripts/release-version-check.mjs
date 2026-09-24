@@ -8,7 +8,7 @@
  *
  * - `monotonic`：新版本必须**大于** npm 上已发布的「同 major.minor」最高版本
  *   （防手误把序号写小，例如 beta.1 之后再发 beta.1）；
- * - `unpublished`：9 个包都不能已经存在该版本（防重复发布导致 npm 403 半途失败）。
+ * - `unpublished`：10 个包都不能已经存在该版本（防重复发布导致 npm 403 半途失败）。
  *
  * 需要网络（npm registry）；失败一律 exit 1（fail loudly，不静默跳过）。
  */

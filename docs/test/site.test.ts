@@ -218,4 +218,46 @@ describe("一键部署模板", () => {
     const major = Number(/Nodejs(\d+)/.exec(fn.runtime)?.[1]);
     expect(major, `CloudBase 运行时 ${fn.runtime} 低于 Node 20`).toBeGreaterThanOrEqual(20);
   });
+
+  it("EdgeOne Makers 模板是可直接上传的 ZIP，且不含 index.html", () => {
+    const zipPath = resolve(REPO_ROOT, "templates/edgeone-makers/twikoo-edgeone-makers.zip");
+    expect(existsSync(zipPath), "缺少 EdgeOne Makers 一键部署 ZIP").toBe(true);
+
+    // 手工读中央目录（不引依赖）：只需文件名列表
+    const buf = readFileSync(zipPath);
+    const eocd = buf.lastIndexOf(Buffer.from([0x50, 0x4b, 0x05, 0x06]));
+    expect(eocd, "ZIP 缺少 EOCD 记录").toBeGreaterThan(-1);
+    const count = buf.readUInt16LE(eocd + 10);
+    let offset = buf.readUInt32LE(eocd + 16);
+    const names: string[] = [];
+    for (let i = 0; i < count; i++) {
+      expect(buf.readUInt32LE(offset), "中央目录签名不匹配").toBe(0x02014b50);
+      const nameLen = buf.readUInt16LE(offset + 28);
+      names.push(buf.subarray(offset + 46, offset + 46 + nameLen).toString("utf8"));
+      offset += 46 + nameLen + buf.readUInt16LE(offset + 30) + buf.readUInt16LE(offset + 32);
+    }
+
+    // 平台按 cloud-functions/ 目录注册路由，入口必须在这个位置
+    expect(names, "ZIP 缺少 cloud-functions/index.js").toContain("cloud-functions/index.js");
+    // 静态资源与函数路由冲突时静态资源优先：有 index.html 就会让 / 失效
+    expect(names, "ZIP 不得含 index.html（会抢占根路径）").not.toContain("index.html");
+    // 平台侧不跑本仓库构建：cloud-functions/ 下只能是已构建的 .js 与 Go 桥接源码 .go
+    expect(
+      names.filter(
+        (n) => n.startsWith("cloud-functions/") && !n.endsWith(".js") && !n.endsWith(".go"),
+      ),
+    ).toEqual([]);
+
+    // 最小部署包：只声明依赖 + 一个 Go 桥接源码，实现由平台 npm install 取回并内联
+    expect(names.slice().sort()).toEqual([
+      "cloud-functions/index.js",
+      "cloud-functions/smtp.go",
+      "package.json",
+    ]);
+  });
+
+  it("EdgeOne Makers 适配器在发布清单里（模板要靠它产出）", () => {
+    const release = readFileSync(resolve(REPO_ROOT, "scripts/release-packages.mjs"), "utf8");
+    expect(release).toContain('"@twikoojs/edgeone-makers"');
+  });
 });

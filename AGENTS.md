@@ -32,7 +32,7 @@ twikoo/
 │   ├── server-common/         # @twikoojs/common        ← 公共后端库，核心交付
 │   ├── server-aws-lambda/     # @twikoojs/aws-lambda    ← AWS Lambda 适配器
 │   ├── server-cloudbase/      # twikoo-func             ← 腾讯云 CloudBase 适配器
-│   ├── server-edgeone-makers/ # twikoo-edgeone-makers   ← EdgeOne Makers 适配器
+│   ├── server-edgeone-makers/ # @twikoojs/edgeone-makers ← EdgeOne Makers 适配器
 │   ├── server-netlify/        # twikoo-netlify          ← Netlify 适配器
 │   ├── server-vercel/         # twikoo-vercel           ← Vercel 适配器
 │   ├── server-self-hosted/    # tkserver                ← 私有部署适配器

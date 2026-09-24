@@ -9,8 +9,11 @@
  * | --- | --- |
  * | `SMTP_SERVICE=SendGrid` | `POST https://api.sendgrid.com/v3/mail/send` |
  * | `SMTP_SERVICE=MailChannels` | `POST https://api.mailchannels.net/tx/v1/send` |
- * | 配置了 `SMTP_HOST` | 经用户自部署的 Go SMTP Bridge 转发（见 `./smtp-bridge`） |
+ * | 配置了 `SMTP_HOST` | 经**同项目**的 Go SMTP Bridge 转发（见 `./smtp-bridge`） |
  * | 其余 | 抛可读错误，提示受支持的通道 |
+ *
+ * 注意上表第三行：桥接是部署包里 `cloud-functions/smtp.go` 编译出的 `/smtp` 路由，
+ * **不需要另外部署一个服务**（1.x 的文档把它写成「自行部署 SMTP 通道」，容易误读）。
  *
  * 注入后 `lib-loader` 的 `getNodemailer` **覆写优先于能力门**，因此
  * `mail: "restricted"` 名副其实：能力存在，但只有受限通道可用。

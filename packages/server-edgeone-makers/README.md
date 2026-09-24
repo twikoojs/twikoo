@@ -56,8 +56,19 @@ Node 侧无法直连 SMTP，故由**同项目**的 Go 函数 `cloud-functions/sm
 `src/mail/smtp-bridge.ts`，两侧的请求/响应字段必须一致。
 
 桥接地址由客户端自行推断（`createMailBridgeContext`）：按「请求体里的 `envId` → `Origin` 头 →
-`Host` 头」依次取候选，再统一规范到路径 `/smtp`，三者都指向本项目自己的域名，
-因此**没有需要用户填写的桥接地址配置**，换自定义域名后也会自动跟随。
+`Host` 头」依次取候选，再统一规范到路径 `/smtp`，逐个探测直到有一个通过校验。
+**没有需要用户填写的桥接地址配置**。
+
+实测（2026-09-24）三个候选的真实取值：
+
+| 候选 | 实际值 | 可用性 |
+| --- | --- | --- |
+| 请求体 `envId` | 前端配置的 Twikoo 地址（如 `https://twikooeo.imaegoo.com`） | ✅ 正确，且**前端必带**（`client/src/utils/api.ts` 每次请求都塞 `envId`） |
+| `Origin` 头 | 博客站点自己的域名 | ❌ 不是 Makers 域名，`<blog>/smtp` 不存在 |
+| `Host` 头 | 平台内部域名（如 `pages-pro-13-…qcloudteo.com`） | ❌ 平台会改写 `Host` |
+
+也就是说**桥接发现实际依赖 `envId`**；前两者只是 1.x 遗留的兜底。真实场景下前端必带 `envId`，
+故可用；但若某个调用方不带 `envId`，会看到「自动发现失败」并列出那个内部域名候选 —— 属预期行为。
 
 启用步骤：
 
@@ -66,7 +77,8 @@ Node 侧无法直连 SMTP，故由**同项目**的 Go 函数 `cloud-functions/sm
 2. 在 Twikoo 管理面板配置 `SMTP_HOST` / `SMTP_PORT` / `SMTP_SECURE` / `SMTP_USER` / `SMTP_PASS` / `SENDER_EMAIL`
 3. **不要**同时配置 `SMTP_SERVICE` —— 配了会走 SendGrid / MailChannels 的 HTTP 通道，不经过 Go 桥接
 
-> 未实测项：Go 桥接与 Node 侧的协同构建在平台上尚未走通一次完整投递（见下方核对清单）。
+> 已实测（2026-09-24）：Go 桥接随部署包编译并注册 `/smtp` 路由（控制台「函数」页显示
+> `{ routePath: "/smtp", runtime: "Go" }`），且**真实投递成功** —— 详见下方核对清单。
 
 ## 构建
 
@@ -154,4 +166,6 @@ npm test
 - [x] 端到端：`GET /` 健康检查、`GET_FUNC_VERSION`、`COMMENT_SUBMIT` 写入、`GET_COMMENTS_COUNT` 读取
 - [x] IP 属地：`SHOW_REGION=true` 时返回真实属地（如 `河南`），内联数据可用
 - [x] 最小部署包（ZIP 仅 `cloud-functions/index.js` + `cloud-functions/smtp.go` + `package.json`）真实部署跑通
-- [ ] Go SMTP Bridge 协同构建与一次完整投递实测（人工项；需要真实 SMTP 账号）
+- [x] Go SMTP Bridge：随部署包编译（构建日志 `Go functions build completed: 1 functions (handler mode)`）、
+      路由注册为 `{ routePath: "/smtp", runtime: "Go" }`、**真实投递成功**
+      （正确密码 → `{"result":{"ok":true,"message":"ok"}}`；错误密码 → `SMTP auth failed`，非假阳性）

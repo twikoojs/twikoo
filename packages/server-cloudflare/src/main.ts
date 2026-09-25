@@ -1,34 +1,8 @@
 /**
- * twikoo-cloudflare 主逻辑（Cloudflare Workers 薄适配器）。
- *
- * 与 1.x twikoo-cloudflare（独立仓库 `twikoojs/twikoo-cloudflare`）的关系：**业务逻辑
- * 全部下沉到 `@twikoojs/common`**，本包只保留「平台入口 + 端口注入 + 载荷形态转换」
- * 三件事，1.x 那份 1224 行的 `src/index.js`（D1 SQL 手写、邮件垫片、验证码、XSS 消毒、
- * 各事件的 20 个 handler）在 2.0 里各自归位：
- *
- * | 1.x 位置 | 2.0 归属 |
- * | --- | --- |
- * | `DBBinding`（D1 SQL 手写） | `./database/d1.ts`（实现 `Database` 端口） |
- * | `setCustomLibs({ nodemailer })` | `./mail/nodemailer.ts` |
- * | `setCustomLibs({ DOMPurify: 直通 })` | `./dom-purify.ts`（xss 白名单） |
- * | `currentRequestGeo` | `./geo/region-store.ts` |
- * | 各事件 handler | `@twikoojs/common` 的 handlers（本包不碰） |
- * | `postSubmit` 5 秒竞速 | `./dispatch.ts`（`ctx.waitUntil`） |
- *
- * **平台核对清单**（Cloudflare Workers / D1 / wrangler，查阅 2026-09-23）：
- * - Worker 模块入口为 `export default { fetch }`，签名 `(request, env, executionCtx)`；
- * - `request.cf` 提供国家/省/城市（仅当前请求，不能按任意 IP 反查）；
- * - D1 绑定经 `env.DB` 注入，`prepare().bind().first()/all()/run()`，位置参数 `?`；
- * - `nodejs_compat` 兼容标志提供 `node:crypto` / `Buffer`（wrangler.toml 已声明）；
- * - **未采用** `cloudflare:sockets` 的裸 TCP（理论上能连 SMTP，但 TLS + 分帧需自实现，
- *   且 1.x 也未做，故邮件仍走 HTTP 通道）。
+ * Cloudflare Workers 入口：转换平台载荷、注入适配器并管理请求内连接。
+ * 业务逻辑由 @twikoojs/common 处理；数据库、能力与部署配置见本包 README。
  */
-import {
-  RES_CODE,
-  createHandler,
-  scaffoldAdapters,
-  setCustomLibs,
-} from "@twikoojs/common";
+import { RES_CODE, createHandler, scaffoldAdapters, setCustomLibs } from "@twikoojs/common";
 import type {
   Capabilities,
   Database,
@@ -39,41 +13,39 @@ import type {
 } from "@twikoojs/common";
 import type { D1DatabaseLike } from "./database/binding";
 import { D1Database } from "./database/d1";
+import { CloudflareMongoDatabase } from "./database/mongo";
 import { createCloudflareDispatcher } from "./dispatch";
-import { createXssDOMPurify } from "./dom-purify";
 import { createNativeFormData } from "./form-data";
-import { createCloudflareIp2Region, rememberRequestGeo, type CfPropertiesLike } from "./geo/region-store";
+import {
+  createCloudflareIp2Region,
+  rememberRequestGeo,
+  type CfPropertiesLike,
+} from "./geo/region-store";
 import { createCloudflareNodemailer } from "./mail/nodemailer";
 
 /**
- * Cloudflare 平台能力声明（能力矩阵的 Cloudflare 行）。
- *
- * - `mail: "restricted"`：发邮件走 HTTP 通道（SendGrid / MailChannels / Resend），
- *   Workers 无法建立 SMTP 连接；
- * - `domPurify: false`：Workers 无 jsdom，改用 `xss` 白名单垫片（`setCustomLibs` 覆写）；
- * - `ip2region: true`：**由覆写满足**（`request.cf` + 随评论落库的 `ipRegion`，
- *   见 `geo/region-store.ts`），不进依赖清单；
- * - `akismet` / `tencentTms: false`：两个 SDK 都强依赖 Node 的 `http` 模块与长连接，
- *   Workers 上不可用（对应「后置垃圾检测」只剩内置预检与违禁词）；
- * - `imageUpload: true`：**由覆写满足**（原生 FormData 垫片），图床走 S3 兼容 API
- *   （Cloudflare R2 支持 S3 协议，配置 `IMAGE_CDN=s3` + `S3_ENDPOINT` 即可）；
- * - `ai: false`：不引入 `@xsai/*`（Workers 产物有体积上限，且该能力的价值需实测后再开）。
+ * Cloudflare 平台能力：IP 属地由 request.cf 与落库数据提供，上传使用原生 FormData。
+ * 其余已启用能力使用公共层的真实依赖；Akismet 与腾讯云内容审核仍关闭。
  */
 export const cloudflareCapabilities: Capabilities = {
-  mail: "restricted",
-  domPurify: false,
+  mail: true,
+  domPurify: true,
   ip2region: true,
   akismet: false,
   tencentTms: false,
   imageUpload: true,
   qqAvatar: true,
-  ai: false,
+  ai: true,
 };
 
 /** Cloudflare 环境变量与绑定（`wrangler.toml` 的 `[vars]` / `[[d1_databases]]`） */
 export interface CloudflareEnvLike {
   /** D1 数据库绑定 */
   DB?: D1DatabaseLike;
+  /** MongoDB 连接串；配置后优先于 D1，每次请求独立建连 */
+  MONGODB_URI?: string;
+  /** MongoDB 数据库名；未配置时沿用连接串中的数据库名 */
+  MONGODB_DB_NAME?: string;
 }
 
 /** Workers 执行上下文（只用到 `waitUntil`；其余成员透传而不使用） */
@@ -205,19 +177,10 @@ export function fromTkResponse(tkRes: TkResponse): Response {
   });
 }
 
-/**
- * 注入 Cloudflare 形态的公共库覆写（DOMPurify / nodemailer / form-data / ip2region）。
- *
- * 覆写优先于能力门与动态加载，故 `mail: "restricted"`、`domPurify: false`、
- * `imageUpload` / `ip2region` 的依赖不必进 `dependencies`（依赖声明完整性由
- * `@twikoojs/common` 的 `test/adapter-deps.test.ts` 断言，本包在 `OVERRIDE_SATISFIED`
- * 里登记）。
- */
+/** 注入 HTTP 邮件兼容层、原生 FormData 与 request.cf 属地查询；其余库由公共层加载。 */
 export function installCloudflareLibs(): void {
   setCustomLibs({
-    // 无 jsdom → 用 xss 白名单消毒（1.x 同款）
-    DOMPurify: createXssDOMPurify(),
-    // 无裸 TCP → 邮件走 SendGrid / MailChannels / Resend 的 HTTP API
+    // 保留 HTTP 邮件通道；常规 SMTP 使用请求内创建和关闭的真实 Nodemailer 连接。
     nodemailer: createCloudflareNodemailer(),
     // 原生 FormData（multipart 边界交给 fetch）替代只认 Node 流的 form-data 包
     "form-data": createNativeFormData(),
@@ -235,7 +198,7 @@ export function getD1Database(env: CloudflareEnvLike): D1Database {
   const binding = env?.DB;
   if (!binding) {
     throw new Error(
-      "未绑定 D1 数据库：请在 wrangler.toml 中声明 [[d1_databases]] 并设置 binding = \"DB\"",
+      '未绑定 D1 数据库：请在 wrangler.toml 中声明 [[d1_databases]] 并设置 binding = "DB"',
     );
   }
   const cached = databases.get(binding);
@@ -246,36 +209,50 @@ export function getD1Database(env: CloudflareEnvLike): D1Database {
 }
 
 /**
- * 装配本次请求的运行态（覆写公共库 + 取 D1 数据库）。
- *
- * 返回 promise 而非直接返回实例：调用点（逐请求处理器）里它与后续异步步骤同批等待，
- * 保持与其它适配器 `prepare*Runtime` 一致的调用形态。
+ * 装配本次请求的运行态（覆写公共库 + MongoDB 或 D1）。
+ * MongoDB 不跨请求缓存；D1 仍按绑定复用。
  * @param env 环境绑定
  * @returns 数据库端口实现
  */
 export function prepareCloudflareRuntime(env: CloudflareEnvLike): Promise<Database> {
   installCloudflareLibs();
-  return Promise.resolve(getD1Database(env));
+  return Promise.resolve(
+    env.MONGODB_URI
+      ? new CloudflareMongoDatabase({ uri: env.MONGODB_URI, dbName: env.MONGODB_DB_NAME })
+      : getD1Database(env),
+  );
 }
 
 /**
- * 创建 Worker 请求处理器（`database` 可注入：单测用内存 D1 替身）。
+ * 创建 Worker 请求处理器（注入的数据库由调用方管理，不在请求结束时关闭）。
  * @param options 注入项
  * @returns 逐请求处理器
  */
 export function createCloudflareFunc(options: { database?: Database } = {}): CloudflareHandler {
   return async (request, env = {}, executionCtx) => {
+    let ownedDatabase: Database | undefined;
+    const pending: Promise<unknown>[] = [];
     try {
       const ip = resolveIp(collectHeaders(request));
       // 属地：记住「本次请求 IP → request.cf 属地」，供提交时落库
       rememberRequestGeo(ip, readCf(request));
+      const body = await readRequestBody(request);
+      if (options.database) installCloudflareLibs();
+      const database = options.database ?? (await prepareCloudflareRuntime(env));
+      if (!options.database && env.MONGODB_URI) ownedDatabase = database;
       const tkRequest = toTkRequest({
         request,
         env,
-        executionCtx,
-        body: await readRequestBody(request),
+        executionCtx: ownedDatabase
+          ? {
+              /** 收集真实后置任务，关闭 MongoDB 时等待它们全部完成。 */
+              waitUntil(promise) {
+                pending.push(promise);
+              },
+            }
+          : executionCtx,
+        body,
       });
-      const database = options.database ?? (await prepareCloudflareRuntime(env));
       const adapters: TkAdapters = scaffoldAdapters({
         request: {
           /** 事件即请求体（闭包透传，见 toTkRequest） */
@@ -302,6 +279,22 @@ export function createCloudflareFunc(options: { database?: Database } = {}): Clo
           message: e instanceof Error ? e.message : String(e),
         },
       });
+    } finally {
+      if (ownedDatabase) {
+        const database = ownedDatabase;
+        const cleanup = Promise.allSettled(pending)
+          .then(() => database.close?.())
+          .catch((error: unknown) => {
+            // 关闭失败只记录日志，不覆盖已经生成的业务响应。
+            console.error("MongoDB 连接关闭失败", error);
+          });
+        if (pending.length && typeof executionCtx?.waitUntil === "function") {
+          executionCtx.waitUntil(cleanup);
+        } else {
+          // 离线调用没有后台执行窗口，必须等待后置任务与连接收尾。
+          await cleanup;
+        }
+      }
     }
   };
 }
@@ -309,11 +302,7 @@ export function createCloudflareFunc(options: { database?: Database } = {}): Clo
 /** 默认处理器（模块级懒建：warm isolate 复用同一份装配） */
 let defaultHandler: CloudflareHandler | null = null;
 
-/**
- * Workers 默认导出：`export default { fetch }`。
- *
- * 部署侧入口只需要一行转发（见包 README 的 `src/index.js`）。
- */
+/** Workers 默认入口。 */
 export default {
   /**
    * Workers 请求入口

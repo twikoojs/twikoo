@@ -152,6 +152,7 @@ Cloudflare 的 `request.cf` 只描述**当前请求**的来源地，而 Twikoo �
 记下的 `ip` 逐条算属地的。本适配器的做法是：请求入口记住「本次请求 IP → `request.cf` 属地」，
 提交评论时把它写进 D1 或 MongoDB 的 `comment.ipRegion`，读取评论时再把库里的值
 回填进进程内缓存；冷启动后仍能显示已有属地，1.x 时期存下的历史数据同样有效。
+MongoDB 仅在 `ipRegion` 未提供（`undefined`）时回填属地，显式传入的空字符串或 `null` 保持原值。
 查询走 `setCustomLibs` 的覆写（`ip2region: true` 由它满足），不加载 ip2region 的 db。
 
 ## 测试

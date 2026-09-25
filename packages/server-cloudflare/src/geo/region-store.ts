@@ -7,8 +7,8 @@
  *
  * **本模块的做法**（1.x twikoo-cloudflare 的 D1 schema 本就有 `ipRegion` 列）：
  * 1. 请求入口用 `request.cf` 记住「本次请求 IP → 属地」；
- * 2. 提交评论时把属地随评论落到 D1 的 `ipRegion` 列（见 `D1Database.addComment`）；
- * 3. 读取评论时再把库里的 `ipRegion` 回填进本表（见 `D1Database.rememberRows`），
+ * 2. 提交评论时把属地随评论落到 D1 或 MongoDB 的 `ipRegion` 字段；
+ * 3. 读取评论时由对应数据库实现把已存的 `ipRegion` 回填进本表，
  *    于是 `binarySearchSync(ip)` 这条**同步**通路（`lib-loader` 的覆写接口形态）
  *    也能命中——包括 1.x 时期就已经存下的历史评论。
  *

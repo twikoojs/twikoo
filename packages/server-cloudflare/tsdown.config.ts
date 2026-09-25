@@ -1,10 +1,19 @@
 import { defineConfig } from "tsdown";
-import { BUILD_TARGET, neverBundleDependencies, outExtensions } from "@twikoojs/tsdown-config";
+import { fileURLToPath } from "node:url";
+import { BUILD_TARGET, outExtensions } from "@twikoojs/tsdown-config";
+
+/** 仅替换已关闭或已由原生实现覆写的公共层依赖。 */
+const unavailableLibs = [
+  "@imaegoo/node-ip2region",
+  "akismet-api",
+  "tencentcloud-sdk-nodejs-tms",
+  "lokijs",
+];
+const libStub = fileURLToPath(new URL("./src/lib-stubs.ts", import.meta.url));
 
 /**
- * twikoo-cloudflare 构建配置：纯 ESM（Workers 只吃 ESM）。
- * dependencies 全部 external —— 由部署方在包目录 `npm install` 后交给 wrangler 打包
- * （wrangler 自己会用 esbuild 把这些依赖编进 Worker 产物，并做 tree-shaking）。
+ * 预打包 workspace 与真实 jsdom 依赖，避免 Wrangler 的 whatwg-url 替身破坏 DOM 初始化。
+ * 保留 Node require 给 Wrangler 处理，不生成依赖 import.meta.url 的 createRequire 垫片。
  */
 export default defineConfig({
   entry: ["src/index.ts"],
@@ -14,5 +23,7 @@ export default defineConfig({
   clean: true,
   target: BUILD_TARGET,
   outExtensions: outExtensions(["esm"]),
-  deps: { neverBundle: neverBundleDependencies() },
+  alias: Object.fromEntries(unavailableLibs.map((name) => [name, libStub])),
+  deps: { alwaysBundle: [/.*/], onlyBundle: false },
+  outputOptions: { polyfillRequire: false },
 });

@@ -4,9 +4,9 @@ import { lookupRegion, rememberRegion } from "../geo/region-store";
 
 /** MongoDB 复用公共实现，仅补充 Workers 的属地持久化与读取回填。 */
 export class CloudflareMongoDatabase extends MongoDatabase {
-  /** 保存当前请求的属地，不覆盖导入或调用方已提供的值。 */
+  /** 仅在属地未提供时回填缓存，保留调用方显式提供的空字符串或 null。 */
   override addComment(data: CommentDoc): Promise<CommentDoc> {
-    const region = data.ipRegion || lookupRegion(data.ip);
+    const region = data.ipRegion !== undefined ? data.ipRegion : lookupRegion(data.ip);
     return super.addComment(region ? { ...data, ipRegion: region } : data);
   }
 

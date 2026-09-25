@@ -29,13 +29,13 @@ it("提交时持久化属地，清空缓存后的另一请求读取时恢复属�
   expect(searcher.binarySearchSync("8.8.8.8")?.region).toBe("US|0|California|San Francisco|");
 });
 
-it("已有属地不被当前缓存覆盖", async () => {
+it.each(["CN|0|广东|深圳|", "", null])("显式属地 %j 不被当前缓存覆盖", async (ipRegion) => {
   vi.spyOn(MongoDatabase.prototype, "addComment").mockImplementation(async (comment) => ({
     ...comment,
     _id: "saved",
   }));
   rememberRequestGeo("8.8.8.8", { country: "US", region: "California" });
   const database = new CloudflareMongoDatabase({ uri: "mongodb://localhost/twikoo" });
-  const stored = await database.addComment({ ip: "8.8.8.8", ipRegion: "CN|0|广东|深圳|" });
-  expect(stored.ipRegion).toBe("CN|0|广东|深圳|");
+  const stored = await database.addComment({ ip: "8.8.8.8", ipRegion });
+  expect(stored.ipRegion).toBe(ipRegion);
 });

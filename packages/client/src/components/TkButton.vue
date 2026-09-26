@@ -182,7 +182,7 @@ function handleClick(evt: MouseEvent): void {
 /*
  * 相邻按钮间距：1.x element-ui 里是 `.el-button + .el-button { margin-left: 10px }`，
  * 这里取与本组件 `.tk-meta-input .tk-input + .tk-input` 一致的 0.5rem，保持站内统一。
- * （`.tk-row.actions` 是 flex，元素间的模板空白本来就被忽略，间距只能靠 margin 给。）
+ * flex 按钮组不保留模板空白，间距由相邻按钮的 margin 提供。
  */
 .twikoo .tk-button + .tk-button {
   margin-left: 0.5rem;

@@ -12,91 +12,91 @@
 -->
 <template>
   <div ref="tkSubmitRef" class="tk-submit tk-fade-in">
-    <div class="tk-row">
-      <TkAvatar :config="config" :mail="mail" :nick="nick" />
-      <div class="tk-col">
-        <TkMetaInput
-          :nick="nick"
-          :mail="mail"
-          :link="link"
-          :config="config"
-          @update="onMetaUpdate"
-        />
-        <TkInput
-          ref="textareaRef"
-          v-model="comment"
-          class="tk-input"
-          type="textarea"
-          :placeholder="commentPlaceholder"
-          :autosize="{ minRows: 3 }"
-          :maxlength="maxLength"
-          show-word-limit
-          @input="onCommentInput"
-          @keyup="onKeyup"
-        />
-      </div>
-    </div>
-    <div class="tk-row actions">
-      <div class="tk-row-actions-start">
-        <!-- 表情按钮：首屏先渲染图标，随后由 OwO 面板以同样的 logo 接管容器内容 -->
-        <!-- 图标为构建期内联的 fontawesome 官方 SVG，非运行时用户数据 -->
-        <!-- eslint-disable vue/no-v-html -->
-        <div
-          v-show="config.SHOW_EMOTION === 'true'"
-          ref="owoRef"
-          v-clickoutside="closeOwo"
-          class="tk-submit-action-icon OwO"
-          v-html="emotionIcon"
-        ></div>
-        <!-- eslint-enable vue/no-v-html -->
-        <div v-show="showImage" class="tk-submit-action-icon" @click="openSelectImage">
-          <TkIcon name="image-regular" />
+    <TkAvatar :config="config" :mail="mail" :nick="nick" />
+    <div class="tk-submit-main">
+      <TkMetaInput
+        :nick="nick"
+        :mail="mail"
+        :link="link"
+        :config="config"
+        @update="onMetaUpdate"
+      />
+      <TkInput
+        ref="textareaRef"
+        v-model="comment"
+        class="tk-input"
+        type="textarea"
+        :placeholder="commentPlaceholder"
+        :autosize="{ minRows: 3 }"
+        :maxlength="maxLength"
+        show-word-limit
+        @input="onCommentInput"
+        @keyup="onKeyup"
+      />
+      <div class="tk-submit-actions">
+        <div class="tk-submit-tools">
+          <!-- 表情按钮：首屏先渲染图标，随后由 OwO 面板以同样的 logo 接管容器内容 -->
+          <!-- 图标为构建期内联的 fontawesome 官方 SVG，非运行时用户数据 -->
+          <!-- eslint-disable vue/no-v-html -->
+          <div
+            v-show="config.SHOW_EMOTION === 'true'"
+            ref="owoRef"
+            v-clickoutside="closeOwo"
+            class="tk-submit-action-icon OwO"
+            v-html="emotionIcon"
+          ></div>
+          <!-- eslint-enable vue/no-v-html -->
+          <div v-show="showImage" class="tk-submit-action-icon" @click="openSelectImage">
+            <TkIcon name="image-regular" />
+          </div>
+          <input
+            ref="inputFileRef"
+            class="tk-input-image"
+            type="file"
+            accept="image/*"
+            value=""
+            @change="onSelectImage"
+          />
+          <a
+            class="tk-submit-action-icon __markdown"
+            alt="Markdown is supported"
+            href="https://guides.github.com/features/mastering-markdown/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <TkIcon name="markdown" />
+          </a>
         </div>
-        <input
-          ref="inputFileRef"
-          class="tk-input-image"
-          type="file"
-          accept="image/*"
-          value=""
-          @change="onSelectImage"
-        />
+        <div class="tk-submit-buttons">
+          <TkButton v-if="!!replyId" class="tk-cancel" size="small" @click="cancel">
+            {{ t("SUBMIT_CANCEL") }}
+          </TkButton>
+          <TkButton class="tk-preview" size="small" @click="preview">{{
+            t("SUBMIT_PREVIEW")
+          }}</TkButton>
+          <TkButton class="tk-send" type="primary" size="small" :disabled="!canSend" @click="send">
+            {{ isSending ? t("SUBMIT_SENDING") : t("SUBMIT_SEND") }}
+          </TkButton>
+        </div>
+        <div
+          v-show="captchaProvider === 'Turnstile'"
+          ref="turnstileContainerRef"
+          class="tk-turnstile-container"
+        >
+          <div ref="turnstileRef" class="tk-turnstile"></div>
+        </div>
+        <div
+          v-show="captchaProvider === 'Geetest'"
+          ref="geetestContainerRef"
+          class="tk-geetest-container"
+        ></div>
+        <div v-show="captchaProvider === 'Cap'" ref="capContainerRef" class="tk-cap-container"></div>
       </div>
-      <a
-        class="tk-submit-action-icon __markdown"
-        alt="Markdown is supported"
-        href="https://guides.github.com/features/mastering-markdown/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <TkIcon name="markdown" />
-      </a>
-      <TkButton v-if="!!replyId" class="tk-cancel" size="small" @click="cancel">
-        {{ t("SUBMIT_CANCEL") }}
-      </TkButton>
-      <TkButton class="tk-preview" size="small" @click="preview">{{
-        t("SUBMIT_PREVIEW")
-      }}</TkButton>
-      <TkButton class="tk-send" type="primary" size="small" :disabled="!canSend" @click="send">
-        {{ isSending ? t("SUBMIT_SENDING") : t("SUBMIT_SEND") }}
-      </TkButton>
-      <div
-        v-show="captchaProvider === 'Turnstile'"
-        ref="turnstileContainerRef"
-        class="tk-turnstile-container"
-      >
-        <div ref="turnstileRef" class="tk-turnstile"></div>
+      <div v-if="isPreviewing" ref="commentPreviewRef" class="tk-preview-container">
+        <!-- 预览内容经 sanitizeHtml 消毒 -->
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <div v-html="commentHtml"></div>
       </div>
-      <div
-        v-show="captchaProvider === 'Geetest'"
-        ref="geetestContainerRef"
-        class="tk-geetest-container"
-      ></div>
-      <div v-show="captchaProvider === 'Cap'" ref="capContainerRef" class="tk-cap-container"></div>
-    </div>
-    <div v-if="isPreviewing" ref="commentPreviewRef" class="tk-preview-container">
-      <!-- 预览内容经 sanitizeHtml 消毒 -->
-      <!-- eslint-disable-next-line vue/no-v-html -->
-      <div v-html="commentHtml"></div>
     </div>
   </div>
 </template>
@@ -993,28 +993,36 @@ onUnmounted(() => {
 <style>
 .twikoo .tk-submit {
   display: flex;
-  flex-direction: column;
+  align-items: flex-start;
 }
-.twikoo .tk-col {
+.twikoo .tk-submit-main {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
 }
-.twikoo .tk-meta-input {
+.twikoo .tk-submit-main > .tk-meta-input {
   margin-bottom: 0.5rem;
 }
-.twikoo .tk-row.actions {
+.twikoo .tk-submit-actions {
   position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
-  margin-left: 3.5rem;
   align-items: center;
-  justify-content: flex-end;
 }
-.twikoo .tk-row-actions-start {
-  flex: 1;
+.twikoo .tk-submit-tools {
   display: flex;
   align-items: center;
+}
+.twikoo .tk-submit-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  row-gap: 0.5rem;
+  margin-left: auto;
 }
 .twikoo .tk-submit-action-icon {
   align-self: center;
@@ -1066,7 +1074,6 @@ onUnmounted(() => {
   flex-direction: column;
 }
 .twikoo .tk-preview-container {
-  margin-left: 3rem;
   margin-bottom: 1rem;
   padding: 5px 15px;
   border: 1px solid rgba(128, 128, 128, 0.31);

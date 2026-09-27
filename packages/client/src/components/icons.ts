@@ -17,6 +17,10 @@
  * - 图标文件与 1.x 完全同源（1.x 直接 `import ... from '@fortawesome/.../x.svg'`），
  *   因此视觉表现与 1.x 一致。
  */
+import eye from "@fortawesome/fontawesome-free/svgs/solid/eye.svg?raw";
+import eyeSlash from "@fortawesome/fontawesome-free/svgs/solid/eye-slash.svg?raw";
+import thumbtack from "@fortawesome/fontawesome-free/svgs/solid/thumbtack.svg?raw";
+import thumbtackSlash from "@fortawesome/fontawesome-free/svgs/solid/thumbtack-slash.svg?raw";
 import circleCheck from "@fortawesome/fontawesome-free/svgs/solid/circle-check.svg?raw";
 import circleExclamation from "@fortawesome/fontawesome-free/svgs/solid/circle-exclamation.svg?raw";
 import circleXmark from "@fortawesome/fontawesome-free/svgs/solid/circle-xmark.svg?raw";
@@ -61,6 +65,10 @@ import windows from "@fortawesome/fontawesome-free/svgs/brands/windows.svg?raw";
 
 /** 图标名 → SVG 内容（fontawesome 官方文件的原始字符串） */
 export const ICONS: Record<string, string> = {
+  eye,
+  "eye-slash": eyeSlash,
+  thumbtack,
+  "thumbtack-slash": thumbtackSlash,
   "circle-check": circleCheck,
   "circle-exclamation": circleExclamation,
   "circle-xmark": circleXmark,

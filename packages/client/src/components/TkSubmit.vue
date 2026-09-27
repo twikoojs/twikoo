@@ -22,6 +22,11 @@
           :config="config"
           @update="onMetaUpdate"
         />
+        <div class="tk-editor-toolbar">
+          <TkButton class="tk-preview" size="small" :aria-pressed="isPreviewing" @click="preview">
+            {{ t("SUBMIT_PREVIEW") }}
+          </TkButton>
+        </div>
         <TkInput
           ref="textareaRef"
           v-model="comment"
@@ -73,9 +78,6 @@
       <TkButton v-if="!!replyId" class="tk-cancel" size="small" @click="cancel">
         {{ t("SUBMIT_CANCEL") }}
       </TkButton>
-      <TkButton class="tk-preview" size="small" @click="preview">{{
-        t("SUBMIT_PREVIEW")
-      }}</TkButton>
       <TkButton class="tk-send" type="primary" size="small" :disabled="!canSend" @click="send">
         {{ isSending ? t("SUBMIT_SENDING") : t("SUBMIT_SEND") }}
       </TkButton>
@@ -1045,6 +1047,11 @@ onUnmounted(() => {
 }
 .twikoo .tk-input-image {
   display: none;
+}
+.twikoo .tk-editor-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.35em;
 }
 .twikoo .tk-input {
   flex: 1;

@@ -48,17 +48,41 @@
             <time :datetime="jsonTimestamp" :title="localeTime">{{ displayCreated }}</time>
           </small>
           <small v-if="isLogin" class="tk-actions">
-            <button v-if="localSpam" @click="handleSpam(false)">
-              {{ t("ADMIN_COMMENT_SHOW") }}
+            <button
+              v-if="localSpam"
+              type="button"
+              :aria-label="t('ADMIN_COMMENT_SHOW')"
+              :title="t('ADMIN_COMMENT_SHOW')"
+              @click="handleSpam(false)"
+            >
+              <TkIcon name="eye" aria-hidden="true" />
             </button>
-            <button v-if="!localSpam" @click="handleSpam(true)">
-              {{ t("ADMIN_COMMENT_HIDE") }}
+            <button
+              v-if="!localSpam"
+              type="button"
+              :aria-label="t('ADMIN_COMMENT_HIDE')"
+              :title="t('ADMIN_COMMENT_HIDE')"
+              @click="handleSpam(true)"
+            >
+              <TkIcon name="eye-slash" aria-hidden="true" />
             </button>
-            <button v-if="!comment.rid && localTop" @click="handleTop(false)">
-              {{ t("ADMIN_COMMENT_UNTOP") }}
+            <button
+              v-if="!comment.rid && localTop"
+              type="button"
+              :aria-label="t('ADMIN_COMMENT_UNTOP')"
+              :title="t('ADMIN_COMMENT_UNTOP')"
+              @click="handleTop(false)"
+            >
+              <TkIcon name="thumbtack-slash" aria-hidden="true" />
             </button>
-            <button v-if="!comment.rid && !localTop" @click="handleTop(true)">
-              {{ t("ADMIN_COMMENT_TOP") }}
+            <button
+              v-if="!comment.rid && !localTop"
+              type="button"
+              :aria-label="t('ADMIN_COMMENT_TOP')"
+              :title="t('ADMIN_COMMENT_TOP')"
+              @click="handleTop(true)"
+            >
+              <TkIcon name="thumbtack" aria-hidden="true" />
             </button>
           </small>
         </div>
@@ -578,22 +602,23 @@ onMounted(() => {
   color: #409eff;
 }
 .twikoo .tk-actions {
-  display: none;
+  display: inline-flex;
   margin-left: 1em;
 }
 .twikoo .tk-actions button {
   appearance: none;
   background: none;
   border: none;
-  padding: 0;
+  padding: 0.35em;
   margin: 0;
   text-decoration: none;
-  display: inline;
-  color: #409eff;
+  display: inline-flex;
+  color: currentColor;
   cursor: pointer;
 }
-.twikoo .tk-comment:hover .tk-actions {
-  display: inline;
+.twikoo .tk-actions button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 /*
  * 间距补丁：1.x 的昵称 / tag / 时间、以及悬停出现的管理按钮之间，都靠模板里的

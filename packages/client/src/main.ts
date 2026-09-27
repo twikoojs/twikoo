@@ -1,6 +1,6 @@
 /**
  * twikoo 客户端公共 API（init / getCommentsCount / getRecentComments /
- * getVisitorsCount / version 五个公开接口不变；version 读 @twikoojs/shared，
+ * getVisitorsCount / version 接口保持兼容，新增 destroy；version 读 @twikoojs/shared，
  * 硬编码 `version.js` 删除）。
  *
  * 双入口形态（与 1.x `main.js` / `main.all.js` 对应）：
@@ -12,7 +12,7 @@
  */
 import { VERSION } from "@twikoojs/shared";
 import { install, type TcbInstance } from "./utils/tcb";
-import { render } from "./render";
+import { render, unmount } from "./render";
 import {
   logger,
   loadLanguage,
@@ -79,15 +79,27 @@ async function initTcbIfNeeded(options: TwikooOptions): Promise<TcbInstance> {
   return await install(cloudbase, options);
 }
 
+/** 初始化代次：销毁或新初始化使旧异步流程失效。 */
+let initialization = 0;
+
+/** 同步销毁评论区，并阻止尚未完成的初始化重新挂载。 */
+export function destroy(): void {
+  initialization += 1;
+  unmount();
+}
+
 /**
  * 初始化评论区（公开 API）。
  * @param options 前端选项
  */
 export async function init(options: TwikooOptions = {}): Promise<void> {
+  const generation = ++initialization;
   const tcb = await initTcbIfNeeded(options);
+  if (generation !== initialization) return;
   // 先按需加载语言分片再挂载：失败回退英文、绝不阻塞渲染，
   // 因此在挂载前 await 即可，组件渲染时语言已就位，无需「加载后重渲染」。
   await loadLanguage({ lang: options.lang, localeBaseUrl: options.localeBaseUrl });
+  if (generation !== initialization) return;
   render(tcb, options);
   await updateVisitorsCount(tcb, options);
 }

@@ -17,6 +17,13 @@ import "./lib/owo.css";
 /** 应用实例缓存（重复 init 时先卸载） */
 let app: VueApp | null = null;
 
+/** 卸载并清空缓存实例；重复调用安全。 */
+export function unmount(): void {
+  const current = app;
+  app = null;
+  current?.unmount();
+}
+
 /**
  * 渲染评论区（`createApp(App).mount(el)`；全局属性 $tcb/$twikoo 注入）。
  * @param tcb 云开发实例
@@ -24,10 +31,7 @@ let app: VueApp | null = null;
  * @returns 应用实例
  */
 export function render(tcb: unknown, options: Record<string, unknown> = {}): VueApp {
-  if (app) {
-    app.unmount();
-    app = null;
-  }
+  unmount();
   app = createApp(TwikooApp);
   // Vue2 Vue.prototype 全局属性 → Vue3 app.config.globalProperties
   app.config.globalProperties.$tcb = tcb;

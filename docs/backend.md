@@ -8,7 +8,7 @@
 | [Railway 部署](#railway-部署) | ★★☆☆☆ | 有免费额度但不足以支持一个月连续运行，部署简单，适合全球访问。 |
 | [Zeabur 部署](#zeabur-部署) | ★☆☆☆☆ | 需要绑定支付宝或信用卡，部署简单，适合中国大陆访问，免费计划环境随时可能会被删除。 |
 | [Netlify 部署](#netlify-部署) | ★★★★☆ | 有充足的免费额度，中国大陆访问速度不错。 |
-| [Hugging Face 部署](#hugging-face-部署) | ★★★☆☆ | 免费，中国大陆访问速度不错。允许通过 Cloudflare Tunnels 自定义域名。 |
+| [Hugging Face 部署](#hugging-face-部署) | ★★★☆☆ | **需要付费方案（PRO，$9/月）**：2026 年 7 月起，免费账号无法创建 Docker Space（Docker SDK 在控制台标为 Paid 且不可选）。中国大陆访问速度不错，允许通过 Cloudflare Tunnels 自定义域名。 |
 | [AWS Lambda 部署](#aws-lambda-部署) | ★★★☆☆ | 全球最大的云平台，适合已经使用 AWS 全家桶的用户。 |
 | [Cloudflare workers 部署](#cloudflare-workers-部署) | ★★☆☆☆ | 部署需使用命令行，冷启动时间较短。支持 D1 / MongoDB、SMTP、DOMPurify 与 AI；Akismet、腾讯云内容审核仍关闭。适配器在 [packages/server-cloudflare](https://github.com/twikoojs/twikoo/tree/main/packages/server-cloudflare)。 |
 | [EdgeOne Makers 部署](#edgeone-makers-部署) | ★★☆☆☆ | 腾讯云 EdgeOne Makers 的函数部署，网页控制台上传 ZIP 即可，无需命令行。**必须绑定自定义域名**（默认域名链接仅 3 小时有效）。功能受限：邮件仅支持部分通道，无垃圾评论检测与 AI 功能。 |
@@ -208,6 +208,14 @@ Netlify 免费等级（Functions Level 0）支持每月 125,000 请求次数和 
 9. 云函数地址（包含 `https://` 前缀和 `/.netlify/functions/twikoo` 后缀，例如 `https://xxx.netlify.app/.netlify/functions/twikoo`）即为您的环境 id
 
 ## Hugging Face 部署
+
+::: warning 前提：需要付费方案（PRO，$9/月）
+2026 年 7 月起，Hugging Face **不再允许免费账号创建 Docker Space** —— 创建 Space 时 Docker SDK 会显示「Paid」徽章且无法选中（Static 与 Gradio 仍免费，但都跑不了 Twikoo）。需订阅 [PRO](https://huggingface.co/subscribe/pro)，或使用 Team / Enterprise 方案的组织账号。
+
+官方依据：[Spaces 概览](https://huggingface.co/docs/hub/spaces-overview)「Creating Gradio and Docker Spaces (anything that runs on compute, including CPU Basic) requires a paid plan」；文档变更见 [hub-docs PR #2624](https://github.com/huggingface/hub-docs/pull/2624)（2026-07-21 合并）。
+
+**2026 年 7 月之前创建的 Docker Space 不受影响**，仍可正常使用与更新（见[更新方式](./update.md#针对-hugging-face-部署的更新方式)）。
+:::
 
 ::: warning 注意
 Hugging Face 部署的环境，由于默认的邮件端口被屏蔽，无法使用邮件功能。详见 [twikoo/issues/638](https://github.com/twikoojs/twikoo/issues/638)

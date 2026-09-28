@@ -1,5 +1,6 @@
 {
   "ADMIN_CLIENT_VERSION": "クライアントバージョン：",
+  "ADMIN_CLOSE": "管理パネルを閉じる",
   "ADMIN_SERVER_VERSION": "サーバーサイドバージョン: ",
   "ADMIN_COMMENT": "コメント管理",
   "ADMIN_COMMENT_DELETE": "削除",
@@ -195,6 +196,8 @@
   "PAGINATION_PAGESIZE": "件/ページ",
   "SUBMIT_CANCEL": "キャンセル",
   "SUBMIT_PREVIEW": "プレビュー",
+  "SUBMIT_EDIT": "編集",
+  "SUBMIT_PREVIEW_EMPTY": "プレビューする内容がありません。",
   "SUBMIT_SEND": "送信",
   "IMAGE_UPLOAD_PLACEHOLDER": "画像のアップロード中",
   "IMAGE_UPLOAD_FAILED": "画像のアップロード失敗",

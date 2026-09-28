@@ -7,7 +7,14 @@
 <template>
   <div class="tk-admin-container">
     <div v-loading="loading" class="tk-admin" :class="{ __show: show }">
-      <button class="tk-admin-close" @click="onClose">
+      <button
+        v-if="!isLogin"
+        type="button"
+        class="tk-admin-close"
+        :aria-label="t('ADMIN_CLOSE')"
+        :title="t('ADMIN_CLOSE')"
+        @click="onClose"
+      >
         <TkIcon name="times" />
       </button>
       <div v-if="needUpdate" class="tk-login-title">
@@ -84,9 +91,26 @@
         <div v-if="isLogin" class="tk-panel">
           <div class="tk-panel-title">
             <div>{{ t("ADMIN_TITLE") }}</div>
-            <a class="tk-panel-logout" href="#" @click.prevent="onLogout">{{
-              t("ADMIN_LOGOUT")
-            }}</a>
+            <div class="tk-panel-header-actions">
+              <button
+                type="button"
+                class="tk-panel-logout"
+                :aria-label="t('ADMIN_LOGOUT')"
+                :title="t('ADMIN_LOGOUT')"
+                @click="onLogout"
+              >
+                <TkIcon name="log-out" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                class="tk-admin-close"
+                :aria-label="t('ADMIN_CLOSE')"
+                :title="t('ADMIN_CLOSE')"
+                @click="onClose"
+              >
+                <TkIcon name="times" aria-hidden="true" />
+              </button>
+            </div>
           </div>
           <div class="tk-tabs">
             <div

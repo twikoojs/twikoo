@@ -1,5 +1,6 @@
 {
   "ADMIN_CLIENT_VERSION": "Client version: ",
+  "ADMIN_CLOSE": "Close admin panel",
   "ADMIN_SERVER_VERSION": "Server version: ",
   "ADMIN_COMMENT": "Comment",
   "ADMIN_COMMENT_DELETE": "Delete",
@@ -195,6 +196,8 @@
   "PAGINATION_PAGESIZE": "entries/page",
   "SUBMIT_CANCEL": "Cancel",
   "SUBMIT_PREVIEW": "Preview",
+  "SUBMIT_EDIT": "Edit",
+  "SUBMIT_PREVIEW_EMPTY": "Nothing to preview yet.",
   "SUBMIT_SEND": "Send",
   "IMAGE_UPLOAD_PLACEHOLDER": "Uploading image",
   "IMAGE_UPLOAD_FAILED": "IMAGE UPLOAD FAILED",

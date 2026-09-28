@@ -1,5 +1,6 @@
 {
   "ADMIN_CLIENT_VERSION": "Versi klien: ",
+  "ADMIN_CLOSE": "Tutup panel admin",
   "ADMIN_SERVER_VERSION": "Versi server: ",
   "ADMIN_COMMENT": "Manajemen Komentar",
   "ADMIN_COMMENT_DELETE": "Hapus",
@@ -195,6 +196,8 @@
   "PAGINATION_PAGESIZE": "entri/halaman",
   "SUBMIT_CANCEL": "Batal",
   "SUBMIT_PREVIEW": "Pratinjau",
+  "SUBMIT_EDIT": "Edit",
+  "SUBMIT_PREVIEW_EMPTY": "Belum ada konten untuk dipratinjau.",
   "SUBMIT_SEND": "Kirim",
   "IMAGE_UPLOAD_PLACEHOLDER": "Mengunggah gambar",
   "IMAGE_UPLOAD_FAILED": "UNGGAH GAMBAR GAGAL",

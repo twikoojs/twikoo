@@ -153,16 +153,44 @@ describe("TkSubmit", () => {
 
   it("预览：marked 渲染 + 消毒", async () => {
     useFakeTcb();
-    const wrapper = mount(TkSubmit, { props: { config: {} } });
+    const wrapper = mount(TkSubmit, { attachTo: document.body, props: { config: {} } });
     await flushPromises();
     await wrapper.find("textarea").setValue("**加粗预览**");
-    expect(wrapper.find(".tk-editor-toolbar .tk-preview").exists()).toBe(true);
-    expect(wrapper.find(".tk-preview").attributes("aria-pressed")).toBe("false");
-    await wrapper.find(".tk-preview").trigger("click");
-    expect(wrapper.find(".tk-preview").attributes("aria-pressed")).toBe("true");
+    expect(wrapper.findAll(".tk-editor-toolbar button")).toHaveLength(1);
+    expect(wrapper.find(".tk-preview-toggle").attributes("aria-label")).toBe(t("SUBMIT_PREVIEW"));
+    await wrapper.find(".tk-preview-toggle").trigger("click");
+    expect(wrapper.find(".tk-preview-toggle").attributes("aria-label")).toBe(t("SUBMIT_EDIT"));
     await flushPromises();
     expect(wrapper.find(".tk-preview-container").exists()).toBe(true);
     expect(wrapper.find(".tk-preview-container").html()).toContain("<strong>加粗预览</strong>");
+    expect(wrapper.find("textarea").isVisible()).toBe(false);
+    expect(wrapper.find(".tk-editor .tk-preview-container").exists()).toBe(true);
+    await wrapper.find(".tk-preview-toggle").trigger("click");
+    expect(wrapper.find("textarea").isVisible()).toBe(true);
+    expect(wrapper.find(".tk-preview-container").exists()).toBe(false);
+    expect((wrapper.find("textarea").element as HTMLTextAreaElement).value).toBe("**加粗预览**");
+    expect(wrapper.find(".tk-preview-toggle").attributes("aria-label")).toBe(t("SUBMIT_PREVIEW"));
+    wrapper.unmount();
+  });
+
+  it("预览保留选区，返回编辑恢复焦点，并提示空草稿", async () => {
+    useFakeTcb();
+    const wrapper = mount(TkSubmit, { attachTo: document.body, props: { config: {} } });
+    await flushPromises();
+    await wrapper.find(".tk-preview-toggle").trigger("click");
+    expect(wrapper.find(".tk-preview-empty").text()).toBe(t("SUBMIT_PREVIEW_EMPTY"));
+    await wrapper.find(".tk-preview-toggle").trigger("click");
+    const input = wrapper.find("textarea");
+    await input.setValue("hello **world**");
+    input.element.focus();
+    input.element.setSelectionRange(2, 5);
+    await wrapper.find(".tk-preview-toggle").trigger("click");
+    await wrapper.find(".tk-preview-toggle").trigger("click");
+    await flushPromises();
+    expect(document.activeElement).toBe(input.element);
+    expect(input.element.selectionStart).toBe(2);
+    expect(input.element.selectionEnd).toBe(5);
+    wrapper.unmount();
   });
 
   it("提交前回调：onSubmit 可原地修改待发送字段", async () => {

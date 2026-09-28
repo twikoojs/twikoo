@@ -1,5 +1,6 @@
 {
   "ADMIN_CLIENT_VERSION": "前端版本：",
+  "ADMIN_CLOSE": "關閉管理面板",
   "ADMIN_SERVER_VERSION": "云函數版本：",
   "ADMIN_COMMENT": "評論管理",
   "ADMIN_COMMENT_DELETE": "刪除",
@@ -195,6 +196,8 @@
   "PAGINATION_PAGESIZE": "條/頁",
   "SUBMIT_CANCEL": "取消",
   "SUBMIT_PREVIEW": "預覽",
+  "SUBMIT_EDIT": "編輯",
+  "SUBMIT_PREVIEW_EMPTY": "暫無預覽內容。",
   "SUBMIT_SEND": "發送",
   "IMAGE_UPLOAD_PLACEHOLDER": "圖片上傳中",
   "IMAGE_UPLOAD_FAILED": "圖片上傳失敗",

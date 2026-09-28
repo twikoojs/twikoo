@@ -1,5 +1,6 @@
 {
   "ADMIN_CLIENT_VERSION": "Phiên bản client: ",
+  "ADMIN_CLOSE": "Đóng bảng quản trị",
   "ADMIN_SERVER_VERSION": "Phiên bản cloud function: ",
   "ADMIN_COMMENT": "Quản lý bình luận",
   "ADMIN_COMMENT_DELETE": "Xóa",
@@ -195,6 +196,8 @@
   "PAGINATION_PAGESIZE": "mục/trang",
   "SUBMIT_CANCEL": "Hủy",
   "SUBMIT_PREVIEW": "Xem trước",
+  "SUBMIT_EDIT": "Chỉnh sửa",
+  "SUBMIT_PREVIEW_EMPTY": "Chưa có nội dung để xem trước.",
   "SUBMIT_SEND": "Gửi",
   "IMAGE_UPLOAD_PLACEHOLDER": "Đang tải ảnh lên",
   "IMAGE_UPLOAD_FAILED": "TẢI ẢNH THẤT BẠI",

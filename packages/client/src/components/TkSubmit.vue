@@ -22,23 +22,49 @@
           :config="config"
           @update="onMetaUpdate"
         />
-        <div class="tk-editor-toolbar">
-          <TkButton class="tk-preview" size="small" :aria-pressed="isPreviewing" @click="preview">
-            {{ t("SUBMIT_PREVIEW") }}
-          </TkButton>
+        <div class="tk-editor" :class="{ 'tk-editor--preview': isPreviewing }">
+          <div class="tk-editor-toolbar">
+            <button
+              type="button"
+              class="tk-preview-toggle"
+              :aria-label="t(isPreviewing ? 'SUBMIT_EDIT' : 'SUBMIT_PREVIEW')"
+              :title="t(isPreviewing ? 'SUBMIT_EDIT' : 'SUBMIT_PREVIEW')"
+              @click="setPreview(!isPreviewing)"
+            >
+              <span :key="String(isPreviewing)" class="tk-editor-swap" aria-hidden="true">
+                <TkIcon :name="isPreviewing ? 'pen' : 'eye'" />
+              </span>
+            </button>
+            <span v-if="maxLength && comment.length" class="tk-input__count"
+              >{{ comment.length }}/{{ maxLength }}</span
+            >
+          </div>
+          <TkInput
+            v-show="!isPreviewing"
+            ref="textareaRef"
+            v-model="comment"
+            class="tk-input"
+            type="textarea"
+            :placeholder="commentPlaceholder"
+            :autosize="{ minRows: 3 }"
+            :maxlength="maxLength"
+            @input="onCommentInput"
+            @keyup="onKeyup"
+          />
+          <div
+            v-if="isPreviewing"
+            class="tk-preview-container"
+            :style="{ minHeight: previewHeight }"
+            :aria-label="t('SUBMIT_PREVIEW')"
+            tabindex="0"
+            @keyup="onKeyup"
+          >
+            <!-- 预览内容经 sanitizeHtml 消毒 -->
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <div ref="previewRef" v-html="commentHtml"></div>
+            <p v-if="!comment.trim()" class="tk-preview-empty">{{ t("SUBMIT_PREVIEW_EMPTY") }}</p>
+          </div>
         </div>
-        <TkInput
-          ref="textareaRef"
-          v-model="comment"
-          class="tk-input"
-          type="textarea"
-          :placeholder="commentPlaceholder"
-          :autosize="{ minRows: 3 }"
-          :maxlength="maxLength"
-          show-word-limit
-          @input="onCommentInput"
-          @keyup="onKeyup"
-        />
       </div>
     </div>
     <div class="tk-row actions">
@@ -94,11 +120,6 @@
         class="tk-geetest-container"
       ></div>
       <div v-show="captchaProvider === 'Cap'" ref="capContainerRef" class="tk-cap-container"></div>
-    </div>
-    <div v-if="isPreviewing" ref="commentPreviewRef" class="tk-preview-container">
-      <!-- 预览内容经 sanitizeHtml 消毒 -->
-      <!-- eslint-disable-next-line vue/no-v-html -->
-      <div v-html="commentHtml"></div>
     </div>
   </div>
 </template>
@@ -179,6 +200,10 @@ const emit = defineEmits<{
 const isSending = ref(false);
 /** 是否处于预览态 */
 const isPreviewing = ref(false);
+/** 切换前输入框高度，避免预览时面板收缩 */
+const previewHeight = ref<string>();
+/** 编辑选区在预览期间保留 */
+let editorSelection: [number, number] = [0, 0];
 /** meta 是否校验通过 */
 const isMetaValid = ref(false);
 /** 提交错误（统一错误模型）*/
@@ -614,11 +639,26 @@ function onCommentInput(): void {
   updatePreview();
 }
 
-/** 切换预览态（1.x preview 对齐） */
-function preview(): void {
-  isPreviewing.value = !isPreviewing.value;
+/** 切换同一编辑面板的显示模式，并恢复编辑选区 */
+function setPreview(value: boolean): void {
+  if (value === isPreviewing.value) return;
+  const el = textarea.value;
+  if (value && el) {
+    editorSelection = [el.selectionStart, el.selectionEnd];
+    previewHeight.value = `${el.getBoundingClientRect().height}px`;
+    closeOwo();
+  }
+  isPreviewing.value = value;
   updatePreview();
+  if (!value)
+    void nextTick(() => {
+      el?.focus();
+      el?.setSelectionRange(...editorSelection);
+    });
 }
+
+// 上传完成或表情插入也会修改草稿，预览需要同步更新。
+watch(comment, updatePreview);
 
 /** 刷新预览 HTML（marked → 消毒 → DOM 后处理；1.x updatePreview 对齐） */
 function updatePreview(): void {
@@ -1050,8 +1090,77 @@ onUnmounted(() => {
 }
 .twikoo .tk-editor-toolbar {
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 0.35em;
+  align-items: center;
+  gap: 8px;
+  position: absolute;
+  bottom: 4px;
+  right: 16px;
+  z-index: 1;
+}
+.twikoo .tk-editor-toolbar .tk-input__count {
+  position: static;
+}
+.twikoo .tk-editor {
+  position: relative;
+}
+.twikoo .tk-preview-toggle {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: currentColor;
+  cursor: pointer;
+  opacity: 0.55;
+}
+.twikoo .tk-preview-toggle:hover,
+.twikoo .tk-preview-toggle:focus-visible {
+  background: rgba(128, 128, 128, 0.1);
+  opacity: 1;
+}
+.twikoo .tk-preview-toggle:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+.twikoo .tk-editor-swap {
+  display: grid;
+  place-items: center;
+  animation: tkEditorSwap 150ms ease-out;
+}
+@keyframes tkEditorSwap {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.twikoo .tk-editor .tk-textarea__inner,
+.twikoo .tk-editor .tk-preview-container {
+  padding: 10px 12px 40px;
+  min-height: 140px;
+  box-sizing: border-box;
+}
+@media (max-width: 767px) {
+  .twikoo .tk-preview-toggle {
+    width: 44px;
+    height: 44px;
+  }
+  .twikoo .tk-editor .tk-textarea__inner,
+  .twikoo .tk-editor .tk-preview-container {
+    padding-bottom: 56px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .twikoo .tk-editor-swap {
+    animation: none;
+  }
 }
 .twikoo .tk-input {
   flex: 1;
@@ -1073,12 +1182,20 @@ onUnmounted(() => {
   flex-direction: column;
 }
 .twikoo .tk-preview-container {
-  margin-left: 3rem;
-  margin-bottom: 1rem;
-  padding: 5px 15px;
+  position: relative;
+  width: 100%;
   border: 1px solid rgba(128, 128, 128, 0.31);
   border-radius: 4px;
   word-break: break-word;
+}
+.twikoo .tk-preview-empty {
+  opacity: 0.55;
+}
+.twikoo .tk-preview-container img {
+  max-width: 100%;
+}
+.twikoo .tk-preview-container pre {
+  overflow-x: auto;
 }
 .twikoo .tk-fade-in {
   animation: tkFadeIn 0.3s;

@@ -1,5 +1,6 @@
 {
   "ADMIN_CLIENT_VERSION": "Клиент версияси: ",
+  "ADMIN_CLOSE": "Бошқарув панелини ёпиш",
   "ADMIN_SERVER_VERSION": "Сервернинг версияси: ",
   "ADMIN_COMMENT": "Изоҳ",
   "ADMIN_COMMENT_DELETE": "Ўчирмоқ",
@@ -195,6 +196,8 @@
   "PAGINATION_PAGESIZE": "ёзувлар/саҳифа",
   "SUBMIT_CANCEL": "Бекор қилиш",
   "SUBMIT_PREVIEW": "Кўриб чиқиш",
+  "SUBMIT_EDIT": "Таҳрирлаш",
+  "SUBMIT_PREVIEW_EMPTY": "Кўриб чиқиш учун ҳали матн йўқ.",
   "SUBMIT_SEND": "Юбормоқ",
   "IMAGE_UPLOAD_PLACEHOLDER": "Расм юклаш",
   "IMAGE_UPLOAD_FAILED": "РАСМ ЮКЛАНМАДИ",

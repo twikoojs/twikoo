@@ -81,11 +81,13 @@ describe("TkLoading（组合式）", () => {
 });
 
 describe("TkIcon（组合式，按需 SVG）", () => {
-  it("注册图标：渲染 fontawesome 官方 SVG 内容（按需引入，非字体）", () => {
+  it("注册图标：渲染与博客一致的 Lucide 线条 SVG", () => {
     const wrapper = mount(TkIcon, { props: { name: "heart" } });
-    // 渲染的是内联 <svg>（来自 svgs/solid/heart.svg 原文件）
+    // 操作图标保留 Twikoo 键名，使用 Lucide 的 24px 画布与描边。
     expect(wrapper.find("svg").exists()).toBe(true);
-    expect(wrapper.find("svg").attributes("viewBox")).toBe("0 0 512 512");
+    expect(wrapper.find("svg").attributes("viewBox")).toBe("0 0 24 24");
+    expect(wrapper.find("svg").attributes("fill")).toBe("none");
+    expect(wrapper.find("svg").attributes("stroke")).toBe("currentColor");
   });
 
   it("未注册图标：渲染空并告警", () => {

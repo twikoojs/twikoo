@@ -1,5 +1,6 @@
 {
   "ADMIN_CLIENT_VERSION": "前端版本：",
+  "ADMIN_CLOSE": "关闭管理面板",
   "ADMIN_SERVER_VERSION": "云函数版本：",
   "ADMIN_COMMENT": "评论管理",
   "ADMIN_COMMENT_DELETE": "删除",
@@ -195,6 +196,8 @@
   "PAGINATION_PAGESIZE": "条/页",
   "SUBMIT_CANCEL": "取消",
   "SUBMIT_PREVIEW": "预览",
+  "SUBMIT_EDIT": "编辑",
+  "SUBMIT_PREVIEW_EMPTY": "暂无预览内容。",
   "SUBMIT_SEND": "发送",
   "IMAGE_UPLOAD_PLACEHOLDER": "图片上传中",
   "IMAGE_UPLOAD_FAILED": "图片上传失败",

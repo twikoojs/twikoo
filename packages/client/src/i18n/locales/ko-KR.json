@@ -1,5 +1,6 @@
 {
   "ADMIN_CLIENT_VERSION": "클라이언트 버전: ",
+  "ADMIN_CLOSE": "관리 패널 닫기",
   "ADMIN_SERVER_VERSION": "서버 버전: ",
   "ADMIN_COMMENT": "댓글 관리",
   "ADMIN_COMMENT_DELETE": "삭제",
@@ -195,6 +196,8 @@
   "PAGINATION_PAGESIZE": "개/페이지",
   "SUBMIT_CANCEL": "취소",
   "SUBMIT_PREVIEW": "미리보기",
+  "SUBMIT_EDIT": "편집",
+  "SUBMIT_PREVIEW_EMPTY": "미리 볼 내용이 없습니다.",
   "SUBMIT_SEND": "등록",
   "IMAGE_UPLOAD_PLACEHOLDER": "이미지 업로드 중",
   "IMAGE_UPLOAD_FAILED": "이미지 업로드 실패",

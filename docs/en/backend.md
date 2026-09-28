@@ -2,7 +2,7 @@
 
 | <div style="width: 10em">Deployment option</div> | Rating | Description |
 | ---- | ---- | ---- |
-| Tencent CloudBase | ★★★☆☆ | Deploy to a Tencent CloudBase environment from the console. Fast inside mainland China. **Standard plan or above recommended**: on the free trial and personal plans the cloud function timeout is fixed at 3 seconds, leaving very little headroom for a comment submission. |
+| Tencent CloudBase | ★★★☆☆ | Deploy to a Tencent CloudBase environment from the console. Fast inside mainland China. **Standard plan or above required**: the free plan cannot add a cross-origin domain under HTTP 网关 → 跨域设置 (paid plans only), and the free trial / personal plans pin the cloud function timeout at 3 seconds. |
 | Vercel | ★★★☆☆ | Good free tier. Slower or unreachable from mainland China; bind your own domain to improve speed. |
 | Netlify | ★★★★☆ | Generous free tier and decent speed from mainland China. |
 | AWS Lambda | ★★★☆☆ | Best fit if you already use AWS. |
@@ -13,14 +13,17 @@
 
 ## Tencent CloudBase
 
-::: warning Prerequisite: Standard plan or above recommended
+::: warning Prerequisite: Standard plan or above required
+**The free plan cannot use HTTP 网关 → 跨域设置 → 添加跨域域名** (paid plans only), so step 2 below cannot be completed.
+Without your site domain in the CORS allowlist the comment box cannot call the cloud function, **so deploying Twikoo requires a Standard plan or above**.
+
 On the free trial and personal plans the function **timeout is fixed at 3 seconds and the memory at 256MB, neither changeable** (the console disables the field and shows a `个人版` tag).
 The adapter now loads jsdom / DOMPurify during instance initialisation (see `packages/server-cloudbase/src/prewarm.ts`), so submitting a comment on a cold instance measured about **1.1s** and does fit inside 3 seconds — but the margin is thin (worst observed 1.9s), and heavier operations (comment import, email test) can still time out.
-Standard plan and above allow raising the timeout to 900 seconds.
+Standard plan and above let you add the cross-origin domain and raise the timeout to 900 seconds.
 :::
 
 1. Create a CloudBase environment and enable anonymous sign-in (身份认证 → 配置 → 登录方式 → 允许匿名登入).
-2. Add your site domain under HTTP 网关 → 跨域设置 → 添加跨域域名 (paid plans only).
+2. Add your site domain under HTTP 网关 → 跨域设置 → 添加跨域域名 (**paid plans only — cannot be done on the free plan, see the prerequisite above**).
 3. In 云函数 → 函数管理，open the `⋮` menu to the right of `鉴权设置` and choose `权限控制（legacy）`, then replace the rule with:
 
 ```json

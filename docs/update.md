@@ -31,12 +31,12 @@ CloudBase 请将云函数运行时升级到 **Node 20 及以上（推荐 24）**
 3. 在弹窗中取消勾选 Use existing Build Cache，点击 Redeploy
 4. 部署完成后访问域名，如果环境配置正确，可以看到“Twikoo 云函数运行正常”的提示
 
-## 针对 Railway 和 Zeabur 部署的更新方式
+## 针对 Railway 部署的更新方式
 
 模板仓库 [`twikoojs/twikoo-zeabur`](https://github.com/twikoojs/twikoo-zeabur) 的依赖写的是 `tkserver@latest`，**不需要改版本号**。
 
 1. 登录 Github，找到部署时 fork 到自己账号下的名为 twikoo-zeabur 的仓库，点击 Sync fork 同步上游
-2. 部署会自动触发；如果没有触发、或更新后版本没变，到 Railway / Zeabur 控制台手动重新部署一次
+2. 部署会自动触发；如果没有触发、或更新后版本没变，到 Railway 控制台手动重新部署一次
 
 ::: tip 如果你的 fork 里写的是固定版本号
 把 `package.json` 里的 `"tkserver": "x.x.x"` 改成 `"tkserver": "latest"`，以后就只需要同步 fork 再重新部署。

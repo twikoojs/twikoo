@@ -16,7 +16,7 @@ A **simple**, **safe**, **free** comment system.
 
 ### Simple
 
-- Free Build.(Support CloudBase, Vercel, Netlify, Hugging Face, Railway, Zeabur, Cloudflare Workers, AWS Lambda, EdgeOne Makers, or self-hosted as the commenting backend)
+- Free Build.(Support CloudBase, Vercel, Netlify, Hugging Face, Railway, Cloudflare Workers, AWS Lambda, EdgeOne Makers, or self-hosted as the commenting backend)
 - Simple Deployment.(Vercel one-click deployment, illustrated guides for every platform, plus Docker self-hosting)
 
 ### Easy to use

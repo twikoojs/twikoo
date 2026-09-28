@@ -361,13 +361,15 @@ export async function sendNotice(options: {
 }): Promise<void> {
   const { comment, config, caps, logger, getParentComment } = options;
   if (comment.isSpam && config.NOTIFY_SPAM === "false") return;
-  await Promise.all([
+  // 单路失败也要等其他通知完成：回复通知可能仍需读库，适配器随后才可关闭连接。
+  const results = await Promise.allSettled([
     noticeMaster({ comment, config, caps, logger }),
     noticeReply({ currentComment: comment, config, caps, logger, getParentComment }),
     noticePushoo({ comment, config, logger }),
-  ]).catch((err) => {
-    logger.error("通知异常：", err);
-  });
+  ]);
+  for (const result of results) {
+    if (result.status === "rejected") logger.error("通知异常：", result.reason);
+  }
 }
 
 /**
@@ -383,7 +385,6 @@ export async function emailTest(options: {
   logger: RequestLogger;
 }): Promise<Record<string, unknown>> {
   const { mail, config, isAdminUser, caps, logger } = options;
-  void caps;
   /** 响应体 */
   const res: Record<string, unknown> = {};
   if (!isAdminUser) {

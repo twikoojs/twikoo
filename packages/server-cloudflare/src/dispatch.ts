@@ -1,20 +1,6 @@
 /**
- * POST_SUBMIT 派发（Cloudflare Workers 的 `ctx.waitUntil` 形态）。
- *
- * `COMMENT_SUBMIT` 保存评论后，垃圾检测 + 三路通知这条耗时链**必须移出本次请求的
- * 执行预算**（否则用户提交要等整条链跑完；超时还会让「已入库的评论」报错，用户重试
- * 又产生重复评论）。各平台的移出机制不同（见 `@twikoojs/common` 的
- * `ports/post-submit.ts` 对照表），Cloudflare 这里用的是 **`waitUntil`**：
- *
- * - `waitUntil(promise)` 把 promise 交给 Workers 运行时托管，**响应可以在它完成前返回**，
- *   而运行时保证它继续执行（不计入响应延迟）；
- * - 与 1.x twikoo-cloudflare 的 `Promise.race([postSubmit, 5s 超时])` 相比是**改进**：
- *   1.x 那个 5 秒竞速只是「不等了」，副作用仍挂在本次请求的生命周期上，
- *   Worker 实例被回收时会被掐断；`waitUntil` 才真正给了它独立的执行窗口。
- *
- * 注意仍受 Workers 的平台上限约束：`waitUntil` 最长可把实例续命到 30 秒（且受 CPU
- * 时间限制），因此**慢速外部依赖（Akismet / 腾讯云文本安全）在本适配器里是关闭的**
- * （见 `main.ts` 的能力声明），只留 HTTP 短信道通知与 LLM 之外的轻量检测。
+ * 通过 ctx.waitUntil 托管垃圾检测与通知，避免等待耗时操作或让其失败影响已保存的评论。
+ * 后台执行仍受 Workers 的 30 秒窗口与 CPU 上限约束；MongoDB 收尾必须等待实际任务。
  */
 import { getPostSubmitService } from "@twikoojs/common";
 import type { PostSubmitDispatcher, PipelineContext, TkResponseBody } from "@twikoojs/common";
@@ -62,9 +48,7 @@ export function createCloudflareDispatcher(): PostSubmitDispatcher {
       const executionCtx = (ctx.request.raw as DispatcherRawPayload | undefined)?.executionCtx;
       if (typeof executionCtx?.waitUntil === "function") {
         executionCtx.waitUntil(guarded);
-        return Promise.resolve();
       }
-      void guarded;
       return Promise.resolve();
     },
   };

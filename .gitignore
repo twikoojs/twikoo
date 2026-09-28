@@ -24,3 +24,5 @@ docs/.vitepress/cache/
 
 .workbuddy/
 .workbuddy-ai/
+
+.wrangler

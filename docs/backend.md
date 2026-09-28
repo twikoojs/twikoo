@@ -10,7 +10,7 @@
 | [Netlify 部署](#netlify-部署) | ★★★★☆ | 有充足的免费额度，中国大陆访问速度不错。 |
 | [Hugging Face 部署](#hugging-face-部署) | ★★★☆☆ | 免费，中国大陆访问速度不错。允许通过 Cloudflare Tunnels 自定义域名。 |
 | [AWS Lambda 部署](#aws-lambda-部署) | ★★★☆☆ | 全球最大的云平台，适合已经使用 AWS 全家桶的用户。 |
-| [Cloudflare workers 部署](#cloudflare-workers-部署) | ★★☆☆☆ | 部署需使用命令行，冷启动时间较短，功能有部分限制。2.0 起使用 Cloudflare D1 数据库，适配器在 [packages/server-cloudflare](https://github.com/twikoojs/twikoo/tree/main/packages/server-cloudflare)。 |
+| [Cloudflare workers 部署](#cloudflare-workers-部署) | ★★☆☆☆ | 部署需使用命令行，冷启动时间较短。支持 D1 / MongoDB、SMTP、DOMPurify 与 AI；Akismet、腾讯云内容审核仍关闭。适配器在 [packages/server-cloudflare](https://github.com/twikoojs/twikoo/tree/main/packages/server-cloudflare)。 |
 | [EdgeOne Makers 部署](#edgeone-makers-部署) | ★★☆☆☆ | 腾讯云 EdgeOne Makers 的函数部署，网页控制台上传 ZIP 即可，无需命令行。**必须绑定自定义域名**（默认域名链接仅 3 小时有效）。功能受限：邮件仅支持部分通道，无垃圾评论检测与 AI 功能。 |
 | [私有部署](#私有部署) | ★★☆☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 | [私有部署 (Docker)](#私有部署-docker) | ★★★☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
@@ -285,39 +285,87 @@ lambda_function_url = "https://axtoiiithbcexamplegq7ozalu0cnkii.lambda-url.us-we
 ## Cloudflare workers 部署
 
 ::: warning 注意
-Cloudflare 部署的功能限制：邮件通知仅支持 SendGrid / MailChannels / Resend 三个通道（Workers 无法直连 SMTP）；不支持 Akismet、腾讯云内容审核，也没有 AI 功能；图片上传请使用 S3 兼容图床（Cloudflare R2 支持 S3 协议）。
+Cloudflare 部署仍不支持 Akismet、腾讯云内容审核；图片上传请使用 S3 兼容图床（Cloudflare R2 支持 S3 协议）。支持真实 SMTP，但端口 25 被平台禁止；SendGrid / MailChannels / Resend 的 HTTP 邮件通道仍保留。已接入真实 jsdom + DOMPurify 与 `@xsai/generate-text` AI 检测。
 :::
 
-部署使用 Cloudflare Workers 与 D1 数据库，全程命令行操作。
+部署使用 Cloudflare Workers，数据库可选 D1 或 MongoDB，全程命令行操作。已有本地测试与 workerd 验证覆盖真实 SMTP 协议及 DOMPurify；尚未完成真实云部署与邮件服务商 TLS 验证。
 
 1. 克隆本仓库并构建（需 Node.js 26 与 pnpm）：
 
    ```sh
    pnpm install
-   pnpm build
+   pnpm -r --filter '@twikoojs/cloudflare...' build
    ```
 
-2. 进入适配器目录，登录 Cloudflare 并创建 D1 数据库：
+2. 进入适配器目录并登录 Cloudflare：
 
    ```sh
    cd packages/server-cloudflare
    npx wrangler login
+   ```
+
+3. 在当前包目录创建 `wrangler.toml`：
+
+   ```toml
+   name = "twikoo"
+   main = "dist/index.js"
+   compatibility_date = "2026-09-01"
+   compatibility_flags = ["nodejs_compat"]
+   ```
+
+   必须启用 `nodejs_compat`。上述日期与标志已用于本地 workerd 验证。构建会预打包 jsdom，避免 Wrangler 替换 `whatwg-url`；不要直接部署未构建的 `src/`，也不要将包内 `main` 写成本包的 `node_modules` 路径。
+
+4. 选择数据库：
+
+   **D1（默认）**：先创建数据库：
+
+   ```sh
    npx wrangler d1 create twikoo
    ```
 
-3. 按上一步输出的 `database_name` 与 `database_id` 写好包内 `wrangler.toml`（模板见[适配器 README](https://github.com/twikoojs/twikoo/tree/main/packages/server-cloudflare)），然后建表：
+   将返回的 ID 加入 `wrangler.toml`：
+
+   ```toml
+   [[d1_databases]]
+   binding = "DB"
+   database_name = "twikoo"
+   database_id = "<上一步输出的 id>"
+   ```
+
+   手动建表（也可等待首次请求自动创建）：
 
    ```sh
    npx wrangler d1 execute twikoo --remote --file=./schema.sql
    ```
 
-4. 部署：
+   **MongoDB**：将连接串存为 secret：
+
+   ```sh
+   npx wrangler secret put MONGODB_URI
+   ```
+
+   默认使用 URI 中的数据库名；需要覆盖时，在 `wrangler.toml` 添加：
+
+   ```toml
+   [vars]
+   MONGODB_DB_NAME = "twikoo"
+   ```
+
+   非空的 `MONGODB_URI` 优先于 D1，无需 D1 绑定或建表；未配置或为空串时使用 D1。MongoDB 每个请求独立建连，等待实际 `POST_SUBMIT` 后置任务结束后关闭；有后台任务时由 `waitUntil` 托管，无该接口的离线调用则等待完成。
+
+5. 部署：
 
    ```sh
    npx wrangler deploy
    ```
 
-5. 命令行会输出 `https://twikoo.<你的用户名>.workers.dev`，浏览器访问它应看到 `Twikoo 云函数运行正常，请参考…`，该地址（含 `https://`）即为前端的 `envId`。
+6. 命令行会输出 `https://twikoo.<你的用户名>.workers.dev`，浏览器访问它应看到 `Twikoo 云函数运行正常，请参考…`，该地址（含 `https://`）即为前端的 `envId`。
+
+邮件和 AI 参数在 **Twikoo 管理面板**配置，不是 Workers 环境变量：
+
+- SMTP：清空 `SMTP_SERVICE`，配置 `SMTP_HOST`、`SMTP_USER`、`SMTP_PASS`、`SENDER_EMAIL`，按服务商要求选择 `SMTP_PORT=465` + `SMTP_SECURE=true`（直接 TLS），或 `SMTP_PORT=587` + `SMTP_SECURE=false`（服务端支持时通过 STARTTLS 升级）。只有字符串 `"true"` 会启用直接 TLS；每次校验或发送均使用独立的非池化 Nodemailer 传输器并关闭连接。
+- HTTP 邮件：显式将 `SMTP_SERVICE` 设为 `SendGrid` / `MailChannels` / `Resend`，API Key 填入 `SMTP_PASS`，`SMTP_USER` 需非空，`SENDER_EMAIL` 填发件地址。
+- AI：配置 `LLM_API_KEY`、`LLM_API_ENDPOINT` 与 `LLM_MODEL`，接口需兼容 OpenAI。
 
 从 1.x 的 [twikoojs/twikoo-cloudflare](https://github.com/twikoojs/twikoo-cloudflare) 升级：D1 表形态与 1.x 一致，数据可以直接沿用，云函数首次请求会自动补上 2.0 新增的列。更多细节（能力矩阵、邮件与图床配置、IP 属地实现）见[适配器 README](https://github.com/twikoojs/twikoo/tree/main/packages/server-cloudflare)。
 

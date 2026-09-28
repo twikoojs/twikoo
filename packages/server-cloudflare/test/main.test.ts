@@ -3,16 +3,11 @@
  *
  * 用 `node:sqlite` 撑起 `env.DB`，因此这里验证的是**完整链路**：Worker 入口 →
  * 载荷归一 → 限流 / 校验 / 读配置 / CORS / 分发 → handler → D1 读写 → 响应序列化，
- * 以及 Cloudflare 特有的四件套（xss 消毒垫片、D1 落库、属地回填、waitUntil 派发）。
+ * 以及 Cloudflare 特有的 DOMPurify 消毒、D1 落库、属地回填与 waitUntil 派发。
  */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { resetCustomLibs } from "@twikoojs/common";
-import worker, {
-  cloudflareCapabilities,
-  createCloudflareFunc,
-  fromTkResponse,
-  toTkRequest,
-} from "../src/index";
+import worker, { createCloudflareFunc, fromTkResponse, toTkRequest } from "../src/index";
 import type { CloudflareEnvLike, ExecutionContextLike } from "../src/index";
 import { D1Database } from "../src/database/d1";
 import { resetGeoStore, lookupRegion } from "../src/geo/region-store";
@@ -192,7 +187,7 @@ describe("薄适配器 · 端到端", () => {
     expect(String(body.message)).toContain("wrangler.toml");
   });
 
-  it("COMMENT_SUBMIT → COMMENT_GET：xss 消毒、属地与 IP 落库、waitUntil 派发副作用", async () => {
+  it("COMMENT_SUBMIT → COMMENT_GET：DOMPurify 消毒、属地与 IP 落库、waitUntil 派发副作用", async () => {
     const binding = await bootstrap({ SHOW_REGION: "true" });
     const func = createCloudflareFunc();
     const { executionCtx, pending } = makeExecutionCtx();
@@ -207,7 +202,7 @@ describe("薄适配器 · 端到端", () => {
           ua: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
           nick: "云上访客",
           mail: "guest@example.com",
-          comment: '<p>你好</p><script>alert(1)</script><img src=x onerror=alert(1)>',
+          comment: "<p>你好</p><script>alert(1)</script><img src=x onerror=alert(1)>",
         },
         { cf: { country: "CN", region: "广东省", city: "深圳市" }, ip: "1.2.3.4" },
       ),
@@ -229,9 +224,10 @@ describe("薄适配器 · 端到端", () => {
     expect(got.data).toHaveLength(1);
     const stored = got.data[0];
     expect(stored.comment).toContain("<p>你好</p>");
-    // xss 白名单垫片生效：script 标签与事件属性被剥掉
+    // DOMPurify 移除脚本与事件属性，同时保留安全段落。
     expect(String(stored.comment)).not.toContain("<script");
     expect(String(stored.comment)).not.toContain("onerror");
+    expect(String(stored.comment)).not.toContain("alert(1)");
     // IP 取自 CF-Connecting-IP；属地来自 request.cf（按评论的 ip 回查命中）
     expect(lookupRegion("1.2.3.4")).toBe("CN|0|广东省|深圳市|");
     // DTO 层的属地文案会剥掉「省/市」后缀（common 的 getIpRegion 语义）
@@ -292,10 +288,15 @@ describe("薄适配器 · 端到端", () => {
       await func(makeRequest({ event: "COUNTER_GET", url: "/post/3" }), env),
     );
     expect(counterAgain.time).toBe(1);
-    expect((await func(makeRequest({ event: "COUNTER_GET", url: "/post/4" }), env)).status).toBe(200);
+    expect((await func(makeRequest({ event: "COUNTER_GET", url: "/post/4" }), env)).status).toBe(
+      200,
+    );
 
     const counts = (await bodyOf(
-      await func(makeRequest({ event: "GET_COMMENTS_COUNT", urls: ["/post/3", "/post/4", "/none"] }), env),
+      await func(
+        makeRequest({ event: "GET_COMMENTS_COUNT", urls: ["/post/3", "/post/4", "/none"] }),
+        env,
+      ),
     )) as { data: Array<{ url: string; count: number }> };
     expect(counts.data).toEqual([
       { url: "/post/3", count: 1 },
@@ -319,7 +320,9 @@ describe("薄适配器 · 端到端", () => {
       await func(makeRequest({ event: "GET_PASSWORD_STATUS", version: "1.0.0" }), env),
     );
     expect(typeof status.code).toBe("number");
-    const config = await bodyOf(await func(makeRequest({ event: "GET_CONFIG", version: "1.0.0" }), env));
+    const config = await bodyOf(
+      await func(makeRequest({ event: "GET_CONFIG", version: "1.0.0" }), env),
+    );
     expect(config.code).toBe(0);
     expect(config).toHaveProperty("config");
   });
@@ -337,74 +340,5 @@ describe("薄适配器 · 端到端", () => {
     const body = await bodyOf(response);
     // 无 event：返回「云函数运行正常」形态（code 非 0）
     expect(body.code).not.toBe(0);
-  });
-});
-
-describe("能力声明", () => {
-  it("Cloudflare 行的能力形态（受限邮件 / 无 jsdom / 无 akismet 与 TMS）", () => {
-    expect(cloudflareCapabilities.mail).toBe("restricted");
-    expect(cloudflareCapabilities.domPurify).toBe(false);
-    expect(cloudflareCapabilities.ip2region).toBe(true);
-    expect(cloudflareCapabilities.akismet).toBe(false);
-    expect(cloudflareCapabilities.tencentTms).toBe(false);
-    expect(cloudflareCapabilities.imageUpload).toBe(true);
-    expect(cloudflareCapabilities.qqAvatar).toBe(true);
-    expect(cloudflareCapabilities.ai).toBe(false);
-  });
-
-  it("覆写「名副其实」：无能力门时可用的库都真的被注入（否则环节会静默失效）", async () => {
-    const { installCloudflareLibs } = await import("../src/main");
-    const { getDomPurify, getFormData, getIpToRegion, getNodemailer } = await import(
-      "@twikoojs/common"
-    );
-    installCloudflareLibs();
-    const domPurify = await getDomPurify(cloudflareCapabilities);
-    expect(domPurify.sanitize("<script>x</script><p>ok</p>")).not.toContain("<script");
-    expect(typeof (await getNodemailer(cloudflareCapabilities)).createTransport).toBe("function");
-    expect(
-      new (await getFormData(cloudflareCapabilities))() instanceof FormData,
-    ).toBe(true);
-    const searcher = (await getIpToRegion(cloudflareCapabilities)).create();
-    expect(typeof searcher.binarySearchSync).toBe("function");
-  });
-
-  it("未注入覆写时，声明为 false 的能力被能力门拦下（对照：说明覆写不可缺）", async () => {
-    const { getDomPurify, getNodemailer } = await import("@twikoojs/common");
-    await expect(getDomPurify(cloudflareCapabilities)).rejects.toThrow("未声明 domPurify 能力");
-    // mail 声明为 "restricted"，能力门只认 `=== true`，同样被拦下
-    await expect(getNodemailer(cloudflareCapabilities)).rejects.toThrow("未声明 mail 能力");
-  });
-
-  it("D1 实例按绑定缓存（同一 isolate 不重复构造）", async () => {
-    const { getD1Database } = await import("../src/main");
-    const binding = createSqliteD1();
-    expect(getD1Database({ DB: binding })).toBe(getD1Database({ DB: binding }));
-  });
-});
-
-describe("依赖纪律", () => {
-  it("Worker 产物不含只属于 Node 的重依赖（各自由能力门或覆写替代）", async () => {
-    const { readFileSync } = await import("node:fs");
-    const pkg = JSON.parse(
-      readFileSync(new URL("../package.json", import.meta.url), "utf8"),
-    ) as { dependencies: Record<string, string> };
-    const names = Object.keys(pkg.dependencies);
-    for (const forbidden of [
-      "jsdom",
-      "dompurify",
-      "nodemailer",
-      "mongodb",
-      "tencentcloud-sdk-nodejs-tms",
-      "akismet-api",
-      "form-data",
-      "@imaegoo/node-ip2region",
-      "@xsai/generate-text",
-    ]) {
-      expect(names).not.toContain(forbidden);
-    }
-    // 无能力门（人人必备）的重依赖必须在（否则对应事件会报 LibLoadError）
-    for (const required of ["xml2js", "html-to-text", "pushoo", "bowser", "marked"]) {
-      expect(names).toContain(required);
-    }
   });
 });

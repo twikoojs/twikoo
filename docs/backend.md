@@ -5,8 +5,7 @@
 | [腾讯云 CloudBase 部署](#腾讯云-cloudbase-部署) | ★★★☆☆ | 手动部署到腾讯云云开发环境，在中国大陆访问速度较快。**需要付费套餐（个人版及以上）**：免费体验版无法在「HTTP 网关 - 跨域设置」添加跨域域名，云函数执行超时也固定 3 秒不可修改。 |
 | [宝塔面板 部署](#宝塔面板-部署) | ★★★☆☆ | 适用于有服务器的用户，通过宝塔面板 (9.2.0+) 的 Docker 应用商店安装。 |
 | [Vercel 部署](#vercel-部署) | ★★★☆☆ | 适用于想要免费部署的用户，在中国大陆访问速度较慢甚至无法访问，绑定自己的域名可以提高访问速度。 |
-| [Railway 部署](#railway-部署) | ★★☆☆☆ | 有免费额度但不足以支持一个月连续运行，部署简单，适合全球访问。 |
-| [Zeabur 部署](#zeabur-部署) | ★☆☆☆☆ | 需要绑定支付宝或信用卡，部署简单，适合中国大陆访问，免费计划环境随时可能会被删除。 |
+| [Railway 部署](#railway-部署) | ★★☆☆☆ | 免费方案每月仅 $1 额度（新用户另有一次性的 $5 试用额度，30 天有效，额度不累积），不足以支撑常驻服务（按最低 0.5 GB 内存算约需 $5/月），实质需要 Hobby 方案（$5/月起）。部署简单，适合全球访问。 |
 | [Netlify 部署](#netlify-部署) | ★★★★☆ | 有充足的免费额度，中国大陆访问速度不错。 |
 | [Hugging Face 部署](#hugging-face-部署) | ★★★☆☆ | 免费，中国大陆访问速度不错。允许通过 Cloudflare Tunnels 自定义域名。 |
 | [AWS Lambda 部署](#aws-lambda-部署) | ★★★☆☆ | 全球最大的云平台，适合已经使用 AWS 全家桶的用户。 |
@@ -143,6 +142,12 @@ Vercel 侧只装这一个 npm 依赖、不跑任何构建，所以**升级只需
 
 ## Railway 部署
 
+::: warning 免费方案不足以支撑常驻服务
+Railway 免费方案每月只有 **$1** 额度（新用户另有一次性的 **$5** 试用额度，30 天有效，额度不累积）。一个常驻服务按最低的 0.5 GB 内存计算约需 **$5/月**（内存单价 $0.00000386/GB/秒），因此实质需要 **Hobby 方案（$5/月起）**。
+
+免费方案的其他限制：项目数 1、每服务内存上限 0.5 GB、不可用 Global regions、无法绑定自定义域名（Railway 自带的 `*.up.railway.app` 域名不受影响）。
+:::
+
 ::: warning 注意
 Railway 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 
@@ -156,23 +161,6 @@ Railway 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
 5. 同样地，添加 MongoDB 相关环境变量 - New Variable - Add Reference - MONGO* - Add，重复步骤以添加 `MONGOHOST`、`MONGOPASSWORD`、`MONGOPORT`、`MONGOUSER` 和 `MONGO_URL` 环境变量。
 6. 点开环境卡片 - Settings - Environment - Domains，绑定一个域名（例如 `mytwikoo.up.railway.app`）
 7. 到博客配置文件中配置 envId 为 `https://` 加域名（例如 `https://mytwikoo.up.railway.app`）
-
-## Zeabur 部署
-
-::: warning 注意
-Zeabur 部署的环境需配合 1.4.0 以上版本的 twikoo.js 使用
-
-请一定要创建 MongoDB，不创建 MongoDB 也能正常使用，但重新部署后数据会丢失！
-:::
-
-1. 在 [Zeabur](https://dash.zeabur.com) 申请并登录账号，点击部署新服务 - 部署其他服务 - 部署 MongoDB，名称随意
-2. 打开 [twikoojs/twikoo-zeabur](https://github.com/twikoojs/twikoo-zeabur) 点击 fork 将仓库 fork 到自己的账号下
-3. 回到 Zeabur 点击部署新服务 - 部署你的源代码 - 授权 GitHub - 选择刚才 fork 的仓库，名称随意
-
-> _无需配置数据库连接字符串！Zeabur 已自动配置_
-
-4. 部署好后点开环境卡片 - 设置 - 域名，绑定一个域名（例如 `mytwikoo.zeabur.app`）
-5. 到博客配置文件中配置 envId 为 `https://` 加域名（例如 `https://mytwikoo.zeabur.app`）
 
 ## Netlify 部署
 

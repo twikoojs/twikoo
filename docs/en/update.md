@@ -54,12 +54,12 @@ Vercel reuses the build cache by default, and a cache hit means `latest` is not 
 3. Uncheck **Use existing Build Cache** and confirm.
 4. Once deployed, open your domain: if the environment is configured correctly you should see "Twikoo 云函数运行正常".
 
-## Railway and Zeabur
+## Railway
 
 The template repository [`twikoojs/twikoo-zeabur`](https://github.com/twikoojs/twikoo-zeabur) depends on `tkserver@latest`, so **there is no version number to change**.
 
 1. On GitHub, open the `twikoo-zeabur` repository you forked and click **Sync fork**.
-2. The deployment is triggered automatically; if it is not, or the version does not change, redeploy manually from the Railway / Zeabur dashboard.
+2. The deployment is triggered automatically; if it is not, or the version does not change, redeploy manually from the Railway dashboard.
 
 ::: tip If your fork pins an exact version
 Change `"tkserver": "x.x.x"` to `"tkserver": "latest"` in `package.json` — from then on you only need to sync the fork and redeploy.

@@ -41,7 +41,7 @@ A simple, safe, free comment system.
 
 ### 简单
 
-- 免费搭建（支持腾讯云 CloudBase、Vercel、Netlify、Hugging Face、Railway、Zeabur、Cloudflare Workers、AWS Lambda、EdgeOne Makers 等平台，也可使用私有服务器作为评论后台）
+- 免费搭建（支持腾讯云 CloudBase、Vercel、Netlify、Hugging Face、Railway、Cloudflare Workers、AWS Lambda、EdgeOne Makers 等平台，也可使用私有服务器作为评论后台）
 - 简单部署（支持 Vercel 一键部署，各平台均有图文部署教程，另有 Docker 私有部署）
 
 ### 易用

@@ -55,7 +55,13 @@ describe("createNetlifyPostSubmitDispatcher", () => {
 
   it("Deploy Preview：优先使用当前请求 origin，不回落生产 URL", async () => {
     const pending: Promise<unknown>[] = [];
-    const post = vi.fn(async () => undefined);
+    const post = vi.fn<
+      (
+        url: string,
+        data?: unknown,
+        config?: { headers?: Record<string, string> },
+      ) => Promise<undefined>
+    >(async () => undefined);
     const dispatcher = createNetlifyPostSubmitDispatcher({
       post,
       getWaitUntil: () => (promise) => {

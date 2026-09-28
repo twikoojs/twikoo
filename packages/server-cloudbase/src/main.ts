@@ -4,7 +4,7 @@
  * 真机复核 2026-09-24：运行环境 Node.js 20.19 可在线装依赖，24.11（公测中）不可）。
  *
  * 载荷转换见 `./transform.ts`，后置副作用派发见 `./dispatch.ts`，
- * 平台 SDK 结构面见 `./types.ts`。
+ * 重依赖预热见 `./prewarm.ts`（平台契约层），平台 SDK 结构面见 `./types.ts`。
  */
 import * as tcbSdkNamespace from "@cloudbase/node-sdk";
 import {
@@ -14,6 +14,11 @@ import {
   defineCapabilities,
   type CloudBaseDatabaseLike,
 } from "@twikoojs/common";
+/**
+ * 副作用导入：在实例初始化阶段就把 jsdom / DOMPurify 装好（见 ./prewarm.ts 的完整说明）。
+ * 必须早于任何请求 —— 模块顶层的静态 import 天然满足，故放在类型导入之后的常规位置。
+ */
+import "./prewarm";
 import { fromTkResponse, toTkRequest } from "./transform";
 import { createCloudBaseDispatcher } from "./dispatch";
 import type { TcbAppLike, TcbContextLike, TcbSdkStatic } from "./types";

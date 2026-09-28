@@ -12,7 +12,7 @@
   ],
   "author": "imaegoo <hello@imaegoo.com> (https://github.com/imaegoo)",
   "license": "MIT",
-  "main": "./dist/index.cjs",
+  "main": "./dist/index.js",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
@@ -40,7 +40,7 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "require": "./dist/index.js"
     }
   },
   "files": [

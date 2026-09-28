@@ -2,7 +2,7 @@
 
 | <div style="width: 10em">Deployment option</div> | Rating | Description |
 | ---- | ---- | ---- |
-| Tencent CloudBase | ★★★☆☆ | Deploy to a Tencent CloudBase environment from the console. Fast inside mainland China. **Standard plan or above required**: the free plan cannot add a cross-origin domain under HTTP 网关 → 跨域设置 (paid plans only), and the free trial / personal plans pin the cloud function timeout at 3 seconds. |
+| Tencent CloudBase | ★★★☆☆ | Deploy to a Tencent CloudBase environment from the console. Fast inside mainland China. **A paid plan (Personal or above) is required**: the free trial plan cannot add a cross-origin domain under HTTP 网关 → 跨域设置 (paid plans only), and its cloud function timeout is fixed at 3 seconds. |
 | Vercel | ★★★☆☆ | Good free tier. Slower or unreachable from mainland China; bind your own domain to improve speed. |
 | Netlify | ★★★★☆ | Generous free tier and decent speed from mainland China. |
 | AWS Lambda | ★★★☆☆ | Best fit if you already use AWS. |
@@ -13,13 +13,13 @@
 
 ## Tencent CloudBase
 
-::: warning Prerequisite: Standard plan or above required
-**The free plan cannot use HTTP 网关 → 跨域设置 → 添加跨域域名** (paid plans only), so step 2 below cannot be completed.
-Without your site domain in the CORS allowlist the comment box cannot call the cloud function, **so deploying Twikoo requires a Standard plan or above**.
+::: warning Prerequisite: a paid plan (Personal or above)
+**The free trial plan cannot use HTTP 网关 → 跨域设置 → 添加跨域域名** (the console shows `您当前版本暂不支持此功能`), so step 2 below cannot be completed — without your site domain in the CORS allowlist the comment box cannot call the cloud function.
 
-On the free trial and personal plans the function **timeout is fixed at 3 seconds and the memory at 256MB, neither changeable** (the console disables the field and shows a `个人版` tag).
-The adapter now loads jsdom / DOMPurify during instance initialisation (see `packages/server-cloudbase/src/prewarm.ts`), so submitting a comment on a cold instance measured about **1.1s** and does fit inside 3 seconds — but the margin is thin (worst observed 1.9s), and heavier operations (comment import, email test) can still time out.
-Standard plan and above let you add the cross-origin domain and raise the timeout to 900 seconds.
+自定义域名 is a paid-plan entitlement ([official pricing doc](https://cloud.tencent.com/document/product/876/127357): 1 for Personal, 5 for Standard, 50 for Enterprise), so **upgrading to Personal (¥19.9/mo) is enough**.
+
+Also, on the free trial plan the function **timeout is fixed at 3 seconds and the memory at 256MB, neither changeable** (Personal and above allow up to 900 seconds and adjustable memory).
+The adapter now loads jsdom / DOMPurify during instance initialisation (see `packages/server-cloudbase/src/prewarm.ts`), so submitting a comment on a cold instance measured about **1.1s** and does fit inside 3 seconds — but the margin is thin (worst observed 1.9s); on a paid plan raise the timeout to 30s or more and there is plenty of room.
 :::
 
 1. Create a CloudBase environment and enable anonymous sign-in (身份认证 → 配置 → 登录方式 → 允许匿名登入).

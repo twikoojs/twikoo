@@ -65,7 +65,7 @@ CloudBase 请将云函数运行时升级到 **Node 20 及以上（推荐 24）**
 
 ## 针对 Hugging Face 部署的更新方式
 
-> 仅适用于 2026 年 7 月之前创建的 Docker Space —— 该时间之后免费账号已无法创建，详见[部署章节的前提说明](./backend.md#hugging-face-部署)。
+> 适用于所有 Docker Space。2026 年 7 月之后免费账号已无法创建新的 Space，详见[部署章节的前提说明](./backend.md#hugging-face-部署)。
 
 1. 登录 Hugging Face，找到部署的 Space，点击上方 Settings，往下滚动找到并点击 Factory rebuild
 

@@ -210,7 +210,7 @@ Netlify 免费等级（Functions Level 0）支持每月 125,000 请求次数和 
 ## Hugging Face 部署
 
 ::: warning 前提：需要付费方案（PRO，$9/月）
-2026 年 7 月起，Hugging Face **不再允许免费账号创建 Docker Space** —— 创建 Space 时 Docker SDK 会显示「Paid」徽章且无法选中（Static 与 Gradio 仍免费，但都跑不了 Twikoo）。需订阅 [PRO](https://huggingface.co/subscribe/pro)，或使用 Team / Enterprise 方案的组织账号。
+2026 年 7 月起，Hugging Face **创建依赖计算资源的 Space 需要付费方案** —— 创建 Space 时 Docker SDK 会显示「Paid」徽章且无法选中。免费个人账号只能创建 Static Space，以及最多 2 个跑在 ZeroGPU 上的 Gradio Space，两者都跑不了 Twikoo。需订阅 [PRO](https://huggingface.co/subscribe/pro)，或使用 Team / Enterprise 方案的组织账号。
 
 官方依据：[Spaces 概览](https://huggingface.co/docs/hub/spaces-overview)「Creating Gradio and Docker Spaces (anything that runs on compute, including CPU Basic) requires a paid plan」；文档变更见 [hub-docs PR #2624](https://github.com/huggingface/hub-docs/pull/2624)（2026-07-21 合并）。
 

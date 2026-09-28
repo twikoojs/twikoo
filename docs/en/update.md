@@ -87,7 +87,7 @@ Change `"tkserver": "x.x.x"` to `"tkserver": "latest"` in `package.json` — fro
 
 ## Hugging Face
 
-> Applies only to Docker Spaces created before July 2026 — free accounts can no longer create them. See the prerequisite note in the [deployment guide](/backend#hugging-face-部署).
+> Applies to all Docker Spaces. Since July 2026 free accounts can no longer create new ones — see the prerequisite note in the [deployment guide](/backend#hugging-face-部署).
 
 1. Open your Space, click **Settings** in the top bar, scroll down and click **Factory rebuild**.
 

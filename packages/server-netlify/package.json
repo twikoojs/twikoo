@@ -28,6 +28,8 @@
   "dependencies": {
     "@cap.js/server": "^4.0.5",
     "@imaegoo/node-ip2region": "^2.1.1",
+    "@netlify/aws-lambda-compat": "^2.0.0",
+    "@netlify/functions": "^6.0.0",
     "@twikoojs/common": "workspace:*",
     "@twikoojs/shared": "workspace:*",
     "@xsai/generate-text": "^0.5.0",

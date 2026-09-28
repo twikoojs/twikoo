@@ -1,18 +1,10 @@
 /**
- * Vercel 的 POST_SUBMIT 派发实现（规范「后置副作用异步语义」）。
+ * Vercel 的 POST_SUBMIT 派发实现。
  *
- * **1.x 语义对齐**：COMMENT_SUBMIT 保存评论后，用 **HTTP 递归自调用**把
- * POST_SUBMIT 送到另一个函数实例执行——垃圾检测与邮件/IM 通知因此拥有
- * 独立的执行时间预算，既不会拖慢用户请求，也不会因为用户请求的超时上限
- * 而整条失败（1.x 实现见 `src/server/vercel/api/index.js` 的 `commentSubmit`）。
- *
- * **为什么放在适配器**：这是平台专有机制，common 不应感知。平台相关部分只有
- * 两处：
- * - 自身地址：`TWIKOO_SELF_URL`（显式覆写）→ `VERCEL_URL`（平台注入）；
- * - 内部派发令牌：走 `x-twikoo-recursion` 请求头（1.x 同名，跨版本可互认）。
- *
- * 副作用链本身仍在 common 的 postSubmit 服务里。
+ * HTTP 递归自调用仍让副作用在独立函数实例执行；`waitUntil()` 托管自调用请求，
+ * 使 COMMENT_SUBMIT 不再等待垃圾检测与邮件/IM 通知完成。
  */
+import { waitUntil } from "@vercel/functions";
 import {
   RECURSION_HEADER,
   httpPost,
@@ -20,11 +12,30 @@ import {
   type PostSubmitDispatcher,
 } from "@twikoojs/common";
 
-/**
- * 派发等待上限（毫秒）。1.x 为 `Promise.race` 5 秒：超时只表示「本请求不再
- * 继续等」，被调用的实例仍在自己的预算内跑完副作用。
- */
+/** waitUntil 不可用时的兼容等待上限（毫秒） */
 const DISPATCH_TIMEOUT_MS = 5000;
+
+/** waitUntil 的最小函数面 */
+type Defer = (promise: Promise<unknown>) => void | undefined;
+
+/** HTTP POST 的可注入函数面 */
+type Post = (
+  url: string,
+  data?: unknown,
+  config?: { headers?: Record<string, string> },
+) => Promise<unknown>;
+
+/** dispatcher 工厂的测试与运行时注入项 */
+interface VercelDispatcherOptions {
+  post?: Post;
+  getDefer?: () => Defer | undefined;
+  timeoutMs?: number;
+}
+
+/** Vercel 请求上下文在 globalThis 上注册的最小结构面 */
+interface VercelRequestContextStore {
+  get?: () => { waitUntil?: Defer };
+}
 
 /**
  * 解析自身函数地址（显式覆写优先，其次平台注入的 VERCEL_URL）。
@@ -37,26 +48,72 @@ function resolveSelfUrl(): string {
   return vercelUrl ? `https://${vercelUrl}` : "";
 }
 
-/** Vercel 的 POST_SUBMIT 派发实现（HTTP 递归自调用） */
-export const vercelPostSubmitDispatcher: PostSubmitDispatcher = {
-  /**
-   * 自调用本函数执行 POST_SUBMIT（不等待副作用完成，只等有界竞速）。
-   * @param comment 已入库的评论
-   * @param ctx 当前请求上下文（用于取递归令牌与记录日志）
-   */
-  async dispatch(comment, ctx): Promise<void> {
-    const url = resolveSelfUrl();
-    if (!url) {
-      ctx.logger.warn("POST_SUBMIT 派发跳过：未取到自身地址（TWIKOO_SELF_URL / VERCEL_URL）");
-      return;
-    }
-    await Promise.race([
-      httpPost(
-        url,
-        { event: "POST_SUBMIT", comment },
-        { headers: { [RECURSION_HEADER]: getRecursionToken(ctx.config) } },
-      ),
-      new Promise((resolve) => setTimeout(resolve, DISPATCH_TIMEOUT_MS)),
-    ]);
-  },
-};
+/**
+ * 获取当前 Vercel 请求的 waitUntil；旧运行时及离线调用中返回 undefined。
+ * @returns 当前请求可用的 waitUntil
+ */
+function getRuntimeDefer(): Defer | undefined {
+  try {
+    const symbol = Symbol.for("@vercel/request-context");
+    const store = (globalThis as typeof globalThis & Record<symbol, VercelRequestContextStore>)[
+      symbol
+    ];
+    return typeof store?.get?.().waitUntil === "function" ? waitUntil : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * 创建 Vercel POST_SUBMIT 派发器。
+ * @param options 平台能力与测试注入项
+ * @returns Vercel 派发端口实现
+ */
+export function createVercelPostSubmitDispatcher(
+  options: VercelDispatcherOptions = {},
+): PostSubmitDispatcher {
+  const post = options.post ?? httpPost;
+  const getDefer = options.getDefer ?? getRuntimeDefer;
+  const timeoutMs = options.timeoutMs ?? DISPATCH_TIMEOUT_MS;
+  return {
+    /**
+     * HTTP 自调用执行 POST_SUBMIT，并交由 Vercel waitUntil 托管。
+     * @param comment 已入库的评论
+     * @param ctx 当前请求上下文
+     */
+    async dispatch(comment, ctx): Promise<void> {
+      const url = resolveSelfUrl();
+      if (!url) {
+        ctx.logger.warn("POST_SUBMIT 派发跳过：未取到自身地址（TWIKOO_SELF_URL / VERCEL_URL）");
+        return;
+      }
+      const running = Promise.resolve().then(() =>
+        post(
+          url,
+          { event: "POST_SUBMIT", comment },
+          { headers: { [RECURSION_HEADER]: getRecursionToken(ctx.config) } },
+        ),
+      );
+      const defer = getDefer();
+      if (defer) {
+        try {
+          defer(
+            running.catch((error: unknown) => {
+              ctx.logger.error(
+                "POST_SUBMIT 后台派发失败",
+                error instanceof Error ? error.message : String(error),
+              );
+            }),
+          );
+          return;
+        } catch {
+          // 旧运行时或非 Vercel 宿主不支持 waitUntil，继续走兼容等待。
+        }
+      }
+      await Promise.race([running, new Promise((resolve) => setTimeout(resolve, timeoutMs))]);
+    },
+  };
+}
+
+/** Vercel 的默认 POST_SUBMIT 派发实现 */
+export const vercelPostSubmitDispatcher = createVercelPostSubmitDispatcher();

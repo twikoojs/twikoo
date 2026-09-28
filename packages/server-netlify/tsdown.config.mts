@@ -13,4 +13,7 @@ export default defineConfig({
   target: BUILD_TARGET,
   outExtensions: outExtensions(["esm", "cjs"]),
   deps: { neverBundle: neverBundleDependencies() },
+  /** CJS 同时提供旧 handler 与现代 default，显式使用命名导出消除混合导出警告。 */
+  outputOptions: (options, format) =>
+    format === "cjs" ? { ...options, exports: "named" } : options,
 });

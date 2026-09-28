@@ -1,10 +1,10 @@
 /**
  * twikoo-netlify 主逻辑（Netlify 独立薄适配器——不再依赖 twikoo-vercel）。
  * 业务逻辑全部在 @twikoojs/common；数据库 MONGODB_URI→Mongo。
- * 平台核对：Functions v1 handler = async (event, context) =>
- * { statusCode, headers, body(string) }；IP 头 x-nf-client-connection-ip——
- * docs.netlify.com/functions（查阅 2026-09-17）。1.x 的 TWIKOO_IP_HEADERS
- * 环境变量机制由本适配器消化（公共库不感知该变量）。
+ * 平台核对：默认导出为现代 Request/Response 入口，同时保留 Functions v1
+ * `handler(event, context)` 具名导出；IP 头 x-nf-client-connection-ip——
+ * docs.netlify.com/functions（查阅 2026-09-28）。1.x 的 TWIKOO_IP_HEADERS 环境变量
+ * 机制由本适配器消化（公共库不感知该变量）。
  *
  * 后置副作用（垃圾检测 + 通知）经 {@link netlifyPostSubmitDispatcher} 以
  * HTTP 递归自调用派发到独立执行单元，见 `./dispatch.ts`。
@@ -22,6 +22,7 @@ import {
   type TkRequest,
   type TkResponse,
 } from "@twikoojs/common";
+import { withLambda } from "@netlify/aws-lambda-compat";
 import { netlifyPostSubmitDispatcher } from "./dispatch";
 
 /** Netlify 平台能力：全能力*/
@@ -152,3 +153,22 @@ export async function handler(event: NetlifyEventLike): Promise<NetlifyResult> {
   handlerFn ??= createNetlifyFunc();
   return handlerFn(event);
 }
+
+/**
+ * 创建现代 Netlify Functions 入口。
+ * @param options 注入项（与 createNetlifyFunc 相同）
+ * @returns Request/Response 形态的现代函数
+ */
+export function createModernNetlifyFunc(options: { database?: Database; mongoUri?: string } = {}) {
+  const legacyHandler = createNetlifyFunc(options);
+  return withLambda(async (event) => {
+    const result = await legacyHandler(event);
+    // Fetch Response 禁止 204 携带 body；旧 Lambda 入口仍需保留空字符串 body。
+    return result.statusCode === 204 ? { ...result, body: undefined } : result;
+  });
+}
+
+/** 现代 Netlify Functions 入口：保留 Lambda 事件转换并启用平台上下文能力 */
+const modernHandler = createModernNetlifyFunc();
+
+export default modernHandler;

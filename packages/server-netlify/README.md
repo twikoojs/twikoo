@@ -8,16 +8,19 @@ Twikoo 2.0 服务端适配器。业务逻辑在 `@twikoojs/common`，本包仅�
 2. 环境变量：`MONGODB_URI`（必填）
 3. 前端配置 API 地址为 `https://<site>.netlify.app/.netlify/functions/twikoo`
 
+运行时要求 Node.js **>= 22.12.0**，建议使用 **Node 24**（`@netlify/functions@6` 与
+`@netlify/aws-lambda-compat@2` 的最低版本要求）。
+
 ## 升级兼容性
 
 > [!WARNING]
-> 现代模板依赖本包的默认导出。必须先发布包含现代入口的 `twikoo-netlify`，再升级部署模板；顺序颠倒会导致部署失败。
+> 现代模板依赖本包的默认导出。必须先发布包含现代入口的 `twikoo-netlify`，再升级部署模板；旧包搭配新模板不受支持，可能在构建或函数加载阶段失败。
 
 | `twikoo-netlify` 包 | 部署模板 | 结果 |
 | --- | --- | --- |
 | 旧版 | 旧模板 `require(...).handler` | 正常运行，通知同步等待，最长约 5 秒 |
 | 新版 | 旧模板 `require(...).handler` | 功能兼容，但仍走同步兼容路径，最长约 5 秒 |
-| 旧版 | 新模板 ESM 默认入口 | **不兼容**：旧包没有 `default` 导出，构建或部署失败 |
+| 旧版 | 新模板 ESM 默认入口 | **不受支持**：旧包缺少现代默认入口，可能在构建或函数加载阶段失败 |
 | 新版 | 新模板 ESM 默认入口 | 正常运行，通过 `context.waitUntil()` 异步派发通知 |
 
 发布和升级必须遵循以下顺序：
@@ -35,7 +38,7 @@ Twikoo 2.0 服务端适配器。业务逻辑在 `@twikoojs/common`，本包仅�
 - [x] `context.waitUntil()` 托管 POST_SUBMIT 自调用，响应不等待垃圾检测与通知
 - [x] 保留 Functions v1 `handler` 具名导出；旧部署壳继续兼容并使用 5 秒有界等待
 - [x] IP 头 `x-nf-client-connection-ip`（适配器已按此头提取，回退 x-real-ip/x-forwarded-for）
-- [ ] 构建期 Node 版本对函数运行时的影响实测（人工项）
+- [x] 现代入口依赖要求 Node.js >= 22.12.0；部署模板建议固定 Node 24
 
 ## 注意
 

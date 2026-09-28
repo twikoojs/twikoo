@@ -10,6 +10,7 @@ import {
   RECURSION_HEADER,
   httpPost,
   getRecursionToken,
+  type PipelineContext,
   type PostSubmitDispatcher,
 } from "@twikoojs/common";
 
@@ -36,14 +37,33 @@ interface NetlifyDispatcherOptions {
   timeoutMs?: number;
 }
 
+/** Netlify Lambda 事件中与派发相关的最小原始请求面 */
+interface NetlifyRawEventLike {
+  rawUrl?: string;
+}
+
 /**
- * 解析自身函数地址：`TWIKOO_SELF_URL`（完整地址，显式覆写）→
- * `${URL}/.netlify/functions/twikoo`（运行时只读变量）。
- * @returns 绝对地址；URL 缺失时为空串
+ * 解析自身函数地址：`TWIKOO_SELF_URL`（完整地址，显式覆写）→ 当前请求 origin →
+ * `${URL}/.netlify/functions/twikoo`（兜底）。
+ *
+ * 优先使用当前请求 origin，避免 Deploy Preview / Branch Deploy 把 POST_SUBMIT
+ * 错派到生产站点；现代 `withLambda` 与 Netlify v1 事件都会保留 `rawUrl`。
+ * @param ctx 当前请求上下文
+ * @returns 绝对地址；无法解析时为空串
  */
-function resolveSelfUrl(): string {
+function resolveSelfUrl(ctx: PipelineContext): string {
   const explicit = process.env.TWIKOO_SELF_URL;
   if (explicit) return explicit;
+
+  const rawUrl = (ctx.request.raw as NetlifyRawEventLike | undefined)?.rawUrl;
+  if (rawUrl) {
+    try {
+      return new URL(FUNCTION_PATH, rawUrl).toString();
+    } catch {
+      // 非法 rawUrl 继续回落 URL，兼容离线测试或非标准宿主。
+    }
+  }
+
   const siteUrl = process.env.URL;
   return siteUrl ? `${siteUrl.replace(/\/$/, "")}${FUNCTION_PATH}` : "";
 }
@@ -79,9 +99,11 @@ export function createNetlifyPostSubmitDispatcher(
      * @param ctx 当前请求上下文
      */
     async dispatch(comment, ctx): Promise<void> {
-      const url = resolveSelfUrl();
+      const url = resolveSelfUrl(ctx);
       if (!url) {
-        ctx.logger.warn("POST_SUBMIT 派发跳过：未取到自身地址（TWIKOO_SELF_URL / URL）");
+        ctx.logger.warn(
+          "POST_SUBMIT 派发跳过：未取到自身地址（TWIKOO_SELF_URL / 当前请求 / URL）",
+        );
         return;
       }
       const running = Promise.resolve().then(() =>

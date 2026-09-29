@@ -42,7 +42,9 @@ function comment(overrides: Partial<CommentDoc> = {}): CommentDoc {
   };
 }
 
-/** 1.x twikoo-cloudflare 的 comment 表（无 extra 列，主键为 (url, created)） */
+/**
+ * 1.x 的 `schema.sql` 给**新装**库建出的 comment 表（21 列、含 ipRegion，无 extra）。
+ */
 const LEGACY_SCHEMA = `
 CREATE TABLE comment (
   _id TEXT NOT NULL,
@@ -54,6 +56,43 @@ CREATE TABLE comment (
   ua TEXT NOT NULL,
   ip TEXT NOT NULL,
   ipRegion TEXT NOT NULL DEFAULT '',
+  master INTEGER NOT NULL,
+  url TEXT NOT NULL,
+  href TEXT NOT NULL,
+  comment TEXT NOT NULL,
+  pid TEXT NOT NULL,
+  rid TEXT NOT NULL,
+  isSpam INTEGER NOT NULL,
+  created INTEGER NOT NULL,
+  updated INTEGER NOT NULL,
+  like TEXT NOT NULL,
+  top INTEGER NOT NULL,
+  avatar TEXT NOT NULL,
+  PRIMARY KEY (url, created DESC)
+);
+CREATE TABLE config (value TEXT NOT NULL);
+CREATE TABLE counter (url TEXT NOT NULL PRIMARY KEY, title TEXT NOT NULL, time INTEGER NOT NULL, created INTEGER NOT NULL, updated INTEGER NOT NULL);
+`;
+
+/**
+ * **1.x 早期版本建出的老库**（20 列：没有 `ipRegion`）。
+ *
+ * 1.x 的 `schema.sql` 只对新装库建 `ipRegion`，早期建的库要用户手工执行
+ * `ALTER TABLE comment ADD COLUMN ipRegion ...`（该语句在 1.x schema.sql 里以注释形式给出）；
+ * 没跑过它的库就是本形态。2.0 必须自己补上这一列，否则 INSERT 里的 `ipRegion` 会让
+ * **发评论整条失败**（`table comment has no column named ipRegion`）——
+ * 2026-09-29 用真实老库真机复现过，当时的 fixture 误写成带 `ipRegion` 的新装形态，因此漏掉了。
+ */
+const LEGACY_SCHEMA_PRE_IPREGION = `
+CREATE TABLE comment (
+  _id TEXT NOT NULL,
+  uid TEXT NOT NULL,
+  nick TEXT NOT NULL,
+  mail TEXT NOT NULL,
+  mailMd5 TEXT NOT NULL,
+  link TEXT NOT NULL,
+  ua TEXT NOT NULL,
+  ip TEXT NOT NULL,
   master INTEGER NOT NULL,
   url TEXT NOT NULL,
   href TEXT NOT NULL,
@@ -354,6 +393,49 @@ describe("D1Database · 1.x 既有库升级", () => {
     const counter = await db.incCounter("/p", "页面");
     expect(counter.time).toBe(1);
     expect((await db.incCounter("/p")).time).toBe(2);
+  });
+
+  it("1.x 早期老库（20 列、无 ipRegion）也能补列后正常写入评论", async () => {
+    const binding = createSqliteD1(LEGACY_SCHEMA_PRE_IPREGION);
+    // 早期老库里的评论（20 列、不含 ipRegion）
+    await binding
+      .prepare(`INSERT INTO comment VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+      .bind(
+        "legacy2",
+        "u",
+        "老站友",
+        "m@example.com",
+        "md5",
+        "",
+        "UA",
+        "8.8.8.8",
+        0,
+        "/p",
+        "https://example.com/p",
+        "<p>更早的评论</p>",
+        "",
+        "",
+        0,
+        1000,
+        1000,
+        "[]",
+        0,
+        "",
+      )
+      .run();
+
+    const db = new D1Database(binding);
+    await db.init();
+
+    // 迁移把 ipRegion 补上了（列存在且默认空串）
+    const old = await db.getComment("legacy2");
+    expect(old?.nick).toBe("老站友");
+    expect(old?.ipRegion).toBe("");
+
+    // 关键回归：发评论不再报 `table comment has no column named ipRegion`
+    const fresh = await db.addComment(comment({ url: "/p" }));
+    expect(await db.getComment(fresh._id as string)).not.toBeNull();
+    expect(await db.countComments({ url: "/p" })).toBe(2);
   });
 });
 

@@ -67,23 +67,71 @@ Change `"tkserver": "x.x.x"` to `"tkserver": "latest"` in `package.json` — fro
 
 ## Netlify
 
-1. On GitHub, open the `twikoo-netlify` repository you forked.
-2. Check that `package.json` depends on `latest` (change it to the following if not):
+::: warning Breaking upgrade: Modern Netlify Functions
+The new Netlify template switches the function entry from the legacy CommonJS
+`exports.handler` form to a Modern Netlify Functions ESM default export. This enables
+`context.waitUntil()` for asynchronous `POST_SUBMIT` dispatch so mail and other
+post-submit notifications no longer block the comment response.
 
-```json
-{
-  "dependencies": {
-    "twikoo-netlify": "latest"
-  }
-}
-```
+This upgrade changes the **npm dependency, function entry, and Node.js runtime together**:
 
-::: tip Only one dependency since 2.0
-1.x's `twikoo-netlify` reused the `twikoo-vercel` implementation, so both had to be listed. Since 2.0 they are independent implementations — `twikoo-netlify` alone is enough.
+- Updating only `twikoo-netlify` while keeping the old `require(...).handler` entry still works, but it stays on the synchronous compatibility path and may still wait up to about 5 seconds.
+- Updating only the template while an old `twikoo-netlify` package is installed may fail during build or function loading because the Modern default entry is unavailable.
+- Node 18/20 is no longer sufficient for the Modern entry; Node.js **>= 22.12.0** is required.
+- Syncing an old fork may conflict because `twikoo.js` is removed and replaced by `twikoo.mjs`. If that happens, apply the steps below manually.
 :::
 
-3. Click **Sync fork**, then in the Netlify dashboard go to Deploys → Trigger deploy → **Clear cache and deploy site** (clearing the cache is what makes `latest` resolve again).
-4. The deployment runs automatically.
+For an existing Netlify deployment created from the old template:
+
+1. Open your forked `twikoo-netlify` repository on GitHub and click **Sync fork**. If GitHub reports a conflict, apply the following changes manually.
+2. Delete:
+
+   ```text
+   netlify/functions/twikoo.js
+   ```
+
+   Create:
+
+   ```text
+   netlify/functions/twikoo.mjs
+   ```
+
+   with:
+
+   ```js
+   export { default } from "twikoo-netlify"
+   ```
+
+3. Make sure `package.json` contains at least:
+
+   ```json
+   {
+     "dependencies": {
+       "twikoo-netlify": "latest"
+     },
+     "engines": {
+       "node": ">=22.12.0"
+     }
+   }
+   ```
+
+4. Create or update `.node-version` in the repository root:
+
+   ```text
+   24
+   ```
+
+   If your Netlify project explicitly sets `NODE_VERSION`, make sure it is at least 22.12.0; Node 24 is recommended.
+
+5. Commit and push the changes.
+6. In Netlify, go to **Deploys → Trigger deploy → Clear cache and deploy site** so `latest` is resolved and installed again.
+7. Open the function URL and verify that it reports Twikoo is running normally.
+8. Submit a test comment and confirm that the response returns quickly while email / push notifications are still delivered.
+
+::: tip Future upgrades
+After this one-time entry migration, future upgrades only require syncing the template and redeploying.
+If the dependency remains `"twikoo-netlify": "latest"`, you do not need to edit a version number manually.
+:::
 
 ## Hugging Face
 

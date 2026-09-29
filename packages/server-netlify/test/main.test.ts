@@ -5,9 +5,16 @@
  * 204 无体）、x-nf-client-connection-ip IP 语义（IP 头可定位）、
  * dependencies 无 twikoo-vercel。
  */
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { createNetlifyFunc, handler, toTkRequest } from "../src/main";
+import modernHandler, {
+  createModernNetlifyFunc,
+  createNetlifyFunc,
+  handler,
+  toTkRequest,
+} from "../src/main";
 import type { NetlifyEventLike } from "../src/main";
 import type { Database } from "@twikoojs/common";
 import { createMemoryAdapters } from "../../server-common/test/utils/memory-adapters";
@@ -68,6 +75,22 @@ describe("twikoo-netlify 薄适配器", () => {
     expect(result.headers["Access-Control-Allow-Credentials"]).toBe("true");
   });
 
+  it("现代默认入口：Request/Response 形态可执行", async () => {
+    const adapters = createMemoryAdapters();
+    const modernFunc = createModernNetlifyFunc({
+      database: adapters.database as unknown as Database,
+    });
+    const response = await modernFunc(
+      new Request("https://x.test/.netlify/functions/twikoo", {
+        method: "OPTIONS",
+        headers: { origin: "https://a.com" },
+      }),
+      { requestId: "test" } as Parameters<typeof modernFunc>[1],
+    );
+    expect(response.status).toBe(204);
+    expect(response.headers.get("Access-Control-Allow-Origin")).toBe("https://a.com");
+  });
+
   it("IP 头缺失 → ip 为空串（可定位：IP 用例红即头部映射错误）", () => {
     const req = toTkRequest(makeEvent({ headers: {} }));
     expect(req.ip).toBe("");
@@ -110,10 +133,22 @@ describe("twikoo-netlify 薄适配器", () => {
     expect(parsed.message).toBe("boom before pipeline");
   });
 
-  it("dependencies 无 twikoo-vercel；handler 为 v1 具名导出", async () => {
+  it("dependencies 无 twikoo-vercel；新旧入口同时导出", async () => {
     const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
     expect(pkg.dependencies["twikoo-vercel"]).toBeUndefined();
     expect(pkg.dependencies["@twikoojs/common"]).toBe("workspace:*");
     expect(typeof handler).toBe("function");
+    expect(typeof modernHandler).toBe("function");
+  });
+
+  it("CJS 产物保留 handler，并提供现代 default 入口", () => {
+    const distPath = fileURLToPath(new URL("../dist/index.js", import.meta.url));
+    expect(existsSync(distPath), "缺少 dist/index.js —— 请先运行 pnpm build").toBe(true);
+    const mod = createRequire(import.meta.url)("../dist/index.js") as {
+      handler?: unknown;
+      default?: unknown;
+    };
+    expect(typeof mod.handler).toBe("function");
+    expect(typeof mod.default).toBe("function");
   });
 });

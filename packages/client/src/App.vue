@@ -70,13 +70,21 @@ onUnmounted(() => {
 .twikoo .tk-expand:active {
   background-color: rgba(0, 0, 0, 0.19);
 }
+/*
+ * display: inline-block 必须显式声明：不少博客主题 / 框架的全局重置会写
+ * `img { display: block }`（如 VitePress 的 `img,svg,video,canvas,audio,iframe,
+ * embed,object{display:block}`），会把图片变成块级元素 —— 表情图片会每个独占一行、
+ * 普通图片也不再是 1.x 的行内表现。这里显式锁定为行内（对齐 1.x）。
+ */
 .twikoo .tk-content img {
+  display: inline-block;
   max-width: 300px;
   max-height: 300px;
   vertical-align: middle;
 }
 .twikoo .tk-owo-emotion,
 .twikoo .OwO-item img {
+  display: inline-block;
   width: 3em;
   height: auto;
   vertical-align: middle;

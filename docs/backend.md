@@ -9,7 +9,7 @@
 | [Netlify 部署](#netlify-部署) | ★★★★☆ | 有充足的免费额度，中国大陆访问速度不错。 |
 | [Hugging Face 部署](#hugging-face-部署) | ★★★☆☆ | **需要付费方案（PRO，$9/月）**：2026 年 7 月起，免费账号无法创建 Docker Space（Docker SDK 在控制台标为 Paid 且不可选）。中国大陆访问速度不错，允许通过 Cloudflare Tunnels 自定义域名。 |
 | [AWS Lambda 部署](#aws-lambda-部署) | ★★★☆☆ | 全球最大的云平台，适合已经使用 AWS 全家桶的用户。 |
-| [Cloudflare workers 部署](#cloudflare-workers-部署) | ★★☆☆☆ | 部署需使用命令行，冷启动时间较短。支持 D1 / MongoDB、DOMPurify 与 AI；**邮件请用 HTTP 通道**（直连 SMTP 在边缘不可用）。Akismet、腾讯云内容审核仍关闭。适配器在 [packages/server-cloudflare](https://github.com/twikoojs/twikoo/tree/main/packages/server-cloudflare)。 |
+| [Cloudflare workers 部署](#cloudflare-workers-部署) | ★★☆☆☆ | 部署需使用命令行，冷启动时间较短。支持 D1 / MongoDB、DOMPurify 与 AI；**邮件请用 HTTP 通道**（直连 SMTP 不可用）。Akismet、腾讯云内容审核仍关闭。适配器在 [packages/server-cloudflare](https://github.com/twikoojs/twikoo/tree/main/packages/server-cloudflare)。 |
 | [EdgeOne Makers 部署](#edgeone-makers-部署) | ★★☆☆☆ | 腾讯云 EdgeOne Makers 的函数部署，网页控制台上传 ZIP 即可，无需命令行。**必须绑定自定义域名**（默认域名链接仅 3 小时有效）。功能受限：邮件仅支持部分通道，无垃圾评论检测与 AI 功能。 |
 | [私有部署](#私有部署) | ★★☆☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
 | [私有部署 (Docker)](#私有部署-docker) | ★★★☆☆ | 适用于有服务器的用户，需要自行申请 HTTPS 证书。 |
@@ -300,12 +300,10 @@ lambda_function_url = "https://axtoiiithbcexamplegq7ozalu0cnkii.lambda-url.us-we
 ::: warning 注意
 Cloudflare 部署仍不支持 Akismet、腾讯云内容审核；图片上传请使用 S3 兼容图床（Cloudflare R2 支持 S3 协议）。已接入真实 jsdom + DOMPurify 与 `@xsai/generate-text` AI 检测。
 
-**邮件通知请使用 HTTP 通道**（SendGrid / MailChannels / Resend）。2026-09-29 真机实测发现，直连 SMTP 在 Cloudflare 边缘**任何端口都无法建立会话**，详见下文「邮件配置」。
+**邮件通知请使用 HTTP 通道**（SendGrid / MailChannels / Resend）。直连 SMTP 在 Cloudflare Workers 上无法建立会话，详见下文「邮件配置」。
 :::
 
-部署使用 Cloudflare Workers，数据库可选 D1 或 MongoDB，全程命令行操作。
-
-2026-09-29 已完成真机部署实测（`wrangler 4.142.0` + D1）：部署、首次请求自动建表、评论读写与计数、DOMPurify 消毒、IP 属地、管理员登录与配置写入均正常，Worker 启动时间 16~36 ms。MongoDB 模式、R2 图片上传、直连 SMTP 尚未验证通过（后者已确认为边缘不可用）。
+部署使用 Cloudflare Workers，数据库可选 D1 或 MongoDB，全程命令行操作。D1 模式可用：首次请求自动建表，评论读写、DOMPurify 消毒、IP 属地、管理员登录与配置均正常。MongoDB 模式与 R2 图片上传尚未验证，直连 SMTP 不可用。
 
 1. 克隆本仓库并构建（需 Node.js 26 与 pnpm）：
 
@@ -379,13 +377,13 @@ Cloudflare 部署仍不支持 Akismet、腾讯云内容审核；图片上传请�
 6. 命令行会输出 `https://twikoo.<你的用户名>.workers.dev`，浏览器访问它应看到 `Twikoo 云函数运行正常，请参考…`，该地址（含 `https://`）即为前端的 `envId`。
 
    ::: tip 中国大陆访问
-   `*.workers.dev` 在国内存在 DNS 污染，直接访问会超时（实测解析到 Meta 的 IP 段，而 `cloudflare.com` 正常）。国内使用时建议绑定自定义域名，或在配置前端前先经由代理验证该地址。
+   `*.workers.dev` 在国内存在 DNS 污染，直接访问会超时。国内使用时建议绑定自定义域名，或在配置前端前先经由代理访问该地址。
    :::
 
 邮件和 AI 参数在 **Twikoo 管理面板**配置，不是 Workers 环境变量：
 
 - HTTP 邮件：显式将 `SMTP_SERVICE` 设为 `SendGrid` / `MailChannels` / `Resend`，API Key 填入 `SMTP_PASS`，`SMTP_USER` 需非空，`SENDER_EMAIL` 填发件地址。
-- 直连 SMTP **在 Cloudflare 边缘不可用**（2026-09-29 真机实测，6 组配置均未建立会话）：端口 25 被平台拦截（`Connections to port 25 are prohibited`）；587 的 STARTTLS 握手失败（`TLS Handshake Failed.`）；465 直接 TLS 也连不上（`Connection closed`，或 `proxy request failed, cannot connect to the specified address`）。失败都发生在传输层，与账号密码是否正确无关，因此**不要**按「465 + `SMTP_SECURE=true`」去配。
+- 直连 SMTP **不可用**：端口 25 被平台拦截（`Connections to port 25 are prohibited`）；587 的 STARTTLS 握手失败（`TLS Handshake Failed.`）；465 直接 TLS 也连不上（`Connection closed`，或 `proxy request failed, cannot connect to the specified address`）。因此**不要**按「465 + `SMTP_SECURE=true`」去配。
 - AI：配置 `LLM_API_KEY`、`LLM_API_ENDPOINT` 与 `LLM_MODEL`，接口需兼容 OpenAI。
 
 从 1.x 的 [twikoojs/twikoo-cloudflare](https://github.com/twikoojs/twikoo-cloudflare) 升级：D1 表形态与 1.x 一致，数据可以直接沿用，云函数首次请求会自动补上 2.0 新增的列（含 1.x 早期建的库里缺失的 `ipRegion` 列）。更多细节（能力矩阵、邮件与图床配置、IP 属地实现）见[适配器 README](https://github.com/twikoojs/twikoo/tree/main/packages/server-cloudflare)。

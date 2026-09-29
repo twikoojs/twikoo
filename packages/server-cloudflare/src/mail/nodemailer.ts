@@ -5,6 +5,14 @@
  * nodejs_compat 使用真实 nodemailer。共享通知层可缓存此配置包装器，但每次
  * verify / sendMail 都单独创建并关闭非池化 SMTP 传输器，不跨请求保留连接。
  * SMTP 依赖按需加载，HTTP 通道不加载只在 nodejs_compat 下可用的 Node 网络模块。
+ *
+ * **注意：真实边缘上直连 SMTP 走不通**，这里保留 SMTP 分支只为本地 workerd 与
+ * HTTP 通道复用同一形态。workerd 对 nodemailer 的 `net` / `tls` 出站路径支持不全，
+ * 在 Cloudflare Workers 上 25 / 587 / 465 三个端口分别报
+ * `Connections to port 25 are prohibited`、`TLS Handshake Failed.`、
+ * `Connection closed`（或 `proxy request failed, cannot connect to the specified address`），
+ * 且都与账号密码无关 —— 也就是连会话都建不起来。面向用户的说明见包 README 的
+ * 「邮件通知」（只讲现状，不讲原因）。
  */
 import type { NodemailerLike } from "@twikoojs/common";
 

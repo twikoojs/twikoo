@@ -10,7 +10,7 @@ Twikoo 2.0 服务端适配器：**Cloudflare Workers + D1 / MongoDB**。业务�
 | 1.x 位置 | 2.0 归属 |
 | --- | --- |
 | `DBBinding`（D1 SQL 手写） | `src/database/d1.ts`（实现 `Database` 端口） |
-| `setCustomLibs({ nodemailer })` | `src/mail/nodemailer.ts`（真实 SMTP + HTTP 通道） |
+| `setCustomLibs({ nodemailer })` | `src/mail/nodemailer.ts`（HTTP 通道可用；直连 SMTP 边缘不可用） |
 | `setCustomLibs({ DOMPurify: 直通 })` | 公共层的 jsdom + DOMPurify |
 | `currentRequestGeo` | `src/geo/region-store.ts`（`request.cf` + 落库 `ipRegion`） |
 | 各事件 handler（20 个） | `@twikoojs/common` 的 handlers（本包不碰） |
@@ -97,13 +97,19 @@ MongoDB 模式每个请求新建一个基于公共 `MongoDatabase` 的实例，�
 
 ### 从 1.x twikoo-cloudflare 升级
 
-D1 表形态与 1.x 对齐（`comment` 的 21 列、`counter`、单行 `config`），**既有数据可直接沿用**。
-2.0 只多一列 `comment.extra`（承载扩展字段），`init()` 会自动 `ALTER TABLE` 补上；
-若想手工做，执行：
+D1 表形态与 1.x 对齐（`comment`、`counter`、单行 `config`），**既有数据可直接沿用**。
+`init()` 会自动 `ALTER TABLE` 补上缺的两列；若想手工做，执行：
 
 ```sql
+ALTER TABLE "comment" ADD COLUMN "ipRegion" TEXT NOT NULL DEFAULT '';
 ALTER TABLE "comment" ADD COLUMN "extra" TEXT NOT NULL DEFAULT '{}';
 ```
+
+- `ipRegion`：1.x 的 `schema.sql` 只对**新装**库建了这一列（21 列），早期建的库只有 20 列、
+  需要用户自己执行上面第一条 ALTER。**漏补它会让写评论整条失败**
+  （`table comment has no column named ipRegion`），而读评论、计数、登录、配置全部正常 ——
+  很容易被误判成别的问题。
+- `extra`：2.0 新增，承载扩展字段。
 
 `cap_kv` 表是 2.0 新增的（内嵌 Cap 验证码存储），由 `init()` 自动创建。
 
@@ -111,7 +117,7 @@ ALTER TABLE "comment" ADD COLUMN "extra" TEXT NOT NULL DEFAULT '{}';
 
 | 能力 | 状态 | 说明 |
 | --- | --- | --- |
-| mail | ✅ | `nodejs_compat` 下的真实 Nodemailer SMTP；保留 SendGrid / MailChannels / Resend HTTP API |
+| mail | ⚠️ | **直连 SMTP 在边缘不可用**（见「邮件通知」）；SendGrid / MailChannels / Resend 的 HTTP API 可用 |
 | domPurify | ✅ | 公共层加载真实 jsdom + DOMPurify，不再使用 `xss` 垫片 |
 | ip2region | ✅（覆写） | `request.cf` + 随评论落库的 `ipRegion`，不加载 IP 数据库 |
 | akismet / tencentTms | ❌ | 仍未纳入本适配器的运行时支持范围 |
@@ -123,12 +129,18 @@ ALTER TABLE "comment" ADD COLUMN "extra" TEXT NOT NULL DEFAULT '{}';
 
 以下配置均在 **Twikoo 管理面板**中设置，不是新增的 Workers 环境变量。
 
-- **SMTP**：配置 `SMTP_HOST`、`SMTP_PORT`、`SMTP_SECURE`、`SMTP_USER`、`SMTP_PASS`
-  与 `SENDER_EMAIL`，并清空 `SMTP_SERVICE`（非空时优先使用服务预设）。Workers 禁止连接
-  SMTP 端口 25；按服务商要求使用 465 + `SMTP_SECURE=true`（直接 TLS），或
-  587 + `SMTP_SECURE=false`（服务端支持时通过 STARTTLS 升级）。公共层仅将字符串
-  `"true"` 识别为启用直接 TLS。每次 `verify` / `sendMail` 独立创建并关闭
-  `pool: false` 的 Nodemailer 传输器，不跨请求保留 SMTP 连接。
+- **直连 SMTP 在 Cloudflare 边缘不可用**（2026-09-29 真机实测）。适配器走的是真实
+  `nodemailer`，但 workerd 运行时对它的 `net` / `tls` 出站路径支持不全 —— 6 组配置
+  （Gmail、QQ、163 × 端口 25 / 465 / 587）**没有一次建立成会话**，且失败都在传输层、
+  与账号密码是否正确无关：
+
+  - 端口 25 → `Connections to port 25 are prohibited`（平台拦截）
+  - 587（`SMTP_SECURE=false`，STARTTLS）→ `TLS Handshake Failed.`
+  - 465（`SMTP_SECURE=true`，直接 TLS）→ `Connection closed`（Gmail）/
+    `proxy request failed, cannot connect to the specified address`（QQ、163）
+
+  ⇒ **要发邮件请用下面的 HTTP 通道。** 注意「本地 workerd 验证通过」并不代表边缘可用，
+  这一点曾把问题掩盖住。
 - **HTTP API**：显式将 `SMTP_SERVICE` 设为 `SendGrid` / `MailChannels` / `Resend`，
   API Key 填入 `SMTP_PASS`，`SMTP_USER` 需非空，`SENDER_EMAIL` 填发件地址。
   这些通道仍走 HTTP，不转为 SMTP；发送失败会抛出带 HTTP 状态码的错误。
@@ -172,15 +184,20 @@ pnpm --filter @twikoojs/cloudflare test
 - `test/geo/region-store.test.ts`、`test/form-data.test.ts`、`test/dispatch.test.ts`、
   `test/database/schema.test.ts`：各注入件的单测。
 
-## 平台核对清单（查阅日期 2026-09-23）
+## 平台核对清单（查阅日期 2026-09-23，真机实测 2026-09-29）
 
 - [x] Workers 模块入口 `export default { fetch }` 与 `(request, env, executionCtx)` 签名
 - [x] `request.cf` 的字段面（country / region / city）与「仅当前请求」的限制
 - [x] D1 binding API（`prepare/bind/first/all/run`、位置参数、`meta.changes`）
 - [x] `ctx.waitUntil` 的后台执行窗口
-- [x] 本地 workerd：D1 / MongoDB 评论读写、DOMPurify 消毒、xsai 请求及审核结果落库、SMTP 协议
-- [x] Wrangler 4.138.0 `deploy --dry-run`：gzip 约 1.37 MiB（实际部署以当前构建结果为准）
-- [ ] **真机部署实测**（`wrangler deploy` + 远程数据库、邮件服务商 TLS、R2 图片上传）
+- [x] 本地 workerd：D1 / MongoDB 评论读写、DOMPurify 消毒、xsai 请求及审核结果落库
+- [x] Wrangler `deploy --dry-run`：`Total Upload 9074 KiB / gzip 1404 KiB`（2026-09-29 复测）
+- [x] **真机部署实测**（2026-09-29，`wrangler 4.142.0` + D1）：部署、首次请求自动建表、
+      评论读写与计数、DOMPurify 消毒、`request.cf` 属地、管理员登录与配置写入、各反向用例；
+      Worker Startup Time 16~36 ms
+- [x] **直连 SMTP 真机实测：边缘不可用**（6 组配置均未建立会话，见「邮件通知」）
+- [ ] MongoDB 模式真机实测（需可用的连接串）
+- [ ] R2 / S3 图片上传真机实测（目前只验证了「未配置时的可读错误」）
 
 ## 关于 npm 发布
 

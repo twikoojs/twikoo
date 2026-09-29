@@ -133,6 +133,33 @@ describe("emotion（setOwoImages 的调用方）", () => {
     expect(parseMarkdown(":tv_doge:")).toContain('class="tk-owo-emotion"');
   });
 
+  it("initMarkedOwo：非 ASCII 名称（如 tv_亲亲）同样渲染为 owo 图片（#1207）", () => {
+    const imgs = initMarkedOwo({
+      Bilibili: {
+        type: "image",
+        container: [
+          { text: "tv_亲亲", icon: '<img src="https://owo.test/tv_qinqin.png">' },
+          { text: "tv_doge", icon: '<img src="https://owo.test/tv_doge.png">' },
+        ],
+      },
+    });
+    expect(imgs["tv_亲亲"]).toBe("https://owo.test/tv_qinqin.png");
+    expect(parseMarkdown(":tv_亲亲:")).toContain('class="tk-owo-emotion"');
+    expect(parseMarkdown(":tv_doge:")).toContain('class="tk-owo-emotion"');
+  });
+
+  it("initMarkedOwo：未注册的名称仍原样输出，不吞字符", () => {
+    initMarkedOwo({
+      Bilibili: {
+        type: "image",
+        container: [{ text: "tv_亲亲", icon: '<img src="https://owo.test/tv_qinqin.png">' }],
+      },
+    });
+    const html = parseMarkdown("表情 :tv_不存在: 保留");
+    expect(html).toContain(":tv_不存在:");
+    expect(html).not.toContain("tk-owo-emotion");
+  });
+
   it("请求失败时结算为空对象（不挂起）", async () => {
     mockOwoXhr({}, 500);
     const odata = await initOwoEmotions("https://owo.test/broken.json");

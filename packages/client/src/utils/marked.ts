@@ -102,11 +102,16 @@ marked.use({
       },
       /**
        * 尝试匹配 :name: 表情标记。
+       *
+       * 名称字符集不可限定为 ASCII：默认 OwO 数据（owo.imaegoo.com/owo.json）的
+       * Bilibili 表情包里 21 个「TV 小电视」表情有 20 个名称含中文（如 `tv_亲亲`），
+       * 1.x 用 `/^:(\S*):/` 放行，2.0 若限 ASCII 会导致整包 TV 表情不渲染（#1207）。
+       * 此处放行任意非空白、非冒号字符，是否命中仍由 owoImages 映射表决定。
        * @param src 剩余文本
        * @returns 匹配 token；未命中返回 undefined（交还内置规则）
        */
       tokenizer(src: string): Tokens.Generic | undefined {
-        const match = /^:([a-zA-Z0-9_+-]+):/.exec(src);
+        const match = /^:([^\s:]+):/.exec(src);
         if (!match) return undefined;
         const imgSrc = owoImages[match[1]];
         if (!imgSrc) return undefined;

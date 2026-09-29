@@ -59,5 +59,8 @@ CREATE TABLE IF NOT EXISTS "cap_kv" (
 
 CREATE INDEX IF NOT EXISTS "idx_cap_kv_expires" ON "cap_kv" ("expires");
 
--- 从 1.x twikoo-cloudflare 的 D1 库升级：comment 表需补一列（列已存在时会报错，可忽略）
+-- 从 1.x twikoo-cloudflare 的 D1 库升级：comment 表需补两列（列已存在时会报错，可忽略）
+-- `ipRegion` 是 1.x 早期建的库缺失的列（1.x 的 schema.sql 只对新装库建它，老库要手工 ALTER），
+-- 不补的话发评论会直接报 `table comment has no column named ipRegion`。
+-- ALTER TABLE "comment" ADD COLUMN "ipRegion" TEXT NOT NULL DEFAULT '';
 -- ALTER TABLE "comment" ADD COLUMN "extra" TEXT NOT NULL DEFAULT '{}';

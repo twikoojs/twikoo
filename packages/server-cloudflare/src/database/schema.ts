@@ -79,8 +79,18 @@ export const SCHEMA_STATEMENTS: string[] = [
  * 而"列已存在"正是新装库与二次运行的常态。这里不做 `PRAGMA table_info` 预探测，
  * 是因为 D1 对 PRAGMA 的支持面随版本变化（探测失败会让整个 init 挂掉，
  * 而忽略 ALTER 失败绝不会）。
+ *
+ * **两列都要补**，缺口会直接表现为「读写全挂」而不是「少个字段」：
+ *
+ * - `ipRegion`：1.x 的 `schema.sql` 里只对**新装**库建了这一列，早期建的库需要用户
+ *   手工执行 `ALTER TABLE comment ADD COLUMN ipRegion ...`（1.x schema.sql 的注释原文）。
+ *   没跑过那条语句的库就是「20 列、无 ipRegion」形态，而本包的 INSERT 列表包含
+ *   `ipRegion`（见 `d1.ts` 的 `COMMENT_COLUMNS`）⇒ `SQLITE_ERROR: table comment has no
+ *   column named ipRegion`，**发评论整条失败**。2026-09-29 真机复现过。
+ * - `extra`：2.0 新增（承载扩展字段）。
  */
 export const MIGRATION_STATEMENTS: string[] = [
+  `ALTER TABLE "comment" ADD COLUMN "ipRegion" TEXT NOT NULL DEFAULT ''`,
   `ALTER TABLE "comment" ADD COLUMN "extra" TEXT NOT NULL DEFAULT '{}'`,
 ];
 

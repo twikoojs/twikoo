@@ -10,6 +10,7 @@
  * 7. 外链 rel 处理（renderLinks DOM 工具）
  * 8. XSS 清洗（sanitizeHtml / DOMPurify）
  * 9. 混排（owo + 代码 + 公式同文）
+ * 10. 非 ASCII 表情名（#1207）
  */
 import { describe, expect, it, beforeEach } from "vitest";
 import { parseMarkdown, setOwoImages } from "../src/utils/marked";
@@ -18,6 +19,8 @@ import { sanitizeHtml } from "../src/utils/sanitize";
 const OWO_IMGS = {
   tv_taking: "https://owo.test/tv.gif",
   good: "https://owo.test/good.png",
+  tv_呆: "https://owo.test/tv-dai.gif",
+  "bilibili-大佬": "https://owo.test/bilibili-dalao.png",
 };
 
 beforeEach(() => {
@@ -112,5 +115,14 @@ describe("marked 回归", () => {
     expect(html).toContain("const b = 2;");
     expect(html).toContain("$a=b$");
     expect(html).toContain('href="https://t.test"');
+  });
+
+  it("10. 非 ASCII 表情名（#1207）：:tv_呆: / :bilibili-大佬: 正常渲染", () => {
+    const html = parseMarkdown(":tv_呆: 和 :bilibili-大佬: 和 :tv_不存在:");
+    expect((html.match(/tk-owo-emotion/g) ?? []).length).toBe(2);
+    expect(html).toContain('src="https://owo.test/tv-dai.gif"');
+    expect(html).toContain('src="https://owo.test/bilibili-dalao.png"');
+    // 未注册的非 ASCII 表情仍原样输出（不吞字符）
+    expect(html).toContain(":tv_不存在:");
   });
 });

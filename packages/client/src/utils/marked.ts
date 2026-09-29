@@ -102,11 +102,15 @@ marked.use({
       },
       /**
        * 尝试匹配 :name: 表情标记。
+       *
+       * 名字字符集对齐 1.x 的 `owo: /^:(\S*):/`——只排除空白与 `:`，
+       * 以兼容含非 ASCII 字符的表情名（默认 CDN 的 Bilibili 包即含
+       * `tv_呆`、`tv_亲亲` 等中文名，#1207）。
        * @param src 剩余文本
        * @returns 匹配 token；未命中返回 undefined（交还内置规则）
        */
       tokenizer(src: string): Tokens.Generic | undefined {
-        const match = /^:([a-zA-Z0-9_+-]+):/.exec(src);
+        const match = /^:([^\s:]+):/.exec(src);
         if (!match) return undefined;
         const imgSrc = owoImages[match[1]];
         if (!imgSrc) return undefined;

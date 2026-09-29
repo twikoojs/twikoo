@@ -11,26 +11,32 @@ Twikoo 2.0 服务端适配器。业务逻辑在 `@twikoojs/common`，本包仅�
 运行时要求 Node.js **>= 22.12.0**，建议使用 **Node 24**（`@netlify/functions@6` 与
 `@netlify/aws-lambda-compat@2` 的最低版本要求）。
 
-## 升级兼容性
+## 不兼容升级说明
 
-> [!WARNING]
-> 现代模板依赖本包的默认导出。必须先发布包含现代入口的 `twikoo-netlify`，再升级部署模板；旧包搭配新模板不受支持，可能在构建或函数加载阶段失败。
+新版 Netlify 部署模板改用 Modern Netlify Functions 入口，以便通过
+`context.waitUntil()` 异步派发 `POST_SUBMIT`。这次升级同时涉及函数入口和
+Node.js 版本，旧部署不能只更新单个文件。
 
-| `twikoo-netlify` 包 | 部署模板 | 结果 |
-| --- | --- | --- |
-| 旧版 | 旧模板 `require(...).handler` | 正常运行，通知同步等待，最长约 5 秒 |
-| 新版 | 旧模板 `require(...).handler` | 功能兼容，但仍走同步兼容路径，最长约 5 秒 |
-| 旧版 | 新模板 ESM 默认入口 | **不受支持**：旧包缺少现代默认入口，可能在构建或函数加载阶段失败 |
-| 新版 | 新模板 ESM 默认入口 | 正常运行，通过 `context.waitUntil()` 异步派发通知 |
+旧模板继续可以运行，但即使升级了新版 `twikoo-netlify`，仍会走旧
+`require(...).handler` 兼容路径，评论提交最多仍可能被后置通知阻塞约 5 秒。
 
-发布和升级必须遵循以下顺序：
+从旧模板升级时请同时完成以下修改：
 
-1. 合并并发布本包的新版本。
-2. 使用旧模板验证新版包的 `handler` 兼容性。
-3. 将模板依赖更新到已发布的新版本，再切换 ESM 默认入口。
-4. 验证浏览器响应耗时和后台通知后，再发布模板更新。
+1. 删除 `netlify/functions/twikoo.js`。
+2. 新建 `netlify/functions/twikoo.mjs`：
 
-旧模板不会自动启用异步派发；仅升级 npm 包不会改善评论提交耗时。
+   ```js
+   export { default } from "twikoo-netlify"
+   ```
+
+3. 确保 `package.json` 使用新版 `twikoo-netlify`，并要求 Node.js >= 22.12.0。
+4. 在仓库根目录增加 `.node-version`，内容为 `24`。
+5. 在 Netlify 使用 **Clear cache and deploy site** 重新部署。
+
+如果先切换新模板但仍安装旧版 `twikoo-netlify`，可能因缺少 Modern 默认入口而在
+构建或函数加载阶段失败；如果项目显式固定了 Node 18/20，也需要同步升级 Node 版本。
+
+详细升级步骤见 [版本更新文档](../../docs/update.md#针对-netlify-部署的更新方式)。
 
 ## 平台核对清单（查阅日期 2026-09-28）
 

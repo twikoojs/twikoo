@@ -6,7 +6,7 @@
  * 对应断言（code 0）即红（替代 1.x「各后端 switch 保持一致」的人工约定）。
  * Mongo 与 Loki 两实现均接入；适配器以各自的 DB 实现接入同一套。
  */
-import { expect, describe, it, beforeEach } from "vitest";
+import { expect, describe, it, beforeEach, vi } from "vitest";
 import { createHandler, RECURSION_HEADER, RES_CODE } from "../../src/index";
 import { createMemoryAdapters, makeRequest } from "../utils/memory-adapters";
 import type { Database, TkAdapters } from "../../src/index";
@@ -156,6 +156,68 @@ export function runContractSuite(name: string, fixture: ContractFixture): void {
       const ids = [...data1, ...data2, ...data3].map((c) => c.id);
       expect(new Set(ids).size).toBe(5);
     });
+
+    /** 大留言板首屏只取分页文档，统计不物化全部主楼 */
+    it.each(["newest", "oldest"])(
+      "COMMENT_GET：2300 条主楼按 %s 排序时限制两个可见性分支的读取量",
+      async (sort) => {
+        const db = adapters.database;
+        // 四组各 575 条：本人正常、本人隐藏、他人正常、他人隐藏。
+        const comments = Array.from({ length: 2300 }, (_, i) => ({
+          _id: `comment-${i}`,
+          url: "/contract",
+          comment: "<p>留言板评论</p>",
+          uid: i % 4 < 2 ? "contract-user" : "other-user",
+          isSpam: i % 2 === 1,
+          created: i + 1,
+        }));
+        await db.bulkAddComments(comments);
+        const reads = vi.spyOn(db, "getComments");
+        try {
+          const visible = comments.filter((c) => !c.isSpam || c.uid === "contract-user");
+          visible.sort((a, b) =>
+            sort === "oldest" ? a.created - b.created : b.created - a.created,
+          );
+          const res = await post({
+            event: "COMMENT_GET",
+            url: "/contract",
+            accessToken: "contract-user",
+            sort,
+          });
+          expect(res.body.code).toBe(0);
+          expect(res.body.count).toBe(1725);
+          expect(res.body.more).toBe(true);
+          expect((res.body.data as Array<{ id: string }>).map((c) => c.id)).toEqual(
+            visible.slice(0, 8).map((c) => c._id),
+          );
+          // 统计、空置顶和空回复不应取回主楼；两个分页分支各最多读 9 条。
+          const batches = await Promise.all(reads.mock.results.map((result) => result.value));
+          expect(batches.reduce((sum, batch) => sum + batch.length, 0)).toBeLessThanOrEqual(18);
+
+          if (sort === "newest") {
+            reads.mockClear();
+            const next = await post({
+              event: "COMMENT_GET",
+              url: "/contract",
+              accessToken: "contract-user",
+              before: visible[7].created,
+            });
+            expect(next.body.code).toBe(0);
+            expect(next.body.count).toBe(1725);
+            expect(next.body.more).toBe(true);
+            expect((next.body.data as Array<{ id: string }>).map((c) => c.id)).toEqual(
+              visible.slice(8, 16).map((c) => c._id),
+            );
+            const nextBatches = await Promise.all(reads.mock.results.map((result) => result.value));
+            expect(nextBatches.reduce((sum, batch) => sum + batch.length, 0)).toBeLessThanOrEqual(
+              18,
+            );
+          }
+        } finally {
+          reads.mockRestore();
+        }
+      },
+    );
 
     it("COMMENT_GET_FOR_ADMIN：分页参数 + data + count（含 HIDDEN 筛选形态）", async () => {
       const id = await seed({ isSpam: true });

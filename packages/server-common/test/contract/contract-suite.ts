@@ -157,6 +157,39 @@ export function runContractSuite(name: string, fixture: ContractFixture): void {
       expect(new Set(ids).size).toBe(5);
     });
 
+    /** 连续本人正常评论之后的隐藏评论仍可翻页读取，不泄露他人隐藏评论。 */
+    it.each([9, 16])(
+      "COMMENT_GET：前 %i 条均为本人正常评论时，逐页返回完整可见列表",
+      async (normalCount) => {
+        await adapters.database.saveConfig({ COMMENT_PAGE_SIZE: "8" });
+        const normalIds: string[] = [];
+        for (let i = 0; i < normalCount; i++) {
+          normalIds.push(await seed({ isSpam: false, created: 100 - i }));
+        }
+        const hiddenId = await seed({ isSpam: true, created: 10 });
+        const publicId = await seed({ uid: "other-user", created: 9 });
+        await seed({ uid: "other-user", isSpam: true, created: 101 });
+        const expectedIds = [...normalIds, hiddenId, publicId];
+        let before: number | undefined;
+
+        // 按预期页数遍历，不能因错误的 more=false 提前结束验证。
+        for (let offset = 0; offset < expectedIds.length; offset += 8) {
+          const res = await post({
+            event: "COMMENT_GET",
+            url: "/contract",
+            accessToken: "contract-user",
+            before,
+          });
+          const data = res.body.data as Array<{ id: string; created: number }>;
+          expect(res.body.code).toBe(0);
+          expect(res.body.count).toBe(expectedIds.length);
+          expect(data.map((c) => c.id)).toEqual(expectedIds.slice(offset, offset + 8));
+          expect(res.body.more).toBe(offset + 8 < expectedIds.length);
+          before = data[data.length - 1].created;
+        }
+      },
+    );
+
     /** 大留言板首屏只取分页文档，统计不物化全部主楼 */
     it.each(["newest", "oldest"])(
       "COMMENT_GET：2300 条主楼按 %s 排序时限制两个可见性分支的读取量",

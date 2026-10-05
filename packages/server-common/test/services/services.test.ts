@@ -528,7 +528,7 @@ describe("评论查询可见性（services/comment-query）", () => {
       .toHaveLength(1);
   });
 
-  it("queryVisibleComments：访客合并去重（非垃圾 ∪ 本人）", async () => {
+  it("queryVisibleComments：访客仅见非垃圾与本人隐藏评论", async () => {
     const adapters = createMemoryAdapters();
     const db = adapters.database;
     await db.addComment({ _id: "a", nick: "正常", url: "/p" });

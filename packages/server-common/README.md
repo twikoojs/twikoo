@@ -33,3 +33,10 @@ const response = await handleRequest(request);
 
 写自己的平台适配器时，用 `scaffoldAdapters` 兜底未实现的端口、`FULL_CAPABILITIES` 声明全能力；
 具体约定见仓库 `AGENTS.md` 的「适配器开发指南」。
+
+## 评论列表分页
+
+访客列表与计数使用相同的可见性条件：「非隐藏评论 + 本人隐藏评论」。两个查询分支互斥，
+每个分页分支最多读取 `pageSize + 1` 条，合并排序后由处理器截取当前页并判断 `more`。
+「加载更多」使用上一页末条评论的 `created` 作为 `before` 游标；本人隐藏评论仍可在后续页读取，
+他人隐藏评论不会返回。管理员未开启 `HIDE_SPAM` 时仍可读取全部评论。

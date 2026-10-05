@@ -65,14 +65,14 @@ export function commentMatchesKeyword(
 
 /**
  * 可见性语义展开（1.x getCommentQuery 的 $or 服务层等价形态）：
- * 管理员（未开 HIDE_SPAM）全可见；否则「非垃圾 ∪ 本人评论」双查合并去重。
+ * 管理员（未开 HIDE_SPAM）全可见；否则「非垃圾 + 本人垃圾」双查合并，两组互斥。
  * @param db 数据库
  * @param condition 基础条件
  * @param uid 当前用户
  * @param isAdminUser 是否管理员
  * @param config 全量配置
  * @param options 查询选项（排序和读取上限同时应用于两个分支）
- * @returns 合并去重后的评论
+ * @returns 合并后的评论
  */
 export async function queryVisibleComments(
   db: Database,
@@ -85,20 +85,12 @@ export async function queryVisibleComments(
   if (isAdminUser && config.HIDE_SPAM !== "true") {
     return db.getComments(condition, options);
   }
-  // 访客 / HIDE_SPAM：非垃圾 ∪ 本人评论（1.x $or 双分支的服务层合并）
-  const [notSpam, mine] = await Promise.all([
+  // 与可见性计数保持一致；分支互斥，本人正常评论不重复占用读取配额。
+  const [notSpam, mySpam] = await Promise.all([
     db.getComments({ ...condition, isSpam: { [NOT]: true } }, options),
-    db.getComments({ ...condition, uid }, options),
+    db.getComments({ ...condition, uid, isSpam: true }, options),
   ]);
-  const seen = new Set<string>();
-  const merged: CommentDoc[] = [];
-  for (const doc of [...notSpam, ...mine]) {
-    const id = String(doc._id);
-    if (!seen.has(id)) {
-      seen.add(id);
-      merged.push(doc);
-    }
-  }
+  const merged = [...notSpam, ...mySpam];
   // 合并后按 sort 语义重排（等价重建库内排序）
   if (options?.sort) {
     const entries = Object.entries(options.sort);

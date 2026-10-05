@@ -71,7 +71,7 @@ export function commentMatchesKeyword(
  * @param uid 当前用户
  * @param isAdminUser 是否管理员
  * @param config 全量配置
- * @param options 查询选项（sort/limit 透传主查）
+ * @param options 查询选项（排序和读取上限同时应用于两个分支）
  * @returns 合并去重后的评论
  */
 export async function queryVisibleComments(
@@ -88,7 +88,7 @@ export async function queryVisibleComments(
   // 访客 / HIDE_SPAM：非垃圾 ∪ 本人评论（1.x $or 双分支的服务层合并）
   const [notSpam, mine] = await Promise.all([
     db.getComments({ ...condition, isSpam: { [NOT]: true } }, options),
-    db.getComments({ ...condition, uid }),
+    db.getComments({ ...condition, uid }, options),
   ]);
   const seen = new Set<string>();
   const merged: CommentDoc[] = [];

@@ -136,6 +136,31 @@ describe("COMMENT_GET / COMMENT_GET_FOR_ADMIN", () => {
     expect(nicksOf(admin)).toEqual(["本人隐藏置顶", "正常置顶", "隐藏置顶"]);
   });
 
+  /** 统计只包含当前页主楼，保留本人隐藏评论及管理员可见性 */
+  it.each([
+    { accessToken: "visitor", hideSpam: "false", count: 3 },
+    { accessToken: "user-9", hideSpam: "false", count: 4 },
+    { accessToken: ADMIN_TOKEN, hideSpam: "false", count: 6 },
+    { accessToken: ADMIN_TOKEN, hideSpam: "true", count: 4 },
+  ])(
+    "计数不重复且遵循可见性：$accessToken / HIDE_SPAM=$hideSpam",
+    async ({ accessToken, hideSpam, count }) => {
+      await adapters.database.saveConfig({ HIDE_SPAM: hideSpam });
+      const root = await seed({ nick: "未标记状态" });
+      await seed({ nick: "本人正常", uid: "user-9", isSpam: false });
+      await seed({ nick: "正常置顶", top: true, url: "/post/1/" });
+      await seed({ nick: "本人隐藏", uid: "user-9", isSpam: true });
+      await seed({ nick: "管理员隐藏", uid: ADMIN_TOKEN, isSpam: true });
+      await seed({ nick: "他人隐藏", isSpam: true });
+      await seed({ nick: "回复", rid: root });
+      await seed({ nick: "其他页面", url: "/other" });
+      const res = await post({ event: "COMMENT_GET", url: "/post/1", accessToken });
+      expect(res.body.code).toBe(0);
+      expect(res.body.count).toBe(count);
+      expect(res.body.data).toHaveLength(count);
+    },
+  );
+
   it("failure：缺 url → 参数不合法错误体", async () => {
     const res = await post({ event: "COMMENT_GET" });
     expect(res.body.code).toBe(1000);

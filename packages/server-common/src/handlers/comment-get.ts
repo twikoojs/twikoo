@@ -98,7 +98,7 @@ export const commentGet: EventHandler = async (ctx) => {
 };
 
 /**
- * 可见性计数（1.x count 的 $or 语义：取回命中 id 精确去重后计数）。
+ * 可见性计数：非垃圾 + 本人垃圾，两组互斥，避免读取完整文档去重。
  * @param ctx 请求上下文
  * @param condition 基础条件
  * @returns 可见条数
@@ -112,11 +112,9 @@ async function queryVisibleCount(
   if (isAdminUser && ctx.config.HIDE_SPAM !== "true") {
     return db.countComments(condition as never);
   }
-  const [a, b] = await Promise.all([
-    db.getComments({ ...condition, isSpam: { [NOT]: true } }),
-    db.getComments({ ...condition, uid: ctx.accessToken }),
+  const [notSpam, mySpam] = await Promise.all([
+    db.countComments({ ...condition, isSpam: { [NOT]: true } }),
+    db.countComments({ ...condition, uid: ctx.accessToken, isSpam: true }),
   ]);
-  const seen = new Set<string>();
-  for (const doc of [...a, ...b]) seen.add(String(doc._id));
-  return seen.size;
+  return notSpam + mySpam;
 }

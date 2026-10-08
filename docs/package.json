@@ -16,6 +16,6 @@
   },
   "devDependencies": {
     "vitepress": "^1.6.4",
-    "vitest": "^5.0.1"
+    "vitest": "^5.0.3"
   }
 }

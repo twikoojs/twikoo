@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@twikoojs/tsdown-config": "workspace:*",
-    "@vitest/coverage-v8": "5.0.1",
+    "@vitest/coverage-v8": "5.0.3",
     "@vue/eslint-config-typescript": "^14.9.0",
     "@vue/test-utils": "^2.5.1",
     "autocorrect-node": "^2.14.0",

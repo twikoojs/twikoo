@@ -32,7 +32,7 @@
     "remove-markdown": "^0.6.4"
   },
   "devDependencies": {
-    "@types/node": "^26.6.1"
+    "@types/node": "^26.6.4"
   },
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

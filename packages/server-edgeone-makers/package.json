@@ -41,6 +41,6 @@
   },
   "devDependencies": {
     "@imaegoo/node-ip2region": "^2.1.1",
-    "@types/node": "^26.6.1"
+    "@types/node": "^26.6.4"
   }
 }

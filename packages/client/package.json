@@ -28,7 +28,7 @@
     "@cloudbase/js-sdk": "^3.10.1",
     "@fortawesome/fontawesome-free": "^7.3.1",
     "@types/jsdom": "^30.0.0",
-    "@types/node": "^26.6.1",
+    "@types/node": "^26.6.4",
     "@vitejs/plugin-vue": "^6.0.9",
     "blueimp-md5": "^2.19.0",
     "dompurify": "^3.4.15",

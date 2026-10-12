@@ -85,7 +85,7 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^26.6.1",
+    "@types/node": "^26.6.4",
     "lokijs": "^1.5.12",
     "mongodb": "^7.6.0"
   },

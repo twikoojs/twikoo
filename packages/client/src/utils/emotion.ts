@@ -12,6 +12,7 @@
  * 2.0 相对 1.x 的修正：请求失败时**结算为 `{}`**（1.x 在该分支既不 resolve 也不
  * reject，会让 `Promise.all` 永久挂起）。成功路径行为完全一致。
  */
+import DOMPurify from "dompurify";
 import { logger } from "./logger";
 import { setOwoImages, type OwoImage } from "./marked";
 
@@ -34,7 +35,7 @@ export interface OwoPackage {
 /** OwO 全量数据（包名 → 包内容） */
 export type OwoData = Record<string, OwoPackage>;
 
-/** 供解析 `icon` HTML 取 `src` 的复用的 template 元素（避免每次创建） */
+/** HTML 即使清洗过也在不挂载的 template 中解析 */
 const template = document.createElement("template");
 
 /**
@@ -44,7 +45,7 @@ const template = document.createElement("template");
  */
 function getImg(html: string): HTMLImageElement | null {
   try {
-    template.innerHTML = html;
+    template.innerHTML = DOMPurify.sanitize(html);
     return template.content.querySelector("img");
   } catch (e) {
     logger.warn("OwO 表情解析失败", e);

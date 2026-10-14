@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 /**
  * 客户端补齐模块单测：constants / avatar / emotion / directives / bus / state / highlight。
  *

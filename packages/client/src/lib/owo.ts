@@ -83,7 +83,7 @@ export default class OwO {
 
     this.logo = document.createElement("div");
     this.logo.className = "OwO-logo";
-    this.logo.innerHTML = DOMPurify.sanitize(option.logo ?? "");
+    this.logo.appendChild(DOMPurify.sanitize(option.logo ?? "", { RETURN_DOM_FRAGMENT: true }));
     const body = document.createElement("div");
     body.className = "OwO-body";
     const bar = document.createElement("div");
@@ -103,8 +103,7 @@ export default class OwO {
         const item = document.createElement("li");
         item.className = "OwO-item";
         item.title = emotion.text ?? "";
-        // 与 Markdown 表情一致，只提取首张图片的地址和类名，不挂载原始 HTML。
-        template.innerHTML = emotion.icon;
+        template.innerHTML = DOMPurify.sanitize(emotion.icon);
         const sourceImage = template.content.querySelector("img");
         if (sourceImage) {
           const image = document.createElement("img");

@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 /** OwO 面板的数据安全、插入文本与悬停预览回归。 */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import OwO from "../src/lib/owo";
@@ -6,10 +7,24 @@ import { parseMarkdown } from "../src/utils/marked";
 
 beforeEach(() => {
   vi.useFakeTimers();
+  // jsdom 25 没有 PointerEvent，只补充预览交互依赖的指针类型。
+  vi.stubGlobal(
+    "PointerEvent",
+    class extends MouseEvent {
+      pointerType: string;
+
+      /** 保留 MouseEvent 行为并补充 pointerType。 */
+      constructor(type: string, options: PointerEventInit = {}) {
+        super(type, options);
+        this.pointerType = options.pointerType ?? "";
+      }
+    },
+  );
 });
 
 afterEach(() => {
   vi.useRealTimers();
+  vi.unstubAllGlobals();
   document.body.replaceChildren();
 });
 
@@ -25,6 +40,37 @@ function mountOwo(odata: OwoData) {
 }
 
 describe("OwO 面板回归", () => {
+  it("logo 清洗后保留 SVG 图标并移除脚本和事件属性", () => {
+    const container = document.createElement("div");
+    const target = document.createElement("textarea");
+    document.body.append(container, target);
+    new OwO({
+      container,
+      target,
+      odata: {},
+      logo: '<svg onload="bad()"><path d="M0 0h1"></path></svg><script>bad()</script>',
+    });
+    vi.runAllTimers();
+    expect(container.querySelector(".OwO-logo svg path")).not.toBeNull();
+    expect(container.querySelector("[onload], script")).toBeNull();
+  });
+
+  it("Markdown 表情映射只读取清洗后的图片地址和类名", () => {
+    const imgs = initMarkedOwo({
+      image: {
+        container: [
+          { text: "unsafe", icon: '<img src="javascript:bad()" onerror="bad()">' },
+          {
+            text: "safe",
+            icon: '<span><img src="https://owo.test/face.png" class="custom" onerror="bad()"></span>',
+          },
+        ],
+      },
+    });
+    expect(Object.hasOwn(imgs, "unsafe")).toBe(false);
+    expect(imgs.safe).toEqual({ src: "https://owo.test/face.png", className: "custom" });
+  });
+
   it("分类名、表情名和 HTML 不能注入活动属性或额外节点", () => {
     const name = '<img src=x onerror="bad()">';
     const title = 'face" onclick="bad()';

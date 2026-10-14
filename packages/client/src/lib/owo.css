@@ -7,7 +7,7 @@
  *
  * 1.x 通过 `view/index.js` 的 `import '../lib/owo.css'` 引入；2.0 原样迁入同一份样式
  * （类名 OwO-* 由 lib/owo.ts 生成，两者严格对应，不可改名）。
- * 唯一差异：本仓 Prettier 重排了缩进与属性换行，**选择器与取值未做任何改动**。
+ * 新增 tk-owo-preview-panel 悬停预览样式。
  */
 
 .OwO {
@@ -122,6 +122,30 @@
 
 .OwO .OwO-body .OwO-items-show {
   display: block;
+}
+
+.twikoo .OwO .tk-owo-preview-panel {
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  width: max-content;
+  max-width: 100%;
+  height: auto;
+  box-sizing: border-box;
+  padding: 8px;
+  background-color: inherit;
+  border: 1px solid rgba(144, 147, 153, 0.31);
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.twikoo .OwO .tk-owo-preview-panel img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(180px, 100%);
+  max-height: min(180px, calc(40vh - 18px));
+  object-fit: contain;
 }
 
 .OwO .OwO-body .OwO-bar {

@@ -132,7 +132,7 @@ function updateMeta(): void {
 }
 
 /**
- * 输入时同步本地表单并静默持久化（不触发 QQ 补全，等 change）。
+ * 输入时同步表单、持久化并更新提交条件；QQ 补全仍在 change 时触发。
  *
  * 通过原生 `name` 反查字段名（而非模板内联箭头），避免模板表达式参与 TS 规则检查。
  * @param value 输入值
@@ -142,7 +142,7 @@ function onMetaInput(value: string, evt: Event): void {
   const key = (evt.target as HTMLInputElement).name as MetaKey;
   if (!key) return;
   metaData[key] = value;
-  localStorage.setItem("twikoo", JSON.stringify(metaData));
+  updateMeta();
 }
 
 /** 从 localStorage 读取草稿（1.x initMeta 对齐） */

@@ -463,18 +463,34 @@ export async function getXml2js(): Promise<Xml2jsLike> {
 }
 
 /**
- * 获取 html-to-text 编译产物（通知纯文本；配置 1.x 对齐：忽略链接 href、跳过图片）。
+ * 获取 html-to-text 编译产物；通知忽略图片，长度检查按替代文本或固定占位计数。
+ * @param options 是否使用评论长度计数规则
  * @returns 编译后的转换函数
  */
-export async function getHtmlToText(): Promise<HtmlToTextLike> {
+export async function getHtmlToText(options: { forWordCount?: boolean } = {}): Promise<HtmlToTextLike> {
   const mod = pickDefault(await loadLib("html-to-text")) as {
     compile(options: unknown): HtmlToTextLike;
   };
   return mod.compile({
     wordwrap: false,
+    formatters: {
+      /** 图片按替代文本计数；无替代文本的图片和分隔线各占 10 个字符。 */
+      wordCount(
+        elem: { name: string; attribs: Record<string, string> },
+        _walk: unknown,
+        builder: {
+          /** 添加不受大小写转换影响的计数文本。 */
+          addInline(text: string, options: { noWordTransform: boolean }): void;
+        },
+      ) {
+        const text = elem.name === "img" ? elem.attribs.alt?.trim() : "";
+        builder.addInline(text || "-".repeat(10), { noWordTransform: true });
+      },
+    },
     selectors: [
       { selector: "a", options: { ignoreHref: true } },
-      { selector: "img", format: "skip" },
+      { selector: "img", format: options.forWordCount ? "wordCount" : "skip" },
+      ...(options.forWordCount ? [{ selector: "hr", format: "wordCount" }] : []),
     ],
   });
 }

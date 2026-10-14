@@ -673,6 +673,8 @@ async function send(): Promise<void> {
     const result = (res.result ?? res) as { id?: string; code?: number; message?: string };
     if (result.id) {
       comment.value = "";
+      isPreviewing.value = false;
+      commentHtml.value = "";
       error.value = undefined;
       emit("load");
       saveDraft();

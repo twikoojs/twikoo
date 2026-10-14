@@ -40,6 +40,12 @@ export async function preCheckSpam(
   let limitLength = parseInt(String(config.LIMIT_LENGTH ?? ""));
   if (Number.isNaN(limitLength)) limitLength = 500;
   if (limitLength) {
+    if (comment.comment.length > limitLength * 10) {
+      throw new Error("评论内容过长");
+    }
+    // 与前端基于原始 Markdown 的口径有差异
+    // 特殊构造的 HTML 可绕过 htmlToText 的输出，暂定 HTML 长度限制为文本长度十倍，不增加配置项
+    // 根本原因还是提交 HTML 的模式本身不够安全
     const htmlToText = await getHtmlToText({ forWordCount: true });
     if (htmlToText(comment.comment).length > limitLength) {
       throw new Error("评论内容过长");

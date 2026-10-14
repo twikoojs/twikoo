@@ -1,5 +1,6 @@
-/** 评论长度按可读文本计算，覆盖 HTML 开销、图片与分隔线的边界。 */
+/** 评论长度同时受可读文本和 HTML 上限约束，覆盖图片与分隔线的边界。 */
 import { describe, expect, it } from "vitest";
+import type { ConfigData } from "../../src/ports/database";
 import { preCheckSpam } from "../../src/services/spam";
 import { getHtmlToText } from "../../src/utils/lib-loader";
 import { createRequestLogger } from "../../src/utils/logger";
@@ -7,7 +8,7 @@ import { createRequestLogger } from "../../src/utils/logger";
 const logger = createRequestLogger("comment-length");
 
 describe("评论长度限制", () => {
-  it("默认上限允许 500 字正文，不计标签和链接地址", async () => {
+  it("默认上限允许 500 字正文，HTML 未超限时不计标签和链接地址", async () => {
     const comment = `<p><a href="https://example.com/${"x".repeat(600)}">${"字".repeat(500)}</a></p>`;
     await expect(preCheckSpam({ comment, nick: "n" }, {}, logger)).resolves.toBe(false);
     await expect(
@@ -16,8 +17,8 @@ describe("评论长度限制", () => {
   });
 
   it.each([
-    ["<p><strong>你好</strong>&amp;</p>", 3],
-    ['<img src="https://example.com/image.png" alt=" 表情 "> ', 2],
+    ["<p><strong>一二三四五六七八九十</strong>&amp;</p>", 11],
+    ['<img src="https://example.com/image.png" alt=" 一二三四五六七八九十 "> ', 10],
     ['<img src="https://example.com/image.png">', 10],
     ['<img alt="   ">', 10],
     ["<hr>", 10],
@@ -30,9 +31,18 @@ describe("评论长度限制", () => {
     ).rejects.toThrow("评论内容过长");
   });
 
+  it.each([500, 1000])("HTML 长度最多为文本上限 %i 的十倍", async (length) => {
+    const comment = `<p>${"字".repeat(length)}</p>`.padEnd(length * 10, " ");
+    const config: ConfigData = length === 500 ? {} : { LIMIT_LENGTH: length };
+    await expect(preCheckSpam({ comment, nick: "n" }, config, logger)).resolves.toBe(false);
+    await expect(
+      preCheckSpam({ comment: `${comment} `, nick: "n" }, config, logger),
+    ).rejects.toThrow("评论内容过长");
+  });
+
   it("上限为 0 时仍允许不限长评论", async () => {
     await expect(
-      preCheckSpam({ comment: "字".repeat(501), nick: "n" }, { LIMIT_LENGTH: 0 }, logger),
+      preCheckSpam({ comment: "字".repeat(5001), nick: "n" }, { LIMIT_LENGTH: 0 }, logger),
     ).resolves.toBe(false);
   });
 

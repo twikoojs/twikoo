@@ -135,6 +135,38 @@ describe("TkMetaInput", () => {
 });
 
 describe("TkSubmit", () => {
+  it("输入时实时校验，change 后才保存资料并更新头像", async () => {
+    useFakeTcb();
+    const saved = { nick: "原昵称", mail: "old@example.com", link: "" };
+    localStorage.setItem("twikoo", JSON.stringify(saved));
+    const wrapper = mount(TkSubmit, { props: { config: {} } });
+    await flushPromises();
+    await wrapper.find("textarea").setValue("测试内容");
+    const avatar = wrapper.find(".tk-avatar img").attributes("src");
+    const nickInput = wrapper.find('input[name="nick"]');
+    const mailInput = wrapper.find('input[name="mail"]');
+
+    (mailInput.element as HTMLInputElement).value = "";
+    await mailInput.trigger("input");
+    expect(wrapper.find(".tk-send").attributes("disabled")).toBeDefined();
+    (mailInput.element as HTMLInputElement).value = "new@example.com";
+    await mailInput.trigger("input");
+    (nickInput.element as HTMLInputElement).value = "新昵称";
+    await nickInput.trigger("input");
+    expect(wrapper.find(".tk-send").attributes("disabled")).toBeUndefined();
+    expect(localStorage.getItem("twikoo")).toBe(JSON.stringify(saved));
+    expect(wrapper.find(".tk-avatar img").attributes("src")).toBe(avatar);
+
+    await mailInput.trigger("change");
+    expect(JSON.parse(localStorage.getItem("twikoo") ?? "{}")).toEqual({
+      nick: "新昵称",
+      mail: "new@example.com",
+      link: "",
+    });
+    expect(wrapper.find(".tk-avatar img").attributes("src")).not.toBe(avatar);
+    wrapper.unmount();
+  });
+
   it("meta 未就绪时发送按钮禁用，填写齐备后可用", async () => {
     useFakeTcb();
     const wrapper = mount(TkSubmit, { props: { config: {} } });

@@ -189,5 +189,7 @@ describe("OwO 面板回归", () => {
     expect(() => owo.toggle()).not.toThrow();
     expect(container.classList.contains("OwO-open")).toBe(true);
     expect(container.querySelectorAll(".OwO-item")).toHaveLength(0);
+    expect(() => owo.toggle()).not.toThrow();
+    expect(container.classList.contains("OwO-open")).toBe(false);
   });
 });

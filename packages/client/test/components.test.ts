@@ -370,6 +370,93 @@ describe("TkFooter", () => {
 });
 
 describe("TkComment", () => {
+  const originalAlert = window.alert;
+  const originalConfirm = window.confirm;
+  afterEach(() => {
+    window.alert = originalAlert;
+    window.confirm = originalConfirm;
+  });
+
+  it.each([
+    ["isSpam", "ADMIN_COMMENT_HIDE", ".tk-tag-yellow"],
+    ["top", "ADMIN_COMMENT_TOP", ".tk-tag-red"],
+  ] as const)("管理操作 %s：失败保留状态，成功后更新", async (field, label, tag) => {
+    const update = vi.fn().mockReturnValue({ code: 1000, message: "请先登录" });
+    const alert = vi.fn();
+    window.alert = alert;
+    useFakeTcb({ COMMENT_SET_FOR_ADMIN: update });
+    setServerConfig({ IS_ADMIN: true });
+    const wrapper = mount(TkComment, {
+      props: { comment: makeComment() },
+    });
+    await flushPromises();
+    const button = wrapper.findAll(".tk-actions button").find((item) => item.text() === t(label))!;
+    await button.trigger("click");
+    await flushPromises();
+    expect(update).toHaveBeenCalledWith(
+      expect.objectContaining({ id: "c1", set: { [field]: true } }),
+    );
+    expect(alert).toHaveBeenCalledWith("请先登录");
+    expect(wrapper.find(tag).exists()).toBe(false);
+
+    update.mockReturnValue({ code: 0 });
+    await button.trigger("click");
+    await flushPromises();
+    expect(wrapper.find(tag).exists()).toBe(true);
+    wrapper.unmount();
+  });
+
+  it("管理员删除：取消不请求，失败不刷新，成功才刷新", async () => {
+    const remove = vi.fn().mockReturnValue({ code: 1000, message: "请先登录" });
+    const ownRemove = vi.fn();
+    const confirm = vi.fn().mockReturnValue(false);
+    const alert = vi.fn();
+    window.confirm = confirm;
+    window.alert = alert;
+    useFakeTcb({ COMMENT_DELETE_FOR_ADMIN: remove, COMMENT_DELETE_FOR_USER: ownRemove });
+    setServerConfig({ IS_ADMIN: true });
+    const wrapper = mount(TkComment, { props: { comment: makeComment() } });
+    await flushPromises();
+    const button = wrapper
+      .findAll(".tk-actions button")
+      .find((item) => item.text() === t("ADMIN_COMMENT_DELETE"))!;
+    await button.trigger("click");
+    expect(remove).not.toHaveBeenCalled();
+    expect(confirm).toHaveBeenCalledWith(t("ADMIN_COMMENT_DELETE_CONFIRM"));
+
+    confirm.mockReturnValue(true);
+    await button.trigger("click");
+    await flushPromises();
+    expect(remove).toHaveBeenCalledWith(expect.objectContaining({ id: "c1" }));
+    expect(alert).toHaveBeenCalledWith("请先登录");
+    expect(wrapper.emitted("load")).toBeUndefined();
+
+    remove.mockReturnValue({ code: 0 });
+    await button.trigger("click");
+    await flushPromises();
+    expect(wrapper.emitted("load")).toHaveLength(1);
+    expect(ownRemove).not.toHaveBeenCalled();
+    wrapper.unmount();
+  });
+
+  it("本人删除仍使用用户接口，普通用户不显示管理按钮", async () => {
+    const remove = vi.fn().mockReturnValue({ code: 0 });
+    const adminRemove = vi.fn();
+    const confirm = vi.fn().mockReturnValue(true);
+    window.confirm = confirm;
+    useFakeTcb({ COMMENT_DELETE_FOR_USER: remove, COMMENT_DELETE_FOR_ADMIN: adminRemove });
+    const wrapper = mount(TkComment, { props: { comment: makeComment({ isOwner: true }) } });
+    await flushPromises();
+    expect(wrapper.find(".tk-actions").exists()).toBe(false);
+    await wrapper.findComponent(TkAction).find(".tk-action-link").trigger("click");
+    await flushPromises();
+    expect(confirm).toHaveBeenCalledWith(t("COMMENT_DELETE_CONFIRM"));
+    expect(remove).toHaveBeenCalledWith(expect.objectContaining({ id: "c1" }));
+    expect(adminRemove).not.toHaveBeenCalled();
+    expect(wrapper.emitted("load")).toHaveLength(1);
+    wrapper.unmount();
+  });
+
   it("渲染昵称/正文/站长标签与回复列表", async () => {
     useFakeTcb();
     const wrapper = mount(TkComment, {

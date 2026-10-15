@@ -3,7 +3,7 @@
 
   职责：主楼/回复共用同一组件（模板内自引用实现楼中楼递归）；点赞/点踩、
   回复框挂载、内容与回复列表的展开折叠、图片灯箱、UA/归属地信息行、
-  站长内联管理按钮（隐藏/置顶）。
+  站长内联管理按钮（隐藏/置顶/删除）。
 
   与 1.x 的关键差异（Vue3 约束，非行为差异）：
   - 1.x 直接 `Object.assign(this.comment, set)` 改 props 对象；Vue3 禁改 props，
@@ -60,6 +60,9 @@
             <button v-if="!comment.rid && !localTop" @click="handleTop(true)">
               {{ t("ADMIN_COMMENT_TOP") }}
             </button>
+            <button @click="onDelete(true)">
+              {{ t("ADMIN_COMMENT_DELETE") }}
+            </button>
           </small>
         </div>
         <TkAction
@@ -73,7 +76,7 @@
           @like="onLike"
           @dislike="onDislike"
           @reply="onReply"
-          @delete="onDelete"
+          @delete="onDelete(false)"
         />
       </div>
       <div
@@ -396,10 +399,14 @@ function onReply(id: string): void {
   emit("reply", props.comment.id);
 }
 
-/** 删除自己的评论（1.x onDelete 对齐：二次确认 + COMMENT_DELETE_FOR_USER） */
-async function onDelete(): Promise<void> {
-  if (!confirm(t("COMMENT_DELETE_CONFIRM"))) return;
-  const res = await call(getAppState().tcb, "COMMENT_DELETE_FOR_USER", { id: props.comment.id });
+/** 删除评论：按操作入口选择本人或管理员接口，成功后刷新列表。 */
+async function onDelete(isAdmin: boolean): Promise<void> {
+  if (!confirm(t(isAdmin ? "ADMIN_COMMENT_DELETE_CONFIRM" : "COMMENT_DELETE_CONFIRM"))) return;
+  const res = await call(
+    getAppState().tcb,
+    isAdmin ? "COMMENT_DELETE_FOR_ADMIN" : "COMMENT_DELETE_FOR_USER",
+    { id: props.comment.id },
+  );
   const payload = (res.result ?? res) as { code?: number; message?: string };
   if (payload.code) alert(payload.message);
   else emit("load");
@@ -481,7 +488,12 @@ function onContentClick(event: MouseEvent): void {
 async function setComment(set: { isSpam?: boolean; top?: boolean }): Promise<void> {
   adminLoading.value = true;
   try {
-    await call(getAppState().tcb, "COMMENT_SET_FOR_ADMIN", { id: props.comment.id, set });
+    const res = await call(getAppState().tcb, "COMMENT_SET_FOR_ADMIN", { id: props.comment.id, set });
+    const payload = (res.result ?? res) as { code?: number; message?: string };
+    if (payload.code) {
+      alert(payload.message);
+      return;
+    }
     if (set.isSpam !== undefined) localSpam.value = set.isSpam;
     if (set.top !== undefined) localTop.value = set.top;
   } finally {

@@ -15,6 +15,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { COMMENT_SUBMIT, type TwikooEvent } from "@twikoojs/shared";
 import {
   allowCorsForError,
+  LokiDatabase,
+  MongoDatabase,
   createHandler,
   registerHandler,
   resetHandlers,
@@ -63,12 +65,13 @@ describe("错误响应 CORS", () => {
     }
   });
 
-  it.each(["init", "getConfig"] as const)("%s 挂起时有界等待并合并并发读取", async (method) => {
+  it("配置读取挂起时有界等待并合并并发读取，但不初始化数据库", async () => {
     vi.useFakeTimers();
     const { database } = createMemoryAdapters();
     const blocked = vi
-      .spyOn(database, method)
+      .spyOn(database, "getConfig")
       .mockImplementation(() => new Promise<never>(() => {}));
+    const init = vi.spyOn(database, "init");
     const request = makeRequest({ headers: { origin: "https://allowed.example" } });
     const responses = Promise.all([
       allowCorsForError(request, database),
@@ -77,6 +80,24 @@ describe("错误响应 CORS", () => {
     await vi.advanceTimersByTimeAsync(100);
     expect(await responses).toEqual([{}, {}]);
     expect(blocked).toHaveBeenCalledTimes(1);
+    expect(init).not.toHaveBeenCalled();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it.each(["loki", "mongo"])("%s 未初始化时立即省略 CORS，不尝试初始化", async (kind) => {
+    vi.useFakeTimers();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const database =
+      kind === "loki"
+        ? new LokiDatabase({ dataDir: "unused-cors-test-data" })
+        : new MongoDatabase({ uri: "mongodb://127.0.0.1:1/unused" });
+    const init = vi.spyOn(database, "init");
+    const result = await allowCorsForError(
+      makeRequest({ headers: { origin: "https://allowed.example" } }),
+      database,
+    );
+    expect(result).toEqual({});
+    expect(init).not.toHaveBeenCalled();
     expect(vi.getTimerCount()).toBe(0);
   });
 

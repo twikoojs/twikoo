@@ -1,6 +1,6 @@
 import { PassThrough } from "node:stream";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { Database } from "@twikoojs/common";
+import { MongoDatabase, type Database } from "@twikoojs/common";
 import { createTkserverServer } from "../src/server";
 
 // 直接验证公共层源码，避免依赖重新构建后的 dist 导出。
@@ -13,6 +13,30 @@ afterEach(() => {
 });
 
 describe("入口拒绝响应的 CORS", () => {
+  it("数据库连接失败后直接返回原错误，不重试初始化或提供 CORS", async () => {
+    vi.useFakeTimers();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const database = new MongoDatabase({ uri: "mongodb://127.0.0.1:1/unused" });
+    const init = vi.spyOn(database, "init").mockRejectedValue(new Error("connection failed"));
+    const instance = createTkserverServer({ database });
+    try {
+      const req = Object.assign(new PassThrough(), {
+        method: "POST",
+        headers: { origin: "https://allowed.example" },
+      });
+      req.end("{}");
+      const writeHead = vi.fn();
+      const result = await new Promise<string>((resolve) => {
+        instance.server.emit("request", req, { writeHead, end: resolve });
+      });
+      expect(init).toHaveBeenCalledTimes(1);
+      expect(JSON.parse(result)).toEqual({ code: 1000, message: "internal error" });
+      expect(writeHead.mock.calls[0][1]).not.toHaveProperty("Access-Control-Allow-Origin");
+    } finally {
+      await instance.gracefulShutdown();
+    }
+  });
+
   it.each([413, 408, 503])("HTTP %s 不因配置挂起而阻塞响应", async (status) => {
     vi.useFakeTimers();
     vi.stubEnv("TWIKOO_MAX_BODY_BYTES", "1");
@@ -48,6 +72,7 @@ describe("入口拒绝响应的 CORS", () => {
       expect(writeHead.mock.calls[0][1]).not.toHaveProperty("Access-Control-Allow-Origin");
       expect(JSON.parse(end.mock.calls[0][0]).code).toBe(status);
       expect(req.destroyed).toBe(true);
+      expect(database.init).not.toHaveBeenCalled();
     } finally {
       finishClose?.();
       await (closing ?? instance.gracefulShutdown());
@@ -124,6 +149,7 @@ describe("入口拒绝响应的 CORS", () => {
       expect(writeHead.mock.calls[0][0]).toBe(status);
       expect(writeHead.mock.calls[0][1]).not.toHaveProperty("Access-Control-Allow-Origin");
       expect(errorLog).toHaveBeenCalled();
+      expect(database.init).not.toHaveBeenCalled();
     } finally {
       finishClose?.();
       await (closing ?? instance.gracefulShutdown());

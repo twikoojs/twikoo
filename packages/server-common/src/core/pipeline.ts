@@ -92,10 +92,10 @@ export function allowCors(request: TkRequest, config: ConfigData): Record<string
   };
 }
 
-/** 错误路径共用进行中的配置读取，避免并发拒绝请求重复建连或堆积查询。 */
+/** 错误路径共用进行中的配置读取，避免并发拒绝请求堆积查询。 */
 const pendingCorsConfig = new WeakMap<Database, Promise<ConfigData | null>>();
 
-/** 错误响应最多等待配置 100ms；失败或超时不放行跨域，也不改变原错误。 */
+/** 错误响应只读取已有数据库的配置，最多等待 100ms；失败或超时不放行跨域，也不改变原错误。 */
 export async function allowCorsForError(
   request: TkRequest,
   database: Database,
@@ -105,7 +105,7 @@ export async function allowCorsForError(
   if (!pending) {
     pending = (async () => {
       try {
-        await database.init();
+        // 未就绪的数据库直接读取失败，避免并发初始化及失败后的重复连接。
         return (await database.getConfig()) ?? {};
       } catch (e) {
         console.error("Twikoo CORS configuration failed:", e);

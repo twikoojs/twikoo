@@ -133,6 +133,8 @@ network:
 safe-outputs:
   report-failure-as-issue: false
   report-failed-jobs: false
+  threat-detection:
+    report-as-issue: false
   add-labels:
     allowed:
       - bug

@@ -10,14 +10,22 @@
  */
 import { Marked, type Tokens } from "marked";
 
-/** OwO 表情映射（text → 图片地址），由 initMarkedOwo 产出 */
-let owoImages: Record<string, string> = {};
+/** OwO 图片元数据；保留表情包自定义类名。 */
+export interface OwoImage {
+  /** 图片地址 */
+  src: string;
+  /** 表情包中的图片类名 */
+  className?: string;
+}
+
+/** OwO 表情映射，由 initMarkedOwo 产出；兼容仅传图片地址。 */
+let owoImages: Record<string, string | OwoImage> = {};
 
 /**
  * 注册 OwO 表情映射（评论提交预览与渲染共用）。
  * @param imgs 表情映射表
  */
-export function setOwoImages(imgs: Record<string, string>): void {
+export function setOwoImages(imgs: Record<string, string | OwoImage>): void {
   owoImages = imgs ?? {};
 }
 
@@ -85,49 +93,62 @@ marked.use({
   ],
 });
 
-/** owo 表情 token（raw + html） */
-interface OwoToken extends Tokens.Generic {
-  /** 渲染 HTML */
-  html: string;
+/** 使用标准图片 token，让外层 Markdown 图片的 alt 保持纯文本。 */
+interface OwoToken extends Tokens.Image {
+  /** 是否为 OwO 表情 */
+  owo?: boolean;
+  /** 表情包中的图片类名 */
+  className?: string;
+}
+
+/** 转义图片属性，避免表情名、地址或类名破坏 HTML 属性边界。 */
+function escapeAttribute(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
 marked.use({
+  renderer: {
+    /** 渲染 OwO 图片；普通 Markdown 图片交还内置渲染器。 */
+    image(token: OwoToken): string | false {
+      if (!token.owo) return false;
+      const className = ["tk-owo-emotion", token.className].filter(Boolean).join(" ");
+      return `<img class="${escapeAttribute(className)}" loading="lazy" src="${escapeAttribute(token.href)}" alt="${escapeAttribute(token.text)}">`;
+    },
+  },
   extensions: [
     {
       name: "owo",
       level: "inline",
-      /** 告知 marked 从何处开始尝试本扩展 */
+      /** 告知 marked 从何处开始尝试本扩展。 */
       start(src: string): number | undefined {
         return src.indexOf(":");
       },
       /**
-       * 尝试匹配 :name: 表情标记。
-       *
-       * 名字字符集对齐 1.x 的 `owo: /^:(\S*):/`——只排除空白与 `:`，
-       * 以兼容含非 ASCII 字符的表情名（默认 CDN 的 Bilibili 包即含
-       * `tv_呆`、`tv_亲亲` 等中文名，#1207）。
+       * 匹配 :name: 表情标记；兼容非 ASCII 名字，保留原始 HTML 代码区内容。
        * @param src 剩余文本
-       * @returns 匹配 token；未命中返回 undefined（交还内置规则）
+       * @returns 标准图片 token；未命中交还内置规则
        */
-      tokenizer(src: string): Tokens.Generic | undefined {
+      tokenizer(src: string): OwoToken | undefined {
+        if (this.lexer.state.inRawBlock) return undefined;
         const match = /^:([^\s:]+):/.exec(src);
-        if (!match) return undefined;
-        const imgSrc = owoImages[match[1]];
-        if (!imgSrc) return undefined;
-        const token: OwoToken = {
-          type: "owo",
+        if (!match || !Object.prototype.hasOwnProperty.call(owoImages, match[1])) return undefined;
+        const image = owoImages[match[1]];
+        const href = typeof image === "string" ? image : image?.src;
+        if (typeof href !== "string" || !href) return undefined;
+        return {
+          type: "image",
           raw: match[0],
-          html: `<img class="tk-owo-emotion" loading="lazy" src="${imgSrc}">`,
+          href,
+          title: null,
+          text: match[0],
+          tokens: [{ type: "text", raw: match[0], text: match[0] }],
+          className: typeof image === "string" ? undefined : image.className,
+          owo: true,
         };
-        return token;
-      },
-      /**
-       * 渲染 token 为 HTML。
-       * @param token owo token
-       * @returns HTML
-       */
-      renderer(token: Tokens.Generic): string {
-        return (token as unknown as OwoToken).html;
       },
     },
   ],

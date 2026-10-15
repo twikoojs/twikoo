@@ -31,7 +31,7 @@ describe("marked 回归", () => {
   it("1. 注册表情 :tv_taking: → img.tk-owo-emotion", () => {
     const html = parseMarkdown("看这个 :tv_taking: 好笑");
     expect(html).toContain(
-      '<img class="tk-owo-emotion" loading="lazy" src="https://owo.test/tv.gif">',
+      '<img class="tk-owo-emotion" loading="lazy" src="https://owo.test/tv.gif" alt=":tv_taking:">',
     );
   });
 
@@ -124,5 +124,50 @@ describe("marked 回归", () => {
     expect(html).toContain('src="https://owo.test/bilibili-dalao.png"');
     // 未注册的非 ASCII 表情仍原样输出（不吞字符）
     expect(html).toContain(":tv_不存在:");
+  });
+});
+
+describe("OwO 解析边界", () => {
+  it("公式中的表情标记交由公式扩展保留", () => {
+    expect(parseMarkdown("$:good:$")).not.toContain("<img");
+    expect(parseMarkdown("$$:good:$$")).not.toContain("<img");
+  });
+
+  it("忽略原型链上的名字", () => {
+    const html = parseMarkdown(":constructor: :toString: :__proto__:");
+    expect(html).not.toContain("<img");
+    expect(html).toContain(":constructor: :toString:");
+    expect(html).toContain(":<strong>proto</strong>:");
+  });
+
+  it.each(["<code>:good:</code>", "<pre>:good:</pre>", "`:good:`", "\\:good:"])(
+    "保留代码区和转义标记：%s",
+    (src) => {
+      expect(parseMarkdown(src)).not.toContain("<img");
+    },
+  );
+
+  it("外层 Markdown 图片的替代文本不嵌入 HTML", () => {
+    const template = document.createElement("template");
+    template.innerHTML = parseMarkdown("![说明 :good:](https://owo.test/main.png)");
+    const images = template.content.querySelectorAll("img");
+    expect(images).toHaveLength(1);
+    expect(images[0].alt).toBe("说明 :good:");
+    expect(images[0].src).toBe("https://owo.test/main.png");
+  });
+
+  it("保留类名和替代文本，并转义图片属性边界", () => {
+    const name = 'x"><svg/onload=alert(1)>';
+    const src = 'https://owo.test/image.png?x="&y=<tag>';
+    const className = 'tk-owo-preview custom" onerror="alert(1)';
+    setOwoImages({ [name]: { src, className } });
+    const template = document.createElement("template");
+    template.innerHTML = parseMarkdown(`:${name}:`);
+    const image = template.content.querySelector("img")!;
+    expect(image.getAttribute("src")).toBe(src);
+    expect(image.className).toBe(`tk-owo-emotion ${className}`);
+    expect(image.alt).toBe(`:${name}:`);
+    expect(image.hasAttribute("onerror")).toBe(false);
+    expect(template.content.querySelector("svg")).toBeNull();
   });
 });

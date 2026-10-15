@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 /**
  * 客户端补齐模块单测：constants / avatar / emotion / directives / bus / state / highlight。
  *
@@ -129,7 +130,7 @@ describe("emotion（setOwoImages 的调用方）", () => {
         container: [{ text: "tv_doge", icon: '<img src="https://owo.test/doge.gif">' }],
       },
     });
-    expect(imgs.tv_doge).toBe("https://owo.test/doge.gif");
+    expect(imgs.tv_doge).toEqual({ src: "https://owo.test/doge.gif", className: "" });
     expect(parseMarkdown(":tv_doge:")).toContain('class="tk-owo-emotion"');
   });
 

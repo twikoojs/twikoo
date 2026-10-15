@@ -6,14 +6,15 @@
  * - 兼容「不规范」的 OwO 数据格式（缺 `text` 时取图片文件名，1.x 行为）；
  * - 产出两样东西：
  *   ① `OwoData`：交给表情选择面板（`lib/owo.ts`）渲染；
- *   ② `text → 图片地址` 映射：经 {@link setOwoImages} 注册给 marked 的 owo 扩展，
+ *   ② `text → 图片元数据` 映射：经 {@link setOwoImages} 注册给 marked 的 owo 扩展，
  *      使评论正文里的 `:xxx:` 渲染为 `<img class="tk-owo-emotion">`。
  *
  * 2.0 相对 1.x 的修正：请求失败时**结算为 `{}`**（1.x 在该分支既不 resolve 也不
  * reject，会让 `Promise.all` 永久挂起）。成功路径行为完全一致。
  */
+import DOMPurify from "dompurify";
 import { logger } from "./logger";
-import { setOwoImages } from "./marked";
+import { setOwoImages, type OwoImage } from "./marked";
 
 /** OwO 单个表情项（图片或纯文字） */
 export interface OwoItem {
@@ -34,22 +35,21 @@ export interface OwoPackage {
 /** OwO 全量数据（包名 → 包内容） */
 export type OwoData = Record<string, OwoPackage>;
 
-/** 供解析 `icon` HTML 取 `src` 的复用的 template 元素（避免每次创建） */
+/** HTML 即使清洗过也在不挂载的 template 中解析 */
 const template = document.createElement("template");
 
 /**
- * 从表情 HTML 片段中取出图片地址。
+ * 从表情 HTML 片段中取出首张图片，兼容前导空白和包裹元素。
  * @param html 表情的 icon HTML
- * @returns 图片地址；解析失败返回空串
+ * @returns 图片元素；解析失败返回 null
  */
-function getImgSrc(html: string): string {
+function getImg(html: string): HTMLImageElement | null {
   try {
-    template.innerHTML = html;
-    const first = template.content.childNodes[0] as HTMLImageElement | undefined;
-    return first?.src ?? "";
+    template.innerHTML = DOMPurify.sanitize(html);
+    return template.content.querySelector("img");
   } catch (e) {
     logger.warn("OwO 表情解析失败", e);
-    return "";
+    return null;
   }
 }
 
@@ -72,7 +72,7 @@ function formatOdata(odata: OwoData): OwoData | undefined {
     for (const item of Object.values(odata)) {
       if (item.type !== "image") continue;
       for (const image of item.container) {
-        if (!image.text) image.text = getFilename(getImgSrc(image.icon));
+        if (!image.text) image.text = getFilename(getImg(image.icon)?.src ?? "");
       }
     }
     return odata;
@@ -127,19 +127,21 @@ export async function initOwoEmotions(apis: string): Promise<OwoData> {
 }
 
 /**
- * 从 OwO 数据构建 `表情名 → 图片地址` 映射，并注册给 marked 的 owo 扩展。
+ * 从 OwO 数据构建 `表情名 → 图片元数据` 映射，并注册给 marked 的 owo 扩展。
  *
  * 1.x 把映射塞进 `marked.setOptions({ odata })`；2.0 改为经 {@link setOwoImages}
  * 注入扩展闭包（表情映射不再污染 marked options）。
  * @param odata OwO 数据
- * @returns `表情名 → 图片地址` 映射
+ * @returns `表情名 → 图片元数据` 映射
  */
-export function initMarkedOwo(odata: OwoData): Record<string, string> {
-  const imgs: Record<string, string> = {};
+export function initMarkedOwo(odata: OwoData): Record<string, OwoImage> {
+  const imgs = Object.create(null) as Record<string, OwoImage>;
   for (const item of Object.values(odata ?? {})) {
     for (const img of item.container ?? []) {
-      const imgSrc = getImgSrc(img.icon);
-      if (imgSrc && img.text) imgs[img.text] = imgSrc;
+      const image = getImg(img.icon);
+      if (image?.src && img.text) {
+        imgs[img.text] = { src: image.src, className: image.className };
+      }
     }
   }
   setOwoImages(imgs);

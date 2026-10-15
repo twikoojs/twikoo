@@ -201,9 +201,9 @@ Twikoo 私有部署版默认使用内置数据库：LokiJS 数据库，支持的
 
 如果看到 ERR_CONNECTION_CLOSED / ERR_CONNECTION_TIMED_OUT / ERR_CONNECTION_RESET，请检查自己所处的地区网络环境是否正常，能够连通云函数，部分地区无法访问 Vercel 等服务，请更换部署方式再试。
 
-如果看到 `Access to XMLHttpRequest at 'https://tcb-api.tencentcloudapi.com/web?env=...' from origin '...' has been blocked by CORS policy...`：请检查前端 js 文件版本是否最新，并确保 envId 以 `https://` 开头。
+如果看到 `Access to fetch at 'https://tcb-api.tencentcloudapi.com/web?env=...' from origin '...' has been blocked by CORS policy...`：请检查前端 js 文件版本是否最新，并确保 envId 以 `https://` 开头。
 
-如果看到 `Access to XMLHttpRequest at ... No 'Access-Control-Allow-Origin' header is present on the requested resource.`：请先访问一下 envId 查看云函数是否运行正常，如果没有运行正常的提示，请重新部署云函数，确保不要漏下任何步骤；如果提示运行正常，请本地启动网站（localhost）并访问管理面板 - 配置管理 - 通用，清空 `CORS_ALLOW_ORIGIN` 字段并保存，然后刷新重试。
+如果看到 `No 'Access-Control-Allow-Origin' header is present on the requested resource.`：请先访问一下 envId 查看云函数是否运行正常，如果没有运行正常的提示，请重新部署云函数，确保不要漏下任何步骤；如果提示运行正常，请本地启动网站（localhost）并访问管理面板 - 配置管理 - 通用，清空 `CORS_ALLOW_ORIGIN` 字段并保存，然后刷新重试。
 
 如果看到其他错误，请 [提交 issue](https://github.com/twikoojs/twikoo/issues/new) 并附上错误信息。
 

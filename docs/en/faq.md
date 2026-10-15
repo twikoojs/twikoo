@@ -198,7 +198,7 @@ On a page with the comment box, open your browser's developer tools (F12 on Wind
 
 **ERR_CONNECTION_CLOSED / ERR_CONNECTION_TIMED_OUT / ERR_CONNECTION_RESET** — Check whether your network can reach the cloud function. Some regions cannot access Vercel or similar services; try a different deployment method.
 
-**`Access to XMLHttpRequest at 'https://tcb-api.tencentcloudapi.com/web?env=...' has been blocked by CORS policy`** — Make sure your frontend JS is up to date and that `envId` starts with `https://`.
+**`Access to fetch at 'https://tcb-api.tencentcloudapi.com/web?env=...' has been blocked by CORS policy`** — Make sure your frontend JS is up to date and that `envId` starts with `https://`.
 
 **`No 'Access-Control-Allow-Origin' header is present`** — Visit your `envId` URL directly to check whether the cloud function is running. If not, redeploy it carefully. If it is running, start the site on localhost, go to **Admin Panel → Configuration → General**, clear the `CORS_ALLOW_ORIGIN` field, save, and refresh.
 

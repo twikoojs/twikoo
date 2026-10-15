@@ -13,6 +13,7 @@
  * reject，会让 `Promise.all` 永久挂起）。成功路径行为完全一致。
  */
 import DOMPurify from "dompurify";
+import { fetchText, TwikooFetchTimeoutError } from "./http";
 import { logger } from "./logger";
 import { setOwoImages, type OwoImage } from "./marked";
 
@@ -87,31 +88,23 @@ function formatOdata(odata: OwoData): OwoData | undefined {
  * @param api 数据源地址
  * @returns OwO 数据（失败时为 `{}`，不抛错）
  */
-function initOwoEmotion(api: string): Promise<OwoData> {
-  return new Promise((resolve) => {
-    const xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState !== 4) return;
-      if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304) {
-        try {
-          resolve(formatOdata(JSON.parse(xhr.responseText) as OwoData) ?? {});
-        } catch (e) {
-          logger.warn("OwO 数据解析失败", e);
-          resolve({});
-        }
-      } else {
-        logger.warn(`OwO 数据请求失败：${xhr.status}`);
-        resolve({});
-      }
-    };
-    try {
-      xhr.open("get", api, true);
-      xhr.send(null);
-    } catch (e) {
-      logger.warn("OwO 数据请求异常", e);
-      resolve({});
+async function initOwoEmotion(api: string): Promise<OwoData> {
+  try {
+    const { response, text } = await fetchText(api);
+    if (!response.ok && response.status !== 304) {
+      logger.warn(`OwO 数据请求失败：${response.status}`);
+      return {};
     }
-  });
+    try {
+      return formatOdata(JSON.parse(text) as OwoData) ?? {};
+    } catch (e) {
+      logger.warn("OwO 数据解析失败", e);
+      return {};
+    }
+  } catch (e) {
+    logger.warn(e instanceof TwikooFetchTimeoutError ? "OwO 数据请求超时" : "OwO 数据请求异常", e);
+    return {};
+  }
 }
 
 /**

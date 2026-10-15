@@ -78,7 +78,7 @@ export type { PipelineContext, EventHandler } from "./core/types";
 export { RateLimitError, HandlerNotRegisteredError } from "./core/errors";
 export { registerHandler, resolveHandler, resetHandlers } from "./core/handler-registry";
 export { dispatch } from "./core/dispatcher";
-export { resetRequestTimes } from "./core/pipeline";
+export { allowCors, allowCorsForError, resetRequestTimes } from "./core/pipeline";
 export type { PostSubmitService } from "./services/post-submit";
 export { setPostSubmitService, getPostSubmitService } from "./services/post-submit";
 // ---- 适配器脚手架（storage/mailer/notifier 占位装配）----

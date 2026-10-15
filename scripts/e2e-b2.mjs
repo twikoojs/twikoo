@@ -232,7 +232,7 @@ async function main() {
     );
     const { window } = dom;
 
-    // jsdom 不实现 fetch，而客户端 HTTP 层依赖它 —— 注入同源桩（见 installFetch）
+    // jsdom 不实现 fetch —— 注入同源桩
     installFetch(window);
 
     const doc = window.document;

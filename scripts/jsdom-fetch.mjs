@@ -2,8 +2,7 @@
  * 在 jsdom window 上安装 `fetch` 桩（`e2e-b2.mjs` 与 `check-cdn-products.mjs` 共用）。
  *
  * 客户端 HTTP 层（`packages/client/src/utils/http.ts`）用 `fetch` + `AbortController`，
- * 而 **jsdom 不实现 `fetch`** —— 缺桩时客户端抛 `fetch is not defined`，`twikoo.init`
- * 直接失败（#1236 把客户端从 XMLHttpRequest 切到 fetch 后，两个核对脚本曾一度全挂）。
+ * 而 **jsdom 不实现 `fetch`** —— 缺桩时 `twikoo.init` 直接抛 `fetch is not defined`。
  *
  * 核对脚本的请求都是同源直连本地 tkserver，故用 Node 的 http/https 实现 `fetch` 的
  * 所需子集：method / headers / body / signal（AbortController 超时），返回客户端用到的

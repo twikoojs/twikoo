@@ -149,10 +149,6 @@ jobs:
       - name: Unit tests (Vitest projects)
         run: pnpm test
 
-  # 集成 / 冒烟门禁：真实启 tkserver，在 jsdom 里加载**已构建产物**跑端到端与产物核对。
-  # 这两项此前只在本地手跑，结果是 #1236 把客户端 HTTP 层从 XHR 换成 fetch（jsdom 不实现
-  # fetch）、以及管理端把整张列表交给 KaTeX 改写 Vue 管理的节点引发块级 diff 崩溃，
-  # 都没能被 CI 拦下。纳入门禁后，此类「改客户端 + 核对脚本没跟上」的回归当场可见。
   e2e:
     name: E2E
     if: github.event.pull_request.draft == false
@@ -176,8 +172,7 @@ jobs:
       - name: Build workspace packages
         run: pnpm build
 
-      # e2e 需要页面上挂 renderMathInElement；KaTeX vendor 资产被 gitignore，
-      # 由 demo 的 prepare-assets 从本地 node_modules 复制（离线，无需 CDN）
+      # KaTeX vendor 资产被 gitignore，需先由 demo 的 prepare-assets 生成
       - name: Prepare demo vendor assets (KaTeX)
         run: pnpm --filter @twikoojs/demo prepare-assets
 

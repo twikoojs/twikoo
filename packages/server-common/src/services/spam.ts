@@ -3,7 +3,7 @@
  * 语义对齐）。
  *
  * 链路（COMMENT_SUBMIT）：
- * 1. preCheckSpam 预检（长度 / 屏蔽词 / 人工审核标记 / 违禁词）——同步快速路径；
+ * 1. preCheckSpam 预检（长度 / 屏蔽词 / 人工审核标记 / 违禁词）——按需加载纯文本转换器；
  * 2. checkCaptcha 验证码（Turnstile / Geetest / Cap 内嵌或外部）；
  * 3. limitFilter 频率限制（单 IP 与全站 10 分钟窗口）；
  * 4. postCheckSpam 后检（腾讯云 TMS / Akismet / Jev / LLM，postSubmit 异步阶段）。
@@ -18,28 +18,38 @@ import {
   getAkismetClient,
   getFormData,
   getGenerateText,
+  getHtmlToText,
   getTencentcloudTms,
 } from "../utils/lib-loader";
 import { GT } from "../ports/database";
 import { equalsMail } from "./comment-dto";
 
 /**
- * 预垃圾评论检测（1.x preCheckSpam 逐行对齐）。
+ * 预垃圾评论检测；长度限制按 HTML 转换后的文本计算。
  * @param comment 待检评论字段
  * @param config 全量配置
  * @param logger 请求日志
  * @returns 是否标记为垃圾（MANUAL_REVIEW / 违禁词）
  */
-export function preCheckSpam(
+export async function preCheckSpam(
   comment: { comment: string; nick: string; link?: string; mail?: string },
   config: ConfigData,
   logger: RequestLogger,
-): boolean {
+): Promise<boolean> {
   // 长度限制
   let limitLength = parseInt(String(config.LIMIT_LENGTH ?? ""));
   if (Number.isNaN(limitLength)) limitLength = 500;
-  if (limitLength && comment.comment.length > limitLength) {
-    throw new Error("评论内容过长");
+  if (limitLength) {
+    if (comment.comment.length > limitLength * 10) {
+      throw new Error("评论内容过长");
+    }
+    // 与前端基于原始 Markdown 的口径有差异
+    // 特殊构造的 HTML 可绕过 htmlToText 的输出，暂定 HTML 长度限制为文本长度十倍，不增加配置项
+    // 根本原因还是提交 HTML 的模式本身不够安全
+    const htmlToText = await getHtmlToText({ forWordCount: true });
+    if (htmlToText(comment.comment).length > limitLength) {
+      throw new Error("评论内容过长");
+    }
   }
   if (config.BLOCKED_WORDS) {
     const commentLowerCase = comment.comment.toLowerCase();

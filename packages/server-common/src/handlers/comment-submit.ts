@@ -86,7 +86,7 @@ async function parseCommentDoc(ctx: Parameters<EventHandler>[0]): Promise<Commen
     rid: comment.rid as string | undefined,
     isSpam: isAdminUser
       ? false
-      : preCheckSpam(
+      : await preCheckSpam(
           {
             comment: toStr(comment.comment),
             nick: toStr(comment.nick),

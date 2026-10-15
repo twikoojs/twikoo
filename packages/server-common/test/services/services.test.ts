@@ -636,7 +636,8 @@ describe("上传解析与预检（services/upload + spam）", () => {
     expect(() => parseImage(asJpeg)).toThrow("图片 MIME 类型与文件内容不匹配");
   });
 
-  it("preCheckSpam：MANUAL_REVIEW 与默认长度", () => {
+  it("preCheckSpam：MANUAL_REVIEW 与默认长度", async () => {
+    setLibImporter(() => import("html-to-text"));
     const logger = {
       /**
        *
@@ -662,9 +663,9 @@ describe("上传解析与预检（services/upload + spam）", () => {
       verbose: () => {},
     } as never;
     expect(
-      preCheckSpam({ comment: "c", nick: "n" }, { AKISMET_KEY: "MANUAL_REVIEW" }, logger),
+      await preCheckSpam({ comment: "c", nick: "n" }, { AKISMET_KEY: "MANUAL_REVIEW" }, logger),
     ).toBe(true);
-    expect(preCheckSpam({ comment: "c", nick: "n" }, {}, logger)).toBe(false);
+    expect(await preCheckSpam({ comment: "c", nick: "n" }, {}, logger)).toBe(false);
   });
 });
 

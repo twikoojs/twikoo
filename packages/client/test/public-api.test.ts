@@ -6,11 +6,12 @@
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
 import init, { getCommentsCount, getRecentComments, getVisitorsCount, version } from "../src/main";
-import { call } from "../src/utils/api";
+import { call, setAppState } from "../src/utils/api";
 
 afterEach(() => {
   vi.useRealTimers();
   vi.restoreAllMocks();
+  setAppState(null, {});
   document.body.innerHTML = "";
   localStorage.clear();
 });
@@ -34,6 +35,48 @@ describe("twikoo 公开 API", () => {
 
   it("缺少 envId 配置 → 报错（1.x 语义）", async () => {
     await expect(getCommentsCount({ urls: ["/a"] })).rejects.toThrow(/缺少 envId 配置/);
+  });
+});
+
+describe.each(["HTTP", "tcb"])("%s 公共 API 业务响应", (channel) => {
+  /** 为两种通道提供相同业务响应，云开发保留 result 信封。 */
+  function mockResponse(result: Record<string, unknown>): void {
+    if (channel === "HTTP") {
+      vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify(result)));
+    } else {
+      setAppState({ app: { callFunction: vi.fn().mockResolvedValue({ result }) } }, {});
+    }
+  }
+
+  it.each([getCommentsCount, getRecentComments, getVisitorsCount])(
+    "%s 遇到非零业务码时拒绝 Promise 并保留原因",
+    async (api) => {
+      mockResponse({ code: 1000, message: "请求被拒绝" });
+      await expect(api({ envId: "https://backend.test", urls: ["/a"] })).rejects.toMatchObject({
+        name: "TwikooResponseError",
+        message: "请求被拒绝",
+      });
+    },
+  );
+
+  it.each([getCommentsCount, getRecentComments])("%s 成功时保留空数组", async (api) => {
+    mockResponse({ code: 0, data: [] });
+    await expect(api({ envId: "https://backend.test", urls: ["/a"] })).resolves.toEqual([]);
+  });
+
+  it("最新评论成功时保留内容和相对时间", async () => {
+    mockResponse({ code: 0, data: [{ id: "c1", created: Date.now(), comment: "hello" }] });
+    await expect(getRecentComments({ envId: "https://backend.test" })).resolves.toEqual([
+      expect.objectContaining({ id: "c1", comment: "hello", relativeTime: expect.any(String) }),
+    ]);
+  });
+
+  it("访问量成功时保留完整响应对象", async () => {
+    mockResponse({ code: 0, time: 12 });
+    await expect(getVisitorsCount({ envId: "https://backend.test" })).resolves.toEqual({
+      code: 0,
+      time: 12,
+    });
   });
 });
 

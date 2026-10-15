@@ -9,7 +9,7 @@
  * `utils/highlight.js`、`utils/api.js` 都 import 了 view 层的 app 实例，
  * 2.0 改为经 `utils/api.ts` 的 appState 单例解耦）。
  */
-import { call, getAppState, type TcbInstance } from "./api";
+import { call, getAppState, getResponse, type TcbInstance } from "./api";
 import { logger } from "./logger";
 import { t } from "../i18n";
 
@@ -154,24 +154,6 @@ export async function getFuncVer(tcb: TcbInstance | null): Promise<unknown> {
 }
 
 /**
- * 解包响应信封（tcb 通道为 `{ result }`，HTTP 通道为裸响应体）。
- * @param result 原始响应
- * @returns 载荷
- */
-function unwrap(result: unknown): Record<string, unknown> {
-  const envelope = result as { result?: Record<string, unknown> } | null;
-  if (
-    envelope &&
-    typeof envelope === "object" &&
-    envelope.result &&
-    typeof envelope.result === "object"
-  ) {
-    return envelope.result;
-  }
-  return (result ?? {}) as Record<string, unknown>;
-}
-
-/**
  * 评论目标路径解析（1.x getUrl 对齐：TWIKOO_MAGIC_PATH 全局变量 / 表达式字符串 / 缺省）。
  * @param path 配置的 path
  * @returns 实际路径
@@ -234,7 +216,7 @@ export async function getCommentsCountApi(
     urls,
     includeReply: options.includeReply,
   });
-  return unwrap(result).data;
+  return getResponse(result).data;
 }
 
 /**
@@ -253,7 +235,7 @@ export async function getRecentCommentsApi(
     pageSize: options.pageSize,
     includeReply: options.includeReply,
   });
-  const data = unwrap(result).data;
+  const data = getResponse(result).data;
   if (Array.isArray(data)) {
     for (const comment of data as Array<{ created?: number; relativeTime?: string }>) {
       comment.relativeTime = timeago(comment.created);
@@ -279,7 +261,7 @@ export async function getVisitorsCountApi(
     href: getHref(options.href),
     title: options.title ?? document.title,
   });
-  return unwrap(result);
+  return getResponse(result);
 }
 
 /**

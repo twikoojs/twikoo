@@ -131,6 +131,8 @@ network:
     - ai.imaegoo.com  # 自建推理端点（BYOK）
 
 safe-outputs:
+  report-failure-as-issue: false
+  report-failed-jobs: false
   add-labels:
     allowed:
       - bug

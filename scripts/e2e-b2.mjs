@@ -24,6 +24,7 @@ import { request } from "node:http";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { JSDOM } from "jsdom";
+import { installFetch } from "./jsdom-fetch.mjs";
 
 /** 仓库根（本文件位于 `scripts/`） */
 const ROOT = resolve(new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"));
@@ -230,6 +231,10 @@ async function main() {
       },
     );
     const { window } = dom;
+
+    // jsdom 不实现 fetch，而客户端 HTTP 层依赖它 —— 注入同源桩（见 installFetch）
+    installFetch(window);
+
     const doc = window.document;
 
     /** 查询单个元素 */

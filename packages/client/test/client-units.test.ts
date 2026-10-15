@@ -31,6 +31,7 @@ afterEach(() => {
   clearAll();
   setServerConfig({});
   document.body.innerHTML = "";
+  vi.useRealTimers();
   vi.restoreAllMocks();
 });
 
@@ -85,35 +86,15 @@ describe("avatar", () => {
 });
 
 describe("emotion（setOwoImages 的调用方）", () => {
-  /** XHR 替身：按 URL 返回固定 OwO 数据 */
-  function mockOwoXhr(payload: unknown, status = 200): void {
-    class FakeXhr {
-      /** 状态码 */
-      status = status;
-      /** 就绪状态 */
-      readyState = 0;
-      /** 响应文本 */
-      responseText = JSON.stringify(payload);
-      /** 回调 */
-      onreadystatechange: (() => void) | null = null;
-      /**
-       * 打开请求（立即就绪并回调，模拟同步到达）。
-       */
-      open(): void {
-        this.readyState = 4;
-      }
-      /**
-       * 发送请求。
-       */
-      send(): void {
-        this.onreadystatechange?.();
-      }
-    }
-    vi.spyOn(globalThis, "XMLHttpRequest").mockImplementation(FakeXhr as never);
+  /** fetch 替身：返回固定 OwO 数据。 */
+  function mockOwoFetch(payload: unknown, status = 200): void {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify(payload), { status }),
+    );
   }
 
   it("initOwoEmotions：缺 text 时用文件名补齐", async () => {
-    mockOwoXhr({
+    mockOwoFetch({
       QQ: {
         type: "image",
         container: [{ icon: '<img src="https://owo.test/qq.png">' }],
@@ -135,9 +116,52 @@ describe("emotion（setOwoImages 的调用方）", () => {
   });
 
   it("请求失败时结算为空对象（不挂起）", async () => {
-    mockOwoXhr({}, 500);
+    mockOwoFetch({}, 500);
     const odata = await initOwoEmotions("https://owo.test/broken.json");
     expect(odata).toEqual({});
+  });
+
+  it.each(["network", "json", "format", "304"])("%s 失败仍结算为空对象", async (failure) => {
+    const request = vi.spyOn(globalThis, "fetch");
+    if (failure === "network") request.mockRejectedValue(new TypeError("Failed to fetch"));
+    else if (failure === "json") request.mockResolvedValue(new Response("not json"));
+    else if (failure === "304") request.mockResolvedValue(new Response(null, { status: 304 }));
+    else request.mockResolvedValue(new Response('{"bad":{"type":"image"}}'));
+    await expect(initOwoEmotions("https://owo.test/broken.json")).resolves.toEqual({});
+  });
+
+  it.each(["headers", "body"])("等待 %s 超时会中止，其他表情源仍正常合并", async (phase) => {
+    vi.useFakeTimers();
+    let signal: AbortSignal | null | undefined;
+    const good = { Emoji: { type: "emoji", container: [{ text: "笑", icon: "😀" }] } };
+    const request = vi.spyOn(globalThis, "fetch").mockImplementation((url, options) => {
+      if (url === "https://owo.test/good.json")
+        return Promise.resolve(new Response(JSON.stringify(good)));
+      signal = options?.signal;
+      const pending = new Promise<never>((_resolve, reject) => {
+        signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")), {
+          once: true,
+        });
+      });
+      return phase === "headers"
+        ? pending
+        : Promise.resolve(Object.assign(new Response(), { text: () => pending }));
+    });
+    const outcome = initOwoEmotions(" https://owo.test/slow.json , https://owo.test/good.json ");
+    await vi.advanceTimersByTimeAsync(29999);
+    expect(signal?.aborted).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    await expect(outcome).resolves.toEqual(good);
+    expect(signal?.aborted).toBe(true);
+    expect(request).toHaveBeenCalledTimes(2);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("成功后清理超时计时器", async () => {
+    vi.useFakeTimers();
+    mockOwoFetch({});
+    await initOwoEmotions("https://owo.test/owo.json");
+    expect(vi.getTimerCount()).toBe(0);
   });
 });
 

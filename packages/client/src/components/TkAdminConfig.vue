@@ -98,7 +98,7 @@ import { VERSION } from "@twikoojs/shared";
 import TkButton from "../components/TkButton.vue";
 import TkInput from "../components/TkInput.vue";
 import { call, logger, t } from "../utils";
-import { getAppState } from "../utils/api";
+import { getAppState, getResponse, getErrorMessage } from "../utils/api";
 import { EVENT_CONFIG_UPDATED, emit as busEmit, off as busOff, on as busOn } from "../utils/bus";
 import { vLoading } from "../utils/directives";
 import { customImageBedServices } from "../i18n/constants";
@@ -755,23 +755,30 @@ const emailTestResult = ref("");
 /**
  * 读取服务端配置并回填表单（1.x readConfig 对齐）。
  */
-async function readConfig(): Promise<void> {
+async function readConfig(): Promise<boolean> {
   loading.value = true;
-  const res = await call(getAppState().tcb, "GET_CONFIG_FOR_ADMIN");
-  const result = (res.result ?? res) as { code?: number; config?: ServerConfig };
-  if (result && !result.code && result.config) {
-    Object.assign(serverConfig, result.config);
-    serverVersion.value = String(result.config.VERSION ?? "");
-    // 兼容旧配置：早期版本没有 CAPTCHA_PROVIDER / IMAGE_CDN 字段，按既有字段推断
-    if (typeof serverConfig.CAPTCHA_PROVIDER === "undefined") {
-      if (serverConfig.TURNSTILE_SITE_KEY) serverConfig.CAPTCHA_PROVIDER = "Turnstile";
-      else if (serverConfig.GEETEST_CAPTCHA_ID) serverConfig.CAPTCHA_PROVIDER = "Geetest";
+  try {
+    const res = await call(getAppState().tcb, "GET_CONFIG_FOR_ADMIN");
+    const result = getResponse(res) as { code?: number; config?: ServerConfig };
+    if (result && !result.code && result.config) {
+      Object.assign(serverConfig, result.config);
+      serverVersion.value = String(result.config.VERSION ?? "");
+      // 兼容旧配置：早期版本没有 CAPTCHA_PROVIDER / IMAGE_CDN 字段，按既有字段推断
+      if (typeof serverConfig.CAPTCHA_PROVIDER === "undefined") {
+        if (serverConfig.TURNSTILE_SITE_KEY) serverConfig.CAPTCHA_PROVIDER = "Turnstile";
+        else if (serverConfig.GEETEST_CAPTCHA_ID) serverConfig.CAPTCHA_PROVIDER = "Geetest";
+      }
+      // 1.x 该分支两条路径结果同为 ''（`SHOW_IMAGE` 仅作为历史字段回写），等价简化为补空串
+      if (typeof serverConfig.IMAGE_CDN === "undefined") serverConfig.IMAGE_CDN = "";
+      resetConfig();
     }
-    // 1.x 该分支两条路径结果同为 ''（`SHOW_IMAGE` 仅作为历史字段回写），等价简化为补空串
-    if (typeof serverConfig.IMAGE_CDN === "undefined") serverConfig.IMAGE_CDN = "";
-    resetConfig();
+    return true;
+  } catch (e) {
+    message.value = getErrorMessage(e);
+    return false;
+  } finally {
+    loading.value = false;
   }
-  loading.value = false;
 }
 
 /** 用服务端配置回填表单（1.x resetConfig 对齐） */
@@ -819,21 +826,33 @@ async function saveConfig(): Promise<void> {
   }
   if (config.IMAGE_CDN !== undefined) config.SHOW_IMAGE = config.IMAGE_CDN ? "true" : "false";
   logger.info("保存配置", config);
-  await call(getAppState().tcb, "SET_CONFIG", { config });
-  await readConfig();
-  // 通知评论列表刷新配置与可见性（1.x app.$emit('configUpdated')）
-  busEmit(EVENT_CONFIG_UPDATED);
-  message.value = "保存成功";
-  loading.value = false;
+  try {
+    // 与评论操作和配置导入的异常后刷新不同，表单保存仅在明确成功后回读；
+    // 保存失败或响应丢失时回读可能用服务端旧值覆盖尚未保存的输入，因此也不应广播会触发表单回读的配置更新事件。
+    getResponse(await call(getAppState().tcb, "SET_CONFIG", { config }));
+    if (!(await readConfig())) return;
+    busEmit(EVENT_CONFIG_UPDATED);
+    message.value = "保存成功";
+  } catch (e) {
+    message.value = getErrorMessage(e);
+  } finally {
+    loading.value = false;
+  }
 }
 
 /** 发送测试邮件（1.x testEmail 对齐） */
 async function testEmail(): Promise<void> {
   loading.value = true;
-  const res = await call(getAppState().tcb, "EMAIL_TEST", { mail: emailTestAddress.value });
-  logger.info("邮件测试", res);
-  emailTestResult.value = JSON.stringify(res);
-  loading.value = false;
+  try {
+    const res = await call(getAppState().tcb, "EMAIL_TEST", { mail: emailTestAddress.value });
+    getResponse(res);
+    logger.info("邮件测试", res);
+    emailTestResult.value = JSON.stringify(res);
+  } catch (e) {
+    emailTestResult.value = getErrorMessage(e);
+  } finally {
+    loading.value = false;
+  }
 }
 
 /** 配置已更新（保存或导入）后重新回填表单 */

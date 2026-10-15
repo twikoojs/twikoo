@@ -1,12 +1,14 @@
 /**
  * 客户端通信层（1.x utils/api.js 语义对齐 + 错误模型改进）。
  *
- * - call(tcb, event, data)：云开发通道 or HTTP XHR 通道；
+ * - call(tcb, event, data)：云开发通道 or HTTP fetch 通道；
  * - accessToken：localStorage `twikoo-access-token`（BC 保留）；
  * - 0.1.x 旧函数名 fallback **已移除**；
  * - TwikooError 八分类：NETWORK/CORS/TIMEOUT/REJECTED/NOT_FOUND/
  *   CLIENT_ERROR/SERVER_ERROR/UNKNOWN，携带 httpStatus/rawMessage/requestId。
  */
+
+import { fetchText, TwikooFetchTimeoutError } from "./http";
 
 /** TwikooError kind 八分类（分类表）*/
 export type TwikooErrorKind =
@@ -51,6 +53,34 @@ export class TwikooError extends Error {
     this.rawMessage = options.rawMessage ?? message;
     this.requestId = options.requestId;
   }
+}
+
+/** 服务端明确返回的业务失败；与无法确认操作结果的通信异常区分。 */
+export class TwikooResponseError extends TwikooError {
+  /** 将业务拒绝保留为可展示的统一错误，同时标记操作结果已经明确。 */
+  constructor(message: string) {
+    super("CLIENT_ERROR", message);
+    this.name = "TwikooResponseError";
+  }
+}
+
+/** 解包两种通道的响应，并将业务失败交给调用方统一处理。 */
+export function getResponse(res: Record<string, unknown>): Record<string, unknown> {
+  const result = (res.result ?? res) as Record<string, unknown>;
+  if (result.code !== undefined && result.code !== 0) {
+    throw new TwikooResponseError(
+      typeof result.message === "string" && result.message
+        ? result.message
+        : (JSON.stringify(result.code) ?? ""),
+    );
+  }
+  return result;
+}
+
+/** 提取可展示的异常原因，兼容云 SDK 拒绝时返回的普通对象或字符串。 */
+export function getErrorMessage(error: unknown): string {
+  if (error && typeof error === "object" && "message" in error) return String(error.message);
+  return String(error);
 }
 
 /** 云开发应用最小结构面（仅需 callFunction） */
@@ -141,88 +171,63 @@ export function isUrl(s: unknown): boolean {
 }
 
 /**
- * HTTP 通道（XHR POST；1.x call 的 HTTP 分支对齐）。
+ * HTTP 通道（fetch POST；1.x call 的 HTTP 分支对齐）。
  * @param url 后端地址
  * @param payload 请求载荷
  * @returns 响应体
  */
-function httpCall(url: string, payload: Record<string, unknown>): Promise<Record<string, unknown>> {
-  return new Promise((resolve, reject) => {
+async function httpCall(
+  url: string,
+  payload: Record<string, unknown>,
+): Promise<Record<string, unknown>> {
+  let body: string;
+  try {
     const accessToken = localStorage.getItem("twikoo-access-token");
-    const xhr = new XMLHttpRequest();
-    const startedAt = Date.now();
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState !== 4) return;
-      const elapsed = Date.now() - startedAt;
-      if (xhr.status === 200) {
-        try {
-          const result = JSON.parse(xhr.responseText) as Record<string, unknown>;
-          if (result.accessToken) {
-            localStorage.setItem(
-              "twikoo-access-token",
-              typeof result.accessToken === "string" ? result.accessToken : "",
-            );
-          }
-          resolve(result);
-        } catch {
-          reject(
-            new TwikooError("UNKNOWN", "后端返回格式异常", {
-              rawMessage: xhr.responseText.slice(0, 200),
-            }),
+    body = JSON.stringify({ accessToken, ...payload, envId: url });
+  } catch (e) {
+    throw new TwikooError("NETWORK", "无法连接到后端", { rawMessage: getErrorMessage(e) });
+  }
+  try {
+    const { response, text } = await fetchText(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+    });
+    const { status } = response;
+    if (status === 200) {
+      try {
+        const result = JSON.parse(text) as Record<string, unknown>;
+        if (result.accessToken) {
+          localStorage.setItem(
+            "twikoo-access-token",
+            typeof result.accessToken === "string" ? result.accessToken : "",
           );
         }
-      } else if (xhr.status === 0) {
-        // status 0：网络失败或跨域拦截（判定表）
-        reject(
-          new TwikooError(elapsed > 30000 ? "TIMEOUT" : "CORS", "请求被跨域策略拦截或网络不可达", {
-            rawMessage: xhr.statusText || "status 0",
-          }),
-        );
-      } else if (xhr.status === 404) {
-        reject(
-          new TwikooError("NOT_FOUND", "接口地址不存在", {
-            httpStatus: 404,
-            rawMessage: xhr.responseText.slice(0, 200),
-          }),
-        );
-      } else if (xhr.status === 401 || xhr.status === 403) {
-        reject(
-          new TwikooError("CLIENT_ERROR", "认证失败，请重新登录", {
-            httpStatus: xhr.status,
-            rawMessage: xhr.responseText.slice(0, 200),
-          }),
-        );
-      } else if (xhr.status === 429) {
-        reject(
-          new TwikooError("REJECTED", "请求过于频繁", {
-            httpStatus: 429,
-            rawMessage: xhr.responseText.slice(0, 200),
-          }),
-        );
-      } else if (xhr.status >= 500) {
-        reject(
-          new TwikooError("SERVER_ERROR", "后端异常", {
-            httpStatus: xhr.status,
-            rawMessage: xhr.responseText.slice(0, 200),
-          }),
-        );
-      } else {
-        reject(
-          new TwikooError("CLIENT_ERROR", `请求失败（${xhr.status}）`, {
-            httpStatus: xhr.status,
-            rawMessage: xhr.responseText.slice(0, 200),
-          }),
-        );
+        return result;
+      } catch {
+        throw new TwikooError("UNKNOWN", "后端返回格式异常", {
+          rawMessage: text.slice(0, 200),
+        });
       }
-    };
-    try {
-      xhr.open("POST", url);
-      xhr.setRequestHeader("Content-Type", "application/json");
-      xhr.send(JSON.stringify({ accessToken, ...payload, envId: url }));
-    } catch (e) {
-      reject(new TwikooError("NETWORK", "无法连接到后端", { rawMessage: String(e) }));
     }
-  });
+    const details = { httpStatus: status, rawMessage: text.slice(0, 200) };
+    if (status === 404) throw new TwikooError("NOT_FOUND", "接口地址不存在", details);
+    if (status === 401 || status === 403) {
+      throw new TwikooError("CLIENT_ERROR", "认证失败，请重新登录", details);
+    }
+    if (status === 429) throw new TwikooError("REJECTED", "请求过于频繁", details);
+    if (status >= 500) throw new TwikooError("SERVER_ERROR", "后端异常", details);
+    throw new TwikooError("CLIENT_ERROR", `请求失败（${status}）`, details);
+  } catch (e) {
+    if (e instanceof TwikooError) throw e;
+    if (e instanceof TwikooFetchTimeoutError) {
+      throw new TwikooError("TIMEOUT", "请求超时", { rawMessage: e.message });
+    }
+    // 浏览器不会向脚本暴露网络失败与 CORS 拦截的可靠区别，沿用 xhr.status === 0 的提示。
+    throw new TwikooError("CORS", "请求被跨域策略拦截或网络不可达", {
+      rawMessage: getErrorMessage(e),
+    });
+  }
 }
 
 /**

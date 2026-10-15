@@ -378,9 +378,19 @@ async function updateComment(event: string, data: Record<string, unknown>): Prom
 function applyRendering(el: HTMLElement | null): void {
   if (!el) return;
   renderLinks(el);
-  renderMath(el, getAppState().options.katex);
-  if (serverConfig.HIGHLIGHT === "true") {
-    renderCode(el, serverConfig.HIGHLIGHT_THEME as string, serverConfig.HIGHLIGHT_PLUGIN as string);
+  // 公式 / 代码高亮只作用于**各条评论的正文容器**（v-html 区域）。
+  // KaTeX 会直接改写它遍历到的文本节点；若把整个列表交给它，它会动到 Vue 管理的
+  // 列表结构（v-for 碎片锚点），随后管理端筛选触发块级 diff 时会取到已脱离 DOM 的
+  // 锚点，`parent.insertBefore` 因 parent 为 null 抛错，筛选结果无法渲染。
+  for (const content of el.querySelectorAll<HTMLElement>(".tk-content")) {
+    renderMath(content, getAppState().options.katex);
+    if (serverConfig.HIGHLIGHT === "true") {
+      renderCode(
+        content,
+        serverConfig.HIGHLIGHT_THEME as string,
+        serverConfig.HIGHLIGHT_PLUGIN as string,
+      );
+    }
   }
 }
 

@@ -16,7 +16,6 @@
     ref="tkCommentRef"
     class="tk-comment"
     :class="{ 'tk-master': comment.master }"
-    :tabindex="isLogin ? 0 : undefined"
   >
     <TkAvatar
       :config="config"
@@ -506,9 +505,6 @@ async function setComment(set: { isSpam?: boolean; top?: boolean }): Promise<voi
     }
     if (set.isSpam !== undefined) localSpam.value = set.isSpam;
     if (set.top !== undefined) localTop.value = set.top;
-    // 状态切换可能改变焦点，将焦点交还评论以保持管理操作栏可见。
-    await nextTick();
-    tkCommentRef.value?.focus({ preventScroll: true });
   } finally {
     adminLoading.value = false;
   }
@@ -608,12 +604,7 @@ onMounted(() => {
   color: #409eff;
   cursor: pointer;
 }
-.twikoo
-  .tk-comment:focus-within:not(:has(.tk-comment:focus-within))
-  > .tk-main
-  > .tk-row
-  > .tk-meta
-  > .tk-actions {
+.twikoo .tk-comment:hover .tk-actions {
   display: inline;
 }
 /*

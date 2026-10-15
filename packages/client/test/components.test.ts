@@ -387,12 +387,10 @@ describe("TkComment", () => {
     useFakeTcb({ COMMENT_SET_FOR_ADMIN: update });
     setServerConfig({ IS_ADMIN: true });
     const wrapper = mount(TkComment, {
-      attachTo: document.body,
       props: { comment: makeComment() },
     });
     await flushPromises();
     const button = wrapper.findAll(".tk-actions button").find((item) => item.text() === t(label))!;
-    (button.element as HTMLButtonElement).focus();
     await button.trigger("click");
     await flushPromises();
     expect(update).toHaveBeenCalledWith(
@@ -400,14 +398,11 @@ describe("TkComment", () => {
     );
     expect(alert).toHaveBeenCalledWith("请先登录");
     expect(wrapper.find(tag).exists()).toBe(false);
-    expect(document.activeElement).toBe(button.element);
 
     update.mockReturnValue({ code: 0 });
     await button.trigger("click");
     await flushPromises();
     expect(wrapper.find(tag).exists()).toBe(true);
-    expect(button.element.isConnected).toBe(false);
-    expect(document.activeElement).toBe(wrapper.element);
     wrapper.unmount();
   });
 
@@ -422,7 +417,6 @@ describe("TkComment", () => {
     setServerConfig({ IS_ADMIN: true });
     const wrapper = mount(TkComment, { props: { comment: makeComment() } });
     await flushPromises();
-    expect(wrapper.attributes("tabindex")).toBe("0");
     const button = wrapper
       .findAll(".tk-actions button")
       .find((item) => item.text() === t("ADMIN_COMMENT_DELETE"))!;
@@ -454,7 +448,6 @@ describe("TkComment", () => {
     const wrapper = mount(TkComment, { props: { comment: makeComment({ isOwner: true }) } });
     await flushPromises();
     expect(wrapper.find(".tk-actions").exists()).toBe(false);
-    expect(wrapper.attributes("tabindex")).toBeUndefined();
     await wrapper.findComponent(TkAction).find(".tk-action-link").trigger("click");
     await flushPromises();
     expect(confirm).toHaveBeenCalledWith(t("COMMENT_DELETE_CONFIRM"));

@@ -62,6 +62,7 @@ const props = withDefaults(
 /** 组件事件（1.x `$emit('update', { meta, valid })` 同名保留） */
 const emit = defineEmits<{
   (e: "update", payload: { meta: MetaData; valid: boolean }): void;
+  (e: "validate", valid: boolean): void;
 }>();
 
 /** 三个 meta 字段的键 */
@@ -132,7 +133,7 @@ function updateMeta(): void {
 }
 
 /**
- * 输入时同步本地表单并静默持久化（不触发 QQ 补全，等 change）。
+ * 输入时同步本地表单并校验，保存和头像更新在 change 时触发。
  *
  * 通过原生 `name` 反查字段名（而非模板内联箭头），避免模板表达式参与 TS 规则检查。
  * @param value 输入值
@@ -142,7 +143,7 @@ function onMetaInput(value: string, evt: Event): void {
   const key = (evt.target as HTMLInputElement).name as MetaKey;
   if (!key) return;
   metaData[key] = value;
-  localStorage.setItem("twikoo", JSON.stringify(metaData));
+  emit("validate", checkValid());
 }
 
 /** 从 localStorage 读取草稿（1.x initMeta 对齐） */
@@ -221,7 +222,7 @@ function syncFromProps(): void {
 watch(() => [props.nick, props.mail, props.link], syncFromProps);
 
 watch(requiredFields, () => {
-  emit("update", { meta: { ...metaData }, valid: checkValid() });
+  emit("validate", checkValid());
 });
 
 watch(

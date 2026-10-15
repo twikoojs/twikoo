@@ -21,6 +21,7 @@
           :link="link"
           :config="config"
           @update="onMetaUpdate"
+          @validate="isMetaValid = $event"
         />
         <TkInput
           ref="textareaRef"

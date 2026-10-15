@@ -149,6 +149,39 @@ jobs:
       - name: Unit tests (Vitest projects)
         run: pnpm test
 
+  e2e:
+    name: E2E
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm (version from package.json packageManager field)
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build workspace packages
+        run: pnpm build
+
+      # KaTeX vendor 资产被 gitignore，需先由 demo 的 prepare-assets 生成
+      - name: Prepare demo vendor assets (KaTeX)
+        run: pnpm --filter @twikoojs/demo prepare-assets
+
+      - name: E2E regression (e2e:b2)
+        run: pnpm e2e:b2
+
+      - name: CDN products + self-hosted check
+        run: pnpm check:products
+
   # docs 不依赖工作区包产物，故无需先构建
   docs:
     name: Docs

@@ -17,6 +17,7 @@ import { request } from "node:http";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { JSDOM } from "jsdom";
+import { installFetch } from "./jsdom-fetch.mjs";
 
 /** 仓库根 */
 const ROOT = resolve(new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"));
@@ -164,6 +165,8 @@ async function loadProduct(file) {
     },
   );
   const { window } = dom;
+  // jsdom 不实现 fetch —— 注入同源桩
+  installFetch(window);
   window.eval(code);
   await window.twikoo.init({
     envId: `http://127.0.0.1:${PORT}`,

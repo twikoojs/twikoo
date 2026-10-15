@@ -378,9 +378,17 @@ async function updateComment(event: string, data: Record<string, unknown>): Prom
 function applyRendering(el: HTMLElement | null): void {
   if (!el) return;
   renderLinks(el);
-  renderMath(el, getAppState().options.katex);
-  if (serverConfig.HIGHLIGHT === "true") {
-    renderCode(el, serverConfig.HIGHLIGHT_THEME as string, serverConfig.HIGHLIGHT_PLUGIN as string);
+  // 只处理各条评论的正文容器（.tk-content，v-html 区域）：整张列表交给 KaTeX
+  // 会改写 Vue 管理的 v-for 锚点，列表重渲染时块级 diff 取到脱离 DOM 的锚点而崩溃。
+  for (const content of el.querySelectorAll<HTMLElement>(".tk-content")) {
+    renderMath(content, getAppState().options.katex);
+    if (serverConfig.HIGHLIGHT === "true") {
+      renderCode(
+        content,
+        serverConfig.HIGHLIGHT_THEME as string,
+        serverConfig.HIGHLIGHT_PLUGIN as string,
+      );
+    }
   }
 }
 

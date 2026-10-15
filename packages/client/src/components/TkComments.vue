@@ -118,7 +118,7 @@ import TkInput from "../components/TkInput.vue";
 import TkIcon from "../components/TkIcon.vue";
 import TkError from "../components/TkError.vue";
 import { call, getUrl, logger, t } from "../utils";
-import { TwikooError, getAppState } from "../utils/api";
+import { TwikooError, getAppState, getResponse, getErrorMessage } from "../utils/api";
 import { setServerConfig } from "../utils/state";
 import { EVENT_CONFIG_UPDATED, off as busOff, on as busOn } from "../utils/bus";
 import { vLoading } from "../utils/directives";
@@ -182,7 +182,7 @@ const searchInputRef = ref<{ focus(): void }>();
 async function initConfig(): Promise<void> {
   try {
     const res = await call(getAppState().tcb, "GET_CONFIG");
-    const result = (res.result ?? res) as { config?: ServerConfig };
+    const result = getResponse(res) as { config?: ServerConfig };
     if (result.config) {
       config.value = result.config;
       setServerConfig(result.config);
@@ -340,7 +340,7 @@ async function getComments(event: Record<string, unknown>): Promise<boolean> {
   try {
     const res = await call(getAppState().tcb, "COMMENT_GET", event);
     if (version !== requestVersion.value) return false;
-    const result = (res.result ?? res) as {
+    const result = getResponse(res) as {
       message?: string;
       data?: CommentDto[];
       more?: boolean;
@@ -368,8 +368,8 @@ async function getComments(event: Record<string, unknown>): Promise<boolean> {
       error.value =
         e instanceof TwikooError
           ? e
-          : new TwikooError("UNKNOWN", (e as Error).message, {
-              rawMessage: (e as Error).message,
+          : new TwikooError("UNKNOWN", getErrorMessage(e), {
+              rawMessage: getErrorMessage(e),
             });
     }
   }

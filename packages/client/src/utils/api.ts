@@ -53,6 +53,34 @@ export class TwikooError extends Error {
   }
 }
 
+/** 服务端明确返回的业务失败；与无法确认操作结果的通信异常区分。 */
+export class TwikooResponseError extends TwikooError {
+  /** 将业务拒绝保留为可展示的统一错误，同时标记操作结果已经明确。 */
+  constructor(message: string) {
+    super("CLIENT_ERROR", message);
+    this.name = "TwikooResponseError";
+  }
+}
+
+/** 解包两种通道的响应，并将业务失败交给调用方统一处理。 */
+export function getResponse(res: Record<string, unknown>): Record<string, unknown> {
+  const result = (res.result ?? res) as Record<string, unknown>;
+  if (result.code !== undefined && result.code !== 0) {
+    throw new TwikooResponseError(
+      typeof result.message === "string" && result.message
+        ? result.message
+        : (JSON.stringify(result.code) ?? ""),
+    );
+  }
+  return result;
+}
+
+/** 提取可展示的异常原因，兼容云 SDK 拒绝时返回的普通对象或字符串。 */
+export function getErrorMessage(error: unknown): string {
+  if (error && typeof error === "object" && "message" in error) return String(error.message);
+  return String(error);
+}
+
 /** 云开发应用最小结构面（仅需 callFunction） */
 export type TcbApp = {
   /**

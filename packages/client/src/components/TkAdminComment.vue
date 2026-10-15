@@ -63,7 +63,7 @@
         </div>
         <!-- 管理端正文：服务端已消毒，客户端再走一次 sanitizeHtml 双保险 -->
         <!-- eslint-disable-next-line vue/no-v-html -->
-        <div class="tk-content" v-html="comment.comment"></div>
+        <div class="tk-content" @click="onContentClick" v-html="comment.comment"></div>
         <div
           v-if="securityAlert && securityAlert.commentId === comment._id"
           class="tk-admin-warn tk-admin-security-alert"
@@ -138,6 +138,7 @@ import TkIcon from "../components/TkIcon.vue";
 import {
   call,
   convertLink,
+  popupLightbox,
   renderCode,
   renderLinks,
   renderMath,
@@ -202,6 +203,13 @@ const commentListRef = ref<HTMLElement>();
  */
 function displayCreated(comment: AdminCommentDto): string {
   return timeago(comment.created);
+}
+
+/** 管理面板正文沿用 LIGHTBOX 配置，支持点击普通图片放大。 */
+function onContentClick(event: MouseEvent): void {
+  if (serverConfig.LIGHTBOX === "true") {
+    popupLightbox(event);
+  }
 }
 
 /** 拉取当前页评论（1.x getComments 对齐） */

@@ -425,6 +425,77 @@ describe("TkComment", () => {
   });
 });
 
+describe("评论图片放大", () => {
+  it.each(["comment", "admin"])(
+    "%s：放大普通图片，加载和缩放后居中，关闭后清理监听",
+    async (view) => {
+      useFakeTcb({
+        GET_CONFIG_FOR_ADMIN: { code: 0, config: { LIGHTBOX: "true" } },
+        COMMENT_GET_FOR_ADMIN: {
+          code: 0,
+          count: 1,
+          data: [
+            {
+              _id: "c1",
+              nick: "甲",
+              comment:
+                '<p><img src="https://example.com/photo.png"></p><p><img class="tk-owo-emotion" src="https://example.com/emoji.png"></p>',
+              created: 1,
+            },
+          ],
+        },
+      });
+      setServerConfig({ LIGHTBOX: "true" });
+      const container = document.createElement("div");
+      container.className = "twikoo";
+      document.body.appendChild(container);
+      const wrapper =
+        view === "admin"
+          ? mount(TkAdminComment, { attachTo: container })
+          : mount(TkComment, {
+              attachTo: container,
+              props: {
+                comment: makeComment({
+                  comment:
+                    '<p><img src="https://example.com/photo.png"></p><p><img class="tk-owo-emotion" src="https://example.com/emoji.png"></p>',
+                }),
+              },
+            });
+      await flushPromises();
+      await wrapper.find(".tk-content img.tk-owo-emotion").trigger("click");
+      expect(container.querySelector(".tk-lightbox")).toBeNull();
+      await wrapper.findAll(".tk-content img")[0].trigger("click");
+      const lightbox = container.querySelector<HTMLElement>(".tk-lightbox")!;
+      const image = lightbox.querySelector<HTMLImageElement>("img")!;
+      expect(image.src).toBe("https://example.com/photo.png");
+      Object.defineProperties(image, {
+        complete: { value: true },
+        naturalWidth: { value: 301 },
+      });
+      vi.spyOn(window, "devicePixelRatio", "get").mockReturnValue(2);
+      const bounds = vi
+        .spyOn(lightbox, "getBoundingClientRect")
+        .mockReturnValue(new DOMRect(0, 0, 1000, 800));
+      vi.spyOn(image, "getBoundingClientRect").mockReturnValue(new DOMRect(0, 0, 301, 201));
+      image.dispatchEvent(new Event("load"));
+      expect(image.style.left).toBe("349.5px");
+      expect(image.style.top).toBe("299.5px");
+      expect(image.style.transform).toBe("none");
+      bounds.mockReturnValue(new DOMRect(0, 0, 1200, 900));
+      window.dispatchEvent(new Event("resize"));
+      expect(image.style.left).toBe("449.5px");
+      expect(image.style.top).toBe("349.5px");
+      lightbox.click();
+      expect(container.querySelector(".tk-lightbox")).toBeNull();
+      bounds.mockClear();
+      window.dispatchEvent(new Event("resize"));
+      image.dispatchEvent(new Event("load"));
+      expect(bounds).not.toHaveBeenCalled();
+      wrapper.unmount();
+    },
+  );
+});
+
 describe("TkComments", () => {
   it("空列表渲染空态与总数", async () => {
     useFakeTcb({

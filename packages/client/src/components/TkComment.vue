@@ -90,7 +90,7 @@
         </span>
         <!-- 正文：服务端已 DOMPurify 消毒，客户端再走一次 sanitizeHtml 双保险 -->
         <!-- eslint-disable-next-line vue/no-v-html -->
-        <span ref="commentRef" @click="popupLightbox" v-html="sanitizedComment"></span>
+        <span ref="commentRef" @click="onContentClick" v-html="sanitizedComment"></span>
       </div>
       <div v-if="showContentExpand" class="tk-expand-wrap">
         <div class="tk-expand" @click="isContentExpanded = true">{{ t("COMMENT_EXPAND") }}</div>
@@ -165,6 +165,7 @@ import TkIcon from "../components/TkIcon.vue";
 import {
   call,
   convertLink,
+  popupLightbox,
   renderCode,
   renderLinks,
   renderMath,
@@ -467,20 +468,10 @@ function handleTop(top: boolean): void {
  * 图片点击放大（`LIGHTBOX` 开启时；1.x popupLightbox 对齐）。
  * @param event 点击事件
  */
-function popupLightbox(event: MouseEvent): void {
-  if (getServerConfig().LIGHTBOX !== "true") return;
-  const target = event.target as HTMLElement;
-  if (target.tagName !== "IMG" || target.classList.contains("tk-owo-emotion")) return;
-  const lightbox = document.createElement("div");
-  lightbox.className = "tk-lightbox";
-  const lightboxImg = document.createElement("img");
-  lightboxImg.className = "tk-lightbox-image";
-  lightboxImg.src = (target as HTMLImageElement).src;
-  lightbox.appendChild(lightboxImg);
-  lightbox.addEventListener("click", () => {
-    document.body.removeChild(lightbox);
-  });
-  document.body.appendChild(lightbox);
+function onContentClick(event: MouseEvent): void {
+  if (getServerConfig().LIGHTBOX === "true") {
+    popupLightbox(event);
+  }
 }
 
 /**

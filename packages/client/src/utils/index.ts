@@ -390,6 +390,39 @@ export function renderLinks(el: HTMLElement | HTMLElement[] | null): void {
   }
 }
 
+/** 图片点击放大，挂载到所属评论区以匹配 .twikoo 样式作用域。 */
+export function popupLightbox(event: MouseEvent): void {
+  const target = event.target;
+  if (!(target instanceof HTMLImageElement) || target.classList.contains("tk-owo-emotion")) return;
+  const container = target.closest(".twikoo");
+  if (!container) return;
+  const lightbox = document.createElement("div");
+  lightbox.className = "tk-lightbox";
+  const lightboxImg = document.createElement("img");
+  lightboxImg.className = "tk-lightbox-image";
+  /** 图片加载或窗口缩放后重新居中，并对齐物理像素，避免文字图片发虚。 */
+  const centerImage = (): void => {
+    if (!lightboxImg.complete || !lightboxImg.naturalWidth) return;
+    const { width, height } = lightboxImg.getBoundingClientRect();
+    const bounds = lightbox.getBoundingClientRect();
+    const pixelRatio = window.devicePixelRatio || 1;
+    lightboxImg.style.left = `${Math.round(((bounds.width - width) / 2) * pixelRatio) / pixelRatio}px`;
+    lightboxImg.style.top = `${Math.round(((bounds.height - height) / 2) * pixelRatio) / pixelRatio}px`;
+    lightboxImg.style.transform = "none";
+  };
+  lightboxImg.addEventListener("load", centerImage);
+  lightboxImg.src = target.src;
+  lightbox.appendChild(lightboxImg);
+  lightbox.addEventListener("click", () => {
+    window.removeEventListener("resize", centerImage);
+    lightboxImg.removeEventListener("load", centerImage);
+    lightbox.remove();
+  });
+  container.appendChild(lightbox);
+  window.addEventListener("resize", centerImage);
+  centerImage();
+}
+
 /**
  * 公式渲染（1.x renderMath 对齐：KaTeX auto-render 由使用方引入后接管）。
  * @param el 容器元素（可为 null）

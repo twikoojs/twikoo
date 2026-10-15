@@ -19,7 +19,7 @@
 import { randomUUID } from "node:crypto";
 // index.ts 的类型仅类型级导入（编译期擦除），避免运行时循环依赖
 import type { TkAdapters, TkRequest, TkResponse, TkResponseBody } from "../index";
-import type { ConfigData } from "../ports/database";
+import type { ConfigData, Database } from "../ports/database";
 import { RateLimitError } from "./errors";
 import { dispatch } from "./dispatcher";
 import type { PipelineContext } from "./types";
@@ -79,7 +79,7 @@ function anonymousSignIn(request: TkRequest): string {
  * @param config 全量配置
  * @returns CORS 响应头（无 Origin 时为空对象）
  */
-function allowCors(request: TkRequest, config: ConfigData): Record<string, string> {
+export function allowCors(request: TkRequest, config: ConfigData): Record<string, string> {
   const origin = request.headers.origin;
   if (!origin) return {};
   return {
@@ -90,6 +90,43 @@ function allowCors(request: TkRequest, config: ConfigData): Record<string, strin
       "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
     "Access-Control-Max-Age": "600",
   };
+}
+
+/** 错误路径共用进行中的配置读取，避免并发拒绝请求堆积查询。 */
+const pendingCorsConfig = new WeakMap<Database, Promise<ConfigData | null>>();
+
+/** 错误响应只读取已有数据库的配置，最多等待 100ms；失败或超时不放行跨域，也不改变原错误。 */
+export async function allowCorsForError(
+  request: TkRequest,
+  database: Database,
+): Promise<Record<string, string>> {
+  if (!request.headers.origin) return {};
+  let pending = pendingCorsConfig.get(database);
+  if (!pending) {
+    pending = (async () => {
+      try {
+        // 未就绪的数据库直接读取失败，避免并发初始化及失败后的重复连接。
+        return (await database.getConfig()) ?? {};
+      } catch (e) {
+        console.error("Twikoo CORS configuration failed:", e);
+        return null;
+      }
+    })();
+    pendingCorsConfig.set(database, pending);
+    void pending.then(() => pendingCorsConfig.delete(database));
+  }
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    const config = await Promise.race([
+      pending,
+      new Promise<null>((resolve) => {
+        timer = setTimeout(() => resolve(null), 100);
+      }),
+    ]);
+    return config === null ? {} : allowCors(request, config);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 /**
@@ -173,14 +210,17 @@ export function createPipeline(adapters: TkAdapters) {
     let status = 200;
     /** 步骤 3 产出，步骤 9 回填判断用 */
     let accessToken = "";
+    // 已尝试读取配置后不重试；尤其不能把读取失败当作未配置白名单。
+    let corsAttempted = false;
     try {
       protect(request, logger);
       // 统一校验客户端字段类型，防止查询操作符对象注入数据库查询条件
       validateClientFields(request.body);
       accessToken = anonymousSignIn(request);
+      corsAttempted = true;
       await adapters.database.init();
       const { config, failed: configReadFailed } = await readConfig(adapters, logger);
-      Object.assign(headers, allowCors(request, config));
+      if (!configReadFailed) Object.assign(headers, allowCors(request, config));
       if (request.method === "OPTIONS") {
         return { status: 204, body: {}, headers };
       }
@@ -207,6 +247,9 @@ export function createPipeline(adapters: TkAdapters) {
         message: getErrorMessage(e),
       };
       if (e instanceof RateLimitError) status = 429;
+      if (!corsAttempted) {
+        Object.assign(headers, await allowCorsForError(request, adapters.database));
+      }
     }
     // 步骤 9：回填 accessToken（1.x 语义：业务成功且请求未携带时才回填）
     if (!body.code && !request.body.accessToken) {

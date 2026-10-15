@@ -3,14 +3,15 @@
  * 1.x server.js 语义对齐：JSON body 解析、socket 跟踪、退出信号优雅关闭、
  * 关闭期间 503。TWIKOO_SKIP_BOOT=1 时仅导出工厂不启动（测试进程内装配）。
  */
-import { createServer, type Server } from "node:http";
+import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import type { AddressInfo, Socket } from "node:net";
-import { BodyTooLargeError, readBodyWithLimit } from "@twikoojs/common";
+import { allowCorsForError, BodyTooLargeError, readBodyWithLimit } from "@twikoojs/common";
 import {
   createTkserverHandler,
   getRequestTimesClearInterval,
   shutdown,
   startRequestTimesTimer,
+  toTkRequest,
 } from "./main";
 import { createTkserverDatabase } from "./database";
 import type { Database } from "@twikoojs/common";
@@ -57,19 +58,35 @@ export function createTkserverServer(options: { database?: Database } = {}): Tks
   const sockets = new Set<Socket>();
   let isShuttingDown = false;
 
+  /** 入口拒绝统一补充 CORS；配置不可用时仍及时结束连接。 */
+  const rejectRequest = async (
+    req: IncomingMessage,
+    res: ServerResponse,
+    status: number,
+    message: string,
+  ): Promise<void> => {
+    req.pause();
+    const headers = await allowCorsForError(toTkRequest(req), database);
+    res.writeHead(status, {
+      ...headers,
+      Connection: "close",
+      "Content-Type": "application/json",
+    });
+    res.end(JSON.stringify({ code: status, message }), () => req.destroy());
+  };
+
   const server = createServer((req, res) => {
-    if (isShuttingDown) {
-      res.writeHead(503, { Connection: "close", "Content-Type": "application/json" });
-      res.end(JSON.stringify({ code: 503, message: "Twikoo server is shutting down" }));
-      return;
-    }
     // 健康检查短路：不进 pipeline、不碰数据库——数据库未就绪时也能反映「进程活着」
-    if (req.method === "GET" && HEALTH_PATHS.has(stripQuery(req.url))) {
+    if (!isShuttingDown && req.method === "GET" && HEALTH_PATHS.has(stripQuery(req.url))) {
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ code: 0, message: "pong" }));
       return;
     }
     void (async () => {
+      if (isShuttingDown) {
+        await rejectRequest(req, res, 503, "Twikoo server is shutting down");
+        return;
+      }
       /**
        * 聚合请求体（累计字节上限 + 读取超时；JSON 解析失败按空体处理，1.x 语义）。
        *
@@ -83,10 +100,7 @@ export function createTkserverServer(options: { database?: Database } = {}): Tks
         /** 超限回 413、超时回 408；直接断开，不进 pipeline */
         const tooLarge = e instanceof BodyTooLargeError;
         const status = tooLarge ? 413 : 408;
-        res.writeHead(status, { Connection: "close", "Content-Type": "application/json" });
-        res.end(
-          JSON.stringify({ code: status, message: tooLarge ? "请求体过大" : "请求体读取超时" }),
-        );
+        await rejectRequest(req, res, status, tooLarge ? "请求体过大" : "请求体读取超时");
         return;
       }
       try {
@@ -108,9 +122,10 @@ export function createTkserverServer(options: { database?: Database } = {}): Tks
         return shimmed;
       };
       await handler(req, shimmed);
-    })().catch(() => {
+    })().catch(async () => {
+      const headers = await allowCorsForError(toTkRequest(req), database);
       if (!res.writableEnded) {
-        res.writeHead(200, { "Content-Type": "application/json" });
+        res.writeHead(200, { ...headers, "Content-Type": "application/json" });
         res.end(JSON.stringify({ code: 1000, message: "internal error" }));
       }
     });

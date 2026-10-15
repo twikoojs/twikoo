@@ -14,6 +14,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { COMMENT_SUBMIT, type TwikooEvent } from "@twikoojs/shared";
 import {
+  allowCorsForError,
+  LokiDatabase,
+  MongoDatabase,
   createHandler,
   registerHandler,
   resetHandlers,
@@ -34,6 +37,81 @@ afterEach(() => {
   registerDefaultHandlers();
   resetRequestTimes();
   vi.unstubAllEnvs();
+  vi.useRealTimers();
+  vi.restoreAllMocks();
+});
+
+describe("错误响应 CORS", () => {
+  it.each(["rate-limit", "validation"])("%s 保留白名单规则", async (kind) => {
+    vi.stubEnv("TWIKOO_THROTTLE", "1");
+    const adapters = createMemoryAdapters({
+      database: { CORS_ALLOW_ORIGIN: "https://allowed.example/" },
+    });
+    const handler = createHandler(adapters);
+    for (const origin of ["https://allowed.example", "https://denied.example"]) {
+      resetRequestTimes();
+      if (kind === "rate-limit") await handler(makeRequest());
+      const response = await handler(
+        makeRequest({
+          headers: { origin },
+          body: kind === "validation" ? ({ event: "COMMENT_SUBMIT", nick: {} } as never) : {},
+        }),
+      );
+      expect(response.status).toBe(kind === "rate-limit" ? 429 : 200);
+      expect(response.body.code).toBe(RES_CODE.FAIL);
+      expect(response.headers["Access-Control-Allow-Origin"]).toBe(
+        origin === "https://allowed.example" ? origin : "",
+      );
+    }
+  });
+
+  it("配置读取挂起时有界等待并合并并发读取，但不初始化数据库", async () => {
+    vi.useFakeTimers();
+    const { database } = createMemoryAdapters();
+    const blocked = vi
+      .spyOn(database, "getConfig")
+      .mockImplementation(() => new Promise<never>(() => {}));
+    const init = vi.spyOn(database, "init");
+    const request = makeRequest({ headers: { origin: "https://allowed.example" } });
+    const responses = Promise.all([
+      allowCorsForError(request, database),
+      allowCorsForError(request, database),
+    ]);
+    await vi.advanceTimersByTimeAsync(100);
+    expect(await responses).toEqual([{}, {}]);
+    expect(blocked).toHaveBeenCalledTimes(1);
+    expect(init).not.toHaveBeenCalled();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it.each(["loki", "mongo"])("%s 未初始化时立即省略 CORS，不尝试初始化", async (kind) => {
+    vi.useFakeTimers();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const database =
+      kind === "loki"
+        ? new LokiDatabase({ dataDir: "unused-cors-test-data" })
+        : new MongoDatabase({ uri: "mongodb://127.0.0.1:1/unused" });
+    const init = vi.spyOn(database, "init");
+    const result = await allowCorsForError(
+      makeRequest({ headers: { origin: "https://allowed.example" } }),
+      database,
+    );
+    expect(result).toEqual({});
+    expect(init).not.toHaveBeenCalled();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("正常管线读取配置失败不能按空白名单放行", async () => {
+    const adapters = createMemoryAdapters();
+    vi.spyOn(adapters.database, "getConfig").mockRejectedValue(new Error("unavailable"));
+    const result = await createHandler(adapters)(
+      makeRequest({
+        headers: { origin: "https://unknown.example" },
+        body: { event: "GET_FUNC_VERSION" },
+      }),
+    );
+    expect(result.headers).not.toHaveProperty("Access-Control-Allow-Origin");
+  });
 });
 
 describe("pipeline 八步编排", () => {

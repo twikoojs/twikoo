@@ -53,7 +53,7 @@
   "ADMIN_CONFIG_ITEM_HIGHLIGHT_THEME": "Кодни таъкидлаш мавзуси. Қуйидагилардан танланг: \"default\", \"coy\", \"dark\", \"funky\", \"okaidia\", \"solarizedlight\", \"tomorrow\", \"twilight\". Олдиндан кўриш учун https://prismjs.com сайтига ташриф буюринг. Агар мавзуингиз кодни ажратиб кўрсатишга зид бўлса, уни «Ҳеч» га ўрнатинг. Стандарт: йўқ.",
   "ADMIN_CONFIG_ITEM_HIGHLIGHT_PLUGIN": "Плагин подсветки кода, опционально: \"showLanguage\",\"copyButton\", соответственно: показывать язык кода, показывать кнопку копирования кода. Вы можете установить несколько опций одновременно, если вы хотите не добавлять плагин подсветки кода, установите значение none. по умолчанию: none.",
   "ADMIN_CONFIG_ITEM_IMAGE_CDN": "Расм юклаш учун расм тўшаги. Қуйидагилардан танланг: \"qcloud\", \"7bu (https://7bu.top)\", \"see (https://s.ee)\", \"lskypro\", \"piclist\", \"easyimage\", \"chevereto\", \"S3 / R2 / MinIO\"",
-  "ADMIN_CONFIG_ITEM_IMAGE_CDN_URL": "IMAGE_CDN томонидан белгиланган расм тўшаги URL. Агар сизнинг IMAGE_CDN шулардан бири бўлса: \"lskypro\", \"piclist\", \"easyimage\", \"s3\"",
+  "ADMIN_CONFIG_ITEM_IMAGE_CDN_URL": "IMAGE_CDN томонидан белгиланган расм тўшаги URL. Агар сизнинг IMAGE_CDN шулардан бири бўлса: \"lskypro\", \"piclist\", \"easyimage\", \"chevereto\"",
   "ADMIN_CONFIG_ITEM_IMAGE_CDN_TOKEN": "Тасвир токен белгиси. Қслоуд учун кераксиз",
   "ADMIN_CONFIG_ITEM_NSFW_API_URL": "NSFW расмни аниқлаш API URL. Бепул хизматлар: nsfw.qixz.cn, лойиҳа: github.com/HG-ha/nsfwpy",
   "ADMIN_CONFIG_ITEM_NSFW_THRESHOLD": "NSFW аниқлаш чегараси (0-1). Баҳо бу қийматдан ошса юклаш рад қилинади. Стандарт: 0.5",

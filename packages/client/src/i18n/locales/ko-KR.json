@@ -53,7 +53,7 @@
   "ADMIN_CONFIG_ITEM_HIGHLIGHT_THEME": "코드 하이라이팅 테마. 사용 가능 테마: \"default\", \"coy\", \"dark\", \"funky\", \"okaidia\", \"solarizedlight\", \"tomorrow\", \"twilight\". https://prismjs.com 에서 미리보기를 확인하세요. 테마와 코드 하이라이팅이 충돌하면 none으로 설정하세요. 기본값: none.",
   "ADMIN_CONFIG_ITEM_HIGHLIGHT_PLUGIN": "코드 하이라이트 추가 기능. 선택 가능: \"showLanguage\", \"copyButton\". (코드 언어 표시, 복사 버튼) 여러 기능을 동시에 설정할 수 있으며, 추가하지 않으려면 none으로 설정하세요. 기본값: none.",
   "ADMIN_CONFIG_ITEM_IMAGE_CDN": "댓글 이미지 업로드 기능에 사용될 호스팅 서비스. 사용 가능 목록: \"qcloud\", \"7bu (https://7bu.top)\", \"see (https://s.ee)\", \"lskypro\", \"piclist\", \"easyimage\", \"chevereto\", \"S3 / R2 / MinIO\"",
-  "ADMIN_CONFIG_ITEM_IMAGE_CDN_URL": "이미지 저장소 URL. IMAGE_CDN 설정이 다음 중 하나인 경우 필요합니다: \"lskypro\", \"piclist\", \"easyimage\", \"s3\"",
+  "ADMIN_CONFIG_ITEM_IMAGE_CDN_URL": "이미지 저장소 URL. IMAGE_CDN 설정이 다음 중 하나인 경우 필요합니다: \"lskypro\", \"piclist\", \"easyimage\", \"chevereto\"",
   "ADMIN_CONFIG_ITEM_IMAGE_CDN_TOKEN": "이미지 호스팅 토큰. qcloud은 설정 불필요.",
   "ADMIN_CONFIG_ITEM_NSFW_API_URL": "NSFW 이미지 감지 API URL. 무료 서비스: nsfw.qixz.cn, 프로젝트: github.com/HG-ha/nsfwpy",
   "ADMIN_CONFIG_ITEM_NSFW_THRESHOLD": "NSFW 감지 임계값 (0-1). 점수가 이 값을 초과하면 업로드가 거부됩니다. 기본값: 0.5",

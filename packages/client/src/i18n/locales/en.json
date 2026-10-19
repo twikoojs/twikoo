@@ -53,7 +53,7 @@
   "ADMIN_CONFIG_ITEM_HIGHLIGHT_THEME": "Code highlighting theme. Select from: \"default\", \"coy\", \"dark\", \"funky\", \"okaidia\", \"solarizedlight\", \"tomorrow\", \"twilight\". Visit https://prismjs.com for preview. If your theme conflicts with code highlighting, please set it to none. Default: none.",
   "ADMIN_CONFIG_ITEM_HIGHLIGHT_PLUGIN": "Code highlight plug-in, optional: \"showLanguage\", \"copyButton\", respectively: show code language, show code copy button. Multiple options can be set at the same time, if you want to add no code highlighting plug-ins, please set it to none. Default: none. ",
   "ADMIN_CONFIG_ITEM_IMAGE_CDN": "The image bed for image uploading. Select from: \"qcloud\", \"7bu (https://7bu.top)\", \"see (https://s.ee)\", \"lskypro\", \"piclist\", \"easyimage\", \"chevereto\", \"S3 / R2 / MinIO\"",
-  "ADMIN_CONFIG_ITEM_IMAGE_CDN_URL": "The URL for the image bed. Required if your IMAGE_CDN is one of these: \"lskypro\", \"piclist\", \"easyimage\", \"s3\"",
+  "ADMIN_CONFIG_ITEM_IMAGE_CDN_URL": "The URL for the image bed. Required if your IMAGE_CDN is one of these: \"lskypro\", \"piclist\", \"easyimage\", \"chevereto\"",
   "ADMIN_CONFIG_ITEM_IMAGE_CDN_TOKEN": "The image bed token. Unnessessary for qcloud",
   "ADMIN_CONFIG_ITEM_NSFW_API_URL": "NSFW image detection API URL. Free services: nsfw.qixz.cn, project: github.com/HG-ha/nsfwpy",
   "ADMIN_CONFIG_ITEM_NSFW_THRESHOLD": "NSFW detection threshold (0-1). Upload will be rejected if score exceeds this value. Default: 0.5",

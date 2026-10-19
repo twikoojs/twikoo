@@ -47,7 +47,7 @@ describe("constants", () => {
     expect(highlightThemes).toContain("tomorrow");
     expect(highlightPlugins).toEqual(["showLanguage", "copyButton"]);
     expect(imageBedServices).toContain("qcloud");
-    expect(customImageBedServices).toEqual(["lskypro", "piclist", "easyimage", "s3"]);
+    expect(customImageBedServices).toEqual(["lskypro", "piclist", "easyimage", "chevereto"]);
     expect(defaultGravatar).toContain("mp");
     expect(DEFAULT_GRAVATAR_CDN).toBe("weavatar.com");
   });

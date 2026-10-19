@@ -53,7 +53,7 @@
   "ADMIN_CONFIG_ITEM_HIGHLIGHT_THEME": "Theme tô sáng code. Truy cập \"default\", \"coy\", \"dark\", \"funky\", \"okaidia\", \"solarizedlight\", \"tomorrow\", \"twilight\". https://prismjs.com để xem trước. Mặc định: none.",
   "ADMIN_CONFIG_ITEM_HIGHLIGHT_PLUGIN": "Plugin tô sáng code. Để không dùng plugin \"showLanguage\", \"copyButton\", đặt thành none. Mặc định: none.",
   "ADMIN_CONFIG_ITEM_IMAGE_CDN": "Dịch vụ lưu trữ ảnh khi tải lên bình luận. \"qcloud\", \"7bu (https://7bu.top)\", \"see (https://s.ee)\", \"lskypro\", \"piclist\", \"easyimage\", \"chevereto\", \"S3 / R2 / MinIO\"",
-  "ADMIN_CONFIG_ITEM_IMAGE_CDN_URL": "URL của dịch vụ lưu trữ ảnh. Bắt buộc nếu IMAGE_CDN là một trong các giá trị tùy chỉnh. \"lskypro\", \"piclist\", \"easyimage\", \"s3\"",
+  "ADMIN_CONFIG_ITEM_IMAGE_CDN_URL": "URL của dịch vụ lưu trữ ảnh. Bắt buộc nếu IMAGE_CDN là một trong các giá trị tùy chỉnh. \"lskypro\", \"piclist\", \"easyimage\", \"chevereto\"",
   "ADMIN_CONFIG_ITEM_IMAGE_CDN_TOKEN": "Token dịch vụ lưu trữ ảnh. Không cần thiết cho qcloud.",
   "ADMIN_CONFIG_ITEM_NSFW_API_URL": "URL API phát hiện ảnh NSFW. Dịch vụ miễn phí: nsfw.qixz.cn, dự án: github.com/HG-ha/nsfwpy",
   "ADMIN_CONFIG_ITEM_NSFW_THRESHOLD": "Ngưỡng phát hiện NSFW (0-1). Tải lên bị từ chối nếu điểm vượt ngưỡng. Mặc định: 0.5",

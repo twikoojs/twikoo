@@ -53,7 +53,7 @@
   "ADMIN_CONFIG_ITEM_HIGHLIGHT_THEME": "Tema penyorotan kode. Pilih dari: \"default\", \"coy\", \"dark\", \"funky\", \"okaidia\", \"solarizedlight\", \"tomorrow\", \"twilight\". Kunjungi https://prismjs.com untuk pratinjau. Jika tema Anda bertentangan dengan penyorotan kode, atur ke none. Bawaan: none.",
   "ADMIN_CONFIG_ITEM_HIGHLIGHT_PLUGIN": "Plugin penyorotan kode. Pilihan: \"showLanguage\", \"copyButton\", masing-masing: tampilkan bahasa kode, tampilkan tombol salin kode. Dapat mengatur beberapa opsi sekaligus. Jika tidak ingin plugin penyorotan kode, atur ke none. Bawaan: none.",
   "ADMIN_CONFIG_ITEM_IMAGE_CDN": "Penyedia hosting gambar untuk unggahan gambar. Pilih dari: \"qcloud\", \"7bu (https://7bu.top)\", \"see (https://s.ee)\", \"lskypro\", \"piclist\", \"easyimage\", \"chevereto\", \"S3 / R2 / MinIO\"",
-  "ADMIN_CONFIG_ITEM_IMAGE_CDN_URL": "URL hosting gambar. Wajib diisi jika IMAGE_CDN Anda adalah salah satu dari: \"lskypro\", \"piclist\", \"easyimage\", \"s3\"",
+  "ADMIN_CONFIG_ITEM_IMAGE_CDN_URL": "URL hosting gambar. Wajib diisi jika IMAGE_CDN Anda adalah salah satu dari: \"lskypro\", \"piclist\", \"easyimage\", \"chevereto\"",
   "ADMIN_CONFIG_ITEM_IMAGE_CDN_TOKEN": "Token hosting gambar. Tidak diperlukan untuk qcloud.",
   "ADMIN_CONFIG_ITEM_NSFW_API_URL": "URL API deteksi gambar NSFW. Layanan gratis: nsfw.qixz.cn, proyek: github.com/HG-ha/nsfwpy",
   "ADMIN_CONFIG_ITEM_NSFW_THRESHOLD": "Ambang deteksi NSFW (0-1). Unggahan akan ditolak jika skor melebihi nilai ini. Bawaan: 0.5",

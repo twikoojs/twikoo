@@ -53,7 +53,7 @@
   "ADMIN_CONFIG_ITEM_HIGHLIGHT_THEME": "コードハイライトのテーマ。選択肢：\"default\"、\"coy\"、\"dark\"、\"funky\"、\"okaidia\"、\"solarizedlight\"、\"tomorrow\"、\"twilight\"、テーマの効果をプレビューするには https://prismjs.com を訪問してください。テーマとコードハイライトに競合がある場合、noneに設定してください。デフォルト：none",
   "ADMIN_CONFIG_ITEM_HIGHLIGHT_PLUGIN": "コード・ハイライト・プラグイン。オプション: \"showLanguage\",\"copyButton\", それぞれ: コード言語の表示、コード・コピー・ボタンの表示。複数のオプションを同時に設定できますが、コード・ハイライト・プラグインを追加したくない場合は、noneに設定してください。",
   "ADMIN_CONFIG_ITEM_IMAGE_CDN": "画像のアップロードに使用する画像ホスティングサービス。次のうちから選択してください：\"qcloud\"、\"7bu (https://7bu.top)\"、\"see (https://s.ee)\"、\"lskypro\"、\"piclist\"、\"easyimage\"、\"chevereto\"、\"S3 / R2 / MinIO\"",
-  "ADMIN_CONFIG_ITEM_IMAGE_CDN_URL": "IMAGE_CDNで設定した画像ホスティングサービスのURL。IMAGE_CDNが以下のいずれかの場合は入力が必要です：\"lskypro\"、\"piclist\"、\"easyimage\"、\"s3\"",
+  "ADMIN_CONFIG_ITEM_IMAGE_CDN_URL": "IMAGE_CDNで設定した画像ホスティングサービスのURL。IMAGE_CDNが以下のいずれかの場合は入力が必要です：\"lskypro\"、\"piclist\"、\"easyimage\"、\"chevereto\"",
   "ADMIN_CONFIG_ITEM_IMAGE_CDN_TOKEN": "画像ホスティングトークン。qcloud画像ホスティングを利用する場合は設定の必要はありません",
   "ADMIN_CONFIG_ITEM_NSFW_API_URL": "NSFW画像検出API URL。無料サービス：nsfw.qixz.cn、プロジェクト：github.com/HG-ha/nsfwpy",
   "ADMIN_CONFIG_ITEM_NSFW_THRESHOLD": "NSFW検出しきい値（0-1）。スコアがこの値を超えるとアップロードが拒否されます。デフォルト：0.5",

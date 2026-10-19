@@ -53,7 +53,7 @@
   "ADMIN_CONFIG_ITEM_HIGHLIGHT_THEME": "代碼高亮主題，可選：\"default\"、\"coy\"、\"dark\"、\"funky\"、\"okaidia\"、\"solarizedlight\"、\"tomorrow\"、\"twilight\"，訪問 https://prismjs.com 可預覽主題效果。如果您的主題和代碼高亮有衝突，請設為 none。預設：none",
   "ADMIN_CONFIG_ITEM_HIGHLIGHT_PLUGIN": "代碼高亮插件，可選：\"showLanguage\"、\"copyButton\"，分別表示：展示代碼語言、展示代碼拷貝按鈕。可以同時設置多個選項，如果想要不添加任何代碼高亮插件，請設為 none。預設：none。",
   "ADMIN_CONFIG_ITEM_IMAGE_CDN": "插入圖片所使用的圖床，目前支持：\"qcloud\"、\"7bu (https://7bu.top)\"、\"see (https://s.ee)\"、\"lskypro\"、\"piclist\"、\"easyimage\"、\"chevereto\"、\"S3 / R2 / MinIO\"",
-  "ADMIN_CONFIG_ITEM_IMAGE_CDN_URL": "圖床的 URL，僅當 IMAGE_CDN 為 \"lskypro\" / \"piclist\" / \"easyimage\" / \"s3\" 時需要填寫",
+  "ADMIN_CONFIG_ITEM_IMAGE_CDN_URL": "圖床的 URL，僅當 IMAGE_CDN 為 \"lskypro\" / \"piclist\" / \"easyimage\" / \"chevereto\" 時需要填寫",
   "ADMIN_CONFIG_ITEM_IMAGE_CDN_TOKEN": "图床 token。qcloud 图床无需设置",
   "ADMIN_CONFIG_ITEM_NSFW_API_URL": "NSFW 圖片檢測 API 地址。免費服務：nsfw.qixz.cn，項目：github.com/HG-ha/nsfwpy",
   "ADMIN_CONFIG_ITEM_NSFW_THRESHOLD": "NSFW 檢測閾值（0-1），當檢測分數高於此值時拒絕上傳。預設：0.5",

@@ -553,11 +553,24 @@ function createSettings(): SettingGroup[] {
           value: "",
         },
         {
+          key: "LLM_REQUEST_EXTRA_JSON",
+          desc: t("ADMIN_CONFIG_ITEM_LLM_REQUEST_EXTRA_JSON"),
+          ph: '{"reasoning_effort":"none","temperature":0}',
+          value: "",
+          type: "textarea",
+        },
+        {
           key: "LLM_SPAM_PROMPT",
           desc: t("ADMIN_CONFIG_ITEM_LLM_SPAM_PROMPT"),
           ph: "",
           value: "",
           type: "textarea",
+        },
+        {
+          key: "LLM_TIMEOUT",
+          desc: t("ADMIN_CONFIG_ITEM_LLM_TIMEOUT"),
+          ph: "30000",
+          value: "",
         },
         {
           key: "LLM_MAX_RETRIES",

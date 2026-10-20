@@ -425,7 +425,7 @@ function toOptionName(key: string): string {
 }
 
 /**
- * 构建 LLM 请求参数：基础参数 + 自定义请求体（不可覆盖鉴权、模型、消息等内置字段）。
+ * 构建 LLM 请求参数：基础参数 + 自定义请求体（自定义参数优先，可覆盖内置字段）。
  * @param config 全量配置
  * @param messages 对话消息
  * @param logger 请求日志（告警用）
@@ -450,11 +450,6 @@ function buildLLMOptions(
     return options;
   }
   for (const [key, value] of Object.entries(extra)) {
-    // 不可覆盖鉴权/地址/消息等基础字段，避免配置误写导致整条链路失效
-    if (key in options) {
-      logger.warn(`LLM_REQUEST_EXTRA_JSON 中的 ${key} 与内置参数冲突，已忽略`);
-      continue;
-    }
     options[toOptionName(key)] = value;
   }
   return options;

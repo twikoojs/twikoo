@@ -414,18 +414,7 @@ function parseRequestExtraFields(rawText: string): Record<string, unknown> | nul
 }
 
 /**
- * 把配置里的 snake_case 键名还原为 xsai 的 camelCase 选项名
- * （xsai 发请求前会把选项名统一 snake_case 化，`reasoning_effort` → `reasoningEffort`，
- * 否则不会进到请求体）。
- * @param key 配置中写的键名
- * @returns 选项名
- */
-function toOptionName(key: string): string {
-  return key.replace(/_([a-z0-9])/g, (_, c: string) => c.toUpperCase());
-}
-
-/**
- * 构建 LLM 请求参数：基础参数 + 自定义请求体（自定义参数优先，可覆盖内置字段）。
+ * 构建 LLM 请求参数：固定传输配置 + 请求体合并钩子（自定义字段仅覆盖最终 JSON 请求体）。
  * @param config 全量配置
  * @param messages 对话消息
  * @param logger 请求日志（告警用）
@@ -449,8 +438,39 @@ function buildLLMOptions(
     logger.warn("LLM_REQUEST_EXTRA_JSON 不是合法的 JSON 对象，已忽略该配置");
     return options;
   }
-  for (const [key, value] of Object.entries(extra)) {
-    options[toOptionName(key)] = value;
+  // 传输层字段既不能成为 SDK 选项，也不发送给远端；兼容大小写及下划线别名。
+  const transportKeys = new Set([
+    "apikey",
+    "baseurl",
+    "endpoint",
+    "url",
+    "authorization",
+    "headers",
+    "fetch",
+    "abortsignal",
+    "signal",
+    "timeout",
+    "method",
+    "redirect",
+    "credentials",
+  ]);
+  const bodyExtra = Object.fromEntries(
+    Object.entries(extra).filter(([key]) => {
+      const allowed = !transportKeys.has(key.replace(/_/g, "").toLowerCase());
+      if (!allowed) logger.warn(`LLM_REQUEST_EXTRA_JSON 中的传输层字段 ${key} 已忽略`);
+      return allowed;
+    }),
+  );
+  if (Object.keys(bodyExtra).length) {
+    /** 在 SDK 完成序列化后仅合并请求体，不改变 URL、鉴权、请求头或超时信号 */
+    options.fetch = (input: Parameters<typeof fetch>[0], init?: RequestInit) => {
+      if (typeof init?.body !== "string") throw new Error("LLM SDK 请求体不是 JSON 字符串");
+      const body = JSON.parse(init.body) as Record<string, unknown>;
+      return globalThis.fetch(input, {
+        ...init,
+        body: JSON.stringify({ ...body, ...bodyExtra }),
+      });
+    };
   }
   return options;
 }

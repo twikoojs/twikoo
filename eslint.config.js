@@ -12,11 +12,13 @@ export default defineConfigWithVueTs(
     // 不纳入本仓 lint 范围，由文档站自身演进节奏维护。
     name: "twikoo/ignores",
     // build/：pkg 打包的中间产物（单文件 bundle，~1.7MB），与 dist/ 同理不参与 lint
+    // .wrangler/：wrangler 本地部署临时产物（deploy-*/index.js 等），非本仓源码
     ignores: [
       "**/*.min.js",
       "**/build/**",
       "**/coverage/**",
       "**/dist/**",
+      "**/.wrangler/**",
       "**/node_modules/**",
       "docs/**",
     ],

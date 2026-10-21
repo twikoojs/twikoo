@@ -73,7 +73,7 @@
   "ADMIN_CONFIG_ITEM_MAIL_SUBJECT_ADMIN": "Subjek notifikasi email admin kustom. Kosongkan untuk menggunakan subjek bawaan.",
   "ADMIN_CONFIG_ITEM_MAIL_TEMPLATE": "Template notifikasi email kustom. Kosongkan untuk menggunakan template bawaan. Kolom yang dapat disertakan: ${SITE_URL}, ${SITE_NAME}, ${PARENT_NICK}, ${PARENT_COMMENT}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IMG}, ${PARENT_IMG}",
   "ADMIN_CONFIG_ITEM_MAIL_TEMPLATE_ADMIN": "Template notifikasi email admin kustom. Kosongkan untuk menggunakan template bawaan. Kolom yang dapat disertakan: ${SITE_URL}, ${SITE_NAME}, ${NICK}, ${COMMENT}, ${POST_URL}, ${IP}, ${MAIL}, ${IMG}",
-  "ADMIN_CONFIG_ITEM_MASTER_TAG": "Teks kustom identitas admin. Bawaan: \"博主\".",
+  "ADMIN_CONFIG_ITEM_MASTER_TAG": "Teks kustom identitas admin. Bawaan: \"Pemilik Blog\".",
   "ADMIN_CONFIG_ITEM_NOTIFY_SPAM": "Apakah mengirim notifikasi untuk komentar spam. Bawaan: true.",
   "ADMIN_CONFIG_ITEM_HIDE_SPAM": "Sembunyikan komentar spam dari semua orang di bagian komentar publik, termasuk admin dan penulis komentar. Komentar tetap dapat ditinjau dan dipulihkan di panel admin. Atur ke true untuk mengaktifkan. Bawaan: false.",
   "ADMIN_CONFIG_ITEM_CAPTCHA_PROVIDER": "Penyedia CAPTCHA",

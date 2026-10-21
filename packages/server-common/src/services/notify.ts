@@ -30,6 +30,17 @@ function escapeHtml(str: unknown): string {
     .replace(/'/g, "&#39;");
 }
 
+/**
+ * 邮件时间格式化（毫秒时间戳 → 服务器本地时间字符串）。
+ * @param timestamp 毫秒时间戳
+ * @returns 本地时间字符串；无效时间返回空字符串
+ */
+function formatMailTime(timestamp: unknown): string {
+  const value = Number(timestamp);
+  if (!Number.isFinite(value) || value <= 0) return "";
+  return new Date(value).toLocaleString();
+}
+
 /** 已初始化的邮件传输器（进程级缓存；emailTest 前重置） */
 let transporter: ReturnType<NodemailerLike["createTransport"]> | null = null;
 
@@ -134,17 +145,21 @@ async function noticeMaster(options: {
   const POST_URL = escapeHtml(
     appendHashToUrl(toStr(comment.href) || `${SITE_URL}${toStr(comment.url)}`, comment._id),
   );
+  const POST_TITLE = escapeHtml(comment.title);
+  const COMMENT_TIME = formatMailTime(comment.created);
   const emailSubject = config.MAIL_SUBJECT_ADMIN || `${SITE_NAME}上有新评论了`;
   let emailContent: unknown;
   if (config.MAIL_TEMPLATE_ADMIN) {
     emailContent = String(config.MAIL_TEMPLATE_ADMIN)
       .replace(/\$\{SITE_URL\}/g, String(SITE_URL))
       .replace(/\$\{SITE_NAME\}/g, String(SITE_NAME))
+      .replace(/\$\{POST_TITLE\}/g, String(POST_TITLE))
       .replace(/\$\{NICK\}/g, String(NICK))
       .replace(/\$\{IMG\}/g, String(IMG))
       .replace(/\$\{IP\}/g, String(IP))
       .replace(/\$\{MAIL\}/g, String(MAIL))
       .replace(/\$\{COMMENT\}/g, String(COMMENT))
+      .replace(/\$\{COMMENT_TIME\}/g, String(COMMENT_TIME))
       .replace(/\$\{POST_URL\}/g, String(POST_URL));
   } else {
     emailContent = `
@@ -297,6 +312,9 @@ async function noticeReply(options: {
     ),
   );
   const SITE_URL = config.SITE_URL;
+  const POST_TITLE = escapeHtml(currentComment.title || parentComment.title);
+  const COMMENT_TIME = formatMailTime(parentComment.created);
+  const REPLY_TIME = formatMailTime(currentComment.created);
   const emailSubject =
     config.MAIL_SUBJECT || `${toStr(PARENT_NICK)}，您在『${SITE_NAME}』上的评论收到了回复`;
   let emailContent: unknown;
@@ -306,10 +324,13 @@ async function noticeReply(options: {
       .replace(/\$\{PARENT_IMG\}/g, String(PARENT_IMG))
       .replace(/\$\{SITE_URL\}/g, String(SITE_URL))
       .replace(/\$\{SITE_NAME\}/g, String(SITE_NAME))
+      .replace(/\$\{POST_TITLE\}/g, String(POST_TITLE))
       .replace(/\$\{PARENT_NICK\}/g, String(PARENT_NICK))
       .replace(/\$\{PARENT_COMMENT\}/g, String(PARENT_COMMENT))
+      .replace(/\$\{COMMENT_TIME\}/g, String(COMMENT_TIME))
       .replace(/\$\{NICK\}/g, String(NICK))
       .replace(/\$\{COMMENT\}/g, String(COMMENT))
+      .replace(/\$\{REPLY_TIME\}/g, String(REPLY_TIME))
       .replace(/\$\{POST_URL\}/g, String(POST_URL));
   } else {
     emailContent = `

@@ -233,6 +233,7 @@ describe("TkSubmit", () => {
     await flushPromises();
     expect(submitted).toBeDefined();
     expect(submitted?.nick).toBe("钩子改过的昵称");
+    expect(submitted?.title).toBe(document.title);
   });
 
   it("提交前回调抛错：中止发送并上报 error", async () => {

@@ -73,7 +73,7 @@ export type SemanticQuery = Record<string, FieldValue>;
  * 评论文档（数据库存储形态）。
  *
  * 字段清单来自 1.x parse() 的 commentDo 语义：uid/nick/mail/mailMd5/link/ua/ip/
- * master/url/href/comment/pid/rid/isSpam/created/updated，QQ 头像补充 avatar，
+ * master/url/href/title/comment/pid/rid/isSpam/created/updated，QQ 头像补充 avatar，
  * 点赞列表 like，导入数据可携带扩展字段（索引签名兜底）。全部字段可选以容忍
  * 导入 / 导出与 1.x 历史数据的字段缺失。
  */
@@ -102,6 +102,8 @@ export interface CommentDoc {
   url?: string;
   /** 评论目标页面完整地址 */
   href?: string;
+  /** 评论目标页面标题（邮件通知模板变量用） */
+  title?: string;
   /** 评论内容（已消毒 HTML） */
   comment?: string;
   /** 父评论 id（直接上级；顶级评论为空） */

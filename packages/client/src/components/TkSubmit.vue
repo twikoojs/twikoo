@@ -644,6 +644,8 @@ async function send(): Promise<void> {
     if (comment.value.match(new RegExp(`!\\[${t("IMAGE_UPLOAD_PLACEHOLDER")}.+\\]\\(\\)`))) {
       throw new Error(t("IMAGE_UPLOAD_PLEASE_WAIT"));
     }
+    /** 页面标题（init 选项优先，缺省取 document.title） */
+    const pageTitle = getAppState().options.title;
     const payload: Record<string, unknown> = {
       nick: nick.value,
       mail: mail.value,
@@ -651,6 +653,7 @@ async function send(): Promise<void> {
       ua: await getUserAgent(),
       url: getUrl(getAppState().options.path),
       href: getHref(getAppState().options.href),
+      title: typeof pageTitle === "string" ? pageTitle : document.title,
       comment: parseMarkdown(comment.value),
       pid: props.pid ? props.pid : props.replyId,
       rid: props.replyId,

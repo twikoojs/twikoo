@@ -151,7 +151,9 @@ Jev 会综合评论正文、昵称和网址进行判断。例如正文看起来�
 - `LLM_API_KEY`：填写您的 API 密钥。
 - `LLM_API_ENDPOINT`：填写 API 接口地址（默认 `https://api.deepseek.com/v1`）。
 - `LLM_MODEL`：填写模型名称（默认 `deepseek-v4-pro`）。
+- `LLM_TIMEOUT`：单次请求超时，单位毫秒，默认 `30000`（30 秒）。必须为 1 至 2147483647 的整数；留空或无效值使用默认值。超时中止请求后按 `LLM_MAX_RETRIES` 重试，每次尝试单独计时。
 - `LLM_MAX_RETRIES`：LLM 检测最大重试次数（默认 3 次）。
+- `LLM_REQUEST_EXTRA_JSON`：自定义请求体 JSON（可选），会合并进 `chat/completions` 的请求体，可用来传 `reasoning_effort`、`temperature`、`top_p` 等任何字段，例如 `{"reasoning_effort":"none","temperature":0}`。键名按 OpenAI 接口的 snake_case 书写，自定义参数优先级高于内置参数，重复的请求体字段将覆盖内置值；端点、API Key、请求头和超时等传输配置不可通过此 JSON 修改，相关字段会被忽略。关闭思考也通过此 JSON 配置，例如按接口支持情况填写 `{"thinking":{"type":"disabled"}}`、`{"enable_thinking":false}` 或 `{"reasoning_effort":"none"}`。留空不发送额外参数，不支持对应参数的 API 请勿填写。
 
 **(可选)** 配置 `LLM_SPAM_PROMPT`：自定义提示词。
 

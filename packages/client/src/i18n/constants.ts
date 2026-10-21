@@ -90,11 +90,16 @@ export const imageBedServices: readonly string[] = [
 ];
 
 /**
- * 需要用户额外填写 `IMAGE_CDN_URL` 的自建图床。
+ * 需要用户填写 `IMAGE_CDN_URL` 的图床（即服务端唯一会读取该配置的图床）。
  *
- * TkAdminConfig 用它决定 `IMAGE_CDN_URL` 输入框的显示条件（1.x 内联数组的等价物）。
+ * TkAdminConfig 用它决定 `IMAGE_CDN_URL` 输入框的显示条件；S3 走 `S3_ENDPOINT` / `S3_CDN_URL`。
  */
-export const customImageBedServices: readonly string[] = ["lskypro", "piclist", "easyimage", "s3"];
+export const customImageBedServices: readonly string[] = [
+  "lskypro",
+  "piclist",
+  "easyimage",
+  "chevereto",
+];
 
 /** 默认头像占位图（`DEFAULT_GRAVATAR` 取值；留空等价于 `initials`） */
 export const defaultGravatar: readonly string[] = [

@@ -154,7 +154,9 @@ Use [OpenAI SDK](https://www.npmjs.com/package/openai) compatible API services (
 - `LLM_API_KEY`: Enter your API key.
 - `LLM_API_ENDPOINT`: Enter the API endpoint URL (default `https://api.deepseek.com/v1`).
 - `LLM_MODEL`: Enter the model name (default `deepseek-v4-pro`).
+- `LLM_TIMEOUT`: Timeout per request in milliseconds, default `30000` (30 seconds). Must be an integer from 1 to 2147483647; empty or invalid values use the default. Timed-out requests are aborted and retried according to `LLM_MAX_RETRIES`, with a fresh timeout for each attempt.
 - `LLM_MAX_RETRIES`: Maximum retries for LLM detection (default 3).
+- `LLM_REQUEST_EXTRA_JSON`: Extra request body JSON (optional), merged into the `chat/completions` body. Use it for any field such as `reasoning_effort`, `temperature`, or `top_p`, e.g. `{"reasoning_effort":"none","temperature":0}`. Keys use the OpenAI snake_case naming. Custom parameters take precedence over built-in parameters and override matching body fields. Transport settings (endpoint, API key, headers, timeout) cannot be changed through this JSON; transport fields are ignored. Configure thinking through this JSON too, using only the parameters supported by your API, such as `{"thinking":{"type":"disabled"}}`, `{"enable_thinking":false}`, or `{"reasoning_effort":"none"}`. Leave it empty to send no extra parameters.
 
 **(Optional)** Configure `LLM_SPAM_PROMPT`: Customize the prompt.
 

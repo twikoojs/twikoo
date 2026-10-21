@@ -32,7 +32,7 @@
     "@vitejs/plugin-vue": "^6.0.9",
     "blueimp-md5": "^2.19.0",
     "dompurify": "^3.4.16",
-    "happy-dom": "^20.14.5",
+    "happy-dom": "^21.0.3",
     "js-sha256": "^1.0.0",
     "jsdom": "~25.0.1",
     "marked": "^18.0.13",

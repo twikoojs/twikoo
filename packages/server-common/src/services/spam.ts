@@ -390,6 +390,92 @@ Treat genuine questions, technical discussions, constructive feedback, relevant 
 }
 
 /**
+ * 日志中模型原始返回的最大保留长度（超出截断），避免一次性返回整篇长文撑爆日志。
+ */
+const LLM_RAW_TEXT_LOG_LIMIT = 500;
+
+/**
+ * 解析自定义请求体文本（抽出独立函数便于单测与告警）。
+ * @param rawText 配置原文
+ * @returns JSON 对象；空串返回空对象，非法 JSON 或非对象返回 null
+ */
+function parseRequestExtraFields(rawText: string): Record<string, unknown> | null {
+  const trimmed = rawText.trim();
+  if (!trimmed) return {};
+  try {
+    const parsed: unknown = JSON.parse(trimmed);
+    if (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)) {
+      return parsed as Record<string, unknown>;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * 构建 LLM 请求参数：固定传输配置 + 请求体合并钩子（自定义字段仅覆盖最终 JSON 请求体）。
+ * @param config 全量配置
+ * @param messages 对话消息
+ * @param logger 请求日志（告警用）
+ * @returns generateText 入参
+ */
+function buildLLMOptions(
+  config: ConfigData,
+  messages: Array<{ role: string; content: string }>,
+  logger: RequestLogger,
+): Record<string, unknown> {
+  const options: Record<string, unknown> = {
+    apiKey: config.LLM_API_KEY,
+    baseURL: config.LLM_API_ENDPOINT || "https://api.deepseek.com/v1",
+    model: config.LLM_MODEL || "deepseek-chat",
+    responseFormat: { type: "json_object" },
+    messages,
+  };
+  const rawExtra = String(config.LLM_REQUEST_EXTRA_JSON ?? "");
+  const extra = parseRequestExtraFields(rawExtra);
+  if (extra === null) {
+    logger.warn("LLM_REQUEST_EXTRA_JSON 不是合法的 JSON 对象，已忽略该配置");
+    return options;
+  }
+  // 传输层字段既不能成为 SDK 选项，也不发送给远端；兼容大小写及下划线别名。
+  const transportKeys = new Set([
+    "apikey",
+    "baseurl",
+    "endpoint",
+    "url",
+    "authorization",
+    "headers",
+    "fetch",
+    "abortsignal",
+    "signal",
+    "timeout",
+    "method",
+    "redirect",
+    "credentials",
+  ]);
+  const bodyExtra = Object.fromEntries(
+    Object.entries(extra).filter(([key]) => {
+      const allowed = !transportKeys.has(key.replace(/_/g, "").toLowerCase());
+      if (!allowed) logger.warn(`LLM_REQUEST_EXTRA_JSON 中的传输层字段 ${key} 已忽略`);
+      return allowed;
+    }),
+  );
+  if (Object.keys(bodyExtra).length) {
+    /** 在 SDK 完成序列化后仅合并请求体，不改变 URL、鉴权、请求头或超时信号 */
+    options.fetch = (input: Parameters<typeof fetch>[0], init?: RequestInit) => {
+      if (typeof init?.body !== "string") throw new Error("LLM SDK 请求体不是 JSON 字符串");
+      const body = JSON.parse(init.body) as Record<string, unknown>;
+      return globalThis.fetch(input, {
+        ...init,
+        body: JSON.stringify({ ...body, ...bodyExtra }),
+      });
+    };
+  }
+  return options;
+}
+
+/**
  * LLM 垃圾检测（1.x checkByLLM 对齐：重试 + JSON 校验 + 失败放行兜底）。
  * @param comment 评论数据
  * @param config 全量配置
@@ -404,6 +490,11 @@ async function checkByLLM(
   logger: RequestLogger,
 ): Promise<boolean> {
   const maxRetries = Number(config.LLM_MAX_RETRIES) || 3;
+  const configuredTimeout = Number(config.LLM_TIMEOUT);
+  const timeout =
+    Number.isInteger(configuredTimeout) && configuredTimeout > 0 && configuredTimeout <= 2147483647
+      ? configuredTimeout
+      : 30000;
   let lastError = "";
   let generateText: ((options: unknown) => Promise<{ text?: string }>) | null = null;
   void caps;
@@ -416,11 +507,9 @@ async function checkByLLM(
       }
       const messages = buildMessages(comment, lastError, String(config.LLM_SPAM_PROMPT ?? ""));
       const chatCompletion = await generateText?.({
-        apiKey: config.LLM_API_KEY,
-        baseURL: config.LLM_API_ENDPOINT || "https://api.deepseek.com/v1",
-        model: config.LLM_MODEL || "deepseek-chat",
-        responseFormat: { type: "json_object" },
-        messages,
+        ...buildLLMOptions(config, messages, logger),
+        // 每次尝试创建独立超时信号，且不允许自定义请求体覆盖传输层的超时保护
+        abortSignal: AbortSignal.timeout(timeout),
       });
       const rawText = chatCompletion?.text ?? "";
       let parsed: { spam?: unknown };
@@ -428,7 +517,15 @@ async function checkByLLM(
         parsed = JSON.parse(repairJson(extractJson(rawText)));
       } catch (err) {
         lastError = err instanceof Error ? err.message : String(err);
-        logger.warn(`LLM 返回校验失败 (尝试第 ${attempt}/${maxRetries} 次)`);
+        logger.warn(
+          `LLM 返回校验失败 (尝试第 ${attempt}/${maxRetries} 次)，原始返回：${
+            rawText
+              ? rawText.length > LLM_RAW_TEXT_LOG_LIMIT
+                ? `${rawText.slice(0, LLM_RAW_TEXT_LOG_LIMIT)}…（已截断，共 ${rawText.length} 字符）`
+                : rawText
+              : "（空）"
+          }`,
+        );
         continue;
       }
       if (typeof parsed === "object" && parsed !== null && typeof parsed.spam === "boolean") {
@@ -436,7 +533,12 @@ async function checkByLLM(
         return parsed.spam;
       }
       lastError = 'Key "spam" must be a boolean value';
-      logger.warn(`LLM 返回校验失败 (尝试第 ${attempt}/${maxRetries} 次)`);
+      logger.warn(
+        `LLM 返回校验失败 (尝试第 ${attempt}/${maxRetries} 次)，原始返回：${rawText.slice(
+          0,
+          LLM_RAW_TEXT_LOG_LIMIT,
+        )}`,
+      );
     } catch (error) {
       lastError = error instanceof Error ? error.message : String(error);
       logger.error(`LLM 请求异常 (尝试第 ${attempt}/${maxRetries} 次), 错误: ${lastError}`);

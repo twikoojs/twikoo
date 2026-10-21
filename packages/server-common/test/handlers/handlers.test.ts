@@ -306,6 +306,7 @@ describe("COMMENT_SUBMIT（含 postSubmit 副作用链）", () => {
       mail: "z@example.com",
       url: "/p/1",
       href: "https://blog.test/p/1",
+      title: "测试文章",
       ua: "Mozilla/5.0",
       comment: "<p>留言<b>加粗</b></p>",
     });
@@ -313,6 +314,7 @@ describe("COMMENT_SUBMIT（含 postSubmit 副作用链）", () => {
     expect(typeof res.body.id).toBe("string");
     const all = await adapters.database.getAllComments();
     expect(all[0].nick).toBe("张三");
+    expect(all[0].title).toBe("测试文章");
     expect(all[0].isSpam).toBe(false);
     expect(all[0].uid).toBe(res.body.accessToken);
   });

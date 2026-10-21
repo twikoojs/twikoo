@@ -78,6 +78,7 @@ async function parseCommentDoc(ctx: Parameters<EventHandler>[0]): Promise<Commen
     master: isBloggerMail,
     url: comment.url as string,
     href: comment.href as string,
+    title: comment.title ? toStr(comment.title) : undefined,
     comment: DOMPurify.sanitize(toStr(comment.comment), {
       FORBID_TAGS: ["style"],
       FORBID_ATTR: ["style"],

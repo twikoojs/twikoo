@@ -119,7 +119,11 @@
             {{ t("ADMIN_COMMENT_DELETE") }}
           </TkButton>
         </div>
-        <div v-if="editingId === comment._id" class="tk-admin-comment-editor">
+        <div
+          v-if="editingId === comment._id"
+          class="tk-admin-comment-editor"
+          @keyup="onEditorKeyup($event, comment)"
+        >
           <TkInput
             ref="editorInputRef"
             v-model="editingText"
@@ -221,6 +225,8 @@ const commentListRef = ref<HTMLElement>();
 const editingId = ref<string | null>(null);
 /** 编辑框内容（优先 Markdown 原文；历史评论缺失时回填 HTML） */
 const editingText = ref("");
+/** 进入编辑态时的原始内容（取消时判断是否有改动） */
+const editingOriginal = ref("");
 /** 编辑框组件引用（v-for 内的模板 ref 会收集为数组，展开后聚焦用） */
 const editorInputRef = ref<{ focus: () => void } | { focus: () => void }[]>();
 /** 保存编辑中 */
@@ -375,15 +381,46 @@ function focusEditor(): void {
  * @param comment 评论
  */
 function startEdit(comment: AdminCommentDto): void {
+  const text = comment.markdown ?? comment.comment ?? "";
   editingId.value = comment._id;
-  editingText.value = comment.markdown ?? comment.comment;
+  editingText.value = text;
+  editingOriginal.value = text;
   void nextTick(focusEditor);
 }
 
-/** 取消编辑（收起输入框，不改动评论）。 */
-function cancelEdit(): void {
+/**
+ * 关闭编辑态并清空内容（不询问）。
+ */
+function closeEditor(): void {
   editingId.value = null;
   editingText.value = "";
+  editingOriginal.value = "";
+}
+
+/**
+ * 取消编辑：内容有改动时先确认是否放弃（内容未改动直接收起）。
+ */
+function cancelEdit(): void {
+  if (
+    editingText.value !== editingOriginal.value &&
+    !confirm(t("ADMIN_COMMENT_EDIT_DISCARD_CONFIRM"))
+  ) {
+    return;
+  }
+  closeEditor();
+}
+
+/**
+ * 编辑框键盘快捷键：Ctrl/Cmd + Enter 保存，Esc 取消（与评论框一致）。
+ * @param evt 键盘事件
+ * @param comment 评论
+ */
+function onEditorKeyup(evt: KeyboardEvent, comment: AdminCommentDto): void {
+  if ((evt.ctrlKey || evt.metaKey) && evt.key === "Enter") {
+    void saveEdit(comment);
+  } else if (evt.key === "Escape") {
+    cancelEdit();
+  }
 }
 
 /**
@@ -400,7 +437,7 @@ async function saveEdit(comment: AdminCommentDto): Promise<void> {
       id: comment._id,
       set: { comment: html, markdown },
     });
-    if (saved) cancelEdit();
+    if (saved) closeEditor();
   } finally {
     savingEdit.value = false;
   }

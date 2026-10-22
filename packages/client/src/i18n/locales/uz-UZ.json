@@ -7,6 +7,7 @@
   "ADMIN_COMMENT_EDIT": "Таҳрирлаш",
   "ADMIN_COMMENT_EDIT_CANCEL": "Бекор қилиш",
   "ADMIN_COMMENT_EDIT_SAVE": "Сақлаш",
+  "ADMIN_COMMENT_EDIT_DISCARD_CONFIRM": "Сақланмаган ўзгартиришлар бекор қилинсинми?",
   "ADMIN_COMMENT_FILTER_ALL": "Ҳаммаси",
   "ADMIN_COMMENT_FILTER_VISIBLE": "Кўринадиган",
   "ADMIN_COMMENT_FILTER_HIDDEN": "Яширилган",

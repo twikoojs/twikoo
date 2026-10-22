@@ -1086,6 +1086,72 @@ describe("TkAdminComment 管理操作（#1140 回归）", () => {
     wrapper.unmount();
   });
 
+  it("编辑框 Ctrl+Enter 保存（#390）", async () => {
+    const { wrapper, calls } = await mountAdminComment({
+      comment: "<p><strong>旧</strong></p>",
+      markdown: "**旧**",
+    });
+
+    /**
+     * 按按钮文案定位元素。
+     * @param label 按钮文案
+     * @returns 找到的按钮包装器
+     */
+    const findByText = (label: string) => {
+      const btn = wrapper.findAll("button").find((b) => b.text() === label);
+      if (!btn) throw new Error(`未找到按钮：${label}`);
+      return btn;
+    };
+
+    await findByText(t("ADMIN_COMMENT_EDIT")).trigger("click");
+    const textarea = wrapper.find(".tk-admin-comment-editor textarea");
+    await textarea.setValue("**快捷键**");
+    await textarea.trigger("keyup", { key: "Enter", ctrlKey: true });
+    await flushPromises();
+
+    const saved = calls.find(
+      (call) => call.event === "COMMENT_SET_FOR_ADMIN" && "markdown" in (call.data.set as object),
+    );
+    expect(saved?.data.set).toMatchObject({ markdown: "**快捷键**" });
+    expect(wrapper.find(".tk-admin-comment-editor").exists()).toBe(false);
+
+    wrapper.unmount();
+  });
+
+  it("编辑框有改动时取消需确认，Esc 同样生效（#390）", async () => {
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(false);
+    const { wrapper, calls } = await mountAdminComment({
+      comment: "<p><strong>旧</strong></p>",
+      markdown: "**旧**",
+    });
+
+    /**
+     * 按按钮文案定位元素。
+     * @param label 按钮文案
+     * @returns 找到的按钮包装器
+     */
+    const findByText = (label: string) => {
+      const btn = wrapper.findAll("button").find((b) => b.text() === label);
+      if (!btn) throw new Error(`未找到按钮：${label}`);
+      return btn;
+    };
+
+    await findByText(t("ADMIN_COMMENT_EDIT")).trigger("click");
+    const textarea = wrapper.find(".tk-admin-comment-editor textarea");
+    await textarea.setValue("改过的内容");
+    await findByText(t("ADMIN_COMMENT_EDIT_CANCEL")).trigger("click");
+
+    expect(confirmSpy).toHaveBeenCalledWith(t("ADMIN_COMMENT_EDIT_DISCARD_CONFIRM"));
+    expect(wrapper.find(".tk-admin-comment-editor").exists()).toBe(true);
+
+    confirmSpy.mockReturnValue(true);
+    await textarea.trigger("keyup", { key: "Escape" });
+    expect(wrapper.find(".tk-admin-comment-editor").exists()).toBe(false);
+    expect(calls.some((call) => call.event === "COMMENT_SET_FOR_ADMIN")).toBe(false);
+
+    wrapper.unmount();
+  });
+
   it("编辑历史评论：无 Markdown 时直接回填 HTML，取消不请求（#390）", async () => {
     const { wrapper, calls } = await mountAdminComment({ comment: "<p>旧<b>内容</b></p>" });
 

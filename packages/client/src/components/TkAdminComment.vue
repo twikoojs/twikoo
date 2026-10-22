@@ -158,7 +158,6 @@ import TkIcon from "../components/TkIcon.vue";
 import {
   call,
   convertLink,
-  htmlToPlainText,
   parseMarkdown,
   popupLightbox,
   renderCode,
@@ -359,12 +358,12 @@ function handleView(comment: AdminCommentDto): void {
 
 /**
  * 进入编辑态：优先用服务端下发的 Markdown 原文；极旧服务端未下发时
- * 把 HTML 转纯文本回填，保证仍可编辑。
+ * 直接编辑已渲染的 HTML，保证历史评论仍可编辑。
  * @param comment 评论
  */
 function startEdit(comment: AdminCommentDto): void {
   editingId.value = comment._id;
-  editingText.value = comment.markdown ?? htmlToPlainText(comment.comment);
+  editingText.value = comment.markdown ?? comment.comment;
 }
 
 /** 取消编辑（收起输入框，不改动评论）。 */

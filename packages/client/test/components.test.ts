@@ -1084,7 +1084,7 @@ describe("TkAdminComment 管理操作（#1140 回归）", () => {
     wrapper.unmount();
   });
 
-  it("编辑历史评论：无 Markdown 时回填纯文本，取消不请求（#390）", async () => {
+  it("编辑历史评论：无 Markdown 时直接回填 HTML，取消不请求（#390）", async () => {
     const { wrapper, calls } = await mountAdminComment({ comment: "<p>旧<b>内容</b></p>" });
 
     /**
@@ -1100,7 +1100,7 @@ describe("TkAdminComment 管理操作（#1140 回归）", () => {
 
     await findByText(t("ADMIN_COMMENT_EDIT")).trigger("click");
     const textarea = wrapper.find(".tk-admin-comment-editor textarea");
-    expect((textarea.element as HTMLTextAreaElement).value).toBe("旧内容");
+    expect((textarea.element as HTMLTextAreaElement).value).toBe("旧<b>内容</b>");
     expect(textarea.attributes("rows")).toBe("2");
 
     await findByText(t("ADMIN_COMMENT_EDIT_CANCEL")).trigger("click");

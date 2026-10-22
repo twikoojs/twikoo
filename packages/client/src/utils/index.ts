@@ -16,7 +16,6 @@ import { t } from "../i18n";
 export { logger } from "./logger";
 export { t, setLanguage, getLanguage, loadLanguage, setLocaleBaseUrl } from "../i18n";
 export { sanitizeHtml } from "./sanitize";
-export { htmlToPlainText } from "./html";
 export { renderCode } from "./highlight";
 export { getQQAvatar, resolveAvatarUrl } from "./avatar";
 export type { AvatarSource, AvatarConfig } from "./avatar";

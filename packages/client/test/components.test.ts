@@ -1010,7 +1010,8 @@ describe("TkAdminComment 管理操作（#1140 回归）", () => {
       },
     };
     setAppState(tcb as never, { path: "/demo.html" });
-    const wrapper = mount(TkAdminComment);
+    // 挂载到 document 上，聚焦断言才能反映到 document.activeElement
+    const wrapper = mount(TkAdminComment, { attachTo: document.body });
     await flushPromises();
     return { wrapper, calls };
   }
@@ -1068,6 +1069,7 @@ describe("TkAdminComment 管理操作（#1140 回归）", () => {
     const textarea = wrapper.find(".tk-admin-comment-editor textarea");
     expect((textarea.element as HTMLTextAreaElement).value).toBe("**旧**");
     expect(textarea.attributes("rows")).toBe("2");
+    expect(document.activeElement).toBe(textarea.element);
 
     await textarea.setValue("**新内容**");
     await findByText(t("ADMIN_COMMENT_EDIT_SAVE")).trigger("click");
@@ -1102,6 +1104,7 @@ describe("TkAdminComment 管理操作（#1140 回归）", () => {
     const textarea = wrapper.find(".tk-admin-comment-editor textarea");
     expect((textarea.element as HTMLTextAreaElement).value).toBe("旧<b>内容</b>");
     expect(textarea.attributes("rows")).toBe("2");
+    expect(document.activeElement).toBe(textarea.element);
 
     await findByText(t("ADMIN_COMMENT_EDIT_CANCEL")).trigger("click");
     expect(wrapper.find(".tk-admin-comment-editor").exists()).toBe(false);

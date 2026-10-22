@@ -121,6 +121,7 @@
         </div>
         <div v-if="editingId === comment._id" class="tk-admin-comment-editor">
           <TkInput
+            ref="editorInputRef"
             v-model="editingText"
             class="tk-admin-comment-editor-input"
             type="textarea"
@@ -148,7 +149,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
+import { nextTick, onMounted, reactive, ref } from "vue";
 import { VERSION } from "@twikoojs/shared";
 import TkAvatar from "./TkAvatar.vue";
 import TkPagination from "./TkPagination.vue";
@@ -218,8 +219,10 @@ const securityAlert = ref<{ commentId: string; message: string; url?: string } |
 const commentListRef = ref<HTMLElement>();
 /** 正在编辑的评论 id（null 表示当前没有展开的编辑框） */
 const editingId = ref<string | null>(null);
-/** 编辑框内容（Markdown 原文；历史评论回填 HTML 转换后的纯文本） */
+/** 编辑框内容（优先 Markdown 原文；历史评论缺失时回填 HTML） */
 const editingText = ref("");
+/** 编辑框组件引用（v-for 内的模板 ref 会收集为数组，展开后聚焦用） */
+const editorInputRef = ref<{ focus: () => void } | { focus: () => void }[]>();
 /** 保存编辑中 */
 const savingEdit = ref(false);
 
@@ -357,6 +360,16 @@ function handleView(comment: AdminCommentDto): void {
 }
 
 /**
+ * 聚焦当前展开的编辑框（兼容 v-for 下模板 ref 的数组形态）。
+ */
+function focusEditor(): void {
+  const instance = Array.isArray(editorInputRef.value)
+    ? editorInputRef.value[0]
+    : editorInputRef.value;
+  instance?.focus();
+}
+
+/**
  * 进入编辑态：优先用服务端下发的 Markdown 原文；极旧服务端未下发时
  * 直接编辑已渲染的 HTML，保证历史评论仍可编辑。
  * @param comment 评论
@@ -364,6 +377,7 @@ function handleView(comment: AdminCommentDto): void {
 function startEdit(comment: AdminCommentDto): void {
   editingId.value = comment._id;
   editingText.value = comment.markdown ?? comment.comment;
+  void nextTick(focusEditor);
 }
 
 /** 取消编辑（收起输入框，不改动评论）。 */

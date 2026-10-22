@@ -112,9 +112,34 @@
           >
             {{ t("ADMIN_COMMENT_TOP") }}
           </TkButton>
+          <TkButton size="mini" type="text" @click="startEdit(comment)">
+            {{ t("ADMIN_COMMENT_EDIT") }}
+          </TkButton>
           <TkButton size="mini" type="text" @click="handleDelete(comment)">
             {{ t("ADMIN_COMMENT_DELETE") }}
           </TkButton>
+        </div>
+        <div
+          v-if="editingId === comment._id"
+          class="tk-admin-comment-editor"
+          @keyup="onEditorKeyup($event, comment)"
+        >
+          <TkInput
+            ref="editorInputRef"
+            v-model="editingText"
+            class="tk-admin-comment-editor-input"
+            type="textarea"
+            :rows="2"
+            autosize
+          />
+          <div class="tk-admin-comment-editor-actions">
+            <TkButton size="mini" type="text" :disabled="savingEdit" @click="cancelEdit">
+              {{ t("ADMIN_COMMENT_EDIT_CANCEL") }}
+            </TkButton>
+            <TkButton size="mini" type="primary" :loading="savingEdit" @click="saveEdit(comment)">
+              {{ t("ADMIN_COMMENT_EDIT_SAVE") }}
+            </TkButton>
+          </div>
         </div>
       </div>
     </div>
@@ -128,7 +153,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
+import { nextTick, onMounted, reactive, ref } from "vue";
 import { VERSION } from "@twikoojs/shared";
 import TkAvatar from "./TkAvatar.vue";
 import TkPagination from "./TkPagination.vue";
@@ -138,6 +163,7 @@ import TkIcon from "../components/TkIcon.vue";
 import {
   call,
   convertLink,
+  parseMarkdown,
   popupLightbox,
   renderCode,
   renderLinks,
@@ -195,6 +221,16 @@ const filter = reactive({ keyword: "", type: "" });
 const securityAlert = ref<{ commentId: string; message: string; url?: string } | null>(null);
 /** 评论列表容器引用（渲染后处理目标） */
 const commentListRef = ref<HTMLElement>();
+/** 正在编辑的评论 id（null 表示当前没有展开的编辑框） */
+const editingId = ref<string | null>(null);
+/** 编辑框内容（优先 Markdown 原文；历史评论缺失时回填 HTML） */
+const editingText = ref("");
+/** 进入编辑态时的原始内容（取消时判断是否有改动） */
+const editingOriginal = ref("");
+/** 编辑框组件引用（v-for 内的模板 ref 会收集为数组，展开后聚焦用） */
+const editorInputRef = ref<{ focus: () => void } | { focus: () => void }[]>();
+/** 保存编辑中 */
+const savingEdit = ref(false);
 
 /**
  * 相对时间文案（管理列表用）。
@@ -330,6 +366,84 @@ function handleView(comment: AdminCommentDto): void {
 }
 
 /**
+ * 聚焦当前展开的编辑框（兼容 v-for 下模板 ref 的数组形态）。
+ */
+function focusEditor(): void {
+  const instance = Array.isArray(editorInputRef.value)
+    ? editorInputRef.value[0]
+    : editorInputRef.value;
+  instance?.focus();
+}
+
+/**
+ * 进入编辑态：优先用服务端下发的 Markdown 原文；极旧服务端未下发时
+ * 直接编辑已渲染的 HTML，保证历史评论仍可编辑。
+ * @param comment 评论
+ */
+function startEdit(comment: AdminCommentDto): void {
+  const text = comment.markdown ?? comment.comment ?? "";
+  editingId.value = comment._id;
+  editingText.value = text;
+  editingOriginal.value = text;
+  void nextTick(focusEditor);
+}
+
+/**
+ * 关闭编辑态并清空内容（不询问）。
+ */
+function closeEditor(): void {
+  editingId.value = null;
+  editingText.value = "";
+  editingOriginal.value = "";
+}
+
+/**
+ * 取消编辑：内容有改动时先确认是否放弃（内容未改动直接收起）。
+ */
+function cancelEdit(): void {
+  if (
+    editingText.value !== editingOriginal.value &&
+    !confirm(t("ADMIN_COMMENT_EDIT_DISCARD_CONFIRM"))
+  ) {
+    return;
+  }
+  closeEditor();
+}
+
+/**
+ * 编辑框键盘快捷键：Ctrl/Cmd + Enter 保存，Esc 取消（与评论框一致）。
+ * @param evt 键盘事件
+ * @param comment 评论
+ */
+function onEditorKeyup(evt: KeyboardEvent, comment: AdminCommentDto): void {
+  if ((evt.ctrlKey || evt.metaKey) && evt.key === "Enter") {
+    void saveEdit(comment);
+  } else if (evt.key === "Escape") {
+    cancelEdit();
+  }
+}
+
+/**
+ * 保存编辑：Markdown 渲染并消毒为 HTML，再与 Markdown 原文一并回写（#390）。
+ * @param comment 评论
+ */
+async function saveEdit(comment: AdminCommentDto): Promise<void> {
+  if (savingEdit.value) return;
+  savingEdit.value = true;
+  try {
+    const markdown = editingText.value;
+    const html = sanitizeHtml(parseMarkdown(markdown));
+    const saved = await updateComment("COMMENT_SET_FOR_ADMIN", {
+      id: comment._id,
+      set: { comment: html, markdown },
+    });
+    if (saved) closeEditor();
+  } finally {
+    savingEdit.value = false;
+  }
+}
+
+/**
  * 删除评论（1.x handleDelete 对齐：二次确认后重载当前页）。
  * @param comment 评论
  */
@@ -357,15 +471,17 @@ function handleTop(comment: AdminCommentDto, top: boolean): void {
 }
 
 /** 执行管理操作；通信失败时仍尝试重载，确认服务端是否已提交操作。 */
-async function updateComment(event: string, data: Record<string, unknown>): Promise<void> {
-  if (loading.value) return;
+async function updateComment(event: string, data: Record<string, unknown>): Promise<boolean> {
+  if (loading.value) return false;
   loading.value = true;
   try {
     getResponse(await call(getAppState().tcb, event, data));
     await getComments();
+    return true;
   } catch (e) {
     alert(getErrorMessage(e));
     if (!(e instanceof TwikooResponseError)) await getComments();
+    return false;
   } finally {
     loading.value = false;
   }
@@ -474,6 +590,11 @@ onMounted(async () => {
   flex-direction: column;
   justify-content: stretch;
 }
+.twikoo .tk-admin-comment-item {
+  padding-bottom: 0.5em;
+  margin-bottom: 0.5em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
 .twikoo .tk-admin-comment-meta {
   display: flex;
   align-items: center;
@@ -488,7 +609,14 @@ onMounted(async () => {
 }
 .twikoo .tk-admin-actions {
   display: flex;
-  margin-bottom: 1em;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+.twikoo .tk-admin-comment-editor {
+  margin-top: 0.5em;
+}
+.twikoo .tk-admin-comment-editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5em;
+  margin-top: 0.5em;
 }
 </style>

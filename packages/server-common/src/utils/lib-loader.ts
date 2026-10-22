@@ -150,6 +150,25 @@ export interface MarkedLike {
   parse(markdown: string): string;
 }
 
+/** turndown 转换器实例使用面（HTML → Markdown） */
+export interface TurndownServiceLike {
+  /**
+   * HTML 转 Markdown
+   * @param html HTML 文本
+   * @returns Markdown 文本
+   */
+  turndown(html: string): string;
+}
+
+/** turndown 使用面（管理端补全历史评论的 Markdown 原文） */
+export interface TurndownLike {
+  /**
+   * @param options turndown 配置
+   * @returns 转换器实例
+   */
+  new (options?: unknown): TurndownServiceLike;
+}
+
 /**
  * IP 属地库使用面（`@imaegoo/node-ip2region` 的真实形态）。
  *
@@ -245,6 +264,7 @@ export const LITERAL_LOADERS: Record<string, () => Promise<unknown>> = {
   "@xsai/generate-text": () => import("@xsai/generate-text"),
   bowser: () => import("bowser"),
   marked: () => import("marked"),
+  turndown: () => import("turndown"),
 };
 
 /**
@@ -566,4 +586,16 @@ export async function getBowser(): Promise<BowserLike> {
  */
 export async function getMarked(): Promise<MarkedLike> {
   return pickDefault(await loadLib("marked")) as MarkedLike;
+}
+
+/**
+ * 获取 turndown（HTML → Markdown；全部适配器可用，仅在管理端读取评论时使用）。
+ *
+ * 支持 `setCustomLibs({ turndown })` 覆写（与其余重依赖一致的测试缝）。
+ * @returns turndown 构造器
+ */
+export async function getTurndown(): Promise<TurndownLike> {
+  const override = customLibs.turndown;
+  if (override) return override as TurndownLike;
+  return pickDefault(await loadLib("turndown")) as TurndownLike;
 }

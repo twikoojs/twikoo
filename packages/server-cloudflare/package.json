@@ -40,6 +40,7 @@
     "mongodb": "^7.6.0",
     "nodemailer": "^10.0.10",
     "pushoo": "workspace:^",
+    "turndown": "^7.2.4",
     "xml2js": "^0.6.2"
   },
   "devDependencies": {

@@ -180,6 +180,18 @@ describe("COMMENT_GET / COMMENT_GET_FOR_ADMIN", () => {
     expect(res.body.data as unknown[]).toHaveLength(1);
   });
 
+  it("admin happy：历史评论补全 Markdown，普通 COMMENT_GET 不执行转换（#390）", async () => {
+    await seed({ nick: "历史评论", comment: "<p>你好<b>世界</b></p>" });
+    const admin = await postAdmin({ event: "COMMENT_GET_FOR_ADMIN", per: 10, page: 1 });
+    expect(admin.body.code).toBe(0);
+    const adminData = admin.body.data as Array<{ markdown?: string }>;
+    expect(adminData[0].markdown).toBe("你好**世界**");
+    // 前台读取不下发 Markdown 原文，也不触发 turndown
+    const visitor = await post({ event: "COMMENT_GET", url: "/post/1" });
+    const visitorData = visitor.body.data as Array<{ markdown?: string }>;
+    expect(visitorData[0].markdown).toBeUndefined();
+  });
+
   it("admin failure：未登录 → NEED_LOGIN", async () => {
     const res = await post({ event: "COMMENT_GET_FOR_ADMIN", per: 10, page: 1 });
     expect(res.body.code).toBe(1024);
@@ -194,6 +206,19 @@ describe("COMMENT_SET_FOR_ADMIN / COMMENT_DELETE_FOR_ADMIN", () => {
     const doc = await adapters.database.getComment(id);
     expect(doc?.nick).toBe("新名");
     expect(doc?.updated).toBeGreaterThan(1700000000000);
+  });
+
+  it("admin happy：保存编辑同时写入 HTML 与 Markdown 原文（#390）", async () => {
+    const id = await seed({ comment: "<p>旧内容</p>", markdown: "旧内容" });
+    const res = await postAdmin({
+      event: "COMMENT_SET_FOR_ADMIN",
+      id,
+      set: { comment: "<p><strong>新内容</strong></p>", markdown: "**新内容**" },
+    });
+    expect(res.body.code).toBe(0);
+    const doc = await adapters.database.getComment(id);
+    expect(doc?.comment).toBe("<p><strong>新内容</strong></p>");
+    expect(doc?.markdown).toBe("**新内容**");
   });
 
   it("failure：未登录修改 → NEED_LOGIN", async () => {
@@ -309,6 +334,7 @@ describe("COMMENT_SUBMIT（含 postSubmit 副作用链）", () => {
       title: "测试文章",
       ua: "Mozilla/5.0",
       comment: "<p>留言<b>加粗</b></p>",
+      markdown: "留言**加粗**",
     });
     expect(res.body.code).toBe(0);
     expect(typeof res.body.id).toBe("string");
@@ -317,6 +343,7 @@ describe("COMMENT_SUBMIT（含 postSubmit 副作用链）", () => {
     expect(all[0].title).toBe("测试文章");
     expect(all[0].isSpam).toBe(false);
     expect(all[0].uid).toBe(res.body.accessToken);
+    expect(all[0].markdown).toBe("留言**加粗**");
   });
 
   it("failure：缺 ua → 参数不合法", async () => {
@@ -330,6 +357,17 @@ describe("COMMENT_SUBMIT（含 postSubmit 副作用链）", () => {
       url: "/p/1",
       ua: "UA",
       comment: "x".repeat(600),
+    });
+    expect(res.body.message).toBe("评论内容过长");
+  });
+
+  it("failure：超长 Markdown 原文 → 评论内容过长（#390）", async () => {
+    const res = await post({
+      event: "COMMENT_SUBMIT",
+      url: "/p/1",
+      ua: "UA",
+      comment: "短正文",
+      markdown: "x".repeat(6000),
     });
     expect(res.body.message).toBe("评论内容过长");
   });

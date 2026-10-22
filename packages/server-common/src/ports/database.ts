@@ -106,6 +106,8 @@ export interface CommentDoc {
   title?: string;
   /** 评论内容（已消毒 HTML） */
   comment?: string;
+  /** 评论 Markdown 原文（管理端编辑用；历史数据可能缺失） */
+  markdown?: string;
   /** 父评论 id（直接上级；顶级评论为空） */
   pid?: string | null;
   /** 根评论 id（回复目标主题；顶级评论为空 → 查询顶级评论用 ABSENT） */

@@ -27,6 +27,8 @@ export interface CommentDto {
   avatar?: string;
   /** 已渲染为 HTML 的评论正文 */
   comment?: string;
+  /** 评论 Markdown 原文（管理端编辑用；历史数据可能缺失） */
+  markdown?: string;
   /** User-Agent */
   ua?: string;
   /** IP 归属地（`SHOW_REGION` 开启时下发） */

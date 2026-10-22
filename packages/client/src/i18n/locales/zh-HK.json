@@ -6,7 +6,6 @@
   "ADMIN_COMMENT_DELETE_CONFIRM": "確認刪除？",
   "ADMIN_COMMENT_EDIT": "編輯",
   "ADMIN_COMMENT_EDIT_CANCEL": "取消",
-  "ADMIN_COMMENT_EDIT_LEGACY_HINT": "該評論未保存 Markdown 原文，已根據 HTML 生成。保存後可能丟失部分格式。",
   "ADMIN_COMMENT_EDIT_SAVE": "保存",
   "ADMIN_COMMENT_FILTER_ALL": "全部",
   "ADMIN_COMMENT_FILTER_VISIBLE": "只看可見",

@@ -120,14 +120,12 @@
           </TkButton>
         </div>
         <div v-if="editingId === comment._id" class="tk-admin-comment-editor">
-          <div v-if="!hasMarkdown(comment)" class="tk-admin-comment-editor-hint">
-            {{ t("ADMIN_COMMENT_EDIT_LEGACY_HINT") }}
-          </div>
           <TkInput
             v-model="editingText"
             class="tk-admin-comment-editor-input"
             type="textarea"
-            :rows="6"
+            :rows="2"
+            autosize
           />
           <div class="tk-admin-comment-editor-actions">
             <TkButton size="mini" type="text" :disabled="savingEdit" @click="cancelEdit">
@@ -360,23 +358,13 @@ function handleView(comment: AdminCommentDto): void {
 }
 
 /**
- * 判断评论是否存有 Markdown 原文。
- * @param comment 评论
- * @returns 是否存有原文（历史数据为 false）
- */
-function hasMarkdown(comment: AdminCommentDto): comment is AdminCommentDto & { markdown: string } {
-  return typeof comment.markdown === "string";
-}
-
-/**
- * 进入编辑态：有原文用原文，历史数据把 HTML 转纯文本回填。
+ * 进入编辑态：优先用服务端下发的 Markdown 原文；极旧服务端未下发时
+ * 把 HTML 转纯文本回填，保证仍可编辑。
  * @param comment 评论
  */
 function startEdit(comment: AdminCommentDto): void {
   editingId.value = comment._id;
-  editingText.value = hasMarkdown(comment)
-    ? comment.markdown
-    : htmlToPlainText(comment.comment);
+  editingText.value = comment.markdown ?? htmlToPlainText(comment.comment);
 }
 
 /** 取消编辑（收起输入框，不改动评论）。 */
@@ -571,12 +559,6 @@ onMounted(async () => {
 }
 .twikoo .tk-admin-comment-editor {
   margin-bottom: 1em;
-}
-.twikoo .tk-admin-comment-editor-hint {
-  margin-bottom: 0.5em;
-  padding: 0.5em;
-  border-radius: 4px;
-  background: rgba(144, 147, 153, 0.1);
 }
 .twikoo .tk-admin-comment-editor-actions {
   display: flex;

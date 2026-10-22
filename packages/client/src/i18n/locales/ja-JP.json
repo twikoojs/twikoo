@@ -6,7 +6,6 @@
   "ADMIN_COMMENT_DELETE_CONFIRM": "本当に削除しますか？",
   "ADMIN_COMMENT_EDIT": "編集",
   "ADMIN_COMMENT_EDIT_CANCEL": "キャンセル",
-  "ADMIN_COMMENT_EDIT_LEGACY_HINT": "このコメントには Markdown の原文が保存されていません。HTML から生成しました。保存後に一部の書式が失われる可能性があります。",
   "ADMIN_COMMENT_EDIT_SAVE": "保存",
   "ADMIN_COMMENT_FILTER_ALL": "全部",
   "ADMIN_COMMENT_FILTER_VISIBLE": "表示中のみ",

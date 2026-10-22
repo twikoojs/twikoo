@@ -6,7 +6,6 @@
   "ADMIN_COMMENT_DELETE_CONFIRM": "Confirm deletion?",
   "ADMIN_COMMENT_EDIT": "Edit",
   "ADMIN_COMMENT_EDIT_CANCEL": "Cancel",
-  "ADMIN_COMMENT_EDIT_LEGACY_HINT": "This comment has no saved Markdown source. It was generated from HTML; some formatting may be lost after saving.",
   "ADMIN_COMMENT_EDIT_SAVE": "Save",
   "ADMIN_COMMENT_FILTER_ALL": "All",
   "ADMIN_COMMENT_FILTER_VISIBLE": "Visible",

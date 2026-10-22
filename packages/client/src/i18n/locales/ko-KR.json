@@ -6,7 +6,6 @@
   "ADMIN_COMMENT_DELETE_CONFIRM": "정말 삭제하시겠습니까?",
   "ADMIN_COMMENT_EDIT": "편집",
   "ADMIN_COMMENT_EDIT_CANCEL": "취소",
-  "ADMIN_COMMENT_EDIT_LEGACY_HINT": "이 댓글에는 Markdown 원문이 저장되어 있지 않습니다. HTML에서 생성했으며 저장 후 일부 서식이 사라질 수 있습니다.",
   "ADMIN_COMMENT_EDIT_SAVE": "저장",
   "ADMIN_COMMENT_FILTER_ALL": "전체",
   "ADMIN_COMMENT_FILTER_VISIBLE": "표시 댓글",

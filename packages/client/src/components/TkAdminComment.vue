@@ -591,6 +591,8 @@ onMounted(async () => {
   justify-content: stretch;
 }
 .twikoo .tk-admin-comment-item {
+  padding-bottom: 0.5em;
+  margin-bottom: 0.5em;
   border-bottom: 1px solid rgba(255, 255, 255, 0.5);
 }
 .twikoo .tk-admin-comment-meta {
@@ -607,10 +609,9 @@ onMounted(async () => {
 }
 .twikoo .tk-admin-actions {
   display: flex;
-  margin-bottom: 1em;
 }
 .twikoo .tk-admin-comment-editor {
-  margin-bottom: 1em;
+  margin-top: 0.5em;
 }
 .twikoo .tk-admin-comment-editor-actions {
   display: flex;

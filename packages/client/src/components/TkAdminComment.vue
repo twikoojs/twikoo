@@ -590,6 +590,9 @@ onMounted(async () => {
   flex-direction: column;
   justify-content: stretch;
 }
+.twikoo .tk-admin-comment-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
 .twikoo .tk-admin-comment-meta {
   display: flex;
   align-items: center;
@@ -605,7 +608,6 @@ onMounted(async () => {
 .twikoo .tk-admin-actions {
   display: flex;
   margin-bottom: 1em;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
 }
 .twikoo .tk-admin-comment-editor {
   margin-bottom: 1em;

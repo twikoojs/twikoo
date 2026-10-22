@@ -9,7 +9,8 @@ import type { Capabilities } from "../ports/capabilities";
 import type { CommentDoc, ConfigData } from "../ports/database";
 // lib-loader 静态导入即可（惰性在它内部完成，见其头注释「消费方约定」）
 import { httpGet } from "../utils/http";
-import { getBowser, getIpToRegion } from "../utils/lib-loader";
+import { getBowser, getIpToRegion, getTurndown } from "../utils/lib-loader";
+import type { TurndownServiceLike } from "../utils/lib-loader";
 import { md5, sha256 } from "../utils/crypto";
 
 /** 前端评论 DTO（1.x toCommentDto 返回形态） */
@@ -464,18 +465,67 @@ export async function parseComment(
 }
 
 /**
+ * 判断评论是否已存有可用的 Markdown 原文。
+ * @param value 文档字段值
+ * @returns 是否为非空字符串
+ */
+function hasMarkdownSource(value: unknown): value is string {
+  return typeof value === "string" && value.length > 0;
+}
+
+/**
+ * 尝试把历史评论 HTML 转成 Markdown（转换失败不阻断管理端列表）。
+ * @param converter turndown 实例
+ * @param html 评论 HTML
+ * @returns Markdown 文本；转换失败返回 undefined
+ */
+function htmlToMarkdown(converter: TurndownServiceLike, html: string): string | undefined {
+  try {
+    return converter.turndown(html);
+  } catch {
+    return undefined;
+  }
+}
+
+/**
  * 管理员评论视图（1.x parseCommentForAdmin 对齐：原样保留 + 补 IP 属地详情）。
+ *
+ * 历史评论只有 HTML、没有 Markdown 原文。管理端编辑需要原文，因此在**仅管理端**
+ * 读取时用 turndown 反向补全缺失的 markdown 字段（前台 COMMENT_GET 不触发）。
+ * 补全结果只随响应下发，不写回数据库——管理员保存编辑时才会同时落库 HTML 与原文。
+ *
+ * 转换依赖缺失或平台不支持时静默保留缺失状态，由客户端降级为纯文本回填。
  * @param comments 评论文档列表
  * @param caps 平台能力声明
- * @returns 附带 ipRegion 的文档列表
+ * @returns 附带 ipRegion（及补全后的 markdown）的文档列表
  */
 export async function parseCommentForAdmin(
   comments: CommentDoc[],
   caps: Capabilities,
 ): Promise<Array<CommentDoc & { ipRegion?: string }>> {
+  /** 是否存在需要补全 Markdown 的历史评论 */
+  const needMarkdown = comments.some(
+    (comment) => !hasMarkdownSource(comment.markdown) && comment.comment,
+  );
+  /** turndown 实例（仅在确有需要时惰性加载） */
+  let converter: TurndownServiceLike | undefined;
+  if (needMarkdown) {
+    try {
+      const TurndownService = await getTurndown();
+      converter = new TurndownService();
+    } catch {
+      // 依赖未安装或平台不支持：保持 markdown 缺失，交给客户端降级
+    }
+  }
   return Promise.all(
     comments.map(async (comment) => ({
       ...comment,
+      markdown:
+        hasMarkdownSource(comment.markdown)
+          ? comment.markdown
+          : converter && comment.comment
+            ? htmlToMarkdown(converter, comment.comment)
+            : comment.markdown,
       ipRegion: await getIpRegion(caps, comment.ip, true),
     })),
   );

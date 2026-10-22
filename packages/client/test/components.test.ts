@@ -228,12 +228,15 @@ describe("TkSubmit", () => {
     await inputs[0].trigger("change");
     await inputs[1].setValue("user@example.com");
     await inputs[1].trigger("change");
-    await wrapper.find("textarea").setValue("测试内容");
+    await wrapper.find("textarea").setValue("**测试内容**");
     await wrapper.find(".tk-send").trigger("click");
     await flushPromises();
     expect(submitted).toBeDefined();
     expect(submitted?.nick).toBe("钩子改过的昵称");
     expect(submitted?.title).toBe(document.title);
+    // #390：同时上报渲染后的 HTML 与 Markdown 原文
+    expect(submitted?.markdown).toBe("**测试内容**");
+    expect(submitted?.comment).toContain("<strong>测试内容</strong>");
   });
 
   it("提交前回调抛错：中止发送并上报 error", async () => {
@@ -968,7 +971,7 @@ describe("TkAdminComment 管理操作（#1140 回归）", () => {
    * 挂载管理评论页签，并用替身 tcb 记录上报的事件载荷。
    * @returns 组件包装器与调用记录
    */
-  async function mountAdminComment() {
+  async function mountAdminComment(commentOverrides: Record<string, unknown> = {}) {
     const calls: Array<{ event: string; data: Record<string, unknown> }> = [];
     const tcb = {
       app: {
@@ -989,7 +992,16 @@ describe("TkAdminComment 管理操作（#1140 回归）", () => {
               result: {
                 code: 0,
                 count: 1,
-                data: [{ _id: "c1", nick: "甲", comment: "x", url: "/demo.html", created: 1 }],
+                data: [
+                  {
+                    _id: "c1",
+                    nick: "甲",
+                    comment: "x",
+                    url: "/demo.html",
+                    created: 1,
+                    ...commentOverrides,
+                  },
+                ],
               },
             };
           }
@@ -1031,6 +1043,69 @@ describe("TkAdminComment 管理操作（#1140 回归）", () => {
     await findByText(t("ADMIN_COMMENT_TOP")).trigger("click");
     await flushPromises();
     expect(calls.filter((c) => c.event === "COMMENT_SET_FOR_ADMIN").at(-1)?.data.id).toBe("c1");
+
+    wrapper.unmount();
+  });
+
+  it("编辑评论：回填 Markdown 原文，保存时同时上报 HTML 与原文（#390）", async () => {
+    const { wrapper, calls } = await mountAdminComment({
+      comment: "<p><strong>旧</strong></p>",
+      markdown: "**旧**",
+    });
+
+    /**
+     * 按按钮文案定位元素。
+     * @param label 按钮文案
+     * @returns 找到的按钮包装器
+     */
+    const findByText = (label: string) => {
+      const btn = wrapper.findAll("button").find((b) => b.text() === label);
+      if (!btn) throw new Error(`未找到按钮：${label}`);
+      return btn;
+    };
+
+    await findByText(t("ADMIN_COMMENT_EDIT")).trigger("click");
+    const textarea = wrapper.find(".tk-admin-comment-editor textarea");
+    expect((textarea.element as HTMLTextAreaElement).value).toBe("**旧**");
+    expect(wrapper.find(".tk-admin-comment-editor-hint").exists()).toBe(false);
+
+    await textarea.setValue("**新内容**");
+    await findByText(t("ADMIN_COMMENT_EDIT_SAVE")).trigger("click");
+    await flushPromises();
+
+    const saved = calls.find(
+      (call) => call.event === "COMMENT_SET_FOR_ADMIN" && "markdown" in (call.data.set as object),
+    );
+    expect(saved?.data.id).toBe("c1");
+    expect(saved?.data.set).toMatchObject({ markdown: "**新内容**" });
+    expect((saved?.data.set as { comment: string }).comment).toContain("<strong>新内容</strong>");
+    expect(wrapper.find(".tk-admin-comment-editor").exists()).toBe(false);
+
+    wrapper.unmount();
+  });
+
+  it("编辑历史评论：无 Markdown 时回填纯文本并提示，取消不请求（#390）", async () => {
+    const { wrapper, calls } = await mountAdminComment({ comment: "<p>旧<b>内容</b></p>" });
+
+    /**
+     * 按按钮文案定位元素。
+     * @param label 按钮文案
+     * @returns 找到的按钮包装器
+     */
+    const findByText = (label: string) => {
+      const btn = wrapper.findAll("button").find((b) => b.text() === label);
+      if (!btn) throw new Error(`未找到按钮：${label}`);
+      return btn;
+    };
+
+    await findByText(t("ADMIN_COMMENT_EDIT")).trigger("click");
+    const textarea = wrapper.find(".tk-admin-comment-editor textarea");
+    expect((textarea.element as HTMLTextAreaElement).value).toBe("旧内容");
+    expect(wrapper.find(".tk-admin-comment-editor-hint").exists()).toBe(true);
+
+    await findByText(t("ADMIN_COMMENT_EDIT_CANCEL")).trigger("click");
+    expect(wrapper.find(".tk-admin-comment-editor").exists()).toBe(false);
+    expect(calls.some((call) => call.event === "COMMENT_SET_FOR_ADMIN")).toBe(false);
 
     wrapper.unmount();
   });

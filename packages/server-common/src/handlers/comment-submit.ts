@@ -65,6 +65,14 @@ async function parseCommentDoc(ctx: Parameters<EventHandler>[0]): Promise<Commen
     throw new Error("邮箱格式不合法");
   }
   const hashMethod = config.GRAVATAR_CDN === "cravatar.cn" ? md5 : sha256;
+  // Markdown 原文同样受正文长度上限约束（与 services/spam.ts 的 LIMIT_LENGTH × 10 同口径），
+  // 避免客户端只放大 markdown 字段绕过正文校验、造成存储膨胀
+  let limitLength = Number(config.LIMIT_LENGTH);
+  if (Number.isNaN(limitLength)) limitLength = 500;
+  const markdown = comment.markdown === undefined ? undefined : toStr(comment.markdown);
+  if (limitLength && markdown && markdown.length > limitLength * 10) {
+    throw new Error("评论内容过长");
+  }
   // 反 XSS 消毒（domPurify 能力 / setCustomLibs 直通注入，1.x DOMPurify.sanitize 对齐）
   const DOMPurify = await getDomPurify(adapters.capabilities);
   const commentDo: CommentDoc = {
@@ -83,6 +91,8 @@ async function parseCommentDoc(ctx: Parameters<EventHandler>[0]): Promise<Commen
       FORBID_TAGS: ["style"],
       FORBID_ATTR: ["style"],
     }),
+    // 保存 Markdown 原文供管理端编辑；老客户端不传该字段时保持 undefined
+    markdown,
     pid: comment.pid ? toStr(comment.pid) : toStr(comment.rid),
     rid: comment.rid as string | undefined,
     isSpam: isAdminUser

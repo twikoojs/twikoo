@@ -112,9 +112,31 @@
           >
             {{ t("ADMIN_COMMENT_TOP") }}
           </TkButton>
+          <TkButton size="mini" type="text" @click="startEdit(comment)">
+            {{ t("ADMIN_COMMENT_EDIT") }}
+          </TkButton>
           <TkButton size="mini" type="text" @click="handleDelete(comment)">
             {{ t("ADMIN_COMMENT_DELETE") }}
           </TkButton>
+        </div>
+        <div v-if="editingId === comment._id" class="tk-admin-comment-editor">
+          <div v-if="!hasMarkdown(comment)" class="tk-admin-comment-editor-hint">
+            {{ t("ADMIN_COMMENT_EDIT_LEGACY_HINT") }}
+          </div>
+          <TkInput
+            v-model="editingText"
+            class="tk-admin-comment-editor-input"
+            type="textarea"
+            :rows="6"
+          />
+          <div class="tk-admin-comment-editor-actions">
+            <TkButton size="mini" type="text" :disabled="savingEdit" @click="cancelEdit">
+              {{ t("ADMIN_COMMENT_EDIT_CANCEL") }}
+            </TkButton>
+            <TkButton size="mini" type="primary" :loading="savingEdit" @click="saveEdit(comment)">
+              {{ t("ADMIN_COMMENT_EDIT_SAVE") }}
+            </TkButton>
+          </div>
         </div>
       </div>
     </div>
@@ -138,6 +160,8 @@ import TkIcon from "../components/TkIcon.vue";
 import {
   call,
   convertLink,
+  htmlToPlainText,
+  parseMarkdown,
   popupLightbox,
   renderCode,
   renderLinks,
@@ -195,6 +219,12 @@ const filter = reactive({ keyword: "", type: "" });
 const securityAlert = ref<{ commentId: string; message: string; url?: string } | null>(null);
 /** 评论列表容器引用（渲染后处理目标） */
 const commentListRef = ref<HTMLElement>();
+/** 正在编辑的评论 id（null 表示当前没有展开的编辑框） */
+const editingId = ref<string | null>(null);
+/** 编辑框内容（Markdown 原文；历史评论回填 HTML 转换后的纯文本） */
+const editingText = ref("");
+/** 保存编辑中 */
+const savingEdit = ref(false);
 
 /**
  * 相对时间文案（管理列表用）。
@@ -330,6 +360,52 @@ function handleView(comment: AdminCommentDto): void {
 }
 
 /**
+ * 判断评论是否存有 Markdown 原文。
+ * @param comment 评论
+ * @returns 是否存有原文（历史数据为 false）
+ */
+function hasMarkdown(comment: AdminCommentDto): comment is AdminCommentDto & { markdown: string } {
+  return typeof comment.markdown === "string";
+}
+
+/**
+ * 进入编辑态：有原文用原文，历史数据把 HTML 转纯文本回填。
+ * @param comment 评论
+ */
+function startEdit(comment: AdminCommentDto): void {
+  editingId.value = comment._id;
+  editingText.value = hasMarkdown(comment)
+    ? comment.markdown
+    : htmlToPlainText(comment.comment);
+}
+
+/** 取消编辑（收起输入框，不改动评论）。 */
+function cancelEdit(): void {
+  editingId.value = null;
+  editingText.value = "";
+}
+
+/**
+ * 保存编辑：Markdown 渲染并消毒为 HTML，再与 Markdown 原文一并回写（#390）。
+ * @param comment 评论
+ */
+async function saveEdit(comment: AdminCommentDto): Promise<void> {
+  if (savingEdit.value) return;
+  savingEdit.value = true;
+  try {
+    const markdown = editingText.value;
+    const html = sanitizeHtml(parseMarkdown(markdown));
+    const saved = await updateComment("COMMENT_SET_FOR_ADMIN", {
+      id: comment._id,
+      set: { comment: html, markdown },
+    });
+    if (saved) cancelEdit();
+  } finally {
+    savingEdit.value = false;
+  }
+}
+
+/**
  * 删除评论（1.x handleDelete 对齐：二次确认后重载当前页）。
  * @param comment 评论
  */
@@ -357,15 +433,17 @@ function handleTop(comment: AdminCommentDto, top: boolean): void {
 }
 
 /** 执行管理操作；通信失败时仍尝试重载，确认服务端是否已提交操作。 */
-async function updateComment(event: string, data: Record<string, unknown>): Promise<void> {
-  if (loading.value) return;
+async function updateComment(event: string, data: Record<string, unknown>): Promise<boolean> {
+  if (loading.value) return false;
   loading.value = true;
   try {
     getResponse(await call(getAppState().tcb, event, data));
     await getComments();
+    return true;
   } catch (e) {
     alert(getErrorMessage(e));
     if (!(e instanceof TwikooResponseError)) await getComments();
+    return false;
   } finally {
     loading.value = false;
   }
@@ -490,5 +568,20 @@ onMounted(async () => {
   display: flex;
   margin-bottom: 1em;
   border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+.twikoo .tk-admin-comment-editor {
+  margin-bottom: 1em;
+}
+.twikoo .tk-admin-comment-editor-hint {
+  margin-bottom: 0.5em;
+  padding: 0.5em;
+  border-radius: 4px;
+  background: rgba(144, 147, 153, 0.1);
+}
+.twikoo .tk-admin-comment-editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5em;
+  margin-top: 0.5em;
 }
 </style>

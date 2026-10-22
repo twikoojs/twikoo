@@ -30,6 +30,7 @@ import {
   isUrl,
   toCommentDto,
   parseComment,
+  parseCommentForAdmin,
   getIpRegion,
 } from "../../src/services/comment-dto";
 import {
@@ -447,6 +448,94 @@ describe("评论 DTO（services/comment-dto）", () => {
     expect(data).toHaveLength(1);
     expect(data[0].replies[0].nick).toBe("回复者");
     expect(data[0].replies[0].ruser).toBe("楼主");
+  });
+
+  it("parseCommentForAdmin：仅管理端用 turndown 补全历史评论 Markdown（#390）", async () => {
+    let conversions = 0;
+    setCustomLibs({
+      DOMPurify: {
+        /**
+         *
+         */
+        sanitize: (d) => d,
+      },
+      turndown: class {
+        /**
+         * 测试替身：去掉标签即视为转换成功。
+         * @param html HTML 文本
+         * @returns 伪 Markdown
+         */
+        turndown(html: string): string {
+          conversions += 1;
+          return html.replace(/<[^>]+>/g, "");
+        }
+      },
+    });
+    const legacy = { _id: "c1", comment: "<p>你好</p>", ip: "1.2.3.4" };
+    const adminCaps = { ...caps, ip2region: false };
+
+    const [adminDoc] = await parseCommentForAdmin([legacy], adminCaps);
+    expect(adminDoc.markdown).toBe("你好");
+    expect(adminDoc.ipRegion).toBe("");
+    expect(conversions).toBe(1);
+
+    // 已有原文：不触发转换
+    const [savedDoc] = await parseCommentForAdmin([{ ...legacy, markdown: "**原文**" }], adminCaps);
+    expect(savedDoc.markdown).toBe("**原文**");
+    expect(conversions).toBe(1);
+
+    // 普通读取：不触发转换，也不下发 markdown
+    const [publicDoc] = await parseComment([legacy], "u", {}, caps);
+    expect(Object.prototype.hasOwnProperty.call(publicDoc, "markdown")).toBe(false);
+    expect(conversions).toBe(1);
+  });
+
+  it("parseCommentForAdmin：turndown 不可用/转换失败时保留缺失，不阻断列表", async () => {
+    setCustomLibs({
+      DOMPurify: {
+        /**
+         *
+         */
+        sanitize: (d) => d,
+      },
+      turndown: class {
+        /**
+         * 构造即失败：模拟依赖不可用。
+         */
+        constructor() {
+          throw new Error("turndown unavailable");
+        }
+      } as never,
+    });
+    const adminCaps = { ...caps, ip2region: false };
+    const [unavailable] = await parseCommentForAdmin(
+      [{ _id: "c1", comment: "<p>你好</p>" }],
+      adminCaps,
+    );
+    expect(unavailable.markdown).toBeUndefined();
+
+    setCustomLibs({
+      DOMPurify: {
+        /**
+         *
+         */
+        sanitize: (d) => d,
+      },
+      turndown: class {
+        /**
+         * 转换抛错：模拟单条评论转换失败。
+         * @returns 永不返回
+         */
+        turndown(): string {
+          throw new Error("convert failed");
+        }
+      } as never,
+    });
+    const [failed] = await parseCommentForAdmin(
+      [{ _id: "c2", comment: "<p>世界</p>" }],
+      adminCaps,
+    );
+    expect(failed.markdown).toBeUndefined();
   });
 
   it("getIpRegion：未声明能力返回空串", async () => {

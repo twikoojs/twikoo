@@ -1,12 +1,13 @@
 /**
  * SEA 单文件产物的重依赖静态引入（惰性加载 × SEA 的桥接层）。
  *
- * **背景（发现 → 实测确认 → 修复）**：`@twikoojs/common` 的 14 个重依赖
+ * **背景（发现 → 实测确认 → 修复）**：`@twikoojs/common` 的重依赖
  * 经 `loadLib(specifier)` 的**变量间接** `await import()` 惰性加载（零静态依赖，
  * 适配器按需安装）。这在有 `node_modules` 的部署形态下工作良好，但 **SEA 单文件产物**
  * 没有 `node_modules` 可解析：变量间接的 specifier 既不会被打包器内联，运行时也解析失败，
- * 于是「发评论（DOMPurify/jsdom）、邮件通知、Akismet 反垃圾、UA/属地解析、Markdown、
- * 推送」等能力会报「缺少依赖 xxx」（存储与查询不受影响——`mongodb`/`lokijs` 走的是
+ * 于是「发评论（DOMPurify/jsdom）、邮件通知、Akismet 反垃圾、UA/属地解析、
+ * Markdown 渲染与反向转换、推送」等能力会报「缺少依赖 xxx」（存储与查询不受影响——
+ * `mongodb`/`lokijs` 走的是
  * **字面量** `await import()`，可被静态解析并内联）。
  *
  * **解法（与 1.x 的打包结果等价）**：本模块**静态 import 全部重依赖**，再经
@@ -34,6 +35,7 @@ import * as marked from "marked";
 import * as nodemailer from "nodemailer";
 import * as pushoo from "pushoo";
 import * as tencentTms from "tencentcloud-sdk-nodejs-tms";
+import * as turndown from "turndown";
 import * as xml2js from "xml2js";
 import * as generateText from "@xsai/generate-text";
 import * as ip2region from "@imaegoo/node-ip2region";
@@ -60,6 +62,7 @@ const BUNDLED_LIBS: Record<string, unknown> = {
   "@xsai/generate-text": generateText,
   bowser,
   marked,
+  turndown,
 };
 
 /**

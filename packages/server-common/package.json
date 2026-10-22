@@ -35,6 +35,7 @@
     "nodemailer": "^10.0.10",
     "pushoo": "workspace:^",
     "tencentcloud-sdk-nodejs-tms": "^4.1.293",
+    "turndown": "^7.2.4",
     "xml2js": "^0.6.0"
   },
   "peerDependenciesMeta": {
@@ -80,12 +81,16 @@
     "tencentcloud-sdk-nodejs-tms": {
       "optional": true
     },
+    "turndown": {
+      "optional": true
+    },
     "xml2js": {
       "optional": true
     }
   },
   "devDependencies": {
     "@types/node": "^26.6.4",
+    "@types/turndown": "^5.0.6",
     "lokijs": "^1.5.12",
     "mongodb": "^7.6.0"
   },

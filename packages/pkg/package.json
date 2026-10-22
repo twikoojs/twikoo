@@ -26,11 +26,13 @@
     "pushoo": "workspace:^",
     "tencentcloud-sdk-nodejs-tms": "^4.1.311",
     "tkserver": "workspace:*",
+    "turndown": "^7.2.4",
     "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "@tsdown/exe": "0.23.0",
     "@types/node": "^26.6.4",
+    "@types/turndown": "^5.0.6",
     "tsdown": "0.23.1"
   }
 }

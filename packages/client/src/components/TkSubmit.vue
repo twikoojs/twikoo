@@ -655,6 +655,7 @@ async function send(): Promise<void> {
       href: getHref(getAppState().options.href),
       title: typeof pageTitle === "string" ? pageTitle : document.title,
       comment: parseMarkdown(comment.value),
+      markdown: comment.value,
       pid: props.pid ? props.pid : props.replyId,
       rid: props.replyId,
     };

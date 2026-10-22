@@ -37,6 +37,7 @@
     "marked": "^18.0.13",
     "pako": "^3.0.2",
     "pushoo": "workspace:^",
+    "turndown": "^7.2.4",
     "xml2js": "^0.6.2"
   },
   "devDependencies": {

@@ -23,6 +23,7 @@ import {
   renderLinks,
   renderMath,
   getOptions,
+  htmlToPlainText,
   logger,
 } from "../src/utils";
 import { setLanguage } from "../src/i18n";
@@ -142,6 +143,15 @@ describe("utils 文件与 DOM 工具", () => {
     const { setAppState } = await import("../src/utils/api");
     setAppState(null, { path: "/x", lang: "zh-CN" });
     expect(getOptions().path).toBe("/x");
+  });
+
+  it("htmlToPlainText：块级换行、br、img alt 与消毒（#390）", () => {
+    expect(htmlToPlainText("<p>你好</p><p>世界</p>")).toBe("你好\n\n世界");
+    expect(htmlToPlainText("a<br>b")).toBe("a\nb");
+    expect(htmlToPlainText('<p><img src="x" alt="图片"></p>')).toBe("图片");
+    expect(htmlToPlainText("<script>alert(1)</script>安全")).toBe("安全");
+    expect(htmlToPlainText(undefined)).toBe("");
+    expect(htmlToPlainText("")).toBe("");
   });
 });
 

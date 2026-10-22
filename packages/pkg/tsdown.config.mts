@@ -3,7 +3,7 @@
  *
  * **基线**：SEA 的 `nodeVersion` 跟随仓库基线——1.x 曾写死 `26.8.1`，
  * 2.0 曾定为 `24`（且以主版本号形式，实际无法通过 `@tsdown/exe` 校验），
- * 现统一为 **`26.9.0`**（Node 26 线；与 `.nvmrc` / CI / Docker 同一基线）。
+ * 现统一由下方 `NODE_VERSION` 常量指定（Node 26 线；与 `.nvmrc` / CI / Docker 同一基线）。
  *
  * 单配置、单产物：把 tkserver 及其全部依赖内联进一个文件，再交给 @tsdown/exe 生成
  * 四个平台的可执行文件（linux-x64 / darwin-arm64 / darwin-x64 / win-x64）。
@@ -36,7 +36,7 @@ import { defineConfig } from "tsdown";
  * 2.0 曾写 `"24"` 从未被真正执行到，属潜伏配置错误）。
  * 这里钉住基线线的具体补丁版本以保证产物可复现（升级时同步 `.nvmrc` 与 CI）。
  */
-const NODE_VERSION = "26.9.0";
+const NODE_VERSION = "26.12.1";
 
 export default defineConfig({
   dts: false,

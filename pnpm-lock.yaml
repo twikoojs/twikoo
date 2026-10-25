@@ -200,8 +200,8 @@ importers:
         specifier: ^17.13.0
         version: 17.13.0
       happy-dom:
-        specifier: ^21.0.3
-        version: 21.0.3
+        specifier: ^21.0.4
+        version: 21.0.4
       jsdom:
         specifier: ~25.0.1
         version: 25.0.1(supports-color@10.2.2)
@@ -222,7 +222,7 @@ importers:
         version: 8.71.2(eslint@10.12.0(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
       vitest:
         specifier: ^5.0.3
-        version: 5.0.3(@types/node@26.6.4)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.3)(jsdom@25.0.1(supports-color@10.2.2))(vite@8.3.0(@types/node@26.6.4)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 5.0.3(@types/node@26.6.4)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.4)(jsdom@25.0.1(supports-color@10.2.2))(vite@8.3.0(@types/node@26.6.4)(esbuild@0.27.7)(yaml@2.9.1))
       vue:
         specifier: ^3.5.43
         version: 3.5.43(typescript@6.0.3)
@@ -234,7 +234,7 @@ importers:
         version: 1.6.4(@algolia/client-search@5.59.0)(@types/node@26.6.4)(axios@1.20.0(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2))(lightningcss@1.33.0)(postcss@8.5.28)(search-insights@2.17.3)(typescript@6.0.3)
       vitest:
         specifier: ^5.0.3
-        version: 5.0.3(@types/node@26.6.4)(@vitest/coverage-v8@5.0.3)(happy-dom@21.0.3)(jsdom@25.0.1(supports-color@10.2.2))(vite@8.3.0(@types/node@26.6.4)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 5.0.3(@types/node@26.6.4)(@vitest/coverage-v8@5.0.3)(happy-dom@21.0.4)(jsdom@25.0.1(supports-color@10.2.2))(vite@8.3.0(@types/node@26.6.4)(esbuild@0.27.7)(yaml@2.9.1))
 
   packages/client:
     dependencies:
@@ -264,8 +264,8 @@ importers:
         specifier: ^3.4.16
         version: 3.4.16
       happy-dom:
-        specifier: ^21.0.3
-        version: 21.0.3
+        specifier: ^21.0.4
+        version: 21.0.4
       js-sha256:
         specifier: ^1.0.0
         version: 1.0.0
@@ -2964,8 +2964,8 @@ packages:
     resolution: {integrity: sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==}
     engines: {node: '>= 0.4'}
 
-  happy-dom@21.0.3:
-    resolution: {integrity: sha512-PesNgu5BnIEmAwzKGewB3K1ORFeznFZJ4JrRz89ea1wkHnxskdpzX9sN/+zb4KO6k8oSMhyJSj/cwXAFrYBBNA==}
+  happy-dom@21.0.4:
+    resolution: {integrity: sha512-tFm+GaLBgo6o0awHnvHaNoraVo27qJ+2tZEtZ+cIa08hXbeitrxAJajLI05hsUy/2/YTKcUjQYzHe5mCcraLBw==}
     engines: {node: '>=20.0.0'}
 
   has-symbols@1.1.0:
@@ -5341,7 +5341,7 @@ snapshots:
       obug: 2.2.1
       std-env: 4.3.0
       tinyrainbow: 3.2.0
-      vitest: 5.0.3(@types/node@26.6.4)(@vitest/coverage-v8@5.0.3)(happy-dom@21.0.3)(jsdom@25.0.1(supports-color@10.2.2))(vite@8.3.0(@types/node@26.6.4)(esbuild@0.27.7)(yaml@2.9.1))
+      vitest: 5.0.3(@types/node@26.6.4)(@vitest/coverage-v8@5.0.3)(happy-dom@21.0.4)(jsdom@25.0.1(supports-color@10.2.2))(vite@8.3.0(@types/node@26.6.4)(esbuild@0.27.7)(yaml@2.9.1))
     optional: true
 
   '@vitest/coverage-v8@5.0.5(vitest@5.0.3)':
@@ -5354,7 +5354,7 @@ snapshots:
       obug: 3.0.0
       std-env: 4.3.0
       tinyrainbow: 3.2.0
-      vitest: 5.0.3(@types/node@26.6.4)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.3)(jsdom@25.0.1(supports-color@10.2.2))(vite@8.3.0(@types/node@26.6.4)(esbuild@0.27.7)(yaml@2.9.1))
+      vitest: 5.0.3(@types/node@26.6.4)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.4)(jsdom@25.0.1(supports-color@10.2.2))(vite@8.3.0(@types/node@26.6.4)(esbuild@0.27.7)(yaml@2.9.1))
 
   '@vitest/istanbul-lib-coverage@1.0.2': {}
 
@@ -6313,7 +6313,7 @@ snapshots:
 
   gopd@1.2.0: {}
 
-  happy-dom@21.0.3:
+  happy-dom@21.0.4:
     dependencies:
       '@types/node': 26.6.4
       '@types/whatwg-mimetype': 3.0.2
@@ -7462,7 +7462,7 @@ snapshots:
       - typescript
       - universal-cookie
 
-  vitest@5.0.3(@types/node@26.6.4)(@vitest/coverage-v8@5.0.3)(happy-dom@21.0.3)(jsdom@25.0.1(supports-color@10.2.2))(vite@8.3.0(@types/node@26.6.4)(esbuild@0.27.7)(yaml@2.9.1)):
+  vitest@5.0.3(@types/node@26.6.4)(@vitest/coverage-v8@5.0.3)(happy-dom@21.0.4)(jsdom@25.0.1(supports-color@10.2.2))(vite@8.3.0(@types/node@26.6.4)(esbuild@0.27.7)(yaml@2.9.1)):
     dependencies:
       '@types/chai': 5.2.3
       '@vitest/mocker': 5.0.3(vite@8.3.0(@types/node@26.6.4)(esbuild@0.27.7)(yaml@2.9.1))
@@ -7481,12 +7481,12 @@ snapshots:
     optionalDependencies:
       '@types/node': 26.6.4
       '@vitest/coverage-v8': 5.0.3(vitest@5.0.3)
-      happy-dom: 21.0.3
+      happy-dom: 21.0.4
       jsdom: 25.0.1(supports-color@10.2.2)
     transitivePeerDependencies:
       - msw
 
-  vitest@5.0.3(@types/node@26.6.4)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.3)(jsdom@25.0.1(supports-color@10.2.2))(vite@8.3.0(@types/node@26.6.4)(esbuild@0.27.7)(yaml@2.9.1)):
+  vitest@5.0.3(@types/node@26.6.4)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.4)(jsdom@25.0.1(supports-color@10.2.2))(vite@8.3.0(@types/node@26.6.4)(esbuild@0.27.7)(yaml@2.9.1)):
     dependencies:
       '@types/chai': 5.2.3
       '@vitest/mocker': 5.0.3(vite@8.3.0(@types/node@26.6.4)(esbuild@0.27.7)(yaml@2.9.1))
@@ -7505,7 +7505,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 26.6.4
       '@vitest/coverage-v8': 5.0.5(vitest@5.0.3)
-      happy-dom: 21.0.3
+      happy-dom: 21.0.4
       jsdom: 25.0.1(supports-color@10.2.2)
     transitivePeerDependencies:
       - msw

@@ -261,8 +261,8 @@ importers:
         specifier: ^2.19.0
         version: 2.19.0
       dompurify:
-        specifier: ^3.4.16
-        version: 3.4.16
+        specifier: ^3.4.17
+        version: 3.4.17
       happy-dom:
         specifier: ^21.0.4
         version: 21.0.4
@@ -327,8 +327,8 @@ importers:
         specifier: 15.0.0
         version: 15.0.0
       dompurify:
-        specifier: ^3.4.16
-        version: 3.4.16
+        specifier: ^3.4.17
+        version: 3.4.17
       form-data:
         specifier: ^4.0.6
         version: 4.0.6
@@ -407,8 +407,8 @@ importers:
         specifier: ^2.14.1
         version: 2.14.1
       dompurify:
-        specifier: ^3.4.16
-        version: 3.4.16
+        specifier: ^3.4.17
+        version: 3.4.17
       form-data:
         specifier: ^4.0.6
         version: 4.0.6
@@ -471,8 +471,8 @@ importers:
         specifier: ^2.14.1
         version: 2.14.1
       dompurify:
-        specifier: ^3.4.16
-        version: 3.4.16
+        specifier: ^3.4.17
+        version: 3.4.17
       form-data:
         specifier: ^4.0.6
         version: 4.0.6
@@ -523,8 +523,8 @@ importers:
         specifier: ^2.14.1
         version: 2.14.1
       dompurify:
-        specifier: ^3.4.16
-        version: 3.4.16
+        specifier: ^3.4.17
+        version: 3.4.17
       html-to-text:
         specifier: ^10.0.1
         version: 10.0.1
@@ -576,7 +576,7 @@ importers:
         version: 2.14.1
       dompurify:
         specifier: ^3.4.14
-        version: 3.4.16
+        version: 3.4.17
       form-data:
         specifier: ^4.0.0
         version: 4.0.6
@@ -694,8 +694,8 @@ importers:
         specifier: ^2.14.1
         version: 2.14.1
       dompurify:
-        specifier: ^3.4.16
-        version: 3.4.16
+        specifier: ^3.4.17
+        version: 3.4.17
       form-data:
         specifier: ^4.0.6
         version: 4.0.6
@@ -758,8 +758,8 @@ importers:
         specifier: ^2.14.1
         version: 2.14.1
       dompurify:
-        specifier: ^3.4.16
-        version: 3.4.16
+        specifier: ^3.4.17
+        version: 3.4.17
       form-data:
         specifier: ^4.0.6
         version: 4.0.6
@@ -825,8 +825,8 @@ importers:
         specifier: ^2.14.1
         version: 2.14.1
       dompurify:
-        specifier: ^3.4.16
-        version: 3.4.16
+        specifier: ^3.4.17
+        version: 3.4.17
       form-data:
         specifier: ^4.0.6
         version: 4.0.6
@@ -2660,8 +2660,8 @@ packages:
     resolution: {integrity: sha512-cgwlv/1iFQiFnU96XXgROh8xTeetsnJiDsTc7TYCLFd9+/WNkIqPTxiM/8pSd8VIrhXGTf1Ny1q1hquVqDJB5w==}
     engines: {node: '>= 4'}
 
-  dompurify@3.4.16:
-    resolution: {integrity: sha512-sqo+pNp3qRhCIpbgRi1y8Tgk27Bo2Ry7w0dC1NBeNTdZChWjz9Xb/KOoZbRP/R6pQZ80Qw8YhXw13hWWBbMRnQ==}
+  dompurify@3.4.17:
+    resolution: {integrity: sha512-B/pSlYVHQ58kqISD/yDjuJ1yfzI34m1gF4lAod2bwSRhiN4K5Cl3H8Af7hqB2PmTL911tdEudnnXn5FnhRoz0w==}
 
   domutils@3.2.2:
     resolution: {integrity: sha512-6kZKyUajlDuqlHKVX1w7gyslj9MPIXzIFiz/rGu35uC1wMi+kMhQwGhl4lt9unC9Vb9INnY9Z3/ZA3+FhASLaw==}
@@ -5938,7 +5938,7 @@ snapshots:
     dependencies:
       domelementtype: 2.3.0
 
-  dompurify@3.4.16:
+  dompurify@3.4.17:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 

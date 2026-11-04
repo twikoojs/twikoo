@@ -37,7 +37,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-vue": "^10.11.1",
     "globals": "^17.13.0",
-    "happy-dom": "^21.0.3",
+    "happy-dom": "^21.0.4",
     "jsdom": "~25.0.1",
     "mongodb-memory-server": "^11.3.0",
     "prettier": "^3.9.10",

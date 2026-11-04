@@ -44,7 +44,7 @@
     "tsdown": "^0.23.1",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.72.1",
-    "vitest": "^5.0.3",
+    "vitest": "^5.0.5",
     "vue": "^3.5.44"
   }
 }

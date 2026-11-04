@@ -42,7 +42,7 @@
     "jsdom": "~25.0.1",
     "marked": "^18.0.13",
     "mongodb": "^7.6.0",
-    "nodemailer": "^10.0.10",
+    "nodemailer": "^10.1.4",
     "pushoo": "workspace:^",
     "tencentcloud-sdk-nodejs-tms": "^4.1.311",
     "turndown": "^7.2.4",

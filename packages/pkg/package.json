@@ -33,6 +33,6 @@
     "@tsdown/exe": "0.23.0",
     "@types/node": "^26.6.4",
     "@types/turndown": "^5.0.6",
-    "tsdown": "0.23.1"
+    "tsdown": "0.23.7"
   }
 }

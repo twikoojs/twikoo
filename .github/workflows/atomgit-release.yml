@@ -35,6 +35,13 @@ env:
   ATOMGIT_REPO: twikoo
   GITHUB_REPO: twikoojs/twikoo
 
+# 同一时刻只允许一个同步任务运行。
+# AtomGit 的「最新版本」标记是全局唯一的，两次运行交错时，先启动的那次
+# 可能后写入而把标记改回旧版本。排队而非取消，避免中途留下半同步状态。
+concurrency:
+  group: sync-release-to-atomgit
+  cancel-in-progress: false
+
 jobs:
   sync:
     name: 同步到 AtomGit

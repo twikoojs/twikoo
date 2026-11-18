@@ -53,13 +53,8 @@ const GITHUB_API = "https://api.github.com";
 /** GitHub 上无发布说明时写入的占位文案（AtomGit 要求 body 非空） */
 const EMPTY_BODY_PLACEHOLDER = "（GitHub 上此版本无发布说明）";
 
-/**
- * 网络抖动与限流的最多重试次数。
- *
- * 取 6 而非更小的值，是为了覆盖 AtomGit 间歇性 401：实测单次成功率约 25%，
- * 6 次全部失败的概率已很低；真正的令牌失效会稳定失败，不影响正确性。
- */
-const MAX_ATTEMPTS = 6;
+/** 网络抖动与限流的最多重试次数 */
+const MAX_ATTEMPTS = 4;
 
 /** 分页抓取时每页条数（两边的上限都是 100） */
 const PER_PAGE = 100;
@@ -138,12 +133,8 @@ async function requestJson(url, options = {}, label = "", { treat404AsError = fa
         throw err;
       }
 
-      // 限流、服务端错误与间歇性 401 可重试。
-      //
-      // 401 也重试，是因为 AtomGit 的鉴权存在**间歇性误报**：实测同一个有效令牌
-      // 对同一接口连续请求会随机返回 401（成功与失败交替出现）。真正的令牌失效
-      // 会连续失败到耗尽重试次数，最终仍会正确报错。
-      if (res.status === 401 || res.status === 429 || res.status >= 500) {
+      // 限流与服务端错误可重试
+      if (res.status === 429 || res.status >= 500) {
         lastError = new Error(`HTTP ${res.status} ${label} ${text.slice(0, 200)}`);
         lastError.status = res.status;
         await sleep(1000 * attempt * 2);
@@ -159,10 +150,9 @@ async function requestJson(url, options = {}, label = "", { treat404AsError = fa
 
       return text ? JSON.parse(text) : null;
     } catch (e) {
-      // 其余 4xx 属于参数问题，重试无意义
-      if (e.status && e.status >= 400 && e.status < 500 && e.status !== 401 && e.status !== 429) {
-        throw e;
-      }
+      // 4xx（除限流）属于参数/权限问题，重试无意义。
+      // 401 尤其如此：令牌失效重试多少次都还是失败，快速报错才能让用户去换令牌。
+      if (e.status && e.status >= 400 && e.status < 500 && e.status !== 429) throw e;
       lastError = e;
       await sleep(1000 * attempt * 2);
     }

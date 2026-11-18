@@ -1,0 +1,69 @@
+# 把 GitHub Release 同步到 AtomGit（只同步标题与描述，不同步附件）
+#
+# 纯人工触发（workflow_dispatch），不做自动触发 —— 原因见下。
+#
+# 为什么必须人工触发：AtomGit 的镜像仓没有开放任何「触发镜像同步」的 API
+#   （实测：PUT /sync_repo 是 Fork 仓专用，镜像仓报 Project not found；
+#    web-api 的 sync_remote_mirror 被 WAF 拦截且不接受 PAT；
+#    镜像仓还禁止通过 API 建 tag）。所以新版本要先在 AtomGit 网页点一次
+#    「同步镜像」，等 tag 过去之后，再来手动跑本工作流补齐 Release。
+#
+# 工作方式：比对两边差异，按发布时间升序补建缺失的 Release。
+#   - 可重复调用，幂等：已存在的不会重复建
+#   - 某 tag 尚未同步到 AtomGit 时，打 warn 跳过，不中断其他条目
+#   - 全部补齐后，把最新的正式版标记为 AtomGit「最新版本」
+#
+# 前置条件：仓库需配置 secret ATOMGIT_TOKEN —— AtomGit 个人访问令牌，
+#   权限只需「项目 → Repository：读写」，其余全部禁止。
+
+name: Sync Release to AtomGit
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "实际写入（取消勾选则只报告差异，不做任何修改）"
+        required: false
+        default: true
+        type: boolean
+
+env:
+  ATOMGIT_OWNER: twikoojs-org
+  ATOMGIT_REPO: twikoo
+  GITHUB_REPO: twikoojs/twikoo
+
+jobs:
+  sync:
+    name: 同步到 AtomGit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # 不需要 git 历史，脚本全程走 API
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: 同步 Release
+        env:
+          ATOMGIT_TOKEN: ${{ secrets.ATOMGIT_TOKEN }}
+          # 读 GitHub API 用；用内置 token 可避开匿名 60 次/小时的限流
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${ATOMGIT_TOKEN:-}" ]; then
+            echo "::error::未配置 secret ATOMGIT_TOKEN"
+            exit 1
+          fi
+
+          if [ "${{ inputs.apply }}" = "true" ]; then
+            node scripts/sync-release-to-atomgit.mjs --apply
+          else
+            node scripts/sync-release-to-atomgit.mjs
+          fi

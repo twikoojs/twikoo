@@ -9,6 +9,8 @@
 [![](https://app.cloudback.it/badge/twikoojs/twikoo)](https://cloudback.it)
 [![](https://img.shields.io/npm/l/twikoo)](./LICENSE)
 
+[![AtomGit](https://atomgit.com/twikoojs-org/twikoo/star/new_badge.svg)](https://atomgit.com/twikoojs-org/twikoo)
+
 一个**简洁**、**安全**、**免费**的静态网站评论系统。<br>
 A **simple**, **safe**, **free** comment system.  
 [English](./README.en.md) | **简体中文**

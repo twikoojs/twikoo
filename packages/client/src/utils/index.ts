@@ -253,13 +253,13 @@ export async function getRecentCommentsApi(
 export async function getTotalCommentsCountApi(
   tcb: TcbInstance | null,
   options: Record<string, unknown> = {},
-): Promise<unknown> {
+): Promise<number> {
   const result = await call(tcb, "GET_TOTAL_COMMENTS_COUNT", {
     envId: options.envId,
     funcName: options.funcName,
     includeReply: options.includeReply,
   });
-  return getResponse(result).data;
+  return getResponse(result).data as number;
 }
 
 /**

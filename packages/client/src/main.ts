@@ -118,7 +118,7 @@ export async function getRecentComments(options: TwikooOptions = {}): Promise<un
  * @param options 选项（includeReply 缺省 false）
  * @returns 评论总数
  */
-export async function getTotalCommentsCount(options: TwikooOptions = {}): Promise<unknown> {
+export async function getTotalCommentsCount(options: TwikooOptions = {}): Promise<number> {
   const tcb = await initTcbIfNeeded(options);
   return await getTotalCommentsCountApi(tcb, options);
 }

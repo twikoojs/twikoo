@@ -1,5 +1,5 @@
 /**
- * 25 事件 handler 全量测试。
+ * 26 事件 handler 全量测试。
  *
  * 每个 handler 至少 1 happy + 1 failure 用例；重依赖经 setCustomLibs /
  * setLibImporter 替身注入（无真实密钥、无真实网络—— 停机协议不触发）。
@@ -517,6 +517,42 @@ describe("COUNTER_GET / GET_COMMENTS_COUNT / GET_RECENT_COMMENTS", () => {
     const withoutReply = await post({ event: "GET_RECENT_COMMENTS" });
     const topNicks = (withoutReply.body.data as Array<{ nick: string }>).map((d) => d.nick);
     expect(topNicks).toEqual(["正常"]);
+  });
+});
+
+describe("GET_TOTAL_COMMENTS_COUNT", () => {
+  it("failure：SHOW_TOTAL_COUNT 缺省关闭 → FAIL 且不带 data", async () => {
+    await seed({});
+    const res = await post({ event: "GET_TOTAL_COMMENTS_COUNT" });
+    expect(res.body.code).toBe(RES_CODE.FAIL);
+    expect(res.body.message).toBe("全站评论总数接口未开启");
+    expect(res.body).not.toHaveProperty("data");
+    // 只有字符串 "true" 才算开启
+    await adapters.database.saveConfig({ SHOW_TOTAL_COUNT: "false" });
+    const off = await post({ event: "GET_TOTAL_COMMENTS_COUNT" });
+    expect(off.body.code).toBe(RES_CODE.FAIL);
+    expect(off.body).not.toHaveProperty("data");
+  });
+
+  it("happy：开启后跨页面统计，不含回复；垃圾不计", async () => {
+    await adapters.database.saveConfig({ SHOW_TOTAL_COUNT: "true" });
+    const id = await seed({ url: "/post/1" });
+    await seed({ url: "/post/2" });
+    await seed({ url: "/post/2", rid: id });
+    await seed({ url: "/post/3", isSpam: true });
+    const res = await post({ event: "GET_TOTAL_COMMENTS_COUNT" });
+    expect(res.body.code).toBe(RES_CODE.SUCCESS);
+    expect(res.body.data).toBe(2);
+  });
+
+  it("happy：includeReply 时计入回复（垃圾回复仍不计）", async () => {
+    await adapters.database.saveConfig({ SHOW_TOTAL_COUNT: "true" });
+    const id = await seed({ url: "/post/1" });
+    await seed({ url: "/post/1", rid: id });
+    await seed({ url: "/post/1", rid: id, isSpam: true });
+    const res = await post({ event: "GET_TOTAL_COMMENTS_COUNT", includeReply: true });
+    expect(res.body.code).toBe(RES_CODE.SUCCESS);
+    expect(res.body.data).toBe(2);
   });
 });
 

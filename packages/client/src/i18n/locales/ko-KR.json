@@ -114,6 +114,7 @@
   "ADMIN_CONFIG_ITEM_SHOW_DISLIKE": "댓글 싫어요 버튼 표시 여부. 기본값: true.",
   "ADMIN_CONFIG_ITEM_SHOW_UA": "댓글 작성자의 운영체제 및 브라우저 표시 여부. 기본값: true.",
   "ADMIN_CONFIG_ITEM_SHOW_REGION": "사용자 IP 지역(도/시 단위) 표시 여부 (부정확할 수 있음, IPv6 미지원). 기본값: false.",
+  "ADMIN_CONFIG_ITEM_SHOW_TOTAL_COUNT": "프론트엔드 API로 사이트 전체 댓글 수 조회 허용 여부 (사이트 규모가 노출됨). 기본값: false.",
   "ADMIN_CONFIG_ITEM_SITE_NAME": "웹사이트 이름.",
   "ADMIN_CONFIG_ITEM_SITE_URL": "웹사이트 주소.",
   "ADMIN_CONFIG_ITEM_SMTP_HOST": "SMTP 서버 주소. SMTP_SERVICE를 설정한 경우 비워두세요.",

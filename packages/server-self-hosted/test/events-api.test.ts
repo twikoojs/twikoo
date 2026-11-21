@@ -163,6 +163,17 @@ describe("评论读者侧", () => {
     expect(Array.isArray(body.data)).toBe(true);
   });
 
+  it("GET_TOTAL_COMMENTS_COUNT：缺省关闭 → 1000；开启后返回全站计数", async () => {
+    const off = await call({ event: "GET_TOTAL_COMMENTS_COUNT" });
+    expect(off.status).toBe(200);
+    expect(off.body.code).toBe(1000);
+    const set = await adminCall({ event: "SET_CONFIG", config: { SHOW_TOTAL_COUNT: "true" } });
+    expect(set.body.code).toBe(0);
+    const { body } = await call({ event: "GET_TOTAL_COMMENTS_COUNT" });
+    expect(body.code).toBe(0);
+    expect(body.data as number).toBeGreaterThan(0);
+  });
+
   it("COMMENT_DELETE_FOR_USER：删除自己的评论", async () => {
     const submit = await call({
       event: "COMMENT_SUBMIT",

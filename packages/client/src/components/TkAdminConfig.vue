@@ -436,6 +436,12 @@ function createSettings(): SettingGroup[] {
           ph: `${EXAMPLE()}true`,
           value: "",
         },
+        {
+          key: "SHOW_TOTAL_COUNT",
+          desc: t("ADMIN_CONFIG_ITEM_SHOW_TOTAL_COUNT"),
+          ph: `${EXAMPLE()}true`,
+          value: "",
+        },
       ],
     },
     {

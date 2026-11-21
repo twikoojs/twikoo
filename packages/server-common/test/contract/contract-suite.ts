@@ -1,5 +1,5 @@
 /**
- * 25 事件契约套件（规范）。
+ * 26 事件契约套件（规范）。
  *
  * 可复用 runner：参数化注入「数据库实现 + 适配器元数据」，把 26 个事件的
  * 请求/响应断言跑在同一套用例上——任何实现漏注册 handler / 漏实现事件，
@@ -28,7 +28,7 @@ export interface ContractFixture {
 }
 
 /**
- * 运行 25 事件契约套件。
+ * 运行 26 事件契约套件。
  * @param name 实现名（展示用）
  * @param fixture 夹具
  */
@@ -95,7 +95,7 @@ export function runContractSuite(name: string, fixture: ContractFixture): void {
     return doc._id as string;
   }
 
-  describe(`${name} 契约套件（25 事件）`, () => {
+  describe(`${name} 契约套件（26 事件）`, () => {
     // ---- 元事件与健康检查 ----
     it("GET_FUNC_VERSION：code 0 + version", async () => {
       const res = await post({ event: "GET_FUNC_VERSION" });
@@ -373,6 +373,19 @@ export function runContractSuite(name: string, fixture: ContractFixture): void {
       await seed();
       const res = await post({ event: "GET_COMMENTS_COUNT", urls: ["/contract"] });
       expect(res.body.data).toEqual([{ url: "/contract", count: 1 }]);
+    });
+
+    it("GET_TOTAL_COMMENTS_COUNT：缺省关闭 → FAIL；开启后 code 0 + 全站计数", async () => {
+      await seed({ url: "/contract" });
+      await seed({ url: "/contract-2" });
+      await seed({ url: "/contract-3", isSpam: true });
+      const off = await post({ event: "GET_TOTAL_COMMENTS_COUNT" });
+      expect(off.body.code).toBe(RES_CODE.FAIL);
+      expect(off.body).not.toHaveProperty("data");
+      await adapters.database.saveConfig({ SHOW_TOTAL_COUNT: "true" });
+      const res = await post({ event: "GET_TOTAL_COMMENTS_COUNT" });
+      expect(res.body.code).toBe(0);
+      expect(res.body.data).toBe(2);
     });
 
     it("GET_RECENT_COMMENTS：摘要列表（1.x 成功不带 code，仅 data）", async () => {

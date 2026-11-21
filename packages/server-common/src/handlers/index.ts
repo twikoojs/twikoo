@@ -1,7 +1,7 @@
 /**
  * 事件处理器装配（规范 handlers）。
  *
- * 25 事件全量注册（一事件一文件）：24 个客户端事件 + 服务端内部事件 `POST_SUBMIT`
+ * 26 事件全量注册（一事件一文件）：25 个客户端事件 + 服务端内部事件 `POST_SUBMIT`
  * （后置副作用链的执行入口，见 `./post-submit.ts` 头注释，长期保留）。
  * dispatcher 模块加载时 import 本文件触发默认注册。
  */
@@ -26,6 +26,7 @@ import {
   GET_PASSWORD_STATUS,
   GET_QQ_NICK,
   GET_RECENT_COMMENTS,
+  GET_TOTAL_COMMENTS_COUNT,
   LOGIN,
   POST_SUBMIT,
   SET_CONFIG,
@@ -56,6 +57,7 @@ import { setConfigEvent } from "./set-config";
 import { loginEvent } from "./login";
 import { getCommentsCount } from "./get-comments-count";
 import { getRecentComments } from "./get-recent-comments";
+import { getTotalCommentsCount } from "./get-total-comments-count";
 import { emailTestEvent } from "./email-test";
 import { uploadImageEvent } from "./upload-image";
 import { getQQNickEvent } from "./get-qq-nick";
@@ -119,6 +121,7 @@ export function registerDefaultHandlers(): void {
   registerHandler(LOGIN, loginEvent);
   registerHandler(GET_COMMENTS_COUNT, getCommentsCount);
   registerHandler(GET_RECENT_COMMENTS, getRecentComments);
+  registerHandler(GET_TOTAL_COMMENTS_COUNT, getTotalCommentsCount);
   registerHandler(EMAIL_TEST, emailTestEvent);
   registerHandler(UPLOAD_IMAGE, uploadImageEvent);
   registerHandler(GET_QQ_NICK, getQQNickEvent);

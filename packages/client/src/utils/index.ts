@@ -245,6 +245,24 @@ export async function getRecentCommentsApi(
 }
 
 /**
+ * 获取全站评论总数 API（需站长开启 SHOW_TOTAL_COUNT，未开启时服务端拒绝）。
+ * @param tcb 云开发实例
+ * @param options 选项（includeReply 缺省 false）
+ * @returns 评论总数
+ */
+export async function getTotalCommentsCountApi(
+  tcb: TcbInstance | null,
+  options: Record<string, unknown> = {},
+): Promise<unknown> {
+  const result = await call(tcb, "GET_TOTAL_COMMENTS_COUNT", {
+    envId: options.envId,
+    funcName: options.funcName,
+    includeReply: options.includeReply,
+  });
+  return getResponse(result).data;
+}
+
+/**
  * 获取访问量 API（COUNTER_GET：读取并自增）。
  * @param tcb 云开发实例
  * @param options 选项

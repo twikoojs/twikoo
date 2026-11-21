@@ -114,6 +114,7 @@
   "ADMIN_CONFIG_ITEM_SHOW_DISLIKE": "「よくないね」ボタンを表示するかどうか。デフォルト：true",
   "ADMIN_CONFIG_ITEM_SHOW_UA": "ユーザーのOSとブラウザーの情報を表示するかどうか。デフォルト：true",
   "ADMIN_CONFIG_ITEM_SHOW_REGION": "ユーザーIPの所在地（省）を表示するかどうか。正確でない場合があります。IPv6はサポートされていません。デフォルト：false",
+  "ADMIN_CONFIG_ITEM_SHOW_TOTAL_COUNT": "フロントエンドの API でサイト全体のコメント総数を取得できるようにするかどうか（サイトの規模が公開されます）。デフォルト：false",
   "ADMIN_CONFIG_ITEM_SITE_NAME": "ウェブサイト名",
   "ADMIN_CONFIG_ITEM_SITE_URL": "ウェブサイトのアドレス",
   "ADMIN_CONFIG_ITEM_SMTP_HOST": "カスタムSMTPサーバのアドレス。SMTP_SERVICEを設定している場合は空白のままにします。",

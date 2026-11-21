@@ -114,6 +114,7 @@
   "ADMIN_CONFIG_ITEM_SHOW_DISLIKE": "Hiển thị nút không thích. Mặc định: true.",
   "ADMIN_CONFIG_ITEM_SHOW_UA": "Hiển thị hệ điều hành và trình duyệt người dùng. Mặc định: true.",
   "ADMIN_CONFIG_ITEM_SHOW_REGION": "Hiển thị vùng IP người dùng (cấp tỉnh). Có thể không chính xác, không hỗ trợ IPv6. Mặc định: false.",
+  "ADMIN_CONFIG_ITEM_SHOW_TOTAL_COUNT": "Cho phép API frontend lấy tổng số bình luận của toàn bộ trang web (làm lộ quy mô trang web). Mặc định: false.",
   "ADMIN_CONFIG_ITEM_SITE_NAME": "Tên website.",
   "ADMIN_CONFIG_ITEM_SITE_URL": "Địa chỉ website.",
   "ADMIN_CONFIG_ITEM_SMTP_HOST": "Địa chỉ máy chủ SMTP tùy chỉnh. Để trống nếu đã cấu hình SMTP_SERVICE.",

@@ -90,6 +90,35 @@ twikoo
   });
 ```
 
+## Get total comments count
+
+获取全站评论总数。<br>
+全站评论总数会暴露站点规模，此接口**默认关闭**：需站长在管理面板「隐私」分类中将 `SHOW_TOTAL_COUNT` 设为 `true` 后才能使用，未开启时会进入 `catch`。
+
+### Version
+
+`>= 2.0.18`
+
+### Example
+
+```js
+twikoo
+  .getTotalCommentsCount({
+    envId: "您的环境 id", // 环境 ID
+    // region: 'ap-guangzhou', // 环境地域，默认为 ap-shanghai，如果您的环境地域不是上海，需传此参数
+    includeReply: false, // 评论数是否包括回复，默认：false
+  })
+  .then(function (count) {
+    console.log(count);
+    // 返回 Number，全站评论总数（不含垃圾评论）
+    // 返回示例：128
+  })
+  .catch(function (err) {
+    // 发生错误（站长未开启 SHOW_TOTAL_COUNT 时也会进入这里）
+    console.error(err);
+  });
+```
+
 ## On Twikoo loaded
 
 Twikoo 成功挂载后的回调函数。<br>

@@ -17,8 +17,8 @@ describe("@twikoojs/shared 导出冒烟", () => {
     expect(new Set(PUSHOO_CHANNELS).size).toBe(PUSHOO_CHANNELS.length);
   });
 
-  it("ALL_EVENTS 恰为 25 个事件标识符（24 客户端事件 + 服务端内部事件 POST_SUBMIT），且值唯一", () => {
-    expect(ALL_EVENTS.length).toBe(25);
+  it("ALL_EVENTS 恰为 26 个事件标识符（25 客户端事件 + 服务端内部事件 POST_SUBMIT），且值唯一", () => {
+    expect(ALL_EVENTS.length).toBe(26);
     expect(new Set(ALL_EVENTS).size).toBe(ALL_EVENTS.length);
   });
 

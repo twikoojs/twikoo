@@ -1,11 +1,18 @@
 /**
  * twikoo 客户端公开 API 测试。
  *
- * 公开 API 五个（init/getCommentsCount/getRecentComments/getVisitorsCount/version）
+ * 公开 API 六个（init/getCommentsCount/getRecentComments/getTotalCommentsCount/
+ * getVisitorsCount/version）
  * version 来自 @twikoojs/shared（构建注入）。HTTP 通道以 fetch 替身驱动（happy-dom）。
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
-import init, { getCommentsCount, getRecentComments, getVisitorsCount, version } from "../src/main";
+import init, {
+  getCommentsCount,
+  getRecentComments,
+  getTotalCommentsCount,
+  getVisitorsCount,
+  version,
+} from "../src/main";
 import { call, setAppState } from "../src/utils/api";
 
 afterEach(() => {
@@ -22,10 +29,11 @@ describe("twikoo 公开 API", () => {
     expect(version.length).toBeGreaterThan(0);
   });
 
-  it("公开 API 五件套均为函数", () => {
+  it("公开 API 均为函数", () => {
     expect(typeof init).toBe("function");
     expect(typeof getCommentsCount).toBe("function");
     expect(typeof getRecentComments).toBe("function");
+    expect(typeof getTotalCommentsCount).toBe("function");
     expect(typeof getVisitorsCount).toBe("function");
   });
 
@@ -48,7 +56,7 @@ describe.each(["HTTP", "tcb"])("%s 公共 API 业务响应", (channel) => {
     }
   }
 
-  it.each([getCommentsCount, getRecentComments, getVisitorsCount])(
+  it.each([getCommentsCount, getRecentComments, getTotalCommentsCount, getVisitorsCount])(
     "%s 遇到非零业务码时拒绝 Promise 并保留原因",
     async (api) => {
       mockResponse({ code: 1000, message: "请求被拒绝" });
@@ -69,6 +77,11 @@ describe.each(["HTTP", "tcb"])("%s 公共 API 业务响应", (channel) => {
     await expect(getRecentComments({ envId: "https://backend.test" })).resolves.toEqual([
       expect.objectContaining({ id: "c1", comment: "hello", relativeTime: expect.any(String) }),
     ]);
+  });
+
+  it.each([0, 42])("全站评论总数成功时返回计数 %i", async (count) => {
+    mockResponse({ code: 0, data: count });
+    await expect(getTotalCommentsCount({ envId: "https://backend.test" })).resolves.toBe(count);
   });
 
   it("访问量成功时保留完整响应对象", async () => {

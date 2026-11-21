@@ -312,6 +312,25 @@ describe("薄适配器 · 端到端", () => {
     expect(recent.data[0].commentText).toContain("第");
   });
 
+  it("GET_TOTAL_COMMENTS_COUNT 走真 SQL：全站非垃圾计数，includeReply 计入回复", async () => {
+    const binding = await bootstrap({ SHOW_TOTAL_COUNT: "true" });
+    const func = createCloudflareFunc();
+    const env: CloudflareEnvLike = { DB: binding };
+    const db = new D1Database(binding);
+    const base = { comment: "c", created: 1, updated: 1 };
+    await db.addComment({ ...base, _id: "top-1", url: "/post/5" });
+    await db.addComment({ ...base, _id: "top-2", url: "/post/6" });
+    await db.addComment({ ...base, _id: "reply-1", url: "/post/6", pid: "top-2", rid: "top-2" });
+    await db.addComment({ ...base, _id: "spam-1", url: "/post/7", isSpam: true });
+
+    const top = await bodyOf(await func(makeRequest({ event: "GET_TOTAL_COMMENTS_COUNT" }), env));
+    expect(top).toMatchObject({ code: 0, data: 2 });
+    const all = await bodyOf(
+      await func(makeRequest({ event: "GET_TOTAL_COMMENTS_COUNT", includeReply: true }), env),
+    );
+    expect(all).toMatchObject({ code: 0, data: 3 });
+  });
+
   it("CONFIG / PASSWORD_STATUS：未配置时的 1.x 语义", async () => {
     const binding = await bootstrap();
     const func = createCloudflareFunc();

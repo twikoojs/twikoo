@@ -304,9 +304,15 @@ async function main() {
 
     log("\n[1] 挂载与样式");
     await check(
-      "API 面：init / getCommentsCount / getRecentComments / getVisitorsCount / version",
+      "API 面：init / getCommentsCount / getRecentComments / getTotalCommentsCount / getVisitorsCount / version",
       () => {
-        for (const key of ["init", "getCommentsCount", "getRecentComments", "getVisitorsCount"]) {
+        for (const key of [
+          "init",
+          "getCommentsCount",
+          "getRecentComments",
+          "getTotalCommentsCount",
+          "getVisitorsCount",
+        ]) {
           assert(typeof window.twikoo[key] === "function", `twikoo.${key} 不是函数`);
         }
         assert(window.twikoo.version === version.version, "客户端版本与服务端版本不一致");

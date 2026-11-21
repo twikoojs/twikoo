@@ -1,11 +1,11 @@
 /**
- * 后端事件名常量（Scope E：24 个客户端事件 + 1 个服务端内部事件）。
+ * 后端事件名常量（Scope E：25 个客户端事件 + 1 个服务端内部事件）。
  *
  * 口径说明：1.x 各平台的顶层事件 switch 并集共 **25 个**标识符——24 个由客户端
  * 发起，另加服务端内部事件 `POST_SUBMIT`（`COMMENT_SUBMIT` 保存评论后触发
- * 垃圾检测与通知，只有 vercel / CloudBase 的顶层 switch 里有它）。本文件即导出
- * 这 25 个，客户端的 `api.ts`、`@twikoojs/common` 的事件分发器与契约测试均以此
- * 为单一事实来源。
+ * 垃圾检测与通知，只有 vercel / CloudBase 的顶层 switch 里有它）；2.0 新增客户端
+ * 事件 `GET_TOTAL_COMMENTS_COUNT`（#440）。本文件即导出这 26 个，客户端的 `api.ts`、
+ * `@twikoojs/common` 的事件分发器与契约测试均以此为单一事实来源。
  */
 
 /** 获取后端函数版本号，客户端用于探测服务端能力与版本兼容性 */
@@ -65,6 +65,9 @@ export const GET_COMMENTS_COUNT = "GET_COMMENTS_COUNT";
 /** 获取最近评论列表 */
 export const GET_RECENT_COMMENTS = "GET_RECENT_COMMENTS";
 
+/** 获取全站评论总数（需站长开启 SHOW_TOTAL_COUNT，缺省关闭） */
+export const GET_TOTAL_COMMENTS_COUNT = "GET_TOTAL_COMMENTS_COUNT";
+
 /** 发送测试邮件，验证 SMTP 配置是否正确 */
 export const EMAIL_TEST = "EMAIL_TEST";
 
@@ -90,7 +93,7 @@ export const CAP_REDEEM = "CAP_REDEEM";
 export const POST_SUBMIT = "POST_SUBMIT";
 
 /**
- * 后端事件名清单（25 个标识符：24 客户端事件 + 服务端内部事件 POST_SUBMIT）。
+ * 后端事件名清单（26 个标识符：25 客户端事件 + 服务端内部事件 POST_SUBMIT）。
  *
  * 由上述常量聚合而成，字符串值不重复书写；供契约测试遍历与分发器覆盖度校验使用，
  * 保证新增事件时只需维护一处常量与一处聚合。
@@ -115,6 +118,7 @@ export const ALL_EVENTS = [
   LOGIN,
   GET_COMMENTS_COUNT,
   GET_RECENT_COMMENTS,
+  GET_TOTAL_COMMENTS_COUNT,
   EMAIL_TEST,
   UPLOAD_IMAGE,
   GET_QQ_NICK,

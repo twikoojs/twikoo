@@ -33,7 +33,7 @@
     "autocorrect-node": "^2.14.0",
     "concurrently": "^10.0.7",
     "cross-env": "^10.1.0",
-    "eslint": "^10.14.0",
+    "eslint": "^10.15.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-vue": "^10.12.1",
     "globals": "^17.14.0",

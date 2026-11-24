@@ -264,6 +264,37 @@ describe("D1Database · 语义查询", () => {
     await expect(db.getComments({ rid: { weird: 1 } } as never)).rejects.toThrow("不支持该形态");
   });
 
+  it("访客关键词只匹配公开字段，忽略 ASCII 大小写并与其他条件相交", async () => {
+    const { db } = await makeDb();
+    const fields = ["nick", "link", "comment", "url", "href"] as const;
+    for (const [index, field] of fields.entries()) {
+      await db.addComment(comment({ _id: field, [field]: "公开NeEdLe", created: index }));
+    }
+    await db.addComment(comment({ _id: "private", mail: "公开needle", ip: "公开needle", created: 10 }));
+    await db.addComment(comment({ _id: "spam", nick: "公开NEEDLE", isSpam: true, created: 11 }));
+
+    const found = await db.getComments(
+      { isSpam: { [NOT]: true } },
+      { publicKeyword: "公开needle", sort: { created: 1 } },
+    );
+    expect(found.map((c) => c._id)).toEqual(fields);
+  });
+
+  it("关键词按字面子串绑定，过滤发生在排序和分页之前", async () => {
+    const { db } = await makeDb();
+    await db.bulkAddComments([
+      comment({ _id: "first", url: "/p", comment: "a%_b' OR 1=1 --", created: 1 }),
+      comment({ _id: "other", url: "/p", comment: "axb", created: 2 }),
+      comment({ _id: "second", url: "/p", comment: "a%_b' OR 1=1 --", created: 3 }),
+      comment({ _id: "elsewhere", url: "/other", comment: "a%_b' OR 1=1 --", created: 4 }),
+    ]);
+    const query = { url: "/p" };
+    const options = { publicKeyword: "%_b' OR 1=1 --", sort: { created: 1 as const } };
+    const page = await db.getComments(query, { ...options, limit: 1, skip: 1 });
+    expect(page.map((c) => c._id)).toEqual(["second"]);
+    expect(await db.getComments(query, { publicKeyword: "%x" })).toEqual([]);
+  });
+
   it("排序 + skip/limit（1.x 分页语义）", async () => {
     const db = await seed();
     const page1 = await db.getComments({}, { sort: { created: -1 }, limit: 2 });
@@ -378,6 +409,9 @@ describe("D1Database · 1.x 既有库升级", () => {
     const old = await db.getComment("legacy1");
     expect(old?.nick).toBe("老用户");
     expect(old?.ipRegion).toBe("CN|0|广东省|深圳市|");
+    expect((await db.getComments({}, { publicKeyword: "旧评论" })).map((c) => c._id)).toEqual([
+      "legacy1",
+    ]);
 
     // 旧配置可读，且保存仍是合并语义
     expect(await db.getConfig()).toEqual({ ADMIN_PASS: "legacy" });

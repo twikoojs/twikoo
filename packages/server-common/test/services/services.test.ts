@@ -4,7 +4,7 @@
  * 重依赖（xml2js / marked / dompurify / nodemailer / pushoo / bowser）全部
  * 经 setLibImporter / setCustomLibs 注入替身——零真实网络、零密钥。
  */
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   commentImportArtalk,
   commentImportArtalk2,
@@ -548,6 +548,7 @@ describe("评论查询可见性（services/comment-query）", () => {
   it("getSearchKeyword：类型与长度校验", () => {
     expect(getSearchKeyword({ keyword: "  abc " })).toBe("abc");
     expect(getSearchKeyword({})).toBe("");
+    expect(() => getSearchKeyword({ keyword: { $eq: "abc" } })).toThrow("搜索关键词必须是字符串");
     expect(() => getSearchKeyword({ keyword: 1 })).toThrow("搜索关键词必须是字符串");
     expect(() => getSearchKeyword({ keyword: "x".repeat(101) })).toThrow("不能超过 100 个字符");
   });
@@ -612,9 +613,28 @@ describe("评论查询可见性（services/comment-query）", () => {
       .toHaveLength(0);
     expect((await searchVisibleComments(ctx({ url: "/p", keyword: "203.0.113" }))).data)
       .toHaveLength(0);
-    // 正文命中仍然正常（公开字段不受影响）
-    expect((await searchVisibleComments(ctx({ url: "/p", keyword: "联系方式" }))).data)
-      .toHaveLength(1);
+    await adapters.database.addComment({
+      _id: "hidden",
+      url: "/p",
+      comment: "联系方式",
+      uid: "other",
+      isSpam: true,
+    });
+    await adapters.database.addComment({
+      _id: "own",
+      url: "/p/",
+      comment: "联系方式",
+      uid: "visitor",
+      isSpam: true,
+    });
+    const read = vi.spyOn(adapters.database, "getComments");
+    const search = ctx({ url: "/p", keyword: "联系方式" });
+    search.accessToken = "visitor";
+    expect(await searchVisibleComments(search)).toMatchObject({
+      count: 2,
+      data: [{ id: "s1" }, { id: "own" }],
+    });
+    expect(read).toHaveBeenCalledWith({ url: ["/p", "/p/"] }, { publicKeyword: "联系方式" });
   });
 
   it("queryVisibleComments：访客仅见非垃圾与本人隐藏评论", async () => {

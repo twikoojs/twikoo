@@ -59,7 +59,9 @@ export interface CloudBaseCommandLike {
    * @returns 指令对象（透传给 SDK）
    */
   lt(value: unknown): unknown;
+  /** 组合查询条件，要求全部满足。 */
   and(...conditions: object[]): object;
+  /** 组合查询条件，要求至少满足一个。 */
   or(...conditions: object[]): object;
 }
 
@@ -159,6 +161,7 @@ export interface CloudBaseDatabaseLike {
   collection(name: string): CloudBaseCollectionLike;
   /** 查询指令（db.command） */
   command: CloudBaseCommandLike;
+  /** 根据模式和匹配选项构造字段的正则查询条件。 */
   RegExp(options: { regexp: string; options: string }): object;
 }
 

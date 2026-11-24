@@ -18,6 +18,7 @@ export const VISITOR_KEYWORD_FIELDS = ["nick", "link", "comment", "url", "href"]
  */
 const ADMIN_KEYWORD_FIELDS = [...VISITOR_KEYWORD_FIELDS, "mail", "ip"] as const;
 
+/** 将关键词转义为正则表达式中的字面文本，包括空字符。 */
 export function escapeSearchRegex(keyword: string): string {
   return keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replaceAll("\0", "\\x00");
 }

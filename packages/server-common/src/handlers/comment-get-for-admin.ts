@@ -11,7 +11,8 @@ import type { CommentDoc } from "../ports/database";
 import type { EventHandler } from "../core/types";
 import { RES_CODE } from "../utils/constants";
 import { validate } from "../utils/validate";
-import { getSearchKeyword, commentMatchesKeyword } from "../services/comment-query";
+import { commentMatchesKeyword } from "../database/comment-keyword";
+import { getSearchKeyword } from "../services/comment-query";
 import { parseCommentForAdmin } from "../services/comment-dto";
 import { isAdmin } from "../services/user";
 

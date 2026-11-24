@@ -85,6 +85,7 @@ export { setPostSubmitService, getPostSubmitService } from "./services/post-subm
 export { scaffoldAdapters } from "./adapters/scaffold";
 export { FULL_CAPABILITIES } from "./ports/capabilities";
 // ---- 数据库实现导出（适配器按平台选择其一）----
+export { VISITOR_KEYWORD_FIELDS } from "./database/comment-keyword";
 export { MongoDatabase, toMongoFilter, newCommentId } from "./database/mongo";
 export type { MongoDatabaseOptions } from "./database/mongo";
 export { LokiDatabase, newLokiCommentId } from "./database/loki";

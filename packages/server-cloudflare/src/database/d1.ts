@@ -25,7 +25,7 @@
  * - 不实现 `batch`：批量导入按 1.x 的逐条 `save()` 语义串行执行，单条失败即可见；
  * - 不做事务包裹：D1 的 `batch` 才是原子单元，而本端口的 19 个方法都是单语句操作。
  */
-import { ABSENT, GT, LT, NOT } from "@twikoojs/common";
+import { ABSENT, GT, LT, NOT, VISITOR_KEYWORD_FIELDS } from "@twikoojs/common";
 import type {
   CommentDoc,
   ConfigData,
@@ -427,6 +427,14 @@ export class D1Database implements Database {
   /** 评论：语义查询 + 排序/分页 */
   async getComments(query: SemanticQuery, options?: QueryOptions): Promise<CommentDoc[]> {
     const where = buildWhere(query);
+    const keyword = options?.publicKeyword;
+    if (keyword) {
+      const matches = VISITOR_KEYWORD_FIELDS.map(
+        (field) => `instr(lower("${field}"), lower(?)) > 0`,
+      );
+      where.sql += `${where.sql ? " AND " : " WHERE "}(${matches.join(" OR ")})`;
+      where.params.push(...VISITOR_KEYWORD_FIELDS.map(() => keyword));
+    }
     const page = buildOrderAndPage(options);
     const { results } = await this.stmt(
       `SELECT * FROM "comment"${where.sql}${page.sql}`,

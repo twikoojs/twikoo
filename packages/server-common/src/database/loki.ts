@@ -22,6 +22,7 @@
 import { existsSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { randomUUID } from "node:crypto";
+import { commentMatchesKeyword } from "./comment-keyword";
 import { ABSENT, GT, LT, NOT } from "../ports/database";
 import type {
   CommentDoc,
@@ -201,6 +202,8 @@ export class LokiDatabase implements Database {
         return value === undefined || value === null || value === "";
       });
     }
+    const keyword = options?.publicKeyword;
+    if (keyword) rs = rs.where((doc) => commentMatchesKeyword(doc, keyword));
     if (options?.sort) {
       // SortSpec { f: 1|-1 } → Loki compoundsort [[f, 是否降序], ...]
       const sortOrder: Array<[string, boolean]> = Object.entries(options.sort).map(

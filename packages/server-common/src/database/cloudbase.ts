@@ -17,6 +17,7 @@
  * 单测以结构化 mock 覆盖（验收方式）。
  */
 import { ABSENT, GT, LT, NOT } from "../ports/database";
+import { VISITOR_KEYWORD_FIELDS, escapeSearchRegex } from "./comment-keyword";
 import type {
   CommentDoc,
   ConfigData,
@@ -58,6 +59,8 @@ export interface CloudBaseCommandLike {
    * @returns 指令对象（透传给 SDK）
    */
   lt(value: unknown): unknown;
+  and(...conditions: object[]): object;
+  or(...conditions: object[]): object;
 }
 
 /** CloudBase 查询链的项目使用面（collection().where() 返回值） */
@@ -131,7 +134,7 @@ export interface CloudBaseCollectionLike {
    * @param cond 查询条件
    * @returns 查询链
    */
-  where(cond: Record<string, unknown>): CloudBaseQueryLike;
+  where(cond: object): CloudBaseQueryLike;
   /**
    * 新增文档（单个或数组；SDK 生成 _id）
    * @param data 文档或文档数组
@@ -156,6 +159,7 @@ export interface CloudBaseDatabaseLike {
   collection(name: string): CloudBaseCollectionLike;
   /** 查询指令（db.command） */
   command: CloudBaseCommandLike;
+  RegExp(options: { regexp: string; options: string }): object;
 }
 
 /** CloudBaseDatabase 构造选项 */
@@ -241,7 +245,13 @@ export class CloudBaseDatabase implements Database {
 
   /** 评论：语义查询 + 排序/分页（orderBy/skip/limit 链式，1.x commentGet 对齐） */
   async getComments(query: SemanticQuery, options?: QueryOptions): Promise<CommentDoc[]> {
-    const cond = toTcbCondition(query, this.db.command);
+    let cond: object = toTcbCondition(query, this.db.command);
+    const keyword = options?.publicKeyword;
+    if (keyword) {
+      const regex = this.db.RegExp({ regexp: escapeSearchRegex(keyword), options: "i" });
+      const matches = VISITOR_KEYWORD_FIELDS.map((field) => ({ [field]: regex }));
+      cond = this.db.command.and(cond, this.db.command.or(...matches));
+    }
     let q = this.col("comment").where(cond);
     if (options?.sort) {
       for (const [field, direction] of Object.entries(options.sort)) {

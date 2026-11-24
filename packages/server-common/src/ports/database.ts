@@ -158,6 +158,7 @@ export type SortSpec = Record<string, 1 | -1>;
  * 1.x commentGet 的「多读 1 条判断 more」属于 handler 层逻辑，组合本选项实现）。
  */
 export interface QueryOptions {
+  publicKeyword?: string;
   /** 排序（不传 = 实现默认序；Mongo 为自然序） */
   sort?: SortSpec;
   /** 跳过条数（分页起点，1.x skip = per * (page - 1)） */

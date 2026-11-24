@@ -33,8 +33,8 @@ import {
   parseCommentForAdmin,
   getIpRegion,
 } from "../../src/services/comment-dto";
+import { commentMatchesKeyword } from "../../src/database/comment-keyword";
 import {
-  commentMatchesKeyword,
   getSearchKeyword,
   queryVisibleComments,
   searchVisibleComments,

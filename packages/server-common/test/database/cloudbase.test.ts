@@ -23,7 +23,8 @@ import { runDatabaseSemanticSuite } from "./semantic-suite";
 
 /** mock 指令对象形态 */
 interface MockCommand {
-  __op: "in" | "inc" | "neq" | "gt" | "lt";
+  __op: "in" | "inc" | "neq" | "gt" | "lt" | "and" | "or";
+  conditions?: object[];
   list?: unknown[];
   n?: number;
   value?: unknown;
@@ -58,14 +59,23 @@ class MockTcbCollection implements CloudBaseCollectionLike {
   docs: Record<string, unknown>[] = [];
 
   /** where 条件捕获记录（形态断言用） */
-  readonly capturedConditions: Record<string, unknown>[] = [];
+  readonly capturedConditions: object[] = [];
 
   /**
    * 解释 where 条件为 JS 谓词（指令对象就地求值）
    */
-  private matches(doc: Record<string, unknown>, cond: Record<string, unknown>): boolean {
+  private matches(doc: Record<string, unknown>, cond: object): boolean {
+    if (isCommand(cond) && (cond.__op === "and" || cond.__op === "or")) {
+      const conditions = cond.conditions ?? [];
+      return cond.__op === "and"
+        ? conditions.every((item) => this.matches(doc, item))
+        : conditions.some((item) => this.matches(doc, item));
+    }
     return Object.entries(cond).every(([key, expected]) => {
       const actual = resolvePath(doc, key);
+      if (expected instanceof RegExp) {
+        return typeof actual === "string" && expected.test(actual);
+      }
       if (isCommand(expected) && expected.__op === "in") {
         const list = expected.list ?? [];
         // TCB 语义：null 在列表中命中「字段缺失」
@@ -85,8 +95,8 @@ class MockTcbCollection implements CloudBaseCollectionLike {
   }
 
   /** 条件查询 */
-  where(cond: Record<string, unknown>): CloudBaseQueryLike {
-    this.capturedConditions.push({ ...cond });
+  where(cond: object): CloudBaseQueryLike {
+    this.capturedConditions.push(cond);
     /**
      * 就地求值当前条件下的匹配文档（get/count/update 共用）
      * @returns 匹配文档数组
@@ -212,7 +222,13 @@ class MockTcbDatabase implements CloudBaseDatabaseLike {
     gt: (value: unknown): MockCommand => ({ __op: "gt", value }),
     /** _.lt 指令（流式分页游标） */
     lt: (value: unknown): MockCommand => ({ __op: "lt", value }),
+    and: (...conditions: object[]): MockCommand => ({ __op: "and", conditions }),
+    or: (...conditions: object[]): MockCommand => ({ __op: "or", conditions }),
   };
+
+  RegExp({ regexp, options }: { regexp: string; options: string }): RegExp {
+    return new RegExp(regexp, options);
+  }
 
   /** 已创建集合（name → 实例） */
   readonly collections = new Map<string, MockTcbCollection>();
@@ -271,7 +287,7 @@ describe("CloudBaseDatabase 平台语义", () => {
     const db = new CloudBaseDatabase({ database: mock });
     await db.getComments({ rid: ABSENT });
     const comment = mock.collections.get("comment");
-    const captured = comment?.capturedConditions.at(-1);
+    const captured = comment?.capturedConditions.at(-1) as Record<string, unknown> | undefined;
     const rid = captured?.rid as { __op: string; list?: unknown[] };
     expect(rid.__op).toBe("in");
     expect(rid.list).toEqual(["", null]);
@@ -299,7 +315,7 @@ describe("CloudBaseDatabase 平台语义", () => {
     const deleted = await db.capDeleteExpired(now);
     // 条件形态断言（须在后续 capGet 之前取：capGet 也会 where，会顶掉 at(-1)）
     const capKv = mock.collections.get("cap_kv");
-    const captured = capKv?.capturedConditions.at(-1);
+    const captured = capKv?.capturedConditions.at(-1) as Record<string, unknown> | undefined;
     const expires = captured?.["value.expires"] as MockCommand | undefined;
     expect(expires?.__op).toBe("lt");
     expect(expires?.value).toBe(now);

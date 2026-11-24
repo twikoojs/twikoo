@@ -6,6 +6,7 @@
  * 不使用本文件——它们分别用 mongodb-memory-server / 临时目录 Loki /
  * 共享契约 runner。
  */
+import { commentMatchesKeyword } from "../../src/database/comment-keyword";
 import { ABSENT, GT, LT, NOT } from "../../src/ports/database";
 import type { QueryOptions } from "../../src/ports/database";
 import type {
@@ -54,7 +55,10 @@ class MemoryDatabase implements Database {
 
   /** 评论：按语义查询 + 排序/分页（内存形态） */
   async getComments(query: SemanticQuery, options?: QueryOptions): Promise<CommentDoc[]> {
-    let result = (await this.getAllComments()).filter((doc) => matches(doc, query));
+    const keyword = options?.publicKeyword;
+    let result = (await this.getAllComments()).filter(
+      (doc) => matches(doc, query) && (!keyword || commentMatchesKeyword(doc, keyword)),
+    );
     if (options?.sort) {
       const entries = Object.entries(options.sort);
       result = [...result].sort((a, b) => {

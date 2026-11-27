@@ -84,6 +84,35 @@ twikoo
   });
 ```
 
+## Get total comments count
+
+Get the total number of comments on the whole site.<br>
+The site-wide total reveals how large the site is, so this API is **disabled by default**: the site owner has to set `SHOW_TOTAL_COUNT` to `true` under the "Privacy" category of the admin panel first. While it is disabled, the call ends up in `catch`.
+
+### Version
+
+`>= 2.0.18`
+
+### Example
+
+```js
+twikoo
+  .getTotalCommentsCount({
+    envId: "Environment ID", // Tencent CloudBase Environment ID
+    // region: 'ap-guangzhou', // Environment locale, default is ap-shanghai, if your environment locale is not Shanghai, you need to pass this parameter
+    includeReply: false, // Whether the count includes replies, the default parameter is false
+  })
+  .then(function (count) {
+    console.log(count);
+    // Returns a Number: the total number of comments on the site (spam excluded)
+    // example: 128
+  })
+  .catch(function (err) {
+    // If an error occurs (also when the site owner has not enabled SHOW_TOTAL_COUNT)
+    console.error(err);
+  });
+```
+
 ## On Twikoo loaded
 
 Callback function after Twikoo is successfully mounted. <br> It will not be triggered in case of environment ID error, network exception, mount failure, etc.

@@ -16,6 +16,7 @@ import {
   getFuncVer,
   getCommentsCountApi,
   getRecentCommentsApi,
+  getTotalCommentsCountApi,
   getVisitorsCountApi,
   readAsText,
   blobToDataURL,
@@ -208,6 +209,21 @@ describe("utils API 封装", () => {
   it("getCommentsCountApi：urls 非数组抛错；空数组直接返回 []", async () => {
     await expect(getCommentsCountApi(null, {})).rejects.toThrow(/urls 参数有误/);
     await expect(getCommentsCountApi(null, { urls: [] })).resolves.toEqual([]);
+  });
+
+  it("getTotalCommentsCountApi：发送 GET_TOTAL_COMMENTS_COUNT 并转发 includeReply", async () => {
+    let sent: Record<string, unknown> = {};
+    const tcb = {
+      app: {
+        /** 记录请求载荷并返回固定计数 */
+        callFunction: async (params: { name: string; data: Record<string, unknown> }) => {
+          sent = params.data;
+          return { result: { code: 0, data: 7 } };
+        },
+      },
+    };
+    await expect(getTotalCommentsCountApi(tcb, { includeReply: true })).resolves.toBe(7);
+    expect(sent).toMatchObject({ event: "GET_TOTAL_COMMENTS_COUNT", includeReply: true });
   });
 
   it("getRecentCommentsApi：为每条评论补 relativeTime", async () => {

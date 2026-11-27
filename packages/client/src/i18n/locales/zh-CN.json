@@ -114,6 +114,7 @@
   "ADMIN_CONFIG_ITEM_SHOW_DISLIKE": "评论点踩按钮，默认为：true",
   "ADMIN_CONFIG_ITEM_SHOW_UA": "是否显示用户系统和浏览器，默认为：true",
   "ADMIN_CONFIG_ITEM_SHOW_REGION": "是否显示用户 IP 属地到省，可能不准确，不支持 IPv6，默认为：false",
+  "ADMIN_CONFIG_ITEM_SHOW_TOTAL_COUNT": "是否允许前端通过 API 获取全站评论总数（会暴露站点规模），默认为：false",
   "ADMIN_CONFIG_ITEM_SITE_NAME": "网站名称",
   "ADMIN_CONFIG_ITEM_SITE_URL": "网站地址",
   "ADMIN_CONFIG_ITEM_SMTP_HOST": "自定义 SMTP 服务器地址。如您已配置 SMTP_SERVICE，此项请留空。",

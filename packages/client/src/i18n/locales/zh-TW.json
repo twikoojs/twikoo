@@ -114,6 +114,7 @@
   "ADMIN_CONFIG_ITEM_SHOW_DISLIKE": "評論點踩按鈕，預設為：true",
   "ADMIN_CONFIG_ITEM_SHOW_UA": "是否顯示使用者作業系統和瀏覽器，預設為：true",
   "ADMIN_CONFIG_ITEM_SHOW_REGION": "是否顯示使用者 IP 所屬地（精確到省），預設為：false",
+  "ADMIN_CONFIG_ITEM_SHOW_TOTAL_COUNT": "是否允許前端透過 API 取得全站評論總數（會暴露網站規模），預設為：false",
   "ADMIN_CONFIG_ITEM_SITE_NAME": "網站名稱",
   "ADMIN_CONFIG_ITEM_SITE_URL": "網站網址",
   "ADMIN_CONFIG_ITEM_SMTP_HOST": "自訂 SMTP 伺服器位址。如您已設定 SMTP_SERVICE，此項請留白。",

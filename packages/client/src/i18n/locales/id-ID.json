@@ -114,6 +114,7 @@
   "ADMIN_CONFIG_ITEM_SHOW_DISLIKE": "Tampilkan tombol tidak suka. Bawaan: true",
   "ADMIN_CONFIG_ITEM_SHOW_UA": "Tampilkan OS dan peramban pengguna. Bawaan: true",
   "ADMIN_CONFIG_ITEM_SHOW_REGION": "Tampilkan wilayah IP pengguna (provinsi). Mungkin tidak akurat, tidak mendukung IPv6. Bawaan: false",
+  "ADMIN_CONFIG_ITEM_SHOW_TOTAL_COUNT": "Izinkan API frontend mengambil jumlah total komentar seluruh situs (mengungkap skala situs). Bawaan: false",
   "ADMIN_CONFIG_ITEM_SITE_NAME": "Nama situs web",
   "ADMIN_CONFIG_ITEM_SITE_URL": "Alamat situs web",
   "ADMIN_CONFIG_ITEM_SMTP_HOST": "Alamat server SMTP kustom. Jika Anda telah mengonfigurasi SMTP_SERVICE, biarkan kosong.",

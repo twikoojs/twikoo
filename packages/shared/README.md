@@ -1,6 +1,6 @@
 # @twikoojs/shared
 
-Twikoo 2.0 的**前后端共享类型与常量**：25 个后端事件名、版本占位符、pushoo 推送渠道等。
+Twikoo 2.0 的**前后端共享类型与常量**：26 个后端事件名、版本占位符、pushoo 推送渠道等。
 
 一般不需要单独安装 —— 它会作为 `twikoo`、`@twikoojs/common` 的依赖被自动带上。
 

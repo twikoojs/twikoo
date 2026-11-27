@@ -1,7 +1,7 @@
 /**
  * dispatcher 分发测试。
  *
- * 重点：switch 全量枚举（25 事件标识符清单）与注册表解析行为；以及
+ * 重点：switch 全量枚举（26 事件标识符清单）与注册表解析行为；以及
  * `COMMENT_GET_FOR_ADMIN` 的 `type` 筛选。
  *
  * ⚠️ `HIDDEN` / `VISIBLE` 是 `type` 的**参数取值，不是事件名**——1.x 从未把二者作为
@@ -69,11 +69,11 @@ describe("dispatcher 分发", () => {
     );
   });
 
-  it("switch 全量枚举 25 个事件标识符（清单完整性）", async () => {
-    // 从源码静态核对 switch 分支数（26 = 24 客户端事件 + 服务端内部事件 POST_SUBMIT + default 兜底）
+  it("switch 全量枚举 26 个事件标识符（清单完整性）", async () => {
+    // 从源码静态核对 switch 分支数（27 = 25 客户端事件 + 服务端内部事件 POST_SUBMIT + default 兜底）
     const { readFileSync } = await import("node:fs");
     const source = readFileSync(new URL("../../src/core/dispatcher.ts", import.meta.url), "utf8");
     const caseCount = source.match(/case [A-Z_]+:/g)?.length ?? 0;
-    expect(caseCount).toBe(25);
+    expect(caseCount).toBe(26);
   });
 });

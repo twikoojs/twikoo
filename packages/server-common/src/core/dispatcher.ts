@@ -1,7 +1,7 @@
 /**
  * 事件分发器（规范 core/dispatcher.ts）。
  *
- * 25 事件全量显式 switch（Scope E 清单）：24 个客户端事件解析到注册表中的
+ * 26 事件全量显式 switch（Scope E 清单）：25 个客户端事件解析到注册表中的
  * handler 实现；POST_SUBMIT 是服务端内部事件——后置副作用链的执行入口
  * （长期保留，带内部派发令牌校验）。事件清单在这里**显式枚举**
  * 正是契约保障：任何事件漏实现/漏断言，契约套件与 switch 清单的 diff
@@ -28,6 +28,7 @@ import {
   GET_PASSWORD_STATUS,
   GET_QQ_NICK,
   GET_RECENT_COMMENTS,
+  GET_TOTAL_COMMENTS_COUNT,
   LOGIN,
   POST_SUBMIT,
   SET_CONFIG,
@@ -115,6 +116,8 @@ export async function dispatch(ctx: PipelineContext): Promise<TkResponseBody> {
       return runRegistered(ctx, GET_COMMENTS_COUNT);
     case GET_RECENT_COMMENTS:
       return runRegistered(ctx, GET_RECENT_COMMENTS);
+    case GET_TOTAL_COMMENTS_COUNT:
+      return runRegistered(ctx, GET_TOTAL_COMMENTS_COUNT);
     case EMAIL_TEST:
       return runRegistered(ctx, EMAIL_TEST);
     case UPLOAD_IMAGE:

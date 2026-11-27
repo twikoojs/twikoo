@@ -114,6 +114,7 @@
   "ADMIN_CONFIG_ITEM_SHOW_DISLIKE": "Show dislike button. Default: true.",
   "ADMIN_CONFIG_ITEM_SHOW_UA": "Show users' OS and browser. Default: true.",
   "ADMIN_CONFIG_ITEM_SHOW_REGION": "Show users' IP region (province). Default: false.",
+  "ADMIN_CONFIG_ITEM_SHOW_TOTAL_COUNT": "Allow the frontend API to get the site-wide comment count (reveals the site's size). Default: false.",
   "ADMIN_CONFIG_ITEM_SITE_NAME": "Website name.",
   "ADMIN_CONFIG_ITEM_SITE_URL": "Website URL.",
   "ADMIN_CONFIG_ITEM_SMTP_HOST": "Custom SMTP server address. If you have configured SMTP_SERVICE, please leave it empty.",

@@ -1,7 +1,7 @@
 /**
  * twikoo 客户端公共 API（init / getCommentsCount / getRecentComments /
- * getVisitorsCount / version 五个公开接口不变；version 读 @twikoojs/shared，
- * 硬编码 `version.js` 删除）。
+ * getVisitorsCount / version 五个 1.x 公开接口不变，另加 2.0 新增的
+ * getTotalCommentsCount；version 读 @twikoojs/shared，硬编码 `version.js` 删除）。
  *
  * 双入口形态（与 1.x `main.js` / `main.all.js` 对应）：
  * - 本文件（对应 `twikoo.min.js` / `twikoo.nocss.js`）：**不含**云开发 SDK，
@@ -19,6 +19,7 @@ import {
   isUrl,
   getCommentsCountApi,
   getRecentCommentsApi,
+  getTotalCommentsCountApi,
   getVisitorsCountApi,
   updateVisitorsCount,
 } from "./utils";
@@ -110,6 +111,16 @@ export async function getCommentsCount(options: TwikooOptions = {}): Promise<unk
 export async function getRecentComments(options: TwikooOptions = {}): Promise<unknown> {
   const tcb = await initTcbIfNeeded(options);
   return await getRecentCommentsApi(tcb, options);
+}
+
+/**
+ * 获取全站评论总数（公开 API；需站长开启 SHOW_TOTAL_COUNT）。
+ * @param options 选项（includeReply 缺省 false）
+ * @returns 评论总数
+ */
+export async function getTotalCommentsCount(options: TwikooOptions = {}): Promise<number> {
+  const tcb = await initTcbIfNeeded(options);
+  return await getTotalCommentsCountApi(tcb, options);
 }
 
 /**

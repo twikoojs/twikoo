@@ -25,7 +25,14 @@
  * - 不实现 `batch`：批量导入按 1.x 的逐条 `save()` 语义串行执行，单条失败即可见；
  * - 不做事务包裹：D1 的 `batch` 才是原子单元，而本端口的 19 个方法都是单语句操作。
  */
-import { ABSENT, GT, LT, NOT } from "@twikoojs/common";
+import {
+  ABSENT,
+  GT,
+  LT,
+  NOT,
+  VISITOR_KEYWORD_FIELDS,
+  commentMatchesKeyword,
+} from "@twikoojs/common";
 import type {
   CommentDoc,
   ConfigData,
@@ -427,6 +434,43 @@ export class D1Database implements Database {
   /** 评论：语义查询 + 排序/分页 */
   async getComments(query: SemanticQuery, options?: QueryOptions): Promise<CommentDoc[]> {
     const where = buildWhere(query);
+    const keyword = options?.publicKeyword;
+    if (keyword) {
+      // SQLite 的 lower() 只转换 ASCII。字节数与字符数不同的字段也要交给 JS 判断，
+      // 即使关键词是 ASCII（例如 K 会转为 k）。其他查询条件仍由数据库筛选。
+      const keywordLower = keyword.toLowerCase();
+      const matches = VISITOR_KEYWORD_FIELDS.map(
+        (field) =>
+          `instr(lower("${field}"), ?) > 0 OR length(CAST("${field}" AS BLOB)) <> length("${field}")`,
+      );
+      where.sql += `${where.sql ? " AND " : " WHERE "}(${matches.join(" OR ")})`;
+      where.params.push(...VISITOR_KEYWORD_FIELDS.map(() => keywordLower));
+      const order = buildOrderAndPage({ sort: options.sort });
+      // 用 rowid 打破排序平局，分批读取候选行，避免一次载入所有非 ASCII 评论。
+      const sql = `SELECT * FROM "comment"${where.sql}${order.sql}${order.sql ? ", " : " ORDER BY "}rowid LIMIT ? OFFSET ?`;
+      const pageSize = 100;
+      const found: Array<Record<string, unknown>> = [];
+      let skip = Math.max(0, options.skip ?? 0);
+      const limit = options.limit ?? -1;
+      for (let offset = 0; limit < 0 || found.length < limit; offset += pageSize) {
+        const { results = [] } = await this.stmt(sql, [
+          ...where.params,
+          pageSize,
+          offset,
+        ]).all<Record<string, unknown>>();
+        for (const row of results) {
+          if (!commentMatchesKeyword(row, keyword)) continue;
+          if (skip > 0) {
+            skip--;
+            continue;
+          }
+          found.push(row);
+          if (found.length === limit) break;
+        }
+        if (results.length < pageSize) break;
+      }
+      return this.toDocs(found);
+    }
     const page = buildOrderAndPage(options);
     const { results } = await this.stmt(
       `SELECT * FROM "comment"${where.sql}${page.sql}`,

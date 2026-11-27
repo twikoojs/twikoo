@@ -18,6 +18,7 @@
  *   公共库不感知平台 SDK——单测用内存 fake 即可覆盖。
  */
 import { randomUUID } from "node:crypto";
+import { commentMatchesKeyword } from "./comment-keyword";
 import { ABSENT, GT, LT, NOT } from "../ports/database";
 import type {
   CommentDoc,
@@ -122,10 +123,17 @@ function matchCondition(doc: CommentDoc, key: string, expected: unknown): boolea
  * @param query 语义查询对象
  * @returns 匹配评论
  */
-function filterComments(comments: CommentDoc[], query: SemanticQuery): CommentDoc[] {
-  if (!Object.keys(query).length) return comments;
-  return comments.filter((comment) =>
-    Object.entries(query).every(([key, value]) => matchCondition(comment, key, value)),
+function filterComments(
+  comments: CommentDoc[],
+  query: SemanticQuery,
+  keyword?: string,
+): CommentDoc[] {
+  const conditions = Object.entries(query);
+  if (!conditions.length && !keyword) return comments;
+  return comments.filter(
+    (comment) =>
+      conditions.every(([key, value]) => matchCondition(comment, key, value)) &&
+      (!keyword || commentMatchesKeyword(comment, keyword)),
   );
 }
 
@@ -193,7 +201,7 @@ export class BlobKvDatabase implements Database {
 
   /** 评论：语义查询 + 排序/分页（JS 层实现；1.x 无 options，2.0 端口统一后补齐） */
   async getComments(query: SemanticQuery, options?: QueryOptions): Promise<CommentDoc[]> {
-    const matched = filterComments(await this.getAllComments(), query);
+    const matched = filterComments(await this.getAllComments(), query, options?.publicKeyword);
     if (!options) return matched;
     let result = [...matched];
     if (options.sort) {

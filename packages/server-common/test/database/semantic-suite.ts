@@ -98,6 +98,26 @@ export function runDatabaseSemanticSuite(name: string, fixture: DbFixture): void
       }
     });
 
+    it("公开关键词：按字面子串匹配，先限定页面与公开字段，再分页", async () => {
+      const db = await fixture.create();
+      try {
+        const keyword = "C++ [v2].* \\ %_ '";
+        await db.bulkAddComments([
+          makeComment({ url: "/p", mail: keyword, ip: keyword }, 1),
+          makeComment({ url: "/other", comment: keyword }, 2),
+          makeComment({ _id: "hit", url: "/p/", nick: `~${keyword.toLowerCase()}~` }, 3),
+        ]);
+        const rows = await db.getComments(
+          { url: ["/p", "/p/"] },
+          { publicKeyword: keyword, sort: { created: 1 }, limit: 1 },
+        );
+        expect(rows.map((row) => row._id)).toEqual(["hit"]);
+        expect(await db.getComments({ url: "/p/" }, { publicKeyword: "v2|v3" })).toEqual([]);
+      } finally {
+        await fixture.dispose(db);
+      }
+    });
+
     it("比较语义：GT / LT 哨兵做数值比较（1.x created $gt / $lt 对齐）", async () => {
       const db = await fixture.create();
       try {

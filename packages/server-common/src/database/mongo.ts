@@ -20,6 +20,7 @@
  * 类型面经 `typeof import("mongodb")`（编译期擦除，不产生静态依赖）。
  */
 import { randomUUID } from "node:crypto";
+import { escapeSearchRegex, VISITOR_KEYWORD_FIELDS } from "./comment-keyword";
 import { ABSENT, GT, LT, NOT } from "../ports/database";
 import type {
   CommentDoc,
@@ -170,7 +171,12 @@ export class MongoDatabase implements Database {
 
   /** 评论：语义查询 + 排序/分页（1.x find().sort().skip().limit().toArray() 对齐） */
   async getComments(query: SemanticQuery, options?: QueryOptions): Promise<CommentDoc[]> {
-    const cursor = this.col("comment").find(toMongoFilter(query));
+    const filter = toMongoFilter(query);
+    if (options?.publicKeyword) {
+      const pattern = { $regex: escapeSearchRegex(options.publicKeyword), $options: "i" };
+      filter.$or = VISITOR_KEYWORD_FIELDS.map((field) => ({ [field]: pattern }));
+    }
+    const cursor = this.col("comment").find(filter);
     if (options?.sort) cursor.sort(options.sort);
     if (options?.skip !== undefined) cursor.skip(options.skip);
     if (options?.limit !== undefined) cursor.limit(options.limit);
